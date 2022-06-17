@@ -150,6 +150,8 @@ f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 
 void onRenderScoreboard(CRules@ this)
 {
+	if (this.get_bool("show_gamehelp")) return;
+	
 	const u8 playingTeamsCount = 1; //change this depending on how many teams in the gamemode, this.getTeamsNum() causes errors
 	CPlayer@[][] teamsPlayers(playingTeamsCount); //holds all teams and their players
 	CPlayer@[] spectators;
@@ -229,6 +231,8 @@ void onRenderScoreboard(CRules@ this)
 
 		topleft.y += 52;
 	}
+	
+	drawManualPointer(topleft.y);
 
 	const float scoreboardHeight = topleft.y + scrollOffset;
 	const float screenHeight = getScreenHeight();
@@ -264,14 +268,12 @@ void drawFancyCopiedText(string username, Vec2f mousePos, uint duration)
 	GUI::DrawTextCentered(text, pos, SColor((255 - duration * 4), col, col, col));
 }
 
-void drawServerInfo(CRules@ this, float y)
+void drawServerInfo(CRules@ this, const f32 y)
 {
 	GUI::SetFont("menu");
 
 	Vec2f pos(screenMidX, y);
-	float width = 200;
-
-	CNet@ net = getNet();
+	f32 width = 200;
 
 	const string info = getTranslatedString(this.gamemode_name) + ": " + getTranslatedString(this.gamemode_info);
 	const string mapName = getTranslatedString("Map name : ") + this.get_string("map_name");
@@ -280,9 +282,6 @@ void drawServerInfo(CRules@ this, float y)
 	Vec2f dim;
 	GUI::GetTextDimensions(info, dim);
 	if (dim.x + 15 > width) width = dim.x + 15;
-
-	//GUI::GetTextDimensions(net.joined_servername, dim);
-	//if (dim.x + 15 > width) width = dim.x + 15;
 
 	GUI::GetTextDimensions(mapName, dim);
 	if (dim.x + 15 > width) width = dim.x + 15;
@@ -295,13 +294,30 @@ void drawServerInfo(CRules@ this, float y)
 	Vec2f mid(screenMidX, y);
 
 	GUI::DrawPane(pos, bot, SColor(0xffcccccc));
-
-	//mid.y += 15;
-	//GUI::DrawTextCentered(net.joined_servername, mid, color_white);
+	
 	mid.y += 15;
 	GUI::DrawTextCentered(info, mid, color_white);
 	mid.y += 15;
 	GUI::DrawTextCentered(mapName, mid, color_white);
 	mid.y += 25;
 	GUI::DrawTextCentered(dayCount, mid, color_white);
+}
+
+void drawManualPointer(const f32 y)
+{
+	const string openHelp = ZombieDesc::open_manual.replace("{KEY}", "["+getControls().getActionKeyKeyName(AK_MENU)+"]");
+	
+	Vec2f dim;
+	GUI::GetTextDimensions(openHelp, dim);
+	
+	Vec2f pos(screenMidX, y);
+	const f32 width = dim.x + 15;
+	pos.x -= width / 2;
+	
+	Vec2f bot = pos;
+	bot.x += width;
+	bot.y += 25;
+	
+	GUI::DrawPane(pos, bot, SColor(0xffcccccc));
+	GUI::DrawTextCentered(openHelp, Vec2f(screenMidX, y+12), color_white);
 }

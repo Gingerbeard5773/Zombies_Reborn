@@ -39,12 +39,15 @@ namespace ZombieDesc
 	respawn             = Translate("Waiting for dawn..."),
 	
 	//manual
+	title               = Translate("ZOMBIE FORTRESS"),
+	tips                = Translate("TIPS"),
 	mod_version         = Translate("Version"),
 	game_mode           = Translate("Build a great castle and endure the masses of zombies!"),
 	change_page         = Translate("Press the arrow buttons to switch between pages."),
 	tip_gateways        = Translate("When night arrives, the undead will appear at these gateways."),
 	tip_zombification   = Translate("A dead body will transform into a zombie after some time."),
-	tip_water_wraith    = Translate("Use water to temporarily stop a burning wraith.");
+	tip_water_wraith    = Translate("Use water to temporarily stop a burning wraith."),
+	tip_headshot        = Translate("Head shots deal additional damage.");
 }
 
 const string[] teams =

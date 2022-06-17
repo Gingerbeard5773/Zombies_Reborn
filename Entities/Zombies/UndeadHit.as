@@ -6,11 +6,23 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	switch(customData)
 	{
 		case Hitters::ballista:
-			damage *= 2.5; break;
+			damage *= 2.5;
+			break;
 		case Hitters::cata_boulder:
-			damage *= 2; break;
+			damage *= 2;
+			break;
 		case Hitters::arrow:
-			if (this.hasTag("dead")) damage *= 1.5; break;
+		{
+			//headshots deal additional damage
+			const Vec2f headPoint = this.getPosition() - Vec2f(0, this.getRadius()/2);
+			const bool hitHead = (worldPoint - headPoint).Length() < this.getRadius()/2;
+			if (this.hasTag("dead") || hitHead)
+			{
+				ParticleBloodSplat(worldPoint, true);
+				damage *= 1.5;
+			}
+			break;
+		}
 	}
 	
 	//damage without activating server_die- to allow for negative health

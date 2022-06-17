@@ -4,29 +4,19 @@
 
 #include "Zombie_Translation.as";
 
-bool showHelp = true;
 bool mousePress = false;
 u8 page = 0;
 
-const u8 pages = 4;
+const u8 pages = 5;
 
 const int KEY_MISC = getControls().getActionKeyKey(AK_MENU);
 
 void onInit(CRules@ this)
 {
+	this.set_bool("show_gamehelp", true);
 	CFileImage@ image = CFileImage("HelpBackground.png");
 	const Vec2f imageSize = Vec2f(image.getWidth(), image.getHeight());
 	AddIconToken("$HELP$", "HelpBackground.png", imageSize, 0);
-	
-	if (!GUI::isFontLoaded("big font"))
-	{
-        GUI::LoadFont("big font", g_locale == "ru" ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Bold.ttf", 50, true);
-    }
-	
-	if (!GUI::isFontLoaded("medium font"))
-	{
-        GUI::LoadFont("medium font", "GUI/Fonts/AveriaSerif-Regular.ttf", 20, true);
-    }
 }
 
 void onTick(CRules@ this)
@@ -37,13 +27,13 @@ void onTick(CRules@ this)
 	CControls@ controls = getControls();
 	if (controls.isKeyJustPressed(KEY_MISC))
 	{
-		showHelp = !showHelp;
+		this.set_bool("show_gamehelp", !this.get_bool("show_gamehelp"));
 	}
 }
 
 void onRender(CRules@ this)
 {
-	if (!showHelp) return;
+	if (!this.get_bool("show_gamehelp")) return;
 	
 	CPlayer@ player = getLocalPlayer();
 	if (player is null) return;
@@ -56,16 +46,17 @@ void onRender(CRules@ this)
 	
 	switch(page)
 	{
-		case 0: Page1(imageSize, center); break;
-		case 1: Page2(imageSize, center); break;
-		case 2: Page3(imageSize, center); break;
-		case 3: Page4(imageSize, center); break;
+		case 0: page1(imageSize, center); break;
+		case 1: page2(imageSize, center); break;
+		case 2: page3(imageSize, center); break;
+		case 3: page4(imageSize, center); break;
+		case 4: page5(imageSize, center); break;
 	};
 	
 	CControls@ controls = getControls();
 	const Vec2f mousePos = controls.getMouseScreenPos();
 	
-	makeExitButton(Vec2f(center.x + imageSize.x - 20, center.y - imageSize.y + 20), controls, mousePos);
+	makeExitButton(this, Vec2f(center.x + imageSize.x - 20, center.y - imageSize.y + 20), controls, mousePos);
 	
 	makePageChangeButton(Vec2f(center.x+22, center.y + imageSize.y + 50), controls, mousePos, true);
 	makePageChangeButton(Vec2f(center.x-22, center.y + imageSize.y + 50), controls, mousePos, false);
@@ -76,7 +67,7 @@ void onRender(CRules@ this)
 	mousePress = controls.mousePressed1; 
 }
 
-void makeExitButton(Vec2f&in pos, CControls@ controls, Vec2f&in mousePos)
+void makeExitButton(CRules@ this, Vec2f&in pos, CControls@ controls, Vec2f&in mousePos)
 {
 	Vec2f tl = pos + Vec2f(-20, -20);
 	Vec2f br = pos + Vec2f(20, 20);
@@ -89,7 +80,7 @@ void makeExitButton(Vec2f&in pos, CControls@ controls, Vec2f&in mousePos)
 		if (controls.mousePressed1 && !mousePress)
 		{
 			Sound::Play("option");
-			showHelp = false;
+			this.set_bool("show_gamehelp", false);
 		}
 	}
 	else
@@ -125,38 +116,59 @@ void makePageChangeButton(Vec2f&in pos, CControls@ controls, Vec2f&in mousePos, 
 	GUI::DrawIcon("MenuItems", right ? 22 : 23, Vec2f(32,32), Vec2f(pos.x-32, pos.y-32), 1.0f);
 }
 
-void Page1(Vec2f&in imageSize, Vec2f&in center)
+void drawHeader(const string&in text, const Vec2f&in pos)
+{
+	GUI::SetFont("big font");
+	GUI::DrawTextCentered(text, pos, color_black);
+}
+
+void page1(Vec2f&in imageSize, Vec2f&in center)
 {
 	GUI::DrawIcon("Page1.png", Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
 	
-	GUI::SetFont("big font");
-	GUI::DrawTextCentered("ZOMBIE FORTRESS", center - Vec2f(0, imageSize.y - 50), color_black);
+	drawHeader(ZombieDesc::title, center - Vec2f(0, imageSize.y - 50));
 	
 	GUI::SetFont("medium font");
 	GUI::DrawTextCentered(ZombieDesc::game_mode, center - Vec2f(0, imageSize.y - 140), color_black);
-	GUI::DrawTextCentered(ZombieDesc::change_page, center - Vec2f(0, imageSize.y - 180), color_black);
+	//GUI::DrawTextCentered(ZombieDesc::change_page, center - Vec2f(0, imageSize.y - 180), color_black);
 }
 
-void Page2(Vec2f&in imageSize, Vec2f&in center)
+void page2(Vec2f&in imageSize, Vec2f&in center)
 {
 	GUI::DrawIcon("Page2.png", Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3));
+	
+	drawHeader(ZombieDesc::tips, center - Vec2f(0, imageSize.y - 50));
 	
 	GUI::SetFont("medium font");
 	GUI::DrawTextCentered(ZombieDesc::tip_gateways, center - Vec2f(0, imageSize.y - 140), color_black);
 }
 
-void Page3(Vec2f&in imageSize, Vec2f&in center)
+void page3(Vec2f&in imageSize, Vec2f&in center)
 {
 	GUI::DrawIcon("Page3.png", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+	
+	drawHeader(ZombieDesc::tips, center - Vec2f(0, imageSize.y - 50));
 	
 	GUI::SetFont("medium font");
 	GUI::DrawTextCentered(ZombieDesc::tip_zombification, center - Vec2f(0, imageSize.y - 140), color_black);
 }
 
-void Page4(Vec2f&in imageSize, Vec2f&in center)
+void page4(Vec2f&in imageSize, Vec2f&in center)
 {
 	GUI::DrawIcon("Page4.png", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
 	
+	drawHeader(ZombieDesc::tips, center - Vec2f(0, imageSize.y - 50));
+	
 	GUI::SetFont("medium font");
 	GUI::DrawTextCentered(ZombieDesc::tip_water_wraith, center - Vec2f(0, imageSize.y - 140), color_black);
+}
+
+void page5(Vec2f&in imageSize, Vec2f&in center)
+{
+	GUI::DrawIcon("Page5.png", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+	
+	drawHeader(ZombieDesc::tips, center - Vec2f(0, imageSize.y - 50));
+	
+	GUI::SetFont("medium font");
+	GUI::DrawTextCentered(ZombieDesc::tip_headshot, center - Vec2f(0, imageSize.y - 140), color_black);
 }
