@@ -30,22 +30,3 @@ shared class UndeadMoveVars
 	f32 flySpeed;
 	f32 flyFactor;
 };
-
-shared const bool isTargetVisible(CBlob@ this, CBlob@ target)
-{
-	Vec2f col;
-	
-	if (getMap().rayCastSolid(this.getPosition(), target.getPosition(), col))
-	{
-		// fix for doors not being considered visible
-		CBlob@ obstruction = getMap().getBlobAtPosition(col);
-		if (obstruction is null || obstruction !is target)
-			return false;
-	}
-	return true;
-}
-
-shared const f32 getDistanceBetween(Vec2f&in point1, Vec2f&in point2)
-{
-	return (point1 - point2).Length();
-}

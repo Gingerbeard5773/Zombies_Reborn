@@ -38,23 +38,21 @@ void onTick(CBrain@ this)
 				this.SetTarget(null);
 				return;
 			}
-
+			
 			// aim at the target
 			blob.setAimPos(target.getPosition());
 			
 			// chase target
 			FlyTo(blob, target.getPosition());
 			
-			// stay away from anything any nearby obstructions such as a tower
-			//DetectForwardObstructions(blob);
-			
 			// should we be mad?
 			// auto-enrage after some time if we cannot get to target
 			const s32 timer = blob.get_s32("auto_enrage_time") - getGameTime();
-			if (getDistanceBetween(target.getPosition(), blob.getPosition()) < blob.get_f32("explosive_radius") || timer < 0)
+			if ((target.getPosition() - blob.getPosition()).Length() < blob.get_f32("explosive_radius") || timer < 0)
 			{
 				// get mad
-				Enrage(blob);
+				blob.Tag("enraged");
+				blob.Sync("enraged", true);
 			}
 		}
 		else
@@ -72,29 +70,27 @@ void onTick(CBrain@ this)
 
 const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 {
-	if (target.hasTag("dead")) return true;
+	if (target.hasTag("dead"))
+		return true;
 	
-	if (!blob.hasTag("target_until_dead"))
-	{
-		if (getDistanceBetween(target.getPosition(), blob.getPosition()) > blob.get_f32(target_searchrad_property))
-			return true;
-		else
-			return !isTargetVisible(blob, target) && XORRandom(30) == 0;
-	}
+	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32(target_searchrad_property))
+		return true;
 	
-	return false;
+	return !isTargetVisible(blob, target) && XORRandom(30) == 0;
 }
 
 void FlyAround(CBrain@ this, CBlob@ blob)
 {
+	CMap@ map = getMap();
+	
 	// look for a target along the way :)
-	FindTarget(this, blob, blob.get_f32(target_searchrad_property));
+	SetBestTarget(this, blob, blob.get_f32(target_searchrad_property));
 
 	// get our destination
 	Vec2f destination = blob.get_Vec2f(destination_property);
-	if (destination == Vec2f_zero || getDistanceBetween(destination, blob.getPosition()) < 128 || XORRandom(30) == 0)
+	if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 128 || XORRandom(30) == 0)
 	{
-		NewDestination(blob);
+		NewDestination(blob, map);
 		return;
 	}
 
@@ -105,40 +101,26 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 	FlyTo(blob, destination);
 
 	// stay away from anything any nearby obstructions such as a tower
-	DetectForwardObstructions(blob);
+	DetectForwardObstructions(blob, map);
 
 	// stay above the ground
-	StayAboveGroundLevel(blob);
-}
-
-void FindTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
-{
-	CBlob@ target = GetBestTarget(this, blob, radius);
-	if (target !is null) this.SetTarget(target);
+	StayAboveGroundLevel(blob, map);
 }
 
 void FlyTo(CBlob@ blob, Vec2f&in destination)
 {
-	const Vec2f mypos = blob.getPosition();
-	const f32 radius = blob.getRadius();
+	Vec2f mypos = blob.getPosition();
 	
 	blob.setKeyPressed(destination.x < mypos.x ? key_left : key_right, true);
 
 	if (destination.y < mypos.y)
 		blob.setKeyPressed(key_up, true);
-		/*
-	else if ((blob.isKeyPressed(key_right) && (getMap().isTileSolid(mypos + Vec2f(1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)) ||
-		     (blob.isKeyPressed(key_left)  && (getMap().isTileSolid(mypos + Vec2f(-1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)))
-		blob.setKeyPressed(key_up, true);
-		*/
 }
 
-void DetectForwardObstructions(CBlob@ blob)
+void DetectForwardObstructions(CBlob@ blob, CMap@ map)
 {
-	if (blob.hasTag("ignore_obstructions")) return;
-	
-	Vec2f mypos;
-	const bool obstructed = getMap().rayCastSolid(mypos, Vec2f(blob.isKeyPressed(key_right) ? mypos.x + 256.0f : // 512
+	Vec2f mypos = blob.getPosition();
+	const bool obstructed = map.rayCastSolidNoBlobs(mypos, Vec2f(blob.isKeyPressed(key_right) ? mypos.x + 256.0f : // 512
 		                                                                                 mypos.x - 256.0f, mypos.y));
 	if (obstructed)
 	{
@@ -146,36 +128,29 @@ void DetectForwardObstructions(CBlob@ blob)
 	}
 }
 
-void StayAboveGroundLevel(CBlob@ blob)
+void StayAboveGroundLevel(CBlob@ blob, CMap@ map)
 {
 	if (blob.hasTag("enraged")) return;
 	
-	if (getFlyHeight(blob.getPosition().x) < blob.getPosition().y)
+	if (getFlyHeight(blob.getPosition().x, map) < blob.getPosition().y)
 	{
 		blob.setKeyPressed(key_up, true);
 	}
 }
 
-void NewDestination(CBlob@ blob)
+void NewDestination(CBlob@ blob, CMap@ map)
 {
-	const Vec2f dim = getMap().getMapDimensions();
+	const Vec2f dim = map.getMapDimensions();
 	s32 x = XORRandom(2) == 0 ? (dim.x / 2 + XORRandom(dim.x / 2)) :
 								(dim.x / 2 - XORRandom(dim.x / 2));
 
 	x = Maths::Clamp(x, 32, dim.x - 32); //stay within map boundaries
 
 	// set destination
-	blob.set_Vec2f(destination_property, Vec2f(x, getFlyHeight(x)));
+	blob.set_Vec2f(destination_property, Vec2f(x, getFlyHeight(x, map)));
 }
 
-const f32 getFlyHeight(const s32&in x)
+const f32 getFlyHeight(const s32&in x, CMap@ map)
 {
-	CMap@ map = getMap();
 	return Maths::Max(0.0f, map.getLandYAtX(x / map.tilesize) * map.tilesize - 96.0f);
-}
-
-void Enrage(CBlob@ this)
-{
-	this.Tag("enraged");
-	this.Sync("enraged", true);
 }

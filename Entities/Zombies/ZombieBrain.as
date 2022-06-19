@@ -44,15 +44,17 @@ void onTick(CBrain@ this)
 			blob.setAimPos(target.getPosition());
 
 			// chase target
-			if (getDistanceBetween(target.getPosition(), blob.getPosition()) > blob.getRadius() + blob.get_f32("attack distance") / 2)
+			if ((target.getPosition() - blob.getPosition()).Length() > blob.getRadius() + blob.get_f32("attack distance") / 2)
 			{
-				PathTo(blob, target.getPosition());
+				CMap@ map = getMap();
+				
+				PathTo(blob, target.getPosition(), map);
 
 				// scale walls and jump over small blocks
-				ScaleObstacles(blob, target.getPosition());
+				ScaleObstacles(blob, target.getPosition(), map);
 
 				// destroy any attackable obstructions such as doors
-				DestroyAttackableObstructions(this, blob);
+				DestroyAttackableObstructions(this, blob, map);
 			}
 		}
 		else
@@ -68,36 +70,29 @@ void onTick(CBrain@ this)
 	blob.set_u8(delay_property, delay);
 }
 
-void FindTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
-{
-	//GetClosestVisibleTarget(this, blob, radius);
-	CBlob@ target = GetBestTarget(this, blob, radius);
-	if (target !is null) this.SetTarget(target);
-}
-
 const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 {
-	bool result = false;
 	if (target.hasTag("dead"))
-		result = true;
-	else if (getDistanceBetween(target.getPosition(), blob.getPosition()) > blob.get_f32(target_searchrad_property))
-		result = true;
-	else
-		result = !isTargetVisible(blob, target) && XORRandom(30) == 0;
+		return true;
 	
-	return result;
+	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32(target_searchrad_property))
+		return true;
+	
+	return !isTargetVisible(blob, target) && XORRandom(30) == 0;
 }
 
 void GoSomewhere(CBrain@ this, CBlob@ blob)
 {
+	CMap@ map = getMap();
+	
 	// look for a target along the way :)
-	FindTarget(this, blob, blob.get_f32(target_searchrad_property));
+	SetBestTarget(this, blob, blob.get_f32(target_searchrad_property));
 
 	// get our destination
 	Vec2f destination = blob.get_Vec2f(destination_property);
-	if (destination == Vec2f_zero || getDistanceBetween(destination, blob.getPosition()) < 128 || XORRandom(30) == 0)
+	if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 128 || XORRandom(30) == 0)
 	{
-		NewDestination(blob);
+		NewDestination(blob, map);
 		return;
 	}
 	
@@ -105,36 +100,34 @@ void GoSomewhere(CBrain@ this, CBlob@ blob)
 	blob.setAimPos(destination);
 
 	// go to our destination
-	PathTo(blob, destination);
+	PathTo(blob, destination, map);
 
 	// scale walls and jump over small blocks
-	ScaleObstacles(blob, destination);
+	ScaleObstacles(blob, destination, map);
 
 	// destroy any attackable obstructions such as doors
-	DestroyAttackableObstructions(this, blob);
+	DestroyAttackableObstructions(this, blob, map);
 }
 
 
-void PathTo(CBlob@ blob, Vec2f&in destination)
+void PathTo(CBlob@ blob, Vec2f&in destination, CMap@ map)
 {
 	Vec2f mypos = blob.getPosition();
 	
 	blob.setKeyPressed(destination.x < mypos.x ? key_left : key_right, true);
 
-	if (destination.y + getMap().tilesize < mypos.y)
+	if (destination.y + map.tilesize < mypos.y)
 	{
 		blob.setKeyPressed(key_up, true);
 	}
 }
 
-void ScaleObstacles(CBlob@ blob, Vec2f&in destination)
+void ScaleObstacles(CBlob@ blob, Vec2f&in destination, CMap@ map)
 {
 	Vec2f mypos = blob.getPosition();
 
-	const f32 radius = blob.getRadius();
-	// check if possibly touching other zombies
+	// check if touching other zombies
 	bool touchingOther = !blob.isOnGround() && blob.getTouchingCount() > 0;
-	// if we're touching someone, check if it's a zombie
 	if (touchingOther)
 	{
 		touchingOther = false;
@@ -160,30 +153,31 @@ void ScaleObstacles(CBlob@ blob, Vec2f&in destination)
 	}
 	else
 	{
-		if ((blob.isKeyPressed(key_right)  && (getMap().isTileSolid(mypos + Vec2f(1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)) ||
-			(blob.isKeyPressed(key_left)  && (getMap().isTileSolid(mypos + Vec2f(-1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)))
+		const f32 radius = blob.getRadius();
+		
+		if ((blob.isKeyPressed(key_right) && (map.isTileSolid(mypos + Vec2f(1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)) ||
+			(blob.isKeyPressed(key_left) && (map.isTileSolid(mypos + Vec2f(-1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)))
 		{
 			blob.setKeyPressed(key_up, true);
 		}
 	}
 }
 
-void DestroyAttackableObstructions(CBrain@ this, CBlob@ blob)
+void DestroyAttackableObstructions(CBrain@ this, CBlob@ blob, CMap@ map)
 {
 	Vec2f col;
-	if (getMap().rayCastSolid(blob.getPosition(), blob.getAimPos(), col))
+	if (map.rayCastSolid(blob.getPosition(), blob.getAimPos(), col))
 	{
-		CBlob@ obstruction = getMap().getBlobAtPosition(col);
-		if (obstruction !is null && (obstruction.hasTag("undead") || obstruction.hasTag("invincible")))
+		CBlob@ obstruction = map.getBlobAtPosition(col);
+		if (obstruction is null || (obstruction.hasTag("undead") || obstruction.hasTag("invincible")))
 			return;
 		
 		this.SetTarget(obstruction);
 	}
 }
 
-void NewDestination(CBlob@ blob)
+void NewDestination(CBlob@ blob, CMap@ map)
 {
-	CMap@ map = getMap();
 	const Vec2f dim = map.getMapDimensions();
 
 	Vec2f destination = blob.get_Vec2f(destination_property);

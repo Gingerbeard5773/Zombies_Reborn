@@ -1,62 +1,46 @@
-/* Targeting */
+//common targeting
 
-shared CBlob@ GetClosestVisibleTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
+shared void SetBestTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
 {
-	Vec2f pos = blob.getPosition();
-	CBlob@[] nearBlobs;
-	blob.getMap().getBlobsInRadius(pos, radius, @nearBlobs);
-
-	CBlob@ best_candidate;
-	f32 closest_dist = 999999.9f;
+	u16[] targetBlobs;
+	if (!getRules().get("target netids", targetBlobs)) return;
 	
-	const u16 blobsLength = nearBlobs.length;
-	for (u16 i = 0; i < blobsLength; ++i)
-	{
-		CBlob@ candidate = nearBlobs[i];
-		if (candidate is null || !canTarget(candidate) || candidate is blob) continue;
-		
-		const f32 dist = getDistanceBetween(candidate.getPosition(), pos);
-		if (dist < closest_dist && isTargetVisible(blob, candidate))
-		{
-			@best_candidate = candidate;
-			closest_dist = dist;
-		}
-	}
-	return best_candidate;
-}
-
-shared CBlob@ GetBestTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
-{
 	const bool seeThroughWalls = blob.hasTag("see_through_walls");
 	const Vec2f pos = blob.getPosition();
-	
-	CBlob@[] nearBlobs;
-	getMap().getBlobsInRadius(pos, radius, @nearBlobs);
 
-	CBlob@ best_candidate;
+	CBlob@ target;
 	f32 closest_dist = 999999.9f;
 	
-	for (u16 i = 0; i < nearBlobs.length; ++i)
+	const u16 blobsLength = targetBlobs.length;
+	for (u16 i = 0; i < blobsLength; ++i)
 	{
-		CBlob@ candidate = nearBlobs[i];
-		if (candidate is null || !canTarget(candidate) || candidate is blob) continue;
-		
-		const bool is_visible = isTargetVisible(blob, candidate);
+		CBlob@ candidate = getBlobByNetworkID(targetBlobs[i]);
+		if (candidate is null || candidate.hasTag("dead")) continue;
 
-		const f32 dist = getDistanceBetween(candidate.getPosition(), pos);
-		if (dist < closest_dist && (is_visible || seeThroughWalls))
+		const f32 dist = (candidate.getPosition() - pos).Length();
+		if (dist < radius && dist < closest_dist && (isTargetVisible(blob, candidate) || seeThroughWalls))
 		{
-			if (!is_visible && XORRandom(30) > 3) continue;
-
-			@best_candidate = candidate;
+			@target = candidate;
 			closest_dist = dist;
 		}
 	}
-	return best_candidate;
+	
+	if (target !is null)
+	{
+		this.SetTarget(target);
+	}
 }
 
-shared const bool canTarget(CBlob@ target)
+shared const bool isTargetVisible(CBlob@ this, CBlob@ target)
 {
-	return !target.hasTag("dead") && !target.hasTag("undead") && //can't be dead (literally)
-		   (target.hasTag("building") || target.hasTag("player") || target.hasTag("vehicle"));
+	Vec2f col;
+	
+	if (getMap().rayCastSolid(this.getPosition(), target.getPosition(), col))
+	{
+		// fix for doors not being considered visible
+		CBlob@ obstruction = getMap().getBlobAtPosition(col);
+		if (obstruction is null || obstruction !is target)
+			return false;
+	}
+	return true;
 }
