@@ -28,8 +28,9 @@ void Spectator(CRules@ this)
 {
 	CCamera@ camera = getCamera();
 	CControls@ controls = getControls();
+	CMap@ map = getMap();
 
-	if (camera is null || controls is null)
+	if (camera is null || controls is null || map is null)
 		return;
 
 	//Zoom in and out using mouse wheel
@@ -101,17 +102,17 @@ void Spectator(CRules@ this)
 	Vec2f mousePos = controls.getMouseWorldPos();
 	if (controls.isKeyJustPressed(KEY_LBUTTON) && !waitForRelease)
 	{
-		CBlob@[] players;
 		SetTargetPlayer(null, camera);
-		getBlobsByTag("player", @players);
-		for (uint i = 0; i < players.length; i++)
+		
+		CBlob@[] players;
+		map.getBlobsInRadius(controls.getMouseWorldPos(), 8.0f, @players);
+		
+		const u16 playersLength = players.length;
+		for (u16 i = 0; i < playersLength; i++)
 		{
 			CBlob@ blob = players[i];
-			Vec2f bpos = blob.getInterpolatedPosition();
-
-			if (Maths::Pow(mousePos.x - bpos.x, 2) + Maths::Pow(mousePos.y - bpos.y, 2) <= Maths::Pow(blob.getRadius() * 2, 2) && camera.getTarget() !is blob)
+			if (blob.hasTag("player"))
 			{
-				//print("set player to track: " + (blob.getPlayer() is null ? "null" : blob.getPlayer().getUsername()));
 				SetTargetPlayer(blob.getPlayer(), camera);
 				camera.setTarget(blob);
 				camera.setPosition(blob.getInterpolatedPosition());
@@ -139,18 +140,14 @@ void Spectator(CRules@ this)
 	}
 
 	//Don't go off the map boundaries
-	CMap@ map = getMap();
-	if (map !is null)
-	{
-		Vec2f dim = map.getMapDimensions();
-		const f32 boundary = map.tilesize * 2 / zoomTarget;
+	Vec2f dim = map.getMapDimensions();
+	const f32 boundary = map.tilesize * 2 / zoomTarget;
 
-		if (pos.x < boundary) pos.x = boundary;
-		if (pos.y < boundary) pos.y = boundary;
-		
-		if (pos.x > dim.x - boundary) pos.x = dim.x - boundary;
-		if (pos.y > dim.y - boundary) pos.y = dim.y - boundary;
-	}
+	if (pos.x < boundary) pos.x = boundary;
+	if (pos.y < boundary) pos.y = boundary;
+	
+	if (pos.x > dim.x - boundary) pos.x = dim.x - boundary;
+	if (pos.y > dim.y - boundary) pos.y = dim.y - boundary;
 
 	camera.setPosition(pos);
 }
