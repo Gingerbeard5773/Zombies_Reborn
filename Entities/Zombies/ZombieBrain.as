@@ -33,25 +33,36 @@ void onTick(CBrain@ this)
 		CBlob@ target = this.getTarget();
 		if (target !is null)
 		{
+			Vec2f targetPos = target.getPosition();
+			
 			// check if the target needs to be dropped
 			if (ShouldLoseTarget(blob, target))
 			{
 				this.SetTarget(null);
 				return;
 			}
+			
+			// is the target still visible?
+			if (!isTargetVisible(blob, target))
+			{
+				this.SetTarget(null);
+				
+				// go to last seen position
+				blob.set_Vec2f(destination_property, targetPos);
+			}
 
 			// aim always at enemy
-			blob.setAimPos(target.getPosition());
+			blob.setAimPos(targetPos);
 
 			// chase target
-			if ((target.getPosition() - blob.getPosition()).Length() > blob.getRadius() + blob.get_f32("attack distance") / 2)
+			if ((targetPos - blob.getPosition()).Length() > blob.getRadius() + blob.get_f32("attack distance") / 2)
 			{
 				CMap@ map = getMap();
 				
-				PathTo(blob, target.getPosition(), map);
+				PathTo(blob, targetPos, map);
 
 				// scale walls and jump over small blocks
-				ScaleObstacles(blob, target.getPosition(), map);
+				ScaleObstacles(this, blob, targetPos, map);
 
 				// destroy any attackable obstructions such as doors
 				DestroyAttackableObstructions(this, blob, map);
@@ -78,7 +89,7 @@ const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32(target_searchrad_property))
 		return true;
 	
-	return !isTargetVisible(blob, target) && XORRandom(30) == 0;
+	return false;
 }
 
 void GoSomewhere(CBrain@ this, CBlob@ blob)
@@ -90,7 +101,7 @@ void GoSomewhere(CBrain@ this, CBlob@ blob)
 
 	// get our destination
 	Vec2f destination = blob.get_Vec2f(destination_property);
-	if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 128 || XORRandom(30) == 0)
+	if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 40 || XORRandom(90) == 0)
 	{
 		NewDestination(blob, map);
 		return;
@@ -103,7 +114,7 @@ void GoSomewhere(CBrain@ this, CBlob@ blob)
 	PathTo(blob, destination, map);
 
 	// scale walls and jump over small blocks
-	ScaleObstacles(blob, destination, map);
+	ScaleObstacles(this, blob, destination, map);
 
 	// destroy any attackable obstructions such as doors
 	DestroyAttackableObstructions(this, blob, map);
@@ -122,7 +133,7 @@ void PathTo(CBlob@ blob, Vec2f&in destination, CMap@ map)
 	}
 }
 
-void ScaleObstacles(CBlob@ blob, Vec2f&in destination, CMap@ map)
+void ScaleObstacles(CBrain@ this, CBlob@ blob, Vec2f&in destination, CMap@ map)
 {
 	Vec2f mypos = blob.getPosition();
 
@@ -130,24 +141,15 @@ void ScaleObstacles(CBlob@ blob, Vec2f&in destination, CMap@ map)
 	bool touchingOther = !blob.isOnGround() && blob.getTouchingCount() > 0;
 	if (touchingOther)
 	{
-		touchingOther = false;
-		const u8 count = blob.getTouchingCount();
-		for (u8 i = 0; i < count; ++i)
-		{
-			CBlob@ _blob = blob.getTouchingByIndex(i);
-			if (_blob.hasTag("undead"))
-			{
-				touchingOther = true;
-				break;
-			}
-		}
+		CBlob@ _blob = blob.getTouchingByIndex(0);
+		touchingOther = _blob.hasTag("undead");
 	}
 
 	if (blob.isOnLadder() || blob.isInWater())
 	{
 		blob.setKeyPressed(destination.y < mypos.y ? key_up : key_down, true);
 	}
-	else if (touchingOther || blob.isOnWall())
+	else if (touchingOther || (blob.isOnWall() && this.getTarget() is null))
 	{
 		blob.setKeyPressed(key_up, true);
 	}
@@ -169,7 +171,7 @@ void DestroyAttackableObstructions(CBrain@ this, CBlob@ blob, CMap@ map)
 	if (map.rayCastSolid(blob.getPosition(), blob.getAimPos(), col))
 	{
 		CBlob@ obstruction = map.getBlobAtPosition(col);
-		if (obstruction is null || (obstruction.hasTag("undead") || obstruction.hasTag("invincible")))
+		if (obstruction is null || (obstruction.hasTag("undead") || !obstruction.isCollidable()))
 			return;
 		
 		this.SetTarget(obstruction);
