@@ -62,7 +62,7 @@ void onRender(CRules@ this)
 	makePageChangeButton(Vec2f(center.x-22, center.y + imageSize.y + 50), controls, mousePos, false);
 	
 	GUI::SetFont("medium font");
-	GUI::DrawTextCentered((page+1)+"", center+imageSize - Vec2f(25, 25), color_black);
+	GUI::DrawTextCentered((page+1)+"/"+pages, center+imageSize - Vec2f(30, 25), color_black);
 	
 	mousePress = controls.mousePressed1; 
 }
