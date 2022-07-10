@@ -141,8 +141,7 @@ void ScaleObstacles(CBrain@ this, CBlob@ blob, Vec2f&in destination, CMap@ map)
 	bool touchingOther = !blob.isOnGround() && blob.getTouchingCount() > 0;
 	if (touchingOther)
 	{
-		CBlob@ _blob = blob.getTouchingByIndex(0);
-		touchingOther = _blob.hasTag("undead");
+		touchingOther = blob.getTouchingByIndex(0).hasTag("undead");
 	}
 
 	if (blob.isOnLadder() || blob.isInWater())

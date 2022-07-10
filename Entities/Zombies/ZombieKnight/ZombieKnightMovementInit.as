@@ -12,7 +12,7 @@ void onInit(CMovement@ this)
     moveVars.walkLadderSpeed.Set(0.15f, 0.6f);
 
     //climbing vars
-    moveVars.climbingEnabled = false;
+    moveVars.climbingFactor = 30;
 
     //jumping vars
     moveVars.jumpMaxVel = 2.9f;

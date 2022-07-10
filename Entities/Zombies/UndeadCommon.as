@@ -11,7 +11,7 @@ shared class UndeadMoveVars
 	Vec2f walkLadderSpeed;
 
 	//climbing vars
-	bool climbingEnabled;
+	u8 climbingFactor;
 
 	//jumping vars
 	f32 jumpMaxVel;

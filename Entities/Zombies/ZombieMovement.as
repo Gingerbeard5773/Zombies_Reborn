@@ -34,7 +34,7 @@ void onTick(CMovement@ this)
 	bool onladder = blob.isOnLadder();
 	
 	// check if we need to scale a wall
-	if (moveVars.climbingEnabled && !blob.isOnLadder() && (up || left || right)) //key pressed
+	if (XORRandom(moveVars.climbingFactor) == 0 && !blob.isOnLadder() && (up || left || right)) //key pressed
 	{
 		//check solid tiles
 		const f32 ts = map.tilesize;
