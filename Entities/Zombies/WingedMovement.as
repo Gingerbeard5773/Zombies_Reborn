@@ -1,4 +1,4 @@
-#include "UndeadCommon.as";
+#include "UndeadMoveCommon.as";
 
 void onInit(CMovement@ this)
 {

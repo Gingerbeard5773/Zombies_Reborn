@@ -1,18 +1,15 @@
-// Aphelion \\
-
 #define SERVER_ONLY
 
-#include "UndeadCommon.as";
 #include "UndeadTargeting.as";
 #include "PressOldKeys.as";
 
 void onInit(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
-	blob.set_u8(delay_property, 5 + XORRandom(5));
+	blob.set_u8("brain_delay", 5 + XORRandom(5));
 
-	if (!blob.exists(target_searchrad_property))
-		 blob.set_f32(target_searchrad_property, 512.0f);
+	if (!blob.exists("brain_target_rad"))
+		 blob.set_f32("brain_target_rad", 512.0f);
 	
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
@@ -22,7 +19,7 @@ void onTick(CBrain@ this)
 	CBlob@ blob = this.getBlob();
 	if (blob.hasTag("dead")) return;
 	
-	u8 delay = blob.get_u8(delay_property);
+	u8 delay = blob.get_u8("brain_delay");
 	delay--;
 	
 	if (delay == 0)
@@ -48,7 +45,7 @@ void onTick(CBrain@ this)
 				this.SetTarget(null);
 				
 				// go to last seen position
-				blob.set_Vec2f(destination_property, targetPos);
+				blob.set_Vec2f("brain_destination", targetPos);
 			}
 
 			// aim always at enemy
@@ -78,7 +75,7 @@ void onTick(CBrain@ this)
 		PressOldKeys(blob);
 	}
 
-	blob.set_u8(delay_property, delay);
+	blob.set_u8("brain_delay", delay);
 }
 
 const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
@@ -86,7 +83,7 @@ const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 	if (target.hasTag("dead"))
 		return true;
 	
-	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32(target_searchrad_property))
+	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32("brain_target_rad"))
 		return true;
 	
 	return false;
@@ -97,10 +94,10 @@ void GoSomewhere(CBrain@ this, CBlob@ blob)
 	CMap@ map = getMap();
 	
 	// look for a target along the way :)
-	SetBestTarget(this, blob, blob.get_f32(target_searchrad_property));
+	SetBestTarget(this, blob, blob.get_f32("brain_target_rad"));
 
 	// get our destination
-	Vec2f destination = blob.get_Vec2f(destination_property);
+	Vec2f destination = blob.get_Vec2f("brain_destination");
 	if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 40 || XORRandom(90) == 0)
 	{
 		NewDestination(blob, map);
@@ -181,7 +178,7 @@ void NewDestination(CBlob@ blob, CMap@ map)
 {
 	const Vec2f dim = map.getMapDimensions();
 
-	Vec2f destination = blob.get_Vec2f(destination_property);
+	Vec2f destination = blob.get_Vec2f("brain_destination");
 	
 	// go somewhere nearby
 	if (destination != Vec2f_zero)
@@ -205,5 +202,5 @@ void NewDestination(CBlob@ blob, CMap@ map)
 	blob.setAimPos(destination);
 
 	// set destination
-	blob.set_Vec2f(destination_property, destination);
+	blob.set_Vec2f("brain_destination", destination);
 }

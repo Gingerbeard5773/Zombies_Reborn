@@ -1,12 +1,10 @@
 #define SERVER_ONLY
 
-#include "UndeadCommon.as";
-
-const u16 OBSTRUCTION_THRESHOLD = 60; // 30 = 1 second
+const u16 obstruction_threshold = 40; // 30 = 1 second
 
 void onInit(CBrain@ this)
 {
-	this.getBlob().set_u16(obstruction_threshold, 0);
+	this.getBlob().set_u16("brain_obstruction_threshold", 0);
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
 
@@ -21,7 +19,7 @@ void onTick(CBrain@ this)
 
 void DetectObstructions(CBrain@ this, CBlob@ blob)
 {
-	u16 threshold = blob.get_u16(obstruction_threshold);
+	u16 threshold = blob.get_u16("brain_obstruction_threshold");
 
 	Vec2f mypos = blob.getPosition();
 
@@ -36,15 +34,14 @@ void DetectObstructions(CBrain@ this, CBlob@ blob)
 	else if (threshold > 0)
 		threshold--;
 		
-	
 	// check if stuck near a tile
-	if (threshold >= OBSTRUCTION_THRESHOLD)
+	if (threshold >= obstruction_threshold)
 	{
 		this.SetTarget(null);
-		blob.set_Vec2f(destination_property, Vec2f_zero); //reset our destination
+		blob.set_Vec2f("brain_destination", Vec2f_zero); //reset our destination
 		
 		threshold = 0;
 	}
 	
-	blob.set_u16(obstruction_threshold, threshold);
+	blob.set_u16("brain_obstruction_threshold", threshold);
 }

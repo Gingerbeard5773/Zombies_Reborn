@@ -1,4 +1,4 @@
-#include "UndeadCommon.as";
+#include "UndeadMoveCommon.as";
 
 const f32 turnaroundspeed = 1.3f;
 const f32 normalspeed = 1.0f;

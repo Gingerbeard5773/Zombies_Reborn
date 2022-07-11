@@ -1,13 +1,9 @@
-﻿// Aphelion \\
-
-#include "UndeadCommon.as";
-
-const int COINS_ON_DEATH = 25;
+﻿const int COINS_ON_DEATH = 25;
 
 void onInit(CBlob@ this)
 {
 	this.set_u16("coins on death", COINS_ON_DEATH);
-	this.set_f32(target_searchrad_property, 512.0f);
+	this.set_f32("brain_target_rad", 512.0f);
 	
 	this.getSprite().SetEmitSound("Wings.ogg");
 	this.getSprite().SetEmitSoundPaused(false);

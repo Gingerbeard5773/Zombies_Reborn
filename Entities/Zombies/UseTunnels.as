@@ -2,7 +2,6 @@
 
 #define SERVER_ONLY;
 
-#include "UndeadCommon.as";
 #include "TunnelCommon.as";
 
 void onInit(CBlob@ this)
@@ -30,7 +29,7 @@ void onTick(CBlob@ this)
 				params.write_u16(tunnels[XORRandom(tunnels.length)].getNetworkID());
 				blob.SendCommand(blob.getCommandID("travel to"), params);
 				
-				this.set_Vec2f(destination_property, Vec2f_zero);
+				this.set_Vec2f("brain_destination", Vec2f_zero);
 			}
 		}
 	}

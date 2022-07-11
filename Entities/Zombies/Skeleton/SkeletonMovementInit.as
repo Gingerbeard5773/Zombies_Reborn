@@ -1,8 +1,4 @@
-/* SkeletonMovementInit.as
- * author: Aphelion3371
- */
-
-#include "UndeadCommon.as"
+#include "UndeadMoveCommon.as"
 
 void onInit(CMovement@ this)
 {

@@ -1,6 +1,4 @@
-﻿#include "UndeadCommon.as";
-
-const u8 TIME_TO_EXPLODE = 5; //seconds
+﻿const u8 TIME_TO_EXPLODE = 5; //seconds
 const s32 TIME_TO_ENRAGE = 45 * 30;
 
 const int COINS_ON_DEATH = 10;
@@ -8,7 +6,7 @@ const int COINS_ON_DEATH = 10;
 void onInit(CBlob@ this)
 {
 	this.set_u16("coins on death", COINS_ON_DEATH);
-	this.set_f32(target_searchrad_property, 512.0f);
+	this.set_f32("brain_target_rad", 512.0f);
 
 	this.getSprite().PlaySound("WraithSpawn.ogg");
 
@@ -78,7 +76,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		//reset if we got watered
 		
 		this.getBrain().SetTarget(null);
-		this.set_u8(delay_property, 250);
+		this.set_u8("brain_delay", 250);
 		this.Untag("enraged");
 		this.Untag("exploding");
 		

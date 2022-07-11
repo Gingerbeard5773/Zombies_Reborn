@@ -1,18 +1,15 @@
-// Aphelion \\
-
 #define SERVER_ONLY
 
-#include "UndeadCommon.as";
 #include "UndeadTargeting.as";
 #include "PressOldKeys.as";
 
 void onInit(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
-	blob.set_u8(delay_property, 5 + XORRandom(5));
+	blob.set_u8("brain_delay", 5 + XORRandom(5));
 
-	if (!blob.exists(target_searchrad_property))
-		 blob.set_f32(target_searchrad_property, 512.0f);
+	if (!blob.exists("brain_target_rad"))
+		blob.set_f32("brain_target_rad", 512.0f);
 
 	this.getCurrentScript().removeIfTag	= "dead";
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
@@ -22,7 +19,7 @@ void onTick(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 
-	u8 delay = blob.get_u8(delay_property);
+	u8 delay = blob.get_u8("brain_delay");
 	delay--;
 
 	if (delay == 0)
@@ -119,7 +116,7 @@ void onTick(CBrain@ this)
 		PressOldKeys(blob);
 	}
 
-	blob.set_u8(delay_property, delay);
+	blob.set_u8("brain_delay", delay);
 }
 
 const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
@@ -127,7 +124,7 @@ const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 	if (target.hasTag("dead") || target.isAttached())
 		return true;
 		
-	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32(target_searchrad_property))
+	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32("brain_target_rad"))
 		return true;
 	
 	return !isTargetVisible(blob, target);
@@ -138,10 +135,10 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 	CMap@ map = getMap();
 	
 	// look for a target along the way :)
-	FindTarget(this, blob, blob.get_f32(target_searchrad_property), map);
+	FindTarget(this, blob, blob.get_f32("brain_target_rad"), map);
 
 	// get our destination
-	Vec2f destination = blob.get_Vec2f(destination_property);
+	Vec2f destination = blob.get_Vec2f("brain_destination");
 	if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 128 || XORRandom(30) == 0)
 	{
 		NewDestination(blob, map);
@@ -252,7 +249,7 @@ void NewDestination(CBlob@ blob, CMap@ map)
 	x = Maths::Clamp(x, 32, dim.x - 32); //stay within map boundaries
 
 	// set destination
-	blob.set_Vec2f(destination_property, Vec2f(x, getFlyHeight(x, map)));
+	blob.set_Vec2f("brain_destination", Vec2f(x, getFlyHeight(x, map)));
 }
 
 const f32 getFlyHeight(const s32&in x, CMap@ map)
