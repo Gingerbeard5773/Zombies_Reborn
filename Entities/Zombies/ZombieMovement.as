@@ -28,7 +28,6 @@ void onTick(CMovement@ this)
 	Vec2f vel = blob.getVelocity();
 	Vec2f pos = blob.getPosition();
 	
-	const f32 vellen = shape.vellen;
 	const bool onground = blob.isOnGround() || blob.isOnLadder();
 	
 	bool onladder = blob.isOnLadder();
@@ -58,9 +57,7 @@ void onTick(CMovement@ this)
 		}
 		
 		// set onladder to true for scaling
-		if (left && surface_left)
-			onladder = true;
-		else if (right && surface_right)
+		if (left && surface_left || right && surface_right)
 			onladder = true;
 	}
 	
@@ -104,13 +101,7 @@ void onTick(CMovement@ this)
 			moveVars.jumpMid = 0.2f;
 			moveVars.jumpEnd = 0.1f;
 			
-			Vec2f force = Vec2f(0,0);
-			f32 side = 0.0f;
-			
-			if (blob.isFacingLeft() && left)
-				side = -1.0f;
-			else if (!blob.isFacingLeft() && right)
-				side = 1.0f;
+			Vec2f force = Vec2f(0, 0);
 			
 			// jump
 			if (moveVars.jumpCount <= 0)
@@ -133,82 +124,74 @@ void onTick(CMovement@ this)
 	bool stop = true;
 	if (!onground)
 	{
-		if (blob.hasTag("dont stop til ground"))
-			stop = false;
+		stop = !blob.hasTag("dont stop til ground");
 	}
 	else
 	{
 		blob.Untag("dont stop til ground");
 	}
 	
-	const bool left_or_right = (left || right);
+	const bool facingleft = blob.isFacingLeft();
+	Vec2f walkDirection;
+	
+	if (right)
 	{
-		const bool facingleft = blob.isFacingLeft();
-		Vec2f walkDirection;
-		
-		if (right)
+		if (vel.x < -0.1f)
+			walkDirection.x += turnaroundspeed;
+		else if (facingleft)
+			walkDirection.x += backwardsspeed;
+		else
+			walkDirection.x += normalspeed;
+	}
+	
+	if (left)
+	{
+		if (vel.x > 0.1f)
+			walkDirection.x -= turnaroundspeed;
+		else if (!facingleft)
+			walkDirection.x -= backwardsspeed;
+		else
+			walkDirection.x -= normalspeed;
+	}
+	
+	f32 force = 1.0f;
+	f32 lim = 0.0f;
+	if (left || right)
+	{
+		lim = moveVars.walkSpeed;
+		lim *= moveVars.walkFactor * Maths::Abs(walkDirection.x);
+	}
+	
+	Vec2f stop_force;
+	
+	const bool greater = vel.x > 0;
+	const f32 absx = greater ? vel.x : -vel.x;
+	
+	if (absx > lim)
+	{
+		if (stop) //stopping
 		{
-			if (vel.x < -0.1f)
-				walkDirection.x += turnaroundspeed;
-			else if (facingleft)
-				walkDirection.x += backwardsspeed;
-			else
-				walkDirection.x += normalspeed;
-		}
-		
-		if (left)
-		{
-			if (vel.x > 0.1f)
-				walkDirection.x -= turnaroundspeed;
-			else if (!facingleft)
-				walkDirection.x -= backwardsspeed;
-			else
-				walkDirection.x -= normalspeed;
-		}
-		
-		f32 force = 1.0f;
-		f32 lim = 0.0f;
-		{
-			if (left_or_right)
+			stop_force.x -= (absx - lim) * (greater ? 1 : -1);
+			
+			stop_force.x *= 30.0f * moveVars.stoppingFactor *
+						(onground ? moveVars.stoppingForce : moveVars.stoppingForceAir);
+			
+			if (absx > 3.0f)
 			{
-				lim = moveVars.walkSpeed;
-				lim *= moveVars.walkFactor * Maths::Abs(walkDirection.x);
+				f32 extra = (absx-3.0f);
+				f32 scale = (1.0f/((1+extra) * 2));
+				stop_force.x *= scale;
 			}
 			
-			Vec2f stop_force;
-			
-			const bool greater = vel.x > 0;
-			const f32 absx = greater ? vel.x : -vel.x;
-			
-			bool stopped = false;
-			if (absx > lim)
-			{
-				if (stop) //stopping
-				{
-					stopped = true;
-					stop_force.x -= (absx - lim) * (greater? 1 : -1);
-					
-					stop_force.x *= 30.0f * moveVars.stoppingFactor *
-								(onground ? moveVars.stoppingForce : moveVars.stoppingForceAir);
-					
-					if (absx > 3.0f)
-					{
-						f32 extra = (absx-3.0f);
-						f32 scale = (1.0f/((1+extra) * 2));
-						stop_force.x *= scale;
-					}
-					
-					blob.AddForce(stop_force);
-				}
-			}
-			
-			if (absx < lim || left && greater || right && !greater)
-			{
-				force *= moveVars.walkFactor * 30.0f;
-				if (Maths::Abs(force) > 0.01f)
-					blob.AddForce(walkDirection*force);
-			}
+			blob.AddForce(stop_force);
 		}
+	}
+	
+	if (absx < lim || left && greater || right && !greater)
+	{
+		force *= moveVars.walkFactor * 30.0f;
+		if (Maths::Abs(force) > 0.01f)
+			blob.AddForce(walkDirection*force);
 	}
 
 	// clean up

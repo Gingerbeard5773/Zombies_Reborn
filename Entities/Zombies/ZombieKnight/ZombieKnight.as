@@ -1,26 +1,25 @@
-﻿#include "UndeadCommon.as";
+﻿#include "UndeadAttackCommon.as";
 #include "KnockedCommon.as";
-
-const u16 ATTACK_FREQUENCY = 60;
-const f32 ATTACK_DAMAGE = 1.25f;
-const f32 ATTACK_DISTANCE = 1.0f;
 
 const int COINS_ON_DEATH = 35;
 
 void onInit(CBlob@ this)
 {
-	this.set_u8("attack frequency", ATTACK_FREQUENCY);
-	this.set_f32("attack damage", ATTACK_DAMAGE);
-	this.set_f32("attack distance", ATTACK_DISTANCE);
-	this.set_string("attack sound", "ZombieKnightAttack");
+	UndeadAttackVars attackVars;
+	attackVars.frequency = 60;
+	attackVars.map_factor = 15;
+	attackVars.damage = 1.25f;
+	attackVars.arc_length = 1.0f;
+	attackVars.sound = "ZombieKnightAttack";
+	this.set("attackVars", attackVars);
+	
+	this.set_f32("gib health", -3.0f);
 	this.set_u16("coins on death", COINS_ON_DEATH);
-	this.set_f32(target_searchrad_property, 512.0f);
 
 	this.getShape().SetRotationsAllowed(false);
 
 	this.getBrain().server_SetActive(true);
 
-	this.set_f32("gib health", -3.0f);
 	this.Tag("flesh");
 	this.Tag("heavy weight");
 

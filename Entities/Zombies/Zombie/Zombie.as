@@ -1,24 +1,24 @@
-﻿#include "UndeadCommon.as";
-
-const u16 ATTACK_FREQUENCY = 45;
-const f32 ATTACK_DAMAGE = 0.75f;
+﻿#include "UndeadAttackCommon.as";
 
 const int COINS_ON_DEATH = 10;
 
 void onInit(CBlob@ this)
 {
-	this.set_u8("attack frequency", ATTACK_FREQUENCY);
-	this.set_f32("attack damage", ATTACK_DAMAGE);
-	this.set_string("attack sound", "ZombieBite"+(XORRandom(2)+1));
+	UndeadAttackVars attackVars;
+	attackVars.frequency = 45;
+	attackVars.map_factor = 20;
+	attackVars.damage = 0.75f;
+	attackVars.sound = "ZombieBite" + (XORRandom(2)+1);
+	this.set("attackVars", attackVars);
+	
+	this.set_f32("gib health", -3.0f);
 	this.set_u16("coins on death", COINS_ON_DEATH);
-	this.set_f32(target_searchrad_property, 512.0f);
 
 	this.getSprite().PlaySound("/ZombieSpawn");
 	this.getShape().SetRotationsAllowed(false);
 
 	this.getBrain().server_SetActive(true);
 
-	this.set_f32("gib health", -3.0f);
 	this.Tag("flesh");
 	this.Tag("medium weight");
 	

@@ -1,24 +1,24 @@
-﻿#include "UndeadCommon.as";
-
-const u8 ATTACK_FREQUENCY = 30; // 30 = 1 second
-const f32 ATTACK_DAMAGE = 0.5f;
+﻿#include "UndeadAttackCommon.as";
 
 const int COINS_ON_DEATH = 5;
 
 void onInit(CBlob@ this)
 {
-	this.set_u8("attack frequency", ATTACK_FREQUENCY);
-	this.set_f32("attack damage", ATTACK_DAMAGE);
-	this.set_string("attack sound", "SkeletonAttack");
+	UndeadAttackVars attackVars;
+	attackVars.frequency = 30;
+	attackVars.map_factor = 40;
+	attackVars.damage = 0.5f;
+	attackVars.sound = "SkeletonAttack";
+	this.set("attackVars", attackVars);
+	
+	this.set_f32("gib health", 0.0f);
 	this.set_u16("coins on death", COINS_ON_DEATH);
-	this.set_f32(target_searchrad_property, 512.0f);
 
 	this.getSprite().PlayRandomSound("/SkeletonSpawn");
 	this.getShape().SetRotationsAllowed(false);
 
 	this.getBrain().server_SetActive(true);
 
-	this.set_f32("gib health", 0.0f);
 	this.Tag("flesh");
 	
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
