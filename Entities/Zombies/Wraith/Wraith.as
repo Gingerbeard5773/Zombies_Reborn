@@ -25,11 +25,11 @@ void onInit(CBlob@ this)
 	this.set_f32("map_bomberman_width", 18.0f);
 	this.set_f32("explosive_radius", 64.0f);
 	this.set_f32("explosive_damage", 10.0f);
+	this.set_u8("custom_hitter", 26); //keg
 	this.set_string("custom_explosion_sound", "Entities/Items/Explosives/KegExplosion.ogg");
 	this.set_f32("map_damage_radius", 72.0f);
 	this.set_f32("map_damage_ratio", 0.7f);
 	this.set_bool("map_damage_raycast", true);
-	this.set_bool("explosive_teamkill", false);
 	this.set_s32("auto_enrage_time", getGameTime() + TIME_TO_ENRAGE + XORRandom(TIME_TO_ENRAGE / 2));
 	//
 
