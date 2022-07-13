@@ -33,17 +33,19 @@ void onTick(CBrain@ this)
 			CBlob@ carriedBlob = blob.getCarriedBlob();
 			if (carriedBlob !is null && carriedBlob is target)
 			{
+				const Vec2f pos = blob.getPosition();
+				
 				if (carriedBlob.hasTag("undead"))
 				{
 					// take 'em where they need to go
-					CBlob@ taxiTarget = carriedBlob.getBrain().getTarget();
+					CBlob@ taxiTarget = getBlobByNetworkID(blob.get_netid("brain_player_target"));
 					if (taxiTarget !is null)
 					{
-						const Vec2f mypos = blob.getPosition();
 						const Vec2f targetPos = taxiTarget.getPosition();
 
-						if (getXBetween(targetPos, mypos) < 64.0f)
+						if (getXBetween(targetPos, pos) < 50.0f)
 						{
+							carriedBlob.set_Vec2f("brain_destination", targetPos); //tell the zombie where to look
 							DetachTarget(this, blob);
 						}
 						else
@@ -63,8 +65,6 @@ void onTick(CBrain@ this)
 							StayAboveGroundLevel(blob, map);
 						}
 					}
-
-					// nope
 					else
 					{
 						DetachTarget(this, blob);
@@ -72,7 +72,6 @@ void onTick(CBrain@ this)
 				}
 				else
 				{
-					Vec2f pos = blob.getPosition();
 					if (pos.y < 30)
 					{
 						// bye bye!
@@ -80,7 +79,7 @@ void onTick(CBrain@ this)
 					}
 					else
 					{
-						FlyTo(blob, Vec2f(blob.getPosition().x, 10));
+						FlyTo(blob, Vec2f(pos.x, 10));
 					}
 				}
 			}
@@ -88,6 +87,7 @@ void onTick(CBrain@ this)
 			// need to pick the target up
 			else
 			{
+				// check if the target needs to be abandoned
 				if (ShouldLoseTarget(blob, target))
 				{
 					DetachTarget(this, blob);
@@ -160,11 +160,16 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 
 void FindTarget(CBrain@ this, CBlob@ blob, const f32&in radius, CMap@ map)
 {
+	CBlob@ player_target = getBlobByNetworkID(blob.get_netid("brain_player_target"));
+	if (player_target is null)
+		SetPlayerTarget(blob);
+	
 	Vec2f pos = blob.getPosition();
 	
 	CBlob@[] nearBlobs;
 	map.getBlobsInRadius(pos, radius, @nearBlobs);
 
+	CBlob@[] taxiCandidates;
 	CBlob@ bestCandidate;
 	f32 closest_dist = 999999.9f;
 	
@@ -178,8 +183,8 @@ void FindTarget(CBrain@ this, CBlob@ blob, const f32&in radius, CMap@ map)
 		{
 			if (candidate.hasTag("undead"))
 			{
-				if (isFriendlyInNeedOfService(candidate, map))
-					@bestCandidate = candidate;
+				if (isFriendlyInNeedOfService(blob, candidate, player_target))
+					taxiCandidates.push_back(candidate);
 			}
 			else if (isTargetVisible(blob, candidate)) //players override all undead taxi service
 			{
@@ -190,19 +195,23 @@ void FindTarget(CBrain@ this, CBlob@ blob, const f32&in radius, CMap@ map)
 		}
 	}
 	
+	if (taxiCandidates.length > 0 && bestCandidate is null)
+	{
+		@bestCandidate = taxiCandidates[XORRandom(taxiCandidates.length)];
+	}
+	
 	if (bestCandidate !is null)
 	{
 		this.SetTarget(bestCandidate);
 	}
 }
 
-const bool isFriendlyInNeedOfService(CBlob@ friendly, CMap@ map)
+const bool isFriendlyInNeedOfService(CBlob@ blob, CBlob@ friendly, CBlob@ player_target)
 {
-	CBlob@ target = friendly.getBrain().getTarget();
-	if (target is null) return false;
+	if (player_target is null) return false;
 	
-	return getXBetween(target.getPosition(), friendly.getPosition()) > 256 ||
-			map.rayCastSolid(friendly.getPosition(), target.getPosition());
+	CBlob@ target = friendly.getBrain().getTarget();
+	return target is null && getXBetween(friendly.getPosition(), player_target.getPosition()) > 210.0f;
 }
 
 void FlyTo(CBlob@ blob, Vec2f&in destination)
@@ -270,4 +279,26 @@ void DetachTarget(CBrain@ this, CBlob@ blob)
 
 	// remove target
 	this.SetTarget(null);
+}
+
+void SetPlayerTarget(CBlob@ blob)
+{
+	u16[] survivors;
+	
+	const u8 playersLength = getPlayerCount();
+	for (u8 i = 0; i < playersLength; ++i)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
+		
+		CBlob@ playerBlob = player.getBlob();
+		if (playerBlob is null) continue;
+		
+		if (!playerBlob.hasTag("undead"))
+			survivors.push_back(playerBlob.getNetworkID());
+	}
+	
+	if (survivors.length <= 0) return;
+	
+	blob.set_netid("brain_player_target", survivors[XORRandom(survivors.length)]);
 }

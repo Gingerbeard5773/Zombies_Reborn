@@ -66,13 +66,14 @@ void spawnZombie(CMap@ map)
 {
 	if (map.getDayTime() > 0.8f || map.getDayTime() < 0.1f)
 	{
-		const u32 r = XORRandom(13);
+		const u32 r = XORRandom(100);
 		
-		string blobname = "skeleton"; //leftover
+		string blobname = "skeleton"; //leftover       // 40%
 		
-		if (r >= 12)       blobname = "wraith";
-		else if (r >= 10)  blobname = "zombieknight";
-		else if (r >= 6)   blobname = "zombie";
+		if (r >= 95)       blobname = "greg";          // 5%
+		else if (r >= 90)  blobname = "wraith";        // 5%
+		else if (r >= 75)  blobname = "zombieknight";  // 15%
+		else if (r >= 40)  blobname = "zombie";        // 35%
 		
 		server_CreateBlob(blobname, -1, getZombieSpawnPos(map));
 	}

@@ -37,6 +37,10 @@ void DetectObstructions(CBrain@ this, CBlob@ blob)
 	// check if stuck near a tile
 	if (threshold >= obstruction_threshold)
 	{
+		CBlob@ carried = blob.getCarriedBlob(); //for gregs
+		if (carried !is null)
+			carried.server_DetachFrom(blob);
+		
 		this.SetTarget(null);
 		blob.set_Vec2f("brain_destination", Vec2f_zero); //reset our destination
 		
