@@ -8,6 +8,7 @@ const string commandslist()
 	"\n !dayspeed [minutes] : set the speed of the day"+
 	"\n !class [name] : set your character's blob"+
 	"\n !cursor [blobname] [amount] : spawn a blob at your cursor"+
+	"\n !carnage : kill all zombies on the map"+
 	"\n !undeadcount : print the amount of zombies on the map\n";
 }
 
@@ -66,6 +67,17 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				{
 					print(commandslist(), color_white);
 					return false;
+				}
+				else if (tokens[0] == "!carnage") //kill all undeads
+				{
+					CBlob@[] blobs;
+					getBlobsByTag("undead", @blobs);
+					const u16 blobsLength = blobs.length;
+					for (u16 i = 0; i < blobsLength; ++i)
+					{
+						CBlob@ blob = blobs[i];
+						blob.server_Die();
+					}
 				}
 				else if (tokens[0] == "!undeadcount") //print the amount of undeads
 				{
