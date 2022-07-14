@@ -15,6 +15,8 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
+	
+	this.getCurrentScript().tickFrequency = 90;
 
 	//INIT COSTS
 	InitCosts();
@@ -99,6 +101,27 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				// Crate.as prevents gold from dropping if it dies after unpack
 				CBlob@ box = getBlobByNetworkID(item);
 				if (box !is null) box.set_s32("gold building amount", CTFCosts::ballista_gold);
+			}
+		}
+	}
+}
+
+void onTick(CBlob@ this)
+{
+	if (!isServer()) return;
+	
+	//heal overlapping vehicles
+	CBlob@[] overlapping;
+	if (this.getOverlapping(@overlapping))
+	{
+		const u8 blobsLength = overlapping.length;
+		for (u8 i = 0; i < blobsLength; ++i)
+		{
+			CBlob@ blob = overlapping[i];
+			const f32 initialHealth = blob.getInitialHealth();
+			if (blob.hasTag("vehicle") && blob.getHealth() < initialHealth)
+			{
+				blob.server_SetHealth(Maths::Min(blob.getHealth() + initialHealth / 15, initialHealth));
 			}
 		}
 	}
