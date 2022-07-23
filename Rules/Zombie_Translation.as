@@ -26,10 +26,19 @@ namespace ZombieDesc
 {
 	const string
 	
-	//vehicles
+	//descriptions
 	ballista            = Translate("A bolt-firing siege engine, requiring a crew of two. Allows class change."),
 	bomber              = Translate("A balloon capable of flying two passengers."),
 	mounted_bow         = Translate("A portable arrow-firing death machine. Can be attached to some vehicles."),
+	
+	windmill            = Translate("Wind Mill\nA grain mill for producing flour."),
+	kitchen             = Translate("Kitchen\nCreate various foods for healing."),
+	nursery             = Translate("Nursery\nA plant nursery for agricultural purposes."),
+	
+	bread               = Translate("Bread\nDelicious crunchy whole-wheat bread.\n$heart_full$$heart_half$"),
+	cake                = Translate("Cake\nFluffy cake made from egg and wheat.\n$heart_full$$heart_full$$heart_full$"),
+	cooked_fish         = Translate("Cooked Fish\nA cooked fish on a stick.\n$heart_full$$heart_full$$heart_full$"),
+	cooked_steak        = Translate("Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_full$"),
 	
 	//scoreboard
 	day                 = Translate("Day"),

@@ -32,6 +32,7 @@
 #include "Requirements.as"
 #include "Costs.as"
 #include "TeamIconToken.as"
+#include "Zombie_Translation.as";
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
@@ -94,16 +95,43 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "spikes", "$spikes$", "Spikes\nPlace on Stone Block\nfor Retracting Trap");
-		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::spikes);
-		blocks[0].push_back(b);
-	}
-	{
 		BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", CTFCosts::workshop_wood);
 		b.buildOnGround = true;
 		b.size.Set(40, 24);
-		blocks[0].insertAt(9, b);
+		blocks[0].push_back(b);
+	}
+	{
+		BuildBlock b(0, "spikes", "$spikes$", "Spikes\nPlace on Stone Block\nfor Retracting Trap");
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::spikes);
+		blocks[0].push_back(b);
+	}
+	
+	BuildBlock[] page_1;
+	blocks.push_back(page_1);
+	{
+		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 102), 1), ZombieDesc::windmill);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 200);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 250);
+		b.buildOnGround = true;
+		b.size.Set(32, 72);
+		blocks[1].push_back(b);
+	}
+	{
+		BuildBlock b(0, "kitchen", getTeamIcon("kitchen", "Kitchen.png", team_num, Vec2f(40, 32)), ZombieDesc::kitchen);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 100);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 100);
+		b.buildOnGround = true;
+		b.size.Set(40, 32);
+		blocks[1].push_back(b);
+	}
+	{
+		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), ZombieDesc::nursery);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 400);
+		AddRequirement(b.reqs, "blob", "seed", "Seed", 1);
+		b.buildOnGround = true;
+		b.size.Set(40, 32);
+		blocks[1].push_back(b);
 	}
 }
 
