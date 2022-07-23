@@ -23,6 +23,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			}
 			break;
 		}
+		case Hitters::saw:
+		{
+			//damage saw if we were killed by one
+			this.server_Hit(hitterBlob, hitterBlob.getPosition(), -velocity, Maths::Clamp(this.getHealth() / 3, 0.25f, 0.5f), Hitters::muscles, true);
+			ParticleBloodSplat(worldPoint, true);
+			break;
+		}
 	}
 	
 	//damage without activating server_die- to allow for negative health
