@@ -15,7 +15,7 @@ u8 getHealingAmount(CBlob@ food)
 		return 0;
 	}
 	
-	if (food_name == "heart" || food_name == "egg" || food_name == "flowers")
+	if (food_name == "heart" || food_name == "egg" || food_name == "flowers" || food_name == "fishy")
 	{
 		return 4;
 	}
