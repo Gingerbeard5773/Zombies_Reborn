@@ -3,7 +3,8 @@
 #define SERVER_ONLY
 
 const u8 warmup_days = 2;       //days of warmup-time we give to players
-const u8 days_to_survive = 15;  //days players must survive to win
+const u8 days_to_survive = 15;   //days players must survive to win
+const f32 game_difficulty = 2.5f; //zombie spawnrate multiplier
 
 const u8 GAME_WON = 5;
 const u8 nextmap_seconds = 15;
@@ -43,8 +44,8 @@ void onTick(CRules@ this)
 	const u8 dayNumber = (gameTime / getTicksASecond() / day_cycle) + 1;
 	
 	//spawn zombies at night-time
-	const f32 difficulty = 2.0f * dayNumber; //default 2.0
-	const u32 spawnRate = Maths::Max(8, getTicksASecond() * (6 - difficulty / 2.2f)); //default 2.0
+	const f32 difficulty = days_to_survive / (dayNumber * game_difficulty);
+	const u32 spawnRate = getTicksASecond() * difficulty;
 	
 	if (gameTime % spawnRate == 0)
 	{
