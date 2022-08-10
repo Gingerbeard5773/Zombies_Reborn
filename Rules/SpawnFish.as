@@ -17,8 +17,8 @@ void onTick(CRules@ this)
 	
 	CBlob@[] grain;
 	getBlobsByName(grain_name, @grain);
-
-	if (fish.length < Maths::Max(min_fish - grain.length, 1)) //more fish if less grain
+	
+	if (fish.length < Maths::Max(int(min_fish - grain.length), 1)) //more fish if less grain
 	{
 		if (fish.length > 2 && XORRandom(4) < 1) //breed fish (25% chance)
 		{
