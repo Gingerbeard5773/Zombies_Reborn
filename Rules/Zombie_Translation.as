@@ -38,7 +38,8 @@ namespace ZombieDesc
 	bread               = Translate("Bread\nDelicious crunchy whole-wheat bread.\n$heart_full$$heart_half$"),
 	cake                = Translate("Cake\nFluffy cake made from egg and wheat.\n$heart_full$$heart_full$$heart_full$"),
 	cooked_fish         = Translate("Cooked Fish\nA cooked fish on a stick.\n$heart_full$$heart_full$$heart_full$"),
-	cooked_steak        = Translate("Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_full$"),
+	cooked_steak        = Translate("Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_half$"),
+	burger              = Translate("Burger\nSeared meat in a bun, bisons love it!\n$heart_full$$heart_full$$heart_full$$heart_full$"),
 	
 	//scoreboard
 	day                 = Translate("Day"),

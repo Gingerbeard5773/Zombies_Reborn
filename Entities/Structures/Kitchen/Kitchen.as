@@ -5,7 +5,7 @@
 #include "Zombie_Translation.as";
 
 const u16 craft_time_seconds = 30;
-const Vec2f craft_menu_size(4, 1);
+const Vec2f craft_menu_size(5, 1);
 
 CraftItem@[] items;
 
@@ -73,6 +73,12 @@ void addRecipes()
 	{
 		CraftItem i("cookedsteak", 1, ZombieDesc::cooked_steak, 0);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
+		items.push_back(i);
+	}
+	{
+		CraftItem i("food", 1, ZombieDesc::burger, 6);
+		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
+		AddRequirement(i.reqs, "blob", "bread", "Bread", 1);
 		items.push_back(i);
 	}
 	

@@ -20,6 +20,11 @@ u8 getHealingAmount(CBlob@ food)
 		return 4;
 	}
 	
+	if (food_name == "food")
+	{
+		return 16;
+	}
+	
 	return food.getHealth();
 }
 
