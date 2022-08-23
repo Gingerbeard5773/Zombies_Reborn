@@ -53,6 +53,22 @@ namespace ZombieDesc
 	scroll_sea          = Translate("Use this to generate a source of water."),
 	scroll_stone        = Translate("Use this to convert nearby stone into thick stone."),
 	
+	//flying merchant
+	fowl_desc           = Translate("Birds."),
+	drought_desc        = Translate("Unplug the drain."),
+	flora_desc          = Translate("Perfect for salads."),
+	fish_desc           = Translate("It says something about ocean animals."),
+	revive_desc         = Translate("Bring back a friend of yours, or maybe even yourself."),
+	clone_desc          = Translate("This one is absolutely crazy."),
+	royalty_desc        = Translate("I forgot what this one did."),
+	wisent_desc         = Translate("Somehow conceals a heffer."),
+	crate_desc          = Translate("Put anything in a box."),
+	teleport_desc       = Translate("Messes with time and space."),
+	carnage_desc        = Translate("Sedgewick really doesn't want me to have this."),
+	midas_desc          = Translate("Makes the rocks shiny."),
+	sea_desc            = Translate("Flood season!"),
+	stone_desc          = Translate("Rocks."),
+	
 	//scoreboard
 	day                 = Translate("Day"),
 	open_manual         = Translate("Press {KEY} to toggle the help manual on/off."),
@@ -69,7 +85,8 @@ namespace ZombieDesc
 	tip_gateways        = Translate("When night arrives, the undead will appear at these gateways."),
 	tip_zombification   = Translate("A dead body will transform into a zombie after some time."),
 	tip_water_wraith    = Translate("Use water to temporarily stop a burning wraith."),
-	tip_headshot        = Translate("Head shots deal additional damage.");
+	tip_headshot        = Translate("Head shots deal additional damage."),
+	tip_merchant        = Translate("If there is not many zombies, a trader will visit at mid-day.");
 }
 
 const string[] teams =

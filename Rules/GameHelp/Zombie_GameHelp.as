@@ -7,7 +7,7 @@
 bool mousePress = false;
 u8 page = 0;
 
-const u8 pages = 5;
+const u8 pages = 6;
 
 const int KEY_MISC = getControls().getActionKeyKey(AK_MENU);
 
@@ -51,6 +51,7 @@ void onRender(CRules@ this)
 		case 2: page3(imageSize, center); break;
 		case 3: page4(imageSize, center); break;
 		case 4: page5(imageSize, center); break;
+		case 5: page6(imageSize, center); break;
 	};
 	
 	CControls@ controls = getControls();
@@ -171,4 +172,14 @@ void page5(Vec2f&in imageSize, Vec2f&in center)
 	
 	GUI::SetFont("medium font");
 	GUI::DrawTextCentered(ZombieDesc::tip_headshot, center - Vec2f(0, imageSize.y - 140), color_black);
+}
+
+void page6(Vec2f&in imageSize, Vec2f&in center)
+{
+	GUI::DrawIcon("Page6.png", Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3));
+	
+	drawHeader(ZombieDesc::tips, center - Vec2f(0, imageSize.y - 50));
+	
+	GUI::SetFont("medium font");
+	GUI::DrawTextCentered(ZombieDesc::tip_merchant, center - Vec2f(0, imageSize.y - 140), color_black);
 }
