@@ -41,6 +41,18 @@ namespace ZombieDesc
 	cooked_steak        = Translate("Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_half$"),
 	burger              = Translate("Burger\nSeared meat in a bun, bisons love it!\n$heart_full$$heart_full$$heart_full$$heart_full$"),
 	
+	scroll_fowl         = Translate("Use this to summon a flock of chickens."),
+	scroll_flora        = Translate("Use this to create plants nearby."),
+	scroll_fish         = Translate("Use this to summon a shark."),
+	scroll_revive       = Translate("Use this near a dead body to ressurect them."),
+	scroll_clone        = Translate("Use this to duplicate an object you are pointing to."),
+	scroll_royalty      = Translate("Use this to summon a geti."),
+	scroll_crate        = Translate("Use this to crate an object you are pointing at."),
+	scroll_wisent       = Translate("Use this to summon a bison."),
+	scroll_teleport     = Translate("Use this to teleport to the area you are pointing to."),
+	scroll_sea          = Translate("Use this to generate a source of water."),
+	scroll_stone        = Translate("Use this to convert nearby stone into thick stone."),
+	
 	//scoreboard
 	day                 = Translate("Day"),
 	open_manual         = Translate("Press {KEY} to toggle the help manual on/off."),

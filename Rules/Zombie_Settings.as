@@ -1,6 +1,7 @@
 // Zombie Fortress settings
 
 #include "GameplayEvents.as";
+#include "Zombie_Scrolls.as";
 
 void onInit(CRules@ this)
 {
@@ -18,6 +19,9 @@ void onInit(CRules@ this)
 	AddFonts();
 	
 	SetupGameplayEvents(this);
+	SetupScrolls(this);
+	
+	this.addCommandID("remove respawn"); //Zombie_Respawning.as
 }
 
 void AddIcons()

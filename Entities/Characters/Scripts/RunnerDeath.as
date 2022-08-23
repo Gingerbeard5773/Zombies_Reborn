@@ -18,18 +18,39 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	// make sure this script is at the end of onHit scripts for it gets the final health
 	if (this.getHealth() <= 0.0f && !this.hasTag("dead"))
 	{
+		
+		//revive this if this is holding a revival scroll
+		CBlob@ held = this.getAttachmentPoint(0).getOccupied();
+		if (held !is null && held.hasCommandID("revive"))
+		{
+			if (isServer())
+			{
+				CBitStream params;
+				params.write_netid(this.getNetworkID());
+				params.write_bool(true);
+				held.SendCommand(held.getCommandID("revive"), params);
+			}
+			
+			return 0.0f;
+		}
+		
 		this.Tag("dead");
 		this.set_u32("death time", getGameTime());
-
 		this.UnsetMinimapVars(); //remove minimap icon
+		
+		//for revival scroll
+		CPlayer@ player = this.getPlayer();
+		if (player !is null)
+		{
+			this.set_string("player_username", player.getUsername());
+		}
 
 		// we want the corpse to stay but player to respawn so we force a die event in rules
-
 		if (isServer())
 		{
-			if (this.getPlayer() !is null)
+			if (player !is null)
 			{
-				getRules().server_PlayerDie(this.getPlayer());
+				getRules().server_PlayerDie(player);
 				this.server_SetPlayer(null);
 			}
 			else
@@ -40,7 +61,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		// add pickup attachment so we can pickup body
 		CAttachment@ a = this.getAttachments();
-
 		if (a !is null)
 		{
 			AttachmentPoint@ ap = a.AddAttachmentPoint("PICKUP", false);
@@ -130,7 +150,7 @@ bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
 void onTick(CBlob@ this)
 {
 	// (drop anything attached)
-	CBlob @carried = this.getCarriedBlob();
+	CBlob@ carried = this.getCarriedBlob();
 	if (carried !is null)
 	{
 		carried.server_DetachFromAll();
@@ -173,8 +193,7 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 void StuffFallsOut(CBlob@ this)
 {
-	if (!getNet().isServer())
-		return;
+	if (!isServer()) return;
 
 	CInventory@ inv = this.getInventory();
 	while (inv !is null && inv.getItemsCount() > 0)

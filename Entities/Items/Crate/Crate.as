@@ -203,7 +203,7 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 
 	Vec2f buttonpos(0, 0);
 
@@ -399,7 +399,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void Unpack(CBlob@ this)
 {
-	if (!getNet().isServer()) return;
+	if (!isServer()) return;
 
 	CBlob@ blob = server_CreateBlob(this.get_string("packed"), this.getTeamNum(), Vec2f_zero);
 
@@ -407,7 +407,7 @@ void Unpack(CBlob@ this)
 
 	if (blob !is null && blob.getShape() !is null)
 	{
-		blob.setPosition(this.getPosition() + Vec2f(0, (this.getHeight() - blob.getHeight()) / 2));
+		blob.setPosition(this.getPosition() + Vec2f(0, (this.getHeight() - blob.getHeight()) / 2 +(this.isAttached() ? 8 : 4)));
 		//	if (!getMap().isInWater(this.getPosition() + Vec2f(0.0f, this.getRadius())))
 		//	blob.getShape().PutOnGround();
 		//	else
@@ -446,8 +446,7 @@ bool isUnpacking(CBlob@ this)
 void ShowParachute(CBlob@ this)
 {
 	CSprite@ sprite = this.getSprite();
-	CSpriteLayer@ parachute = sprite.addSpriteLayer("parachute",   32, 32);
-
+	CSpriteLayer@ parachute = sprite.addSpriteLayer("parachute", 32, 32);
 	if (parachute !is null)
 	{
 		Animation@ anim = parachute.addAnimation("default", 0, true);
@@ -460,7 +459,6 @@ void HideParachute(CBlob@ this)
 {
 	CSprite@ sprite = this.getSprite();
 	CSpriteLayer@ parachute = sprite.getSpriteLayer("parachute");
-
 	if (parachute !is null && parachute.isVisible())
 	{
 		parachute.SetVisible(false);
@@ -645,7 +643,7 @@ bool canUnpackHere(CBlob@ this)
 
 	Vec2f space = this.get_Vec2f(required_space);
 	Vec2f t_off = Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
-	Vec2f offsetPos = crate_getOffsetPos(this, map);
+	Vec2f offsetPos = crate_getOffsetPos(this);
 	for (f32 step_x = 0.0f; step_x < space.x ; ++step_x)
 	{
 		for (f32 step_y = 0.0f; step_y < space.y ; ++step_y)
@@ -683,13 +681,17 @@ bool canUnpackHere(CBlob@ this)
 	return (supported);
 }
 
-Vec2f crate_getOffsetPos(CBlob@ blob, CMap@ map)
+Vec2f crate_getOffsetPos(CBlob@ blob)
 {
-	Vec2f halfSize = blob.get_Vec2f(required_space) * 0.5f;
-
-	Vec2f alignedWorldPos = map.getAlignedWorldPos(blob.getPosition() + Vec2f(0, -2)) + (Vec2f(0.5f, 0.0f) * map.tilesize);
-	Vec2f offsetPos = alignedWorldPos - Vec2f(halfSize.x , halfSize.y) * map.tilesize;
-	return offsetPos;
+	Vec2f reqspace = blob.get_Vec2f(required_space);
+	
+	Vec2f bPos = blob.getPosition();
+	Vec2f pos = Vec2f(bPos.x - reqspace.x*4, bPos.y - reqspace.y*8+8+(blob.isAttached() ? 8 : 4));
+	pos.x = Maths::Floor(pos.x / 8.0f+0.5f);
+	pos.y = Maths::Floor(pos.y / 8.0f);
+	pos *= 8;
+	
+	return pos;
 }
 
 CBlob@ getPlayerInside(CBlob@ this)
@@ -707,7 +709,7 @@ CBlob@ getPlayerInside(CBlob@ this)
 bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_special = true)
 {
 	bool dumped_anything = false;
-	if (getNet().isClient())
+	if (isClient())
 	{
 		if ((this.getInventory().getItemsCount() > 1)
 			 || (getPlayerInside(this) is null && this.getInventory().getItemsCount() > 0))
@@ -715,7 +717,7 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 			this.getSprite().PlaySound("give.ogg");
 		}
 	}
-	if (getNet().isServer())
+	if (isServer())
 	{
 		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
 		CInventory@ inv = this.getInventory();
@@ -764,42 +766,40 @@ void onRender(CSprite@ this)
 	if (blob.get_string("packed").isEmpty() || blob.get_string("packed name").size() == 0) return;
 
 	Vec2f pos2d = blob.getScreenPos();
-	u32 gameTime = getGameTime();
-	u32 unpackTime = blob.get_u32("unpack time");
+	const u32 gameTime = getGameTime();
+	const u32 unpackTime = blob.get_u32("unpack time");
 
 	if (unpackTime > gameTime)
 	{
 		// draw drop time progress bar
-		int top = pos2d.y - 1.0f * blob.getHeight();
+		const int top = pos2d.y - 1.0f * blob.getHeight();
 		Vec2f dim(32.0f, 12.0f);
-		int secs = 1 + (unpackTime - gameTime) / getTicksASecond();
+		const int secs = 1 + (unpackTime - gameTime) / getTicksASecond();
 		Vec2f upperleft(pos2d.x - dim.x / 2, top - dim.y - dim.y);
 		Vec2f lowerright(pos2d.x + dim.x / 2, top - dim.y);
-		f32 progress = 1.0f - (float(secs) / float(blob.get_u32("unpack secs")));
+		const f32 progress = 1.0f - (float(secs) / float(blob.get_u32("unpack secs")));
 		GUI::DrawProgressBar(upperleft, lowerright, progress);
 	}
 
 	if (blob.isAttached())
 	{
 		AttachmentPoint@ point = blob.getAttachments().getAttachmentPointByName("PICKUP");
-
 		CBlob@ holder = point.getOccupied();
-
-		if (holder is null) { return; }
+		if (holder is null) return;
 
 		CPlayer@ local = getLocalPlayer();
 		if (local !is null && local.getBlob() is holder)
 		{
-			CMap@ map = blob.getMap();
-			if (map is null) return;
+			CMap@ map = getMap();
 
 			Vec2f space = blob.get_Vec2f(required_space);
-			Vec2f offsetPos = crate_getOffsetPos(blob, map);
+			Vec2f offsetPos = crate_getOffsetPos(blob);
 
 			const f32 scalex = getDriver().getResolutionScaleFactor();
 			const f32 zoom = getCamera().targetDistance * scalex;
 			Vec2f aligned = getDriver().getScreenPosFromWorldPos(offsetPos);
-			GUI::DrawIcon("CrateSlots.png", 0, Vec2f(40, 32), aligned, zoom);
+			GUI::DrawRectangle(aligned, aligned+space*8*zoom*2, SColor(128, 255, 255, 255));
+			//GUI::DrawIcon("CrateSlots.png", 0, space*8, aligned, zoom);
 
 			for (f32 step_x = 0.0f; step_x < space.x ; ++step_x)
 			{
@@ -815,5 +815,4 @@ void onRender(CSprite@ this)
 			}
 		}
 	}
-
 }

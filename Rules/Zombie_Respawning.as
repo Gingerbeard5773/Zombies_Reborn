@@ -135,3 +135,24 @@ void syncRespawnTime(CRules@ this, CPlayer@ player, const u32&in time)
 	this.set_u32("respawn time", time);
 	this.SyncToPlayer("respawn time", player);
 }
+
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("remove respawn"))
+	{
+		const string username = params.read_string();
+		
+		Respawn[]@ respawns;
+		if (!this.get("respawns", @respawns)) return;
+		
+		for (u8 i = 0; i < respawns.length; i++)
+		{
+			Respawn@ r = respawns[i];
+			if (r.username == username)
+			{
+				respawns.erase(i);
+				break;
+			}
+		}
+	}
+}
