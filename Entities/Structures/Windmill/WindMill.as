@@ -182,7 +182,7 @@ void onTick(CSprite@ this)
 	const u8 animtime = millpow < 0.5f ? 0 : 8 - millpow;
 	
 	CSpriteLayer@ windmill = this.getSpriteLayer("windmill");
-	windmill.RotateBy(millpow, Vec2f());
+	windmill.RotateBy(millpow*(this.isFacingLeft() ? -1 : 1), Vec2f());
 	
 	CSpriteLayer@ pole = this.getSpriteLayer("pole");
 	{
