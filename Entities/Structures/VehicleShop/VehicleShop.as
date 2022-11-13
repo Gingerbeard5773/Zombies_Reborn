@@ -40,14 +40,13 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + ZombieDesc::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_gold);
 	}
 	{
 		const string bomber_icon = getTeamIcon("bomber", "Icon_Bomber.png", team_num, Vec2f(44, 74), 0);
 		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", ZombieDesc::bomber, false, true);
 		s.crate_icon = 7;
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_gold);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 200);
 	}
 	{
@@ -95,12 +94,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		string name = params.read_string();
 		{
-			if (name == "ballista" || name == "bomber")
+			if (name == "bomber")
 			{
 				// makes crate still drop gold if it breaks before it's unpacked
 				// Crate.as prevents gold from dropping if it dies after unpack
 				CBlob@ box = getBlobByNetworkID(item);
-				if (box !is null) box.set_s32("gold building amount", CTFCosts::ballista_gold);
+				if (box !is null) box.set_s32("gold building amount", 50);
 			}
 		}
 	}
