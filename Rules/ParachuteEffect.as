@@ -4,6 +4,8 @@ void onInit(CBlob@ this)
 {
 	if (isClient())
 	{
+		if (this.hasTag("parachute landed")) return; //networking reasons
+		
 		CSprite@ sprite = this.getSprite();
 		CSpriteLayer@ chute = sprite.addSpriteLayer("parachute", "Crate.png", 32, 32);
 		if (chute !is null)
@@ -49,5 +51,6 @@ void HideParachute(CBlob@ this)
 		}
 	}
 	
+	this.Tag("parachute landed");
 	this.RemoveScript(getCurrentScriptName());
 }
