@@ -1,9 +1,14 @@
-﻿const int COINS_ON_DEATH = 25;
+﻿#include "ShieldCommon.as";
+#include "ParticleSparks.as";
+
+const int COINS_ON_DEATH = 25;
+const int GRAB_COOLDOWN = 30;
 
 void onInit(CBlob@ this)
 {
 	this.set_u16("coins on death", COINS_ON_DEATH);
 	this.set_f32("brain_target_rad", 512.0f);
+	this.set_u32("greg_next_grab", 0);
 	
 	this.getSprite().SetEmitSound("Wings.ogg");
 	this.getSprite().SetEmitSoundPaused(false);
@@ -22,9 +27,29 @@ void onInit(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (blob !is null && blob is this.getBrain().getTarget())
+	if (isServer() && blob !is null && blob is this.getBrain().getTarget() && this.get_u32("greg_next_grab") < getGameTime())
 	{
-		this.server_AttachTo(blob, "PICKUP");
+		//we use server_hit for synchronization purposes (its a hack)
+		//this triggers onHitBlob
+		this.server_Hit(blob, point1, blob.getPosition() - this.getPosition(), 0.0f, 0, true);
+		this.set_u32("greg_next_grab", getGameTime() + GRAB_COOLDOWN);
+	}
+}
+
+void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
+{
+	Sound::Play("SkeletonAttack.ogg", this.getPosition());
+	if (!blockAttack(hitBlob, velocity, 0.0f)) //knights can shield against the grab
+	{
+		this.server_AttachTo(hitBlob, "PICKUP");
+	}
+	else
+	{
+		if (isClient())
+		{
+			Sound::Play("ShieldHit.ogg", worldPoint);
+			sparks(worldPoint, -velocity.Angle(), velocity.Length()*0.05f);
+		}
 	}
 }
 
