@@ -101,9 +101,6 @@ void onTick(CBrain@ this)
 
 				// aim at the target
 				blob.setAimPos(target.getPosition());
-
-				// stay away from anything any nearby obstructions such as a tower
-				DetectForwardObstructions(blob, map);
 			}
 		}
 		else
