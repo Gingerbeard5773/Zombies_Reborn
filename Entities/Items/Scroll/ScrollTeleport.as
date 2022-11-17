@@ -2,6 +2,7 @@
 
 #include "GenericButtonCommon.as";
 #include "Zombie_Translation.as";
+#include "ParticleTeleport.as";
 
 void onInit(CBlob@ this)
 {
@@ -36,16 +37,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (isClient())
 		{
 			//effects
-			for (u8 i = 0; i < 5; i++)
-			{
-				Vec2f vel = getRandomVelocity(-90.0f, 2, 360.0f);
-				ParticleAnimated("MediumSteam", pos, vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, false);
-			}
-			
-			ParticleZombieLightning(pos);
+			ParticleTeleport(pos);
 			ParticleZombieLightning(aim);
-			
-			Sound::Play("Respawn.ogg", pos, 3.5f);
 		}
 		
 		if (caller.isMyPlayer())
