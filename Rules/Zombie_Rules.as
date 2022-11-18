@@ -34,8 +34,9 @@ void Reset(CRules@ this)
 		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
 	}
 	
-	this.set_u8("day_number", 1);
 	this.set_u8("message_timer", 1);
+	this.set_u8("day_number", 1);
+	this.Sync("day_number", true);
 	
 	seconds_till_nextmap = nextmap_seconds;
 	this.SetCurrentState(WARMUP);
