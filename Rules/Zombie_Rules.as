@@ -3,10 +3,9 @@
 #define SERVER_ONLY
 
 u8 warmup_days = 2;          //days of warmup-time we give to players
-u8 days_to_survive = 15;     //days players must survive to win
+u8 days_to_survive = 15;     //days players must survive to win, use 0 for no win condition
 f32 game_difficulty = 2.5f;  //zombie spawnrate multiplier
 u16 maximum_zombies = 400;   //maximum amount of zombies that can be on the map at once
-bool infinite_days = false;  //decides if we can go past days_to_survive
 
 const u8 GAME_WON = 5;
 const u8 nextmap_seconds = 15;
@@ -33,7 +32,6 @@ void Reset(CRules@ this)
 		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u8("days_to_survive")  : 15;
 		game_difficulty = cfg.exists("game_difficulty") ? cfg.read_f32("game_difficulty") : 2.5f;
 		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
-		infinite_days   = cfg.exists("infinite_days")   ? cfg.read_bool("infinite_days")  : false;
 	}
 	
 	this.set_u8("day_number", 1);
@@ -138,7 +136,7 @@ void checkDayChange(CRules@ this, const u8&in dayNumber)
 		setTimedGlobalMessage(this, dayMessage, 10);
 		
 		//end game if we reached the last day
-		if (dayNumber >= days_to_survive && !infinite_days)
+		if (dayNumber >= days_to_survive && days_to_survive != 0)
 		{
 			dayMessage = "Day "+days_to_survive+" Reached! You win!";
 			this.SetCurrentState(GAME_WON);
