@@ -41,7 +41,8 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	Sound::Play("SkeletonAttack.ogg", this.getPosition());
 	if (!blockAttack(hitBlob, velocity, 0.0f)) //knights can shield against the grab
 	{
-		this.server_AttachTo(hitBlob, "PICKUP");
+		if (hitBlob is this.getBrain().getTarget()) //another check to stop unusual grabs
+			this.server_AttachTo(hitBlob, "PICKUP");
 	}
 	else
 	{
