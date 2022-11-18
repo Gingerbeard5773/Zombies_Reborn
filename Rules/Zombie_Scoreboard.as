@@ -14,7 +14,7 @@ bool mouseWasPressed2 = false;
 CPlayer@ hoveredPlayer;
 
 //returns the bottom
-f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
+const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 {
 	CRules@ rules = getRules();
 	CTeam@ team = rules.getTeam(teamNum);
@@ -46,9 +46,9 @@ f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 	
 	GUI::DrawText(getTranslatedString("Player"), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Username"), Vec2f(bottomright.x - 440, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Ping"), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 200, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 130, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 200, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Ping"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 
 	topleft.y += stepheight * 0.5f;
 
@@ -131,9 +131,9 @@ f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 		}
 
 		GUI::DrawText("" + username, Vec2f(bottomright.x - 440, topleft.y), namecolour);
-		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
-		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 200, topleft.y), SColor(0xffffffff));
-		GUI::DrawText("" + p.getDeaths(), Vec2f(bottomright.x - 130, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + p.getDeaths(), Vec2f(bottomright.x - 200, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 	}
 
 	// username copied text, goes at bottom to overlay above everything else
