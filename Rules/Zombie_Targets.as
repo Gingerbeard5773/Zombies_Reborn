@@ -5,6 +5,7 @@
 void onInit(CRules@ this)
 {
 	this.set_u16("undead count", 0);
+	this.Sync("undead count", true);
 	
 	u16[] netids;
 	this.set("target netids", netids);
@@ -13,6 +14,7 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	this.set_u16("undead count", 0);
+	this.Sync("undead count", true);
 	this.clear("target netids");
 }
 
@@ -21,6 +23,7 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	if (blob.hasTag("undead"))
 	{
 		this.add_u16("undead count", 1);
+		this.Sync("undead count", true);
 	}
 	else if (canTarget(blob))
 	{
@@ -34,6 +37,7 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 	if (blob.hasTag("undead"))
 	{
 		this.sub_u16("undead count", 1);
+		this.Sync("undead count", true);
 	}
 	else if (canTarget(blob))
 	{
