@@ -53,7 +53,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		setKnocked(hitBlob, 10);
 	}
 	
-	if (isClient() && damage > 0.0f && hitBlob.hasTag("flesh"))
+	if (isClient() && damage > 0.0f && hitBlob.hasTag("flesh") && hitBlob !is this)
 	{
 		Sound::Play("/SwordKill2", worldPoint);
 	}
