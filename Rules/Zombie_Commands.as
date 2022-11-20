@@ -9,7 +9,8 @@ const string commandslist()
 	"\n !class [name] : set your character's blob"+
 	"\n !cursor [blobname] [amount] : spawn a blob at your cursor"+
 	"\n !carnage : kill all zombies on the map"+
-	"\n !undeadcount : print the amount of zombies on the map\n";
+	"\n !undeadcount : print the amount of zombies on the map"+
+	"\n !state : toggle warmup on or off\n";
 }
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
@@ -84,6 +85,13 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					CBlob@[] undeads;
 					getBlobsByTag("undead", @undeads);
 					print(undeads.length+" undeads found");
+					return false;
+				}
+				else if (tokens[0] == "!state")
+				{
+					this.SetCurrentState(this.getCurrentState() == WARMUP ? GAME : WARMUP);
+					this.SetGlobalMessage(this.getCurrentState() == GAME ? "Gamestate: GAME" : "Gamestate: WARMUP");
+					this.set_u8("message_timer", 5);
 					return false;
 				}
 			}
