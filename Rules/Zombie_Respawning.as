@@ -104,6 +104,9 @@ CBlob@ spawnPlayer(CRules@ this, CPlayer@ player)
 		CBlob@ blob = player.getBlob();
 		if (blob !is null)
 		{
+			if (!blob.hasTag("dead"))
+				return blob;
+			
 			blob.server_SetPlayer(null);
 			blob.server_Die();
 		}

@@ -54,7 +54,7 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 		const string name = blob.getName();
 		if (getMatsTime(this, name) > getGameTime() || !canReceiveMats(name)) return;
 		
-		client_GiveMats(this, player, blob);
+		client_GiveMats(this, player, blob, true);
 	}
 }
 
@@ -68,13 +68,14 @@ const u32 getMatsTime(CRules@ this, const string&in name)
 	return this.get_u32(name + timer_prop); 
 }
 
-void client_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob)
+void client_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob, const bool&in checkTimeAlive = false)
 {
 	this.set_u32(blob.getName() + timer_prop, getGameTime() + (materials_wait * getTicksASecond()));
 	
 	CBitStream params;
 	params.write_u16(player.getNetworkID());
 	params.write_netid(blob.getNetworkID());
+	params.write_bool(checkTimeAlive);
 	this.SendCommand(this.getCommandID(give_items_cmd), params);
 }
 
@@ -132,6 +133,9 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			CPlayer@ player = getPlayerByNetworkId(params.read_u16());
 			CBlob@ blob = getBlobByNetworkID(params.read_netid());
 			if (player is null || blob is null) return;
+			
+			const bool checkTimeAlive = params.read_bool();
+			if (checkTimeAlive && blob.getTickSinceCreated() > 10) return;
 			
 			server_GiveMats(this, player, blob);
 		}
