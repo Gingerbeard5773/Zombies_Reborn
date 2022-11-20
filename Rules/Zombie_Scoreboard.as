@@ -22,6 +22,8 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 	const u8 playersLength = players.length;
 	if (playersLength <= 0 || team is null)
 		return topleft.y;
+	
+	const u16 zombies = rules.get_u16("undead count");
 
 	const f32 lineheight = 16;
 	const f32 padheight = 2;
@@ -39,6 +41,7 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 	//draw team info
 	GUI::DrawText(teams[teamNum], Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + playersLength), Vec2f(bottomright.x - 470, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Zombies: {ZOMBIECOUNT}").replace("{ZOMBIECOUNT}", "" + zombies), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
 
 	topleft.y += stepheight * 2;
 	
@@ -148,9 +151,22 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 	return topleft.y;
 }
 
+int lastOpenedGameTime = 0;
+float yFallDown = 0;
+float fallSpeed = 100.0f;
+
 void onRenderScoreboard(CRules@ this)
 {
 	if (this.get_bool("show_gamehelp")) return;
+
+	uint gameTime = getGameTime();
+	if(lastOpenedGameTime + 2 < gameTime) // was just opened
+	{
+		yFallDown = float(getScreenHeight()) * 0.35f;
+	}
+	lastOpenedGameTime = gameTime;
+
+	yFallDown = Maths::Max(0, yFallDown - getRenderApproximateCorrectionFactor()*fallSpeed);
 	
 	const u8 playingTeamsCount = 1; //change this depending on how many teams in the gamemode, this.getTeamsNum() causes errors
 	CPlayer@[][] teamsPlayers(playingTeamsCount); //holds all teams and their players
@@ -176,8 +192,8 @@ void onRenderScoreboard(CRules@ this)
 
 	@hoveredPlayer = null;
 
-	Vec2f topleft(Maths::Max(100, screenMidX-maxMenuWidth), 150);
-	drawServerInfo(this, 40);
+	Vec2f topleft(Maths::Max(100, screenMidX-maxMenuWidth), 150 - yFallDown);
+	drawServerInfo(this, 40 - yFallDown);
 
 	// start the scoreboard lower or higher.
 	topleft.y -= scrollOffset;
