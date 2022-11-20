@@ -1,4 +1,5 @@
-﻿const u8 TIME_TO_EXPLODE = 5; //seconds
+﻿#include "Hitters.as";
+const u8 TIME_TO_EXPLODE = 5; //seconds
 const s32 TIME_TO_ENRAGE = 45 * 30;
 
 const int COINS_ON_DEATH = 10;
@@ -41,19 +42,7 @@ void onTick(CBlob@ this)
 {
 	if (this.hasTag("enraged"))
 	{
-		if (!this.hasTag("exploding"))
-		{
-			this.Tag("exploding");
-			
-			//start kill timer
-			this.server_SetTimeToDie(TIME_TO_EXPLODE);
-			
-			this.getSprite().PlaySound("/WraithDie");
-			
-			this.SetLight(true);
-			this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
-			this.SetLightColor(SColor(255, 211, 121, 224));
-		}
+		startFuse(this);
 		
 		if (isClient())
 		{
@@ -65,13 +54,35 @@ void onTick(CBlob@ this)
 	}
 }
 
+void startFuse(CBlob@ this)
+{
+	if (!this.hasTag("exploding"))
+	{
+		this.Tag("exploding");
+		
+		//start kill timer
+		this.server_SetTimeToDie(TIME_TO_EXPLODE);
+		
+		this.getSprite().PlaySound("/WraithDie");
+		
+		this.SetLight(true);
+		this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
+		this.SetLightColor(SColor(255, 211, 121, 224));
+	}
+}
+
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (isClient() && damage > 0.0f)
 	{
 		this.getSprite().PlaySound("/ZombieHit");
 	}
-	else if (customData >= 3 && customData <= 5 && this.hasTag("enraged")) //water hitters
+	
+	if (customData == Hitters::fire)
+	{
+		startFuse(this);
+	}
+	else if (isWaterHitter(customData) && this.hasTag("enraged"))
 	{
 		//reset if we got watered
 		
