@@ -188,19 +188,29 @@ void onGameEnd(CRules@ this)
 	}
 }
 
+void onPlayerLeave(CRules@ this, CPlayer@ player)
+{
+	checkGameEnded(this, player);
+}
+
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
+{
+	checkGameEnded(this, victim);
+}
+
+void checkGameEnded(CRules@ this, CPlayer@ player)
 {
 	if (this.isWarmup()) return;
 	
 	//have all players died?
-	if (!isGameLost()) return;
+	if (!isGameLost(player)) return;
 	
 	this.SetCurrentState(GAME_OVER);
 	setTimedGlobalMessage(this, "Game over! All survivors perished! You lasted "+this.get_u8("day_number")+" days.", nextmap_seconds);
 }
 
 // Check if we lost the game
-const bool isGameLost()
+const bool isGameLost(CPlayer@ player)
 {
 	bool noAlivePlayers = true;
 	
@@ -208,7 +218,7 @@ const bool isGameLost()
 	for (u8 i = 0; i < playerCount; i++)
 	{
 		CPlayer@ ply = getPlayer(i);
-		if (ply is null) continue;
+		if (ply is null || ply is player) continue;
 		
 		CBlob@ plyBlob = ply.getBlob();
 		if (plyBlob !is null && !plyBlob.hasTag("undead") && !plyBlob.hasTag("dead"))
