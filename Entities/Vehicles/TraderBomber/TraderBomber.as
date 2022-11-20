@@ -19,7 +19,13 @@ void onInit(CBlob@ this)
 	this.chatBubbleOffset = Vec2f(0, 48);
 	this.SetChatBubbleFont("menu");
 	
+	this.server_setTeamNum(XORRandom(8));
+	
 	this.SetMapEdgeFlags(u8(CBlob::map_collide_sides));
+	
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_none);
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 9, Vec2f(8, 8));
+	this.SetMinimapRenderAlways(true);
 	
 	if (isServer())
 	{
@@ -364,7 +370,7 @@ void onInit(CSprite@ this)
 	
 	// add balloon
 
-	CSpriteLayer@ balloon = this.addSpriteLayer("balloon", "TraderBalloon.png", 48, 72, XORRandom(8), 0);
+	CSpriteLayer@ balloon = this.addSpriteLayer("balloon", "TraderBalloon.png", 48, 72);
 	if (balloon !is null)
 	{
 		balloon.addAnimation("default", 0, false);
