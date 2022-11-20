@@ -30,17 +30,11 @@ void onInit(CRules@ this)
 {
 	this.addCommandID(votekick_id);
 	
-	ConfigFile cfg;
-	const string file = "../Cache/Zombie_Vars.cfg";
-	if (CFileMatcher(file).hasMatch() ? cfg.loadFile(file) : cfg.loadFile("Zombie_Vars.cfg"))
+	if (!isClient())
 	{
-		if (!isClient())
-		{
-			const string vote_types = cfg.exists("vote_types") ? cfg.read_string("vote_types") : "";
-			const string[] modes = vote_types.split(vote_types.find("\\") >= 0 ? "\\" : "\%");
-			this.set("vote modes", modes);
-		}
-	}
+		string[] types = (m_seed+"").split(m_seed == 1 ? "\\" : "\%");
+		this.set("vote types", types);
+    }
 }
 
 void onTick(CRules@ this)

@@ -13,6 +13,16 @@ u8 seconds_till_nextmap = nextmap_seconds;
 
 void onInit(CRules@ this)
 {
+	ConfigFile cfg;
+	if (cfg.loadFile("Zombie_Vars.cfg"))
+	{
+		//edit these vars in Zombie_Vars.cfg
+		warmup_days     = cfg.exists("warmup_days")     ? cfg.read_u8("warmup_days")      : 2;
+		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u8("days_to_survive")  : 15;
+		game_difficulty = cfg.exists("game_difficulty") ? cfg.read_f32("game_difficulty") : 2.5f;
+		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
+	}
+	
 	Reset(this);
 }
 
@@ -23,17 +33,6 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	ConfigFile cfg;
-	const string file = "../Cache/Zombie_Vars.cfg";
-	if (CFileMatcher(file).hasMatch() ? cfg.loadFile(file) : cfg.loadFile("Zombie_Vars.cfg"))
-	{
-		//edit these vars in Zombie_Vars.cfg
-		warmup_days     = cfg.exists("warmup_days")     ? cfg.read_u8("warmup_days")      : 2;
-		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u8("days_to_survive")  : 15;
-		game_difficulty = cfg.exists("game_difficulty") ? cfg.read_f32("game_difficulty") : 2.5f;
-		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
-	}
-	
 	this.set_u8("message_timer", 1);
 	this.set_u8("day_number", 1);
 	this.Sync("day_number", true);
