@@ -71,6 +71,7 @@ namespace ZombieDesc
 	
 	//scoreboard
 	day                 = Translate("Day"),
+	zombie_count        = Translate("Zombies: {ZOMBIECOUNT}"),
 	open_manual         = Translate("Press {KEY} to toggle the help manual on/off."),
 	
 	//respawning

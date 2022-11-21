@@ -41,7 +41,7 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 	//draw team info
 	GUI::DrawText(teams[teamNum], Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + playersLength), Vec2f(bottomright.x - 470, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Zombies: {ZOMBIECOUNT}").replace("{ZOMBIECOUNT}", "" + zombies), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(ZombieDesc::zombie_count.replace("{ZOMBIECOUNT}", "" + zombies), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
 
 	topleft.y += stepheight * 2;
 	

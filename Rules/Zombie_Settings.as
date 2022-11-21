@@ -5,7 +5,7 @@
 
 void onInit(CRules@ this)
 {
-	this.set_string("version", "1.1.0");
+	this.set_string("version", "1.2.0");
 	sv_contact_info = "github.com/Gingerbeard5773/Zombies_Reborn";
 	
 	print("\n ---- INITIALIZING ZOMBIE FORTRESS ---- \n"+
@@ -47,7 +47,7 @@ void AddFonts()
 void onBlobCreated(CRules@ this, CBlob@ blob)
 {
 	//keep gold from decaying
-	if (blob.getName() == "mat_gold")
+	if (isServer() && blob.getName() == "mat_gold")
 	{
 		blob.RemoveScript("DecayQuantity.as");
 	}

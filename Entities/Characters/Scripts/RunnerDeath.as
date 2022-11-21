@@ -20,18 +20,22 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		
 		//revive this if this is holding a revival scroll
-		CBlob@ held = this.getAttachmentPoint(0).getOccupied();
-		if (held !is null && held.hasCommandID("revive"))
+		AttachmentPoint@ attach = this.getAttachmentPoint(0);
+		if (attach !is null)
 		{
-			if (isServer())
+			CBlob@ held = attach.getOccupied();
+			if (held !is null && held.hasCommandID("revive"))
 			{
-				CBitStream params;
-				params.write_netid(this.getNetworkID());
-				params.write_bool(true);
-				held.SendCommand(held.getCommandID("revive"), params);
+				if (isServer())
+				{
+					CBitStream params;
+					params.write_netid(this.getNetworkID());
+					params.write_bool(true);
+					held.SendCommand(held.getCommandID("revive"), params);
+				}
+				
+				return 0.0f;
 			}
-			
-			return 0.0f;
 		}
 		
 		this.Tag("dead");
