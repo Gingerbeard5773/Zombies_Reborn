@@ -27,7 +27,6 @@ namespace ZombieDesc
 	const string
 	
 	//descriptions
-	ballista            = Translate("A bolt-firing siege engine, requiring a crew of two. Allows class change."),
 	bomber              = Translate("A balloon capable of flying two passengers."),
 	mounted_bow         = Translate("A portable arrow-firing death machine. Can be attached to some vehicles."),
 	

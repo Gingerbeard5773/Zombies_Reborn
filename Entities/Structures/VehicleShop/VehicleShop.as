@@ -37,7 +37,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		const string ballista_icon = getTeamIcon("ballista", "VehicleIcons.png", team_num, Vec2f(32, 32), 1);
-		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + ZombieDesc::ballista, false, true);
+		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + Descriptions::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
 	}
