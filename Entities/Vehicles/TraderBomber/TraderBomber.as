@@ -79,7 +79,7 @@ void onInit(CBlob@ this)
 		{
 			ShopItem@ s = addShopItem(this, "Scroll of Quarry", "$scroll_stone$", "scroll_stone", ZombieDesc::stone_desc, true);
 			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 30);
+			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 1);
 			break;
 		}
@@ -90,7 +90,7 @@ void onInit(CBlob@ this)
 		{
 			ShopItem@ s = addShopItem(this, "Scroll of Ressurection", "$scroll_revive$", "scroll_revive", ZombieDesc::revive_desc, true);
 			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 30);
+			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 1);
 			break;
 		}
@@ -149,7 +149,7 @@ void onInit(CBlob@ this)
 		{
 			ShopItem@ s = addShopItem(this, "Scroll of Fowl", "$scroll_fowl$", "scroll_fowl", ZombieDesc::fowl_desc, true);
 			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
+			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 			AddStock(s, 1);
 			break;
 		}
@@ -190,7 +190,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", 250);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sell Wood (250)", "$COIN$", "coin_35", "Sell 250 wood for 35 $COIN$", true);
+		ShopItem@ s = addShopItem(this, "Sell Wood (250)", "$COIN$", "coin_50", "Sell 250 wood for 50 $COIN$", true);
 		s.spawnNothing = true;
 		s.customData = 255;
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 250);
@@ -206,9 +206,9 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 225);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Chicken (1)", "$chicken$", "chicken", "Buy 1 Chicken for 230 $COIN$", true);
+		ShopItem@ s = addShopItem(this, "Buy Chicken (1)", "$chicken$", "chicken", "Buy 1 Chicken for 200 $COIN$", true);
 		s.customData = 255;
-		AddRequirement(s.requirements, "coin", "", "Coins", 230);
+		AddRequirement(s.requirements, "coin", "", "Coins", 200);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Sell Flour (50)", "$COIN$", "coin_200", "Sell 50 flour for 200 $COIN$", true);
