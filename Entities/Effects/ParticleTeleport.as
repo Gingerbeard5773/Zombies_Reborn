@@ -10,7 +10,8 @@ void ParticleTeleport(Vec2f&in pos)
 		for (u8 i = 0; i < 5; i++)
 		{
 			Vec2f vel = getRandomVelocity(-90.0f, 2, 360.0f);
-			ParticleAnimated("MediumSteam", pos, vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, true);
+			CParticle@ p = ParticleAnimated("MediumSteam", pos, vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, true);
+			if (p !is null) p.Z = 650.0f;
 		}
 	}
 }
