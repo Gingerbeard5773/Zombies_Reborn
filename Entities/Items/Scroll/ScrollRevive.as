@@ -2,6 +2,7 @@
 
 #include "GenericButtonCommon.as";
 #include "Zombie_Translation.as";
+#include "RespawnCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -79,13 +80,17 @@ void RevivePlayer(CPlayer@ player, CBlob@ b)
 	
 	if (isServer())
 	{
-		//remove respawn at Zombie_Respawning.as
-		CRules@ rules = getRules();
-		if (rules.hasCommandID("remove respawn"))
+		//remove respawn
+		Respawn[]@ respawns;
+		if (getRules().get("respawns", @respawns))
 		{
-			CBitStream params;
-			params.write_string(player.getUsername());
-			rules.SendCommand(rules.getCommandID("remove respawn"), params);
+			for (u8 i = 0; i < respawns.length; i++)
+			{
+				if (respawns[i].username != player.getUsername()) continue;
+				
+				respawns.erase(i);
+				break;
+			}
 		}
 		
 		//create new blob for our dead player to use

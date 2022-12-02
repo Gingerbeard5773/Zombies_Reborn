@@ -1,5 +1,7 @@
 // Zombie Fortress chat commands
 
+#include "RespawnCommon.as";
+
 const string commandslist()
 {
 	return
@@ -8,6 +10,7 @@ const string commandslist()
 	"\n !dayspeed [minutes] : set the speed of the day"+
 	"\n !class [name] : set your character's blob"+
 	"\n !cursor [blobname] [amount] : spawn a blob at your cursor"+
+	"\n !respawn [username] : respawn a player"+
 	"\n !carnage : kill all zombies on the map"+
 	"\n !undeadcount : print the amount of zombies on the map"+
 	"\n !state : toggle warmup on or off\n";
@@ -93,6 +96,26 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					this.SetGlobalMessage(this.getCurrentState() == GAME ? "Gamestate: GAME" : "Gamestate: WARMUP");
 					this.set_u8("message_timer", 5);
 					return false;
+				}
+			}
+			
+			if (tokens[0] == "!respawn") //respawn player
+			{
+				Respawn[]@ respawns;
+				if (!this.get("respawns", @respawns))
+				{
+					warn("!respawn:: Respawns not found!");
+					return false;
+				}
+				
+				const string ply_name = tokens.length > 1 ? tokens[1] : player.getUsername();
+				
+				for (u8 i = 0; i < respawns.length; i++)
+				{
+					Respawn@ r = respawns[i];
+					if (r.username != ply_name) continue;
+					
+					r.timeStarted = 0;
 				}
 			}
 		}

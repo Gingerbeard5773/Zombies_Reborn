@@ -2,21 +2,11 @@
 
 #define SERVER_ONLY
 
+#include "RespawnCommon.as";
+
 const string startClass = "builder";  //the class that players will spawn as
 const u32 spawnTimeLeniency = 30;     //players can insta-respawn for this many seconds after dawn comes
 const u32 spawnTimeMargin = 8;        //max amount of random seconds we can give to respawns
-
-shared class Respawn
-{
-	string username;
-	u32 timeStarted;
-
-	Respawn(const string _username, const u32 _timeStarted)
-	{
-		username = _username;
-		timeStarted = _timeStarted;
-	}
-};
 
 void onInit(CRules@ this)
 {
@@ -147,25 +137,4 @@ void syncRespawnTime(CRules@ this, CPlayer@ player, const u32&in time)
 {
 	this.set_u32("respawn time", time);
 	this.SyncToPlayer("respawn time", player);
-}
-
-void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
-{
-	if (cmd == this.getCommandID("remove respawn"))
-	{
-		const string username = params.read_string();
-		
-		Respawn[]@ respawns;
-		if (!this.get("respawns", @respawns)) return;
-		
-		for (u8 i = 0; i < respawns.length; i++)
-		{
-			Respawn@ r = respawns[i];
-			if (r.username == username)
-			{
-				respawns.erase(i);
-				break;
-			}
-		}
-	}
 }

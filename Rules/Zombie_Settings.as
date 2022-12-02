@@ -20,8 +20,6 @@ void onInit(CRules@ this)
 	
 	SetupGameplayEvents(this);
 	SetupScrolls(this);
-	
-	this.addCommandID("remove respawn"); //Zombie_Respawning.as
 }
 
 void AddIcons()
