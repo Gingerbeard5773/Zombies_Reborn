@@ -64,12 +64,6 @@ void onTick(CBlob@ this)
 	}
 }
 
-// reset revive counter on pickup
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	this.set_u32("death time", getGameTime());
-}
-
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return this.hasTag("dead");
