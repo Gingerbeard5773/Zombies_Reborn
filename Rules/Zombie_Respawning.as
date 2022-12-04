@@ -7,6 +7,7 @@
 const string startClass = "builder";  //the class that players will spawn as
 const u32 spawnTimeLeniency = 30;     //players can insta-respawn for this many seconds after dawn comes
 const u32 spawnTimeMargin = 8;        //max amount of random seconds we can give to respawns
+const u32 spawnTimeSeconds = 3;       //respawn duration during insta-respawn seconds
 
 void onInit(CRules@ this)
 {
@@ -40,7 +41,7 @@ void onTick(CRules@ this)
 		for (u8 i = 0; i < respawns.length; i++)
 		{
 			Respawn@ r = respawns[i];
-			if (r.timeStarted == 0 || r.timeStarted <= gametime)
+			if (r.timeStarted <= gametime)
 			{
 				spawnPlayer(this, getPlayerByUsername(r.username));
 				respawns.erase(i);
@@ -49,7 +50,6 @@ void onTick(CRules@ this)
 		}
 	}
 }
-
 
 void onPlayerRequestSpawn(CRules@ this, CPlayer@ player)
 {
@@ -62,7 +62,7 @@ void onPlayerRequestSpawn(CRules@ this, CPlayer@ player)
 		const s32 timeTillDawn = (day_cycle - timeElapsed + XORRandom(spawnTimeMargin)) * getTicksASecond();
 		
 		const bool skipWait = timeElapsed <= spawnTimeLeniency || this.isWarmup();
-		const s32 timeTillRespawn = skipWait ? 0 : timeTillDawn;
+		const s32 timeTillRespawn = skipWait ? spawnTimeSeconds * getTicksASecond() : timeTillDawn;
 		
 		Respawn r(player.getUsername(), timeTillRespawn + gametime);
 		this.push("respawns", r);
@@ -102,9 +102,10 @@ CBlob@ spawnPlayer(CRules@ this, CPlayer@ player)
 		}
 
 		Vec2f spawnPos = getSpawnLocation();
-		CBlob@ newBlob = server_CreateBlob(startClass, 0, spawnPos);
+		CBlob@ newBlob = server_CreateBlob(startClass, player.getTeamNum(), spawnPos);
 		newBlob.server_SetPlayer(player);
 		
+		//give the blob a parachute if spawning at roof
 		if (this.hasCommandID("give_parachute") && spawnPos.y <= 16)
 		{
 			CBitStream bs;

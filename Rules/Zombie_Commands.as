@@ -11,6 +11,7 @@ const string commandslist()
 	"\n !class [name] : set your character's blob"+
 	"\n !cursor [blobname] [amount] : spawn a blob at your cursor"+
 	"\n !respawn [username] : respawn a player"+
+	"\n !softban [username / IP] [minutes / -1 for permanent] [reason] : soft ban a player"+ 
 	"\n !carnage : kill all zombies on the map"+
 	"\n !undeadcount : print the amount of zombies on the map"+
 	"\n !state : toggle warmup on or off\n";
@@ -64,6 +65,25 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				{
 					this.daycycle_speed = parseInt(tokens[1]);
 				}
+				else if (tokens[0] == "!softban") //soft ban a player
+				{
+					if (tokens.length < 3)
+					{
+						warn("!softban:: missing perameters");
+						return false;
+					}
+					if (!this.hasCommandID("server_softban"))
+					{
+						warn("!softban:: CMD 'server_soft_ban' missing");
+						return false;
+					}
+					
+					CBitStream params;
+					params.write_string(tokens[1]);
+					params.write_string(tokens.length > 3 ? tokens[3] : "");
+					params.write_s32(parseInt(tokens[2])*60);
+					this.SendCommand(this.getCommandID("server_softban"), params, false);
+				}
 			}
 			else
 			{
@@ -109,7 +129,6 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				}
 				
 				const string ply_name = tokens.length > 1 ? tokens[1] : player.getUsername();
-				
 				for (u8 i = 0; i < respawns.length; i++)
 				{
 					Respawn@ r = respawns[i];

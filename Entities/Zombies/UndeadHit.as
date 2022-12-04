@@ -6,10 +6,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	switch(customData)
 	{
 		case Hitters::ballista:
-			damage *= 2.5;
+			damage *= 2.5f;
 			break;
 		case Hitters::cata_boulder:
-			damage *= 2;
+			damage *= 2.0f;
 			break;
 		case Hitters::arrow:
 		{
@@ -19,7 +19,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			if (this.hasTag("dead") || hitHead)
 			{
 				ParticleBloodSplat(worldPoint, true);
-				damage *= 1.5;
+				damage *= 1.5f;
 			}
 			break;
 		}
@@ -30,6 +30,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			ParticleBloodSplat(worldPoint, true);
 			break;
 		}
+	}
+	
+	//player controlled wraiths don't damage as much
+	if (hitterBlob.getPlayer() !is null && hitterBlob.hasTag("enraged"))
+	{
+		damage *= 0.15f;
 	}
 	
 	//damage without activating server_die- to allow for negative health

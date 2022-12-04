@@ -75,6 +75,7 @@ namespace ZombieDesc
 	
 	//respawning
 	respawn             = Translate("Waiting for dawn..."),
+	respawn_undead      = Translate("Waiting for wraiths..."),
 	
 	//manual
 	title               = Translate("ZOMBIE FORTRESS"),

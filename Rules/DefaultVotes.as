@@ -51,12 +51,14 @@ void onTick(CRules@ this)
 class VoteKickFunctor : VoteFunctor
 {
 	VoteKickFunctor() {} //dont use this
-	VoteKickFunctor(CPlayer@ _kickplayer)
+	VoteKickFunctor(CPlayer@ _kickplayer, string _reason)
 	{
 		@kickplayer = _kickplayer;
+		reason = _reason;
 	}
 
 	CPlayer@ kickplayer;
+	string reason;
 
 	void Pass(bool outcome)
 	{
@@ -67,10 +69,23 @@ class VoteKickFunctor : VoteFunctor
 					.replace("{USER}", kickplayer.getUsername()),
 				vote_message_colour()
 			);
-
-			if (getNet().isServer())
+			
+			if (isServer())
 			{
-				getSecurity().ban(kickplayer, VoteKickTime, "Voted off"); //30 minutes ban
+				CRules@ rules = getRules();
+				if (rules.hasCommandID("server_softban") && reason != "Hacker")
+				{
+					//do soft ban
+					CBitStream params;
+					params.write_string(kickplayer.getUsername());
+					params.write_string(reason);
+					params.write_s32(VoteKickTime*60);
+					rules.SendCommand(rules.getCommandID("server_softban"), params, false);
+				}
+				else
+				{
+					getSecurity().ban(kickplayer, VoteKickTime, "Voted off"); //30 minutes ban
+				}
 			}
 		}
 	}
@@ -142,7 +157,7 @@ VoteObject@ Create_Votekick(CPlayer@ player, CPlayer@ byplayer, string reason)
 {
 	VoteObject vote;
 
-	@vote.onvotepassed = VoteKickFunctor(player);
+	@vote.onvotepassed = VoteKickFunctor(player, reason);
 	@vote.canvote = VoteKickCheckFunctor(player, reason);
 	@vote.playerleave = VoteKickLeaveFunctor(player);
 
@@ -165,6 +180,9 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	//get our player first - if there isn't one, move on
 	CPlayer@ me = getLocalPlayer();
 	if (me is null) return;
+	
+	//soft banned players cannot vote!
+	if (me.getTeamNum() == u8(-2)) return;
 
 	CRules@ rules = getRules();
 
@@ -174,7 +192,6 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 		Menu::addSeparator(menu);
 
 		return;
-
 	}
 
 	//and advance context menu when clicked

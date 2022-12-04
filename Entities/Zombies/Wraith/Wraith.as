@@ -40,6 +40,23 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (isServer())
+	{
+		//player functionality
+		CPlayer@ player = this.getPlayer();
+		if (player !is null)
+		{	
+			const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
+			const u8 delay = this.get_u8("brain_delay");
+			if ((this.isKeyPressed(key_action1) && delay == 0 && !this.hasTag("enraged")) || auto_explode_timer < 0)
+			{
+				this.Tag("enraged");
+				this.Sync("enraged", true);
+			}
+			this.set_u8("brain_delay", Maths::Max(0, delay - 1));
+		}
+	}
+	
 	if (this.hasTag("enraged"))
 	{
 		startFuse(this);
@@ -58,6 +75,7 @@ void startFuse(CBlob@ this)
 {
 	if (!this.hasTag("exploding"))
 	{
+		this.Tag("enraged");
 		this.Tag("exploding");
 		
 		//start kill timer
@@ -68,6 +86,19 @@ void startFuse(CBlob@ this)
 		this.SetLight(true);
 		this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
 		this.SetLightColor(SColor(255, 211, 121, 224));
+	}
+}
+
+void onSetPlayer(CBlob@ this, CPlayer@ player)
+{
+	if (player !is null && player.isMyPlayer())
+	{
+		CCamera@ cam = getCamera();
+		if (cam !is null)
+		{
+			cam.targetDistance = Maths::Min(1.0f, cam.targetDistance);
+		}
+		Sound::Play("switch.ogg");
 	}
 }
 
@@ -107,6 +138,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				ParticleAnimated("MediumSteam", this.getPosition(), vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, false);
 			}
 		}
+	}
+	else if (this.getPlayer() !is null && customData == Hitters::suicide)
+	{
+		startFuse(this);
+		return 0.0f; //don't allow insta explode
 	}
 
 	return damage;
