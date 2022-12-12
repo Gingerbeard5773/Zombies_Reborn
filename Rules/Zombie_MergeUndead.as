@@ -13,8 +13,8 @@ void onInit(CRules@ this)
 	{
 		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
 		
-		const u8 merge_zombies = cfg.exists("merge_zombies") ? cfg.read_u8("merge_zombies") : 1;
-		if (merge_zombies == 0)
+		const bool merge_zombies = cfg.exists("merge_zombies") ? cfg.read_bool("merge_zombies") : true;
+		if (!merge_zombies)
 		{
 			this.RemoveScript(getCurrentScriptName());
 		}
