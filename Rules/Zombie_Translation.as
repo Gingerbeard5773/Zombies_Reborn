@@ -63,7 +63,7 @@ namespace ZombieDesc
 	wisent_desc         = Translate("Somehow conceals a heffer."),
 	crate_desc          = Translate("Put anything in a box."),
 	teleport_desc       = Translate("Messes with time and space."),
-	carnage_desc        = Translate("Sedgewick really doesn't want me to have this."),
+	carnage_desc        = Translate("Sedgwick really doesn't want me to have this."),
 	midas_desc          = Translate("Makes the rocks shiny."),
 	sea_desc            = Translate("Flood season!"),
 	stone_desc          = Translate("Rocks."),

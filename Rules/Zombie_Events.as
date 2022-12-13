@@ -25,31 +25,10 @@ void onStateChange(CRules@ this, const u8 oldState)
 void onTick(CRules@ this)
 {
 	if (!isServer()) return;
-
-	const u32 gameTime = getGameTime();
 	
-	if (gameTime % 60 == 0)
+	if (getGameTime() % 60 == 0)
 	{
 		checkHourChange(this);
-	}
-
-	if (gameTime % 15 == 0)
-	{
-		//skeletal rain event
-		doSkeletalRain(this);
-	}
-}
-
-void doSkeletalRain(CRules@ this)
-{
-	u32 skeletal_rain_time = this.get_u32("skeleton_rain");
-	if (skeletal_rain_time > 0)
-	{
-		skeletal_rain_time--;
-		this.set_u32("skeleton_rain", skeletal_rain_time);
-		
-		Vec2f dim = getMap().getMapDimensions();
-		server_CreateBlob("skeleton", -1, Vec2f(XORRandom(dim.x), 0));
 	}
 }
 
@@ -64,18 +43,21 @@ void checkHourChange(CRules@ this)
 		{
 			case 5: //mid day
 			{
-				doTraderEvent(this);
+				doTraderEvent(this, map);
+				break;
+			}
+			case 10: //midnight
+			{
+				doSedgwickEvent(this, map);
 				break;
 			}
 		}
 	}
 }
 
-void doTraderEvent(CRules@ this)
+void doTraderEvent(CRules@ this, CMap@ map)
 {
-	CBlob@[] zombies;
-	getBlobsByTag("undead", @zombies);
-	if (zombies.length > 10) return; //don't spawn trader if there is too many zombies
+	if (this.get_u16("undead count") > 10) return; //don't spawn trader if there is too many zombies
 	
 	//find a proper spawning position near an elegible player
 	Vec2f[] spawns;
@@ -86,18 +68,53 @@ void doTraderEvent(CRules@ this)
 		if (player is null) continue;
 		
 		CBlob@ playerBlob = player.getBlob();
-		if (playerBlob is null) continue;
+		if (playerBlob is null || playerBlob.hasTag("undead")) continue;
 		
-		if (!playerBlob.hasTag("undead"))
-			spawns.push_back(playerBlob.getPosition());
+		spawns.push_back(playerBlob.getPosition());
 	}
 	
 	if (spawns.length <= 0) return;
 	
-	//timed global message
 	this.SetGlobalMessage("A flying merchant has arrived!");
 	this.set_u8("message_timer", 6);
 	
 	Vec2f spawn(spawns[XORRandom(spawns.length)].x + 200 - XORRandom(400), 0);
+	
+	if (map.isTileSolid(map.getTile(spawn)))
+	{
+		//in case of roof
+		Vec2f[] markers;
+		if (map.getMarkers("zombie_spawn", markers))
+			spawn = markers[XORRandom(markers.length)];
+	}
+	
 	server_CreateBlob("traderbomber", 0, spawn);
+}
+
+void doSedgwickEvent(CRules@ this, CMap@ map)
+{
+	if ((this.get_u8("day_number")+1) % 5 != 0) return; //night before every fifth day
+	
+	Vec2f[] spawns;
+	if (!map.getMarkers("zombie_spawn", spawns)) //no markers? spawn on someone
+	{
+		const u8 playersLength = getPlayerCount();
+		for (u8 i = 0; i < playersLength; ++i)
+		{
+			CPlayer@ player = getPlayer(i);
+			if (player is null) continue;
+			
+			CBlob@ playerBlob = player.getBlob();
+			if (playerBlob is null) continue;
+			
+			spawns.push_back(playerBlob.getPosition());
+		}
+		
+		if (spawns.length <= 0) return;
+	}
+	
+	this.SetGlobalMessage("Sedgwick the necromancer has appeared!");
+	this.set_u8("message_timer", 6);
+	
+	server_CreateBlob("sedgwick", -1, spawns[XORRandom(spawns.length)]);
 }
