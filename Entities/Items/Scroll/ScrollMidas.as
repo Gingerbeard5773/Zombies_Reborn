@@ -37,7 +37,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				TileType t = map.getTile(tpos).type;
 				if (map.isTileStone(t) || map.isTileThickStone(t))
 				{
-					if (isServer() && XORRandom(2) == 0)
+					if (isServer())
 					{
 						map.server_SetTile(tpos, CMap::tile_gold);
 					}
