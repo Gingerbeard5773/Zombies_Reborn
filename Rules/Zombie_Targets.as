@@ -55,5 +55,5 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 
 const bool canTarget(CBlob@ blob)
 {
-	return (blob.hasTag("player") || blob.hasTag("vehicle"));
+	return blob.hasTag("player");
 }
