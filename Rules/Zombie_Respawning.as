@@ -102,7 +102,7 @@ CBlob@ spawnPlayer(CRules@ this, CPlayer@ player)
 		}
 
 		Vec2f spawnPos = getSpawnLocation();
-		CBlob@ newBlob = server_CreateBlob(startClass, player.getTeamNum(), spawnPos);
+		CBlob@ newBlob = server_CreateBlob(startClass, 0, spawnPos);
 		newBlob.server_SetPlayer(player);
 		
 		//give the blob a parachute if spawning at roof
