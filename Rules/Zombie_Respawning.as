@@ -8,6 +8,7 @@ const string startClass = "builder";  //the class that players will spawn as
 const u32 spawnTimeLeniency = 30;     //players can insta-respawn for this many seconds after dawn comes
 const u32 spawnTimeMargin = 8;        //max amount of random seconds we can give to respawns
 const u32 spawnTimeSeconds = 3;       //respawn duration during insta-respawn seconds
+const u16 dayRespawnUndeadMax = 5;    //amount of zombies allowed before we disable full day insta respawns
 
 void onInit(CRules@ this)
 {
@@ -23,10 +24,7 @@ void onRestart(CRules@ this)
 	const u8 plyCount = getPlayerCount();
 	for (u8 i = 0; i < plyCount; i++)
 	{
-		CPlayer@ player = getPlayer(i);
-		Respawn r(player.getUsername(), gameTime);
-		this.push("respawns", r);
-		syncRespawnTime(this, player, gameTime);
+		addRespawn(this, getPlayer(i), gameTime);
 	}
 }
 
@@ -41,13 +39,32 @@ void onTick(CRules@ this)
 		for (u8 i = 0; i < respawns.length; i++)
 		{
 			Respawn@ r = respawns[i];
-			if (r.timeStarted <= gametime)
-			{
-				spawnPlayer(this, getPlayerByUsername(r.username));
-				respawns.erase(i);
-				i = 0;
-			}
+			if (r.timeStarted > gametime) continue;
+			
+			spawnPlayer(this, getPlayerByUsername(r.username));
+			respawns.erase(i);
+			i = 0;
 		}
+	}
+}
+
+void onBlobDie(CRules@ this, CBlob@ blob)
+{
+	//recheck if we can skip wait times
+	if (!blob.hasTag("undead") || this.get_u16("undead count") > dayRespawnUndeadMax) return;
+	
+	Respawn[]@ respawns;
+	if (!this.get("respawns", @respawns) || respawns.length <= 0) return;
+	
+	const int timeTillRespawn = getTimeTillRespawn(this);
+	if (timeTillRespawn > spawnTimeSeconds * getTicksASecond() + getGameTime()) return;
+	
+	const u8 respawnLength = respawns.length;
+	for (u8 i = 0; i < respawnLength; i++)
+	{
+		Respawn@ r = respawns[i];
+		r.timeStarted = timeTillRespawn;
+		syncRespawnTime(this, getPlayerByUsername(r.username), timeTillRespawn);
 	}
 }
 
@@ -55,19 +72,15 @@ void onPlayerRequestSpawn(CRules@ this, CPlayer@ player)
 {
 	if (!isRespawnAdded(this, player.getUsername()))
 	{
-		const u32 gametime = getGameTime();
-		const u32 day_cycle = this.daycycle_speed * 60;
-		
-		const u32 timeElapsed = (gametime / getTicksASecond()) % day_cycle;
-		const s32 timeTillDawn = (day_cycle - timeElapsed + XORRandom(spawnTimeMargin)) * getTicksASecond();
-		
-		const bool skipWait = timeElapsed <= spawnTimeLeniency || this.isWarmup();
-		const s32 timeTillRespawn = skipWait ? spawnTimeSeconds * getTicksASecond() : timeTillDawn;
-		
-		Respawn r(player.getUsername(), timeTillRespawn + gametime);
-		this.push("respawns", r);
-		syncRespawnTime(this, player, timeTillRespawn + gametime);
+		addRespawn(this, player, getTimeTillRespawn(this));
 	}
+}
+
+void addRespawn(CRules@ this, CPlayer@ player, const int&in timeTillRespawn)
+{
+	Respawn r(player.getUsername(), timeTillRespawn);
+	this.push("respawns", r);
+	syncRespawnTime(this, player, timeTillRespawn);
 }
 
 const bool isRespawnAdded(CRules@ this, const string&in username)
@@ -84,6 +97,29 @@ const bool isRespawnAdded(CRules@ this, const string&in username)
 		}
 	}
 	return false;
+}
+
+const int getTimeTillRespawn(CRules@ this)
+{
+	const u32 gametime = getGameTime();
+	const u32 day_cycle = this.daycycle_speed * 60;
+	
+	const u32 timeElapsed = (gametime / getTicksASecond()) % day_cycle;
+	const int timeTillDawn = (day_cycle - timeElapsed + XORRandom(spawnTimeMargin)) * getTicksASecond();
+	
+	const bool skipWait = skipRespawnWait(this, timeElapsed);
+	const int timeTillRespawn = skipWait ? spawnTimeSeconds * getTicksASecond() : timeTillDawn;
+	
+	return timeTillRespawn + gametime;
+}
+
+const bool skipRespawnWait(CRules@ this, const u32&in timeElapsed)
+{
+	CMap@ map = getMap();
+	return
+		(this.isWarmup()) ||
+		(timeElapsed <= spawnTimeLeniency) ||
+		(this.get_u16("undead count") <= dayRespawnUndeadMax && map.getDayTime() > 0.2f && map.getDayTime() < 0.7f);
 }
 
 CBlob@ spawnPlayer(CRules@ this, CPlayer@ player)
