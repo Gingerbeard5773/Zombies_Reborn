@@ -81,14 +81,19 @@ namespace ZombieDesc
 	title               = Translate("ZOMBIE FORTRESS"),
 	tips                = Translate("TIPS"),
 	mod_version         = Translate("Version"),
-	game_mode           = Translate("Build a great castle and endure the masses of zombies!"),
-	change_page         = Translate("Press the arrow buttons to switch between pages."),
-	tip_gateways        = Translate("When night arrives, the undead will appear at these gateways."),
-	tip_zombification   = Translate("A dead body will transform into a zombie after some time."),
-	tip_water_wraith    = Translate("Use water to temporarily stop a burning wraith."),
-	tip_headshot        = Translate("Head shots deal additional damage."),
-	tip_merchant        = Translate("If there is not many zombies, a trader will visit at mid-day.");
+	change_page         = Translate("Press the arrow buttons to switch between pages.");
 }
+
+const string[] page_tips =
+{
+	Translate("Build a great castle and endure the masses of zombies!"),
+	Translate("When night arrives, the undead will appear at these gateways."),
+	Translate("A dead body will transform into a zombie after some time."),
+	Translate("Use water to temporarily stop a burning wraith."),
+	Translate("Head shots deal additional damage."),
+	Translate("If there is not many zombies, a trader will visit at mid-day."),
+	Translate("Respawns are instant if there is no zombies during day light.")
+};
 
 const string[] teams =
 {

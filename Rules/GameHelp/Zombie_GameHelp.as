@@ -7,9 +7,7 @@
 bool mousePress = false;
 u8 page = 0;
 
-const u8 pages = 6;
-
-const int KEY_MISC = getControls().getActionKeyKey(AK_MENU);
+const u8 pages = 7;
 
 void onInit(CRules@ this)
 {
@@ -25,7 +23,7 @@ void onTick(CRules@ this)
 	if (player is null) return;
 	
 	CControls@ controls = getControls();
-	if (controls.isKeyJustPressed(KEY_MISC))
+	if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_MENU)))
 	{
 		this.set_bool("show_gamehelp", !this.get_bool("show_gamehelp"));
 	}
@@ -67,34 +65,28 @@ void managePages(Vec2f&in imageSize, Vec2f&in center)
 {
 	switch(page)
 	{
-		case 0: page1(imageSize, center);
+		case 0: drawPage(imageSize, center, ZombieDesc::title, Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
 			break;
-		case 1: drawTipPage(imageSize, center, "Page2.png", ZombieDesc::tip_gateways, Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3));
+		case 1: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3));
 			break;
-		case 2: drawTipPage(imageSize, center, "Page3.png", ZombieDesc::tip_zombification, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+		case 2: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
 			break;
-		case 3: drawTipPage(imageSize, center, "Page4.png", ZombieDesc::tip_water_wraith, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+		case 3: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
 			break;
-		case 4: drawTipPage(imageSize, center, "Page5.png", ZombieDesc::tip_headshot, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+		case 4: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
 			break;
-		case 5: drawTipPage(imageSize, center, "Page6.png", ZombieDesc::tip_merchant, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3));
+		case 5: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3));
+			break;
+		case 6: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3));
 			break;
 	};
 }
 
-void page1(Vec2f&in imageSize, Vec2f&in center)
+void drawPage(Vec2f&in imageSize, Vec2f&in center, const string&in header, Vec2f&in imagePos)
 {
-	GUI::DrawIcon("Page1.png", Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
-	drawTextWithFont(ZombieDesc::title, center - Vec2f(0, imageSize.y - 50), "big font");
-	drawTextWithFont(ZombieDesc::game_mode, center - Vec2f(0, imageSize.y - 140), "medium font");
-	//drawTextWithFont(ZombieDesc::change_page, center - Vec2f(0, imageSize.y - 180), "medium font");
-}
-
-void drawTipPage(Vec2f&in imageSize, Vec2f&in center, const string&in pagefile, const string&in tip, Vec2f&in imagePos)
-{
-	GUI::DrawIcon(pagefile, imagePos);
-	drawTextWithFont(ZombieDesc::tips, center - Vec2f(0, imageSize.y - 50), "big font");
-	drawTextWithFont(tip, center - Vec2f(0, imageSize.y - 140), "medium font");
+	GUI::DrawIcon("Page"+(page+1)+".png", imagePos);
+	drawTextWithFont(header, center - Vec2f(0, imageSize.y - 50), "big font");
+	drawTextWithFont(page_tips[page], center - Vec2f(0, imageSize.y - 140), "medium font");
 }
 
 void drawTextWithFont(const string&in text, const Vec2f&in pos, const string&in font)
