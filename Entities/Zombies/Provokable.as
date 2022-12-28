@@ -2,10 +2,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (isServer())
 	{
-		if (damage > 0.0f && hitterBlob !is null && !hitterBlob.hasTag("undead"))
+		if (damage > 0.0f && !hitterBlob.hasTag("undead"))
 		{
 			//find damage player blob from projectiles
-			CPlayer@ owner = hitterBlob.getDamageOwnerPlayer();
+			/*CPlayer@ owner = hitterBlob.getDamageOwnerPlayer();
 			if (hitterBlob.hasTag("projectile") && owner !is null)
 			{
 				CBlob@ damager = owner.getBlob();
@@ -14,9 +14,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 					this.getBrain().SetTarget(damager);
 					return damage;
 				}
-			}
+			}*/
 			
-			this.getBrain().SetTarget(hitterBlob);
+			if (hitterBlob.hasTag("flesh"))
+			{
+				this.getBrain().SetTarget(hitterBlob);
+			}
 		}
 	}
 	return damage;
