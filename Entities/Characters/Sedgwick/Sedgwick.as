@@ -34,6 +34,8 @@ void onInit(CBlob@ this)
 	this.SetLight(false);
 	this.SetLightRadius(75.0f);
 	this.SetLightColor(SColor(255, 150, 240, 171));
+	
+	this.addCommandID("cast spell");
 
 	server_SetSpell(this, XORRandom(spell_end));
 }
@@ -42,9 +44,7 @@ void onTick(CBlob@ this)
 {
 	if (this.getTickSinceCreated() < 5*30) return;
 	
-	const u8 spell = this.get_u8("spell num");
-	
-	this.setKeyPressed(key_action1, spell != spell_end); //for anim
+	this.setKeyPressed(key_action1, this.getShape().isStatic() && this.getTimeToDie() < 0); //for anim
 	
 	if (getGameTime() % 30 == 0)
 	{
@@ -71,7 +71,22 @@ void onTick(CBlob@ this)
 			this.getShape().SetStatic(true);
 		}
 		
-		const u8 countdown = this.get_u8("spell countdown");
+		if (isServer())
+		{
+			CBitStream params;
+			params.write_u8(this.get_u8("spell num"));
+			params.write_u8(this.get_u8("spell countdown"));
+			this.SendCommand(this.getCommandID("cast spell"), params);
+		}
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("cast spell"))
+	{
+		const u8 spell = params.read_u8();
+		const u8 countdown = params.read_u8();
 		switch(spell)
 		{
 			case spell_skeleton:  SpellSkeletonRain(this, countdown);  break;
@@ -81,7 +96,10 @@ void onTick(CBlob@ this)
 			case spell_end:       SedgwickDeparture(this, countdown);  break;
 		}
 		
-		this.set_u8("spell countdown", Maths::Max(this.get_u8("spell countdown") - 1, 0));
+		if (isServer())
+		{
+			this.set_u8("spell countdown", Maths::Max(this.get_u8("spell countdown") - 1, 0));
+		}
 	}
 }
 
@@ -365,8 +383,6 @@ void server_SetSpell(CBlob@ this, const u8&in spell_num)
 	
 	this.set_u8("spell num", spell_num);
 	this.set_u8("spell countdown", spell_countdown[spell_num]);
-	this.Sync("spell num", true);
-	this.Sync("spell countdown", true);
 	
 	if (spell_num == spell_portal)
 	{
@@ -378,9 +394,9 @@ void SedgwickDeparture(CBlob@ this, const u8&in countdown)
 {
 	this.setKeyPressed(key_action1, false);
 	this.SetLight(false);
-	if (countdown == 0 && isServer())
+	if (this.getTimeToDie() < 0 && isServer())
 	{
-		this.server_Die();
+		this.server_SetTimeToDie(spell_countdown[spell_end]);
 	}
 }
 

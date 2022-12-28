@@ -75,8 +75,12 @@ void startFuse(CBlob@ this)
 {
 	if (!this.hasTag("exploding"))
 	{
-		this.Tag("enraged");
 		this.Tag("exploding");
+		if (isServer())
+		{
+			this.Tag("enraged");
+			this.Sync("enraged", true);
+		}
 		
 		//start kill timer
 		this.server_SetTimeToDie(TIME_TO_EXPLODE);
@@ -117,13 +121,18 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		//reset if we got watered
 		
-		this.getBrain().SetTarget(null);
-		this.set_u8("brain_delay", 250);
-		this.Untag("enraged");
-		this.Untag("exploding");
+		if (isServer())
+		{
+			this.getBrain().SetTarget(null);
+			this.set_u8("brain_delay", 250);
+			this.Untag("enraged");
+			this.Sync("enraged", true);
+			
+			//stop kill timer
+			this.server_SetTimeToDie(-1);
+		}
 		
-		//stop kill timer
-		this.server_SetTimeToDie(-1);
+		this.Untag("exploding");
 		
 		this.SetLight(false);
 		
