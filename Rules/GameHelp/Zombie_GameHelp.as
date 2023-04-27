@@ -7,7 +7,7 @@
 bool mousePress = false;
 u8 page = 0;
 
-const u8 pages = 7;
+const u8 pages = 6;
 
 void onInit(CRules@ this)
 {
@@ -67,26 +67,26 @@ void managePages(Vec2f&in imageSize, Vec2f&in center)
 	{
 		case 0: drawPage(imageSize, center, ZombieDesc::title, Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
 			break;
-		case 1: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3));
+		//case 1: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3), 1);
+			//break;
+		case 1: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 2);
 			break;
-		case 2: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+		case 2: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 3);
 			break;
-		case 3: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+		case 3: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 4);
 			break;
-		case 4: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3));
+		case 4: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 5);
 			break;
-		case 5: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3));
-			break;
-		case 6: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3));
+		case 5: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 6);
 			break;
 	};
 }
 
-void drawPage(Vec2f&in imageSize, Vec2f&in center, const string&in header, Vec2f&in imagePos)
+void drawPage(Vec2f&in imageSize, Vec2f&in center, const string&in header, Vec2f&in imagePos, const u8&in pageNum = 0)
 {
-	GUI::DrawIcon("Page"+(page+1)+".png", imagePos);
+	GUI::DrawIcon("Page"+(pageNum+1)+".png", imagePos);
 	drawTextWithFont(header, center - Vec2f(0, imageSize.y - 50), "big font");
-	drawTextWithFont(page_tips[page], center - Vec2f(0, imageSize.y - 140), "medium font");
+	drawTextWithFont(page_tips[pageNum], center - Vec2f(0, imageSize.y - 140), "medium font");
 }
 
 void drawTextWithFont(const string&in text, const Vec2f&in pos, const string&in font)
