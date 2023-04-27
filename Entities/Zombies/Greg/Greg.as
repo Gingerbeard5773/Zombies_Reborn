@@ -11,6 +11,7 @@ void onInit(CBlob@ this)
 	this.set_u32("greg_next_grab", 0);
 	
 	this.getSprite().SetEmitSound("Wings.ogg");
+	this.getSprite().SetEmitSoundVolume(0.5f);
 	this.getSprite().SetEmitSoundPaused(false);
 	
 	this.getSprite().PlayRandomSound("/GregCry");
