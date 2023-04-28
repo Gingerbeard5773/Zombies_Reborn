@@ -31,7 +31,7 @@ u8 getHealingAmount(CBlob@ food)
 void Heal(CBlob@ this, CBlob@ food)
 {
 	const bool exists = getBlobByNetworkID(food.getNetworkID()) !is null;
-	if (isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() && !food.hasTag("healed") && exists)
+	if (isServer() && this.hasTag("player") && !this.hasTag("undead") && this.getHealth() < this.getInitialHealth() && !food.hasTag("healed") && exists)
 	{
 		const u8 heal_amount = getHealingAmount(food);
 		if (heal_amount > 0)
