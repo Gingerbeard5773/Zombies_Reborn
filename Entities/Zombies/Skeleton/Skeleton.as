@@ -6,7 +6,7 @@ void onInit(CBlob@ this)
 {
 	UndeadAttackVars attackVars;
 	attackVars.frequency = 30;
-	attackVars.map_factor = 40;
+	attackVars.map_factor = 45;
 	attackVars.damage = 0.5f;
 	attackVars.sound = "SkeletonAttack";
 	this.set("attackVars", attackVars);

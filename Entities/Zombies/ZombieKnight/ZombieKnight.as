@@ -7,7 +7,7 @@ void onInit(CBlob@ this)
 {
 	UndeadAttackVars attackVars;
 	attackVars.frequency = 60;
-	attackVars.map_factor = 15;
+	attackVars.map_factor = 27;
 	attackVars.damage = 1.25f;
 	attackVars.arc_length = 1.0f;
 	attackVars.sound = "ZombieKnightAttack";
