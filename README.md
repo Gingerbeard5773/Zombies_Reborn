@@ -15,4 +15,5 @@ https://discord.gg/V29BBeba3C
   <li><b>Gingerbeard</b> - Creator</li>
   <li><b>Aphelion</b> - Scripting</li>
   <li><b>GoldenGuy</b> - Scripting</li>
+  <li><b>sinecura</b> - Spriting, Mapping</li>
 </ul>
