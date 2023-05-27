@@ -28,7 +28,7 @@ void onTick(CRules@ this)
 	CBlob@ blob = player.getBlob();
 	if (blob is null) return;
 	
-	const string name = blob.getName();
+	const string name = getRecieverName(blob);
 	if (getMatsTime(this, name) > gameTime || !canReceiveMats(name)) return;
 
 	CBlob@[] overlapping;
@@ -38,7 +38,9 @@ void onTick(CRules@ this)
 		for (u8 i = 0; i < overlappingLength; ++i)
 		{
 			const string overlapped = overlapping[i].getName();
-			if ((overlapped == "buildershop" && name == "builder") || (overlapped == "archershop" && name == "archer"))
+			if ((overlapped == "buildershop" && name == "builder") ||
+				(overlapped == "archershop" && name == "archer") ||
+				(overlapped == "barracks"))
 			{
 				client_GiveMats(this, player, blob);
 			}
@@ -51,11 +53,21 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
 	if (player !is null && player.isMyPlayer() && blob !is null)
 	{
-		const string name = blob.getName();
+		const string name = getRecieverName(blob);
 		if (getMatsTime(this, name) > getGameTime() || !canReceiveMats(name)) return;
 		
 		client_GiveMats(this, player, blob, true);
 	}
+}
+
+const string getRecieverName(CBlob@ blob)
+{
+	const string name = blob.getName();
+	
+	if (name == "crossbowman") //use archer spawnmats for crossbow
+		return "archer";
+	
+	return name;
 }
 
 const bool canReceiveMats(const string&in name)
@@ -70,7 +82,7 @@ const u32 getMatsTime(CRules@ this, const string&in name)
 
 void client_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob, const bool&in checkTimeAlive = false)
 {
-	this.set_u32(blob.getName() + timer_prop, getGameTime() + (materials_wait * getTicksASecond()));
+	this.set_u32(getRecieverName(blob) + timer_prop, getGameTime() + (materials_wait * getTicksASecond()));
 	
 	CBitStream params;
 	params.write_u16(player.getNetworkID());
@@ -81,7 +93,7 @@ void client_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob, const bool&in c
 
 void server_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob)
 {
-	const string name = blob.getName();
+	const string name = getRecieverName(blob);
 	if (name == "builder")
 	{
 		if (this.isWarmup())
@@ -154,7 +166,7 @@ void onRender(CRules@ this)
 	if (b !is null)
 	{
 		const u32 gameTime = getGameTime();
-		const string name = b.getName();
+		const string name = getRecieverName(b);
 		const s32 next_items = getMatsTime(this, name);
 		if (next_items > gameTime)
 		{

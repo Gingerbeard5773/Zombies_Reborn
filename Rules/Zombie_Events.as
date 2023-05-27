@@ -49,6 +49,7 @@ void checkHourChange(CRules@ this)
 			case 10: //midnight
 			{
 				doSedgwickEvent(this, map);
+				doSkelepedeEvent(this, map);
 				break;
 			}
 		}
@@ -117,4 +118,29 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 	this.set_u8("message_timer", 6);
 	
 	server_CreateBlob("sedgwick", -1, spawns[XORRandom(spawns.length)]);
+}
+
+void doSkelepedeEvent(CRules@ this, CMap@ map)
+{
+	if (this.get_u8("day_number") != this.get_u8("skelepede day")) return;
+
+	Vec2f dim = map.getMapDimensions();
+	u8 survivorsCount = 0;
+	const u8 playersLength = getPlayerCount();
+	for (u8 i = 0; i < playersLength; ++i)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
+		
+		CBlob@ playerBlob = player.getBlob();
+		if (playerBlob is null || playerBlob.hasTag("undead")) continue;
+
+		survivorsCount++;
+	}
+	survivorsCount /= 4;
+	for (u8 i = 0; i < 3 + survivorsCount; ++i)
+	{
+		Vec2f spawn(XORRandom(dim.x), dim.y + 50 + XORRandom(600));
+		server_CreateBlob("skelepede", -1, spawn);
+	}
 }

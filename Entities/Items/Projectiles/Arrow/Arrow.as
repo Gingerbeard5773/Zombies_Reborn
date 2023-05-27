@@ -547,7 +547,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		}
 		
 		//stick into "map" blobs
-		if (hitBlob.getShape().isStatic())
+		if (hitBlob.getShape().isStatic() && !hitBlob.hasTag("skelepede"))
 		{
 			ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
 		}

@@ -38,7 +38,11 @@ void Reset(CRules@ this)
 	this.set_u8("message_timer", 1);
 	this.set_u8("day_number", 1);
 	this.Sync("day_number", true);
-	
+
+	//setup skelepede night event
+	const u8[] skelepede_possible_days = {6, 7, 8, 11, 12}; 
+	this.set_u8("skelepede day", skelepede_possible_days[XORRandom(skelepede_possible_days.length)]);
+
 	seconds_till_nextmap = nextmap_seconds;
 	this.SetCurrentState(WARMUP);
 }
@@ -63,7 +67,7 @@ void onTick(CRules@ this)
 	
 	if (gameTime % spawnRate == 0)
 	{
-		spawnZombie(this, map);
+		spawnZombie(this, map, dayNumber);
 	}
 	
 	if (gameTime % getTicksASecond() == 0) //once every second
@@ -77,10 +81,12 @@ void onTick(CRules@ this)
 }
 
 // Spawn various zombie blobs on the map
-void spawnZombie(CRules@ this, CMap@ map)
+void spawnZombie(CRules@ this, CMap@ map, const u8&in dayNumber)
 {
 	if (map.getDayTime() > 0.8f || map.getDayTime() < 0.1f)
 	{
+		if (dayNumber == this.get_u8("skelepede day")) return;
+
 		if (maximum_zombies != 999 && this.get_u16("undead count") >= maximum_zombies) return;
 		
 		const u32 r = XORRandom(100);
