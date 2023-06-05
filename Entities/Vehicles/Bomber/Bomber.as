@@ -1,5 +1,6 @@
 #include "VehicleCommon.as"
 #include "Hitters.as"
+#include "ThrowCommon.as"
 
 // Boat logic
 
@@ -33,6 +34,8 @@ void onTick(CBlob@ this)
 	{
 		if (this.getHealth() > 1.0f)
 		{
+			HandleBombing(this);
+
 			VehicleInfo@ v;
 			if (!this.get("VehicleInfo", @v)) return;
 			
@@ -61,6 +64,48 @@ void onTick(CBlob@ this)
 				if (getGameTime() % 30 == 0)
 					this.server_Hit(this, this.getPosition(), Vec2f(0, 0), 0.05f, 0, true);
 			}
+		}
+	}
+}
+
+void HandleBombing(CBlob@ this)
+{
+	AttachmentPoint@ driverSeat = this.getAttachments().getAttachmentPointByName("FLYER");
+	if (driverSeat is null) return;
+	
+	CBlob@ flyer = driverSeat.getOccupied();
+	if (flyer is null) return;
+
+	if (driverSeat.isKeyPressed(key_action3) && this.get_u32("lastDropTime") < getGameTime())
+	{
+		CInventory@ inv = this.getInventory();
+		if (inv !is null && inv.getItemsCount() > 0)
+		{
+			this.getSprite().PlaySound("bridge_open", 1.0f, 1.0f);
+
+			if (isServer())
+			{
+				CBlob@ item = inv.getItem(0);
+				if (item.getName() == "mat_bombs")
+				{
+					CBlob@ blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
+					if (blob !is null)
+					{
+						item.server_Die();
+					}
+				}
+				else
+				{
+					this.server_PutOutInventory(item);
+					item.setPosition(this.getPosition() + Vec2f(0, 12));
+					if (item.hasTag("activatable"))
+					{
+						server_ActivateCommand(this, item);
+					}
+				}
+			}
+
+			this.set_u32("lastDropTime", getGameTime() + 30);
 		}
 	}
 }
