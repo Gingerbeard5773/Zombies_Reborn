@@ -187,9 +187,35 @@ void onTick(CBlob@ this)
 	}
 }
 
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
+{
+	if (blob is null) return;
+
+	CraftItem@ item = items[this.get_u8("crafting")];
+	CBitStream bs = item.reqs;
+	bs.ResetBitIndex();
+	string name;
+
+	while (!bs.isBufferEnd())
+	{
+		ReadRequirement(bs, "", name, "", 0);
+
+		if (blob.getName() == name)
+		{
+			this.server_PutInInventory(blob);
+			break;
+		}
+	}
+}
+
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
 	return forBlob.getTeamNum() == this.getTeamNum() && forBlob.isOverlapping(this);
+}
+
+void onAddToInventory(CBlob@ this, CBlob@ blob)
+{
+	this.getSprite().PlaySound("/PopIn");
 }
 
 // SPRITE

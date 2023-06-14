@@ -87,7 +87,7 @@ void convertToFlour(CBlob@ mill, CBlob@ grain)
 		flour.Init();
 		flour.server_SetQuantity(10+XORRandom(7));
 		
-		if (!mill.server_PutInInventory(flour))
+		//if (!mill.server_PutInInventory(flour))
 			flour.setPosition(mill.getPosition() + Vec2f(8, 24));
 	}
 	
