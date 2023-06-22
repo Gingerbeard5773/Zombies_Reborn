@@ -2,6 +2,8 @@
 
 #define SERVER_ONLY
 
+#include "ZombieSpawnPos.as";
+
 u8 warmup_days = 2;          //days of warmup-time we give to players
 u8 days_to_survive = 15;     //days players must survive to win, as well as the power creep of zombies
 f32 game_difficulty = 2.5f;  //zombie spawnrate multiplier
@@ -100,30 +102,6 @@ void spawnZombie(CRules@ this, CMap@ map, const u8&in dayNumber)
 		
 		server_CreateBlob(blobname, -1, getZombieSpawnPos(map));
 	}
-}
-
-// Decide where zombies spawn
-Vec2f getZombieSpawnPos(CMap@ map)
-{
-	Vec2f[] spawns;
-	map.getMarkers("zombie_spawn", spawns);
-	
-	if (spawns.length <= 0)
-	{
-		Vec2f dim = map.getMapDimensions();
-		const u32 margin = 10;
-		const Vec2f offset = Vec2f(0, -8);
-		
-		Vec2f side;
-		
-		map.rayCastSolid(Vec2f(margin, 0.0f), Vec2f(margin, dim.y), side);
-		spawns.push_back(side + offset);
-		
-		map.rayCastSolid(Vec2f(dim.x-margin, 0.0f), Vec2f(dim.x-margin, dim.y), side);
-		spawns.push_back(side + offset);
-	}
-	
-	return spawns[XORRandom(spawns.length)];
 }
 
 // Protocols when the day changes
