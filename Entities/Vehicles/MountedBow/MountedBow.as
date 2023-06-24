@@ -87,8 +87,18 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 
 	if (gunner !is null && gunner.getOccupied() !is null)
 	{
+		CBlob@ operator = gunner.getOccupied();
 		gunner.offsetZ = 5.0f;
-		Vec2f aim_vec = gunner.getPosition() - gunner.getAimPos();
+		Vec2f aimpos = operator.getPlayer() is null ? operator.getAimPos() : gunner.getAimPos();
+		Vec2f aim_vec = gunner.getPosition() - aimpos;
+		
+		if (isServer() && operator.getPlayer() is null && operator.isKeyPressed(key_action1) && canFireIgnoreFiring(this, v))
+		{
+			CBitStream fireParams;
+			fireParams.write_u16(operator.getNetworkID());
+			fireParams.write_u8(0);
+			this.SendCommand(this.getCommandID("fire"), fireParams);
+		}
 
 		if (this.isAttached())
 		{

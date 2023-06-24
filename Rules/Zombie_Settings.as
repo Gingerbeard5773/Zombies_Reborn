@@ -29,6 +29,7 @@ void AddIcons()
 	AddIconToken("$change_class$", "/GUI/InteractionIcons.png", Vec2f(32, 32), 12, 2);
 	AddIconToken("$heart_full$", "/GUI/HeartNBubble.png", Vec2f(12, 12), 1);
 	AddIconToken("$heart_half$", "/GUI/HeartNBubble.png", Vec2f(12, 12), 3);
+	AddIconToken("$worker_migrant$", "MigrantMale.png", Vec2f(32, 32), 3, 0);
 }
 
 void AddFonts()

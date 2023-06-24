@@ -1,5 +1,8 @@
 // Zombie Fortress game events
 
+#include "MigrantCommon.as";
+#include "ZombieSpawnPos.as";
+
 const u8 GAME_WON = 5;
 f32 lastDayHour;
 
@@ -41,6 +44,11 @@ void checkHourChange(CRules@ this)
 		lastDayHour = dayHour;
 		switch(dayHour)
 		{
+			case 3:
+			{
+				doMigrantEvent(this, map);
+				break;
+			}
 			case 5: //mid day
 			{
 				doTraderEvent(this, map);
@@ -54,6 +62,28 @@ void checkHourChange(CRules@ this)
 			}
 		}
 	}
+}
+
+void doMigrantEvent(CRules@ this, CMap@ map)
+{
+	//if (this.get_u8("day_number") % 2 != 0) return; //every other day
+
+	if (this.get_u16("undead count") > 15) return; //don't if too many zombies
+	
+	CBlob@[] migrants;
+	getBlobsByTag("migrant", @migrants);
+	if (migrants.length > 15) return; //don't if we already have enough migrants
+
+	Vec2f spawn = getZombieSpawnPos(map);
+	const u8 amount = 1 + XORRandom(3);
+	for (u8 i = 0; i < amount; ++i)
+	{
+		Vec2f offset(XORRandom(64) - 32, 0);
+		CreateMigant(spawn + offset, 0);
+	}
+
+	this.SetGlobalMessage(amount == 1 ? "A refugee has arrived!": "Refugees have arrived!");
+	this.set_u8("message_timer", 6);
 }
 
 void doTraderEvent(CRules@ this, CMap@ map)

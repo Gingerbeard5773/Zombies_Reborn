@@ -7,7 +7,7 @@
 bool mousePress = false;
 u8 page = 0;
 
-const u8 pages = 6;
+const u8 pages = 7;
 
 void onInit(CRules@ this)
 {
@@ -78,6 +78,8 @@ void managePages(Vec2f&in imageSize, Vec2f&in center)
 		case 4: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 5);
 			break;
 		case 5: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 6);
+			break;
+		case 6: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 200, center.y - imageSize.y/3), 7);
 			break;
 	};
 }

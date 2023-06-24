@@ -33,6 +33,8 @@ namespace ZombieDesc
 	windmill            = Translate("Wind Mill\nA grain mill for producing flour."),
 	kitchen             = Translate("Kitchen\nCreate various foods for healing."),
 	nursery             = Translate("Nursery\nA plant nursery for agricultural purposes."),
+	barracks            = Translate("Barracks\nChange class or obtain weaponry."),
+	factory             = Translate("A generic factory for various items. Requires a free worker to produce items."),
 	
 	bread               = Translate("Bread\nDelicious crunchy whole-wheat bread.\n$heart_full$$heart_half$"),
 	cake                = Translate("Cake\nFluffy cake made from egg and wheat.\n$heart_full$$heart_full$$heart_full$"),
@@ -92,7 +94,8 @@ const string[] page_tips =
 	Translate("Use water to temporarily stop a burning wraith."),
 	Translate("Head shots deal additional damage."),
 	Translate("If there is not many zombies, a trader will visit at mid-day."),
-	Translate("Respawns are instant if there is no zombies during day light.")
+	Translate("Respawns are instant if there is no zombies during day light."),
+	Translate("Migrants will come every other day if the undead population is low.")
 };
 
 const string[] teams =
