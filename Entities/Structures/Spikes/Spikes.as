@@ -264,7 +264,7 @@ void onTick(CBlob@ this)
 
 bool canStab(CBlob@ b)
 {
-	return b.hasTag("flesh");
+	return b.hasTag("flesh") && b.getName() != "chicken";
 }
 
 //physics logic
