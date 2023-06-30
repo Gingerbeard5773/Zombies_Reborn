@@ -30,7 +30,8 @@ void onTick(CBrain@ this)
 		CBlob@ attacker = getAttacker(this, blob);
 		if (attacker !is null)
 		{
-			DitchOwner(blob);
+			if (!getMap().rayCastSolid(blob.getPosition(), attacker.getPosition()))
+				DitchOwner(blob);
 			SetStrategy(blob, Strategy::runaway);
 		}
 
@@ -73,7 +74,8 @@ void DitchOwner(CBlob@ blob)
 	CBlob@ owner = getOwner(blob);
 	if (owner !is null)
 	{
-		returnWorker(owner, getHallsFor(owner, BASE_RADIUS), blob);
+		detachWorker(owner, blob);
+		setWorker(owner, null);
 	}
 	ResetWorker(blob);   //unstatic
 }
@@ -322,6 +324,8 @@ bool JustGo(CBrain@ this, CBlob@ blob, Vec2f &in destination)
 bool Runaway(CBrain@ this, CBlob@ blob, CBlob@ attacker)
 {
 	if (attacker is null || attacker.hasTag("dead")) return false;
+	
+	if (getMap().rayCastSolid(blob.getPosition(), attacker.getPosition())) return false;
 
 	Vec2f pos = blob.getPosition();
 	Vec2f hispos = attacker.getPosition();
