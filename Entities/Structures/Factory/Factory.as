@@ -41,6 +41,7 @@ void onInit(CBlob@ this)
 
 	this.set_u8("population usage", 1);
 	this.set_Vec2f("production offset", Vec2f(-8.0f, 0.0f));
+	this.set_s32("gold building amount", 0);
 	
 	this.getCurrentScript().tickFrequency = 90;
 }
@@ -205,6 +206,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			if (caller.getInventory().getCount("mat_gold") < gold_cost) return;
 			caller.TakeBlob("mat_gold", gold_cost);
+			
+			this.set_s32("gold building amount", gold_cost);
 
 			if (this.get_u8("migrants count") > 0 || this.hasTag(worker_tag))
 			{
