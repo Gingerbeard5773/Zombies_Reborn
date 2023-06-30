@@ -49,7 +49,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				if (b.hasTag("dead") && !b.hasTag("undead"))
 				{
 					CPlayer@ player = getPlayerByUsername(b.get_string("player_username")); //RunnerDeath.as
-					if (player is null || player.getBlob() !is null) continue;
+					if ((player is null || player.getBlob() !is null) && b.getName() != "migrant") continue;
 					
 					RevivePlayer(player, b);
 					this.server_Die();
@@ -64,10 +64,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 void RevivePlayer(CPlayer@ player, CBlob@ b)
 {
 	Vec2f bpos = b.getPosition();
-	
 	if (isClient())
 	{
-		//effects
 		ParticleZombieLightning(bpos);
 		Sound::Play("MagicWand.ogg", bpos);
 		
@@ -80,22 +78,25 @@ void RevivePlayer(CPlayer@ player, CBlob@ b)
 	
 	if (isServer())
 	{
-		//remove respawn
-		Respawn[]@ respawns;
-		if (getRules().get("respawns", @respawns))
-		{
-			for (u8 i = 0; i < respawns.length; i++)
-			{
-				if (respawns[i].username != player.getUsername()) continue;
-				
-				respawns.erase(i);
-				break;
-			}
-		}
-		
 		//create new blob for our dead player to use
 		CBlob@ newBlob = server_CreateBlob(b.getName(), 0, bpos);
-		newBlob.server_SetPlayer(player);
+		if (player !is null)
+		{
+			newBlob.server_SetPlayer(player);
+
+			//remove respawn
+			Respawn[]@ respawns;
+			if (getRules().get("respawns", @respawns))
+			{
+				for (u8 i = 0; i < respawns.length; i++)
+				{
+					if (respawns[i].username != player.getUsername()) continue;
+					
+					respawns.erase(i);
+					break;
+				}
+			}
+		}
 		
 		//kill dead body
 		b.server_Die();
