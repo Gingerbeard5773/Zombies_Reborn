@@ -43,7 +43,13 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	if (!blockAttack(hitBlob, velocity, 0.0f)) //knights can shield against the grab
 	{
 		if (hitBlob is this.getBrain().getTarget()) //another check to stop unusual grabs
+		{
+			CBlob@ carried = hitBlob.getCarriedBlob();
+			if (carried !is null && carried.hasTag("player"))
+				hitBlob.server_DetachAll(); //detach migrants
+
 			this.server_AttachTo(hitBlob, "PICKUP");
+		}
 	}
 	else
 	{
