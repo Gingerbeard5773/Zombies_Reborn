@@ -9,48 +9,36 @@ void onInit(CBlob@ this)
 	this.set_TileType("background tile", CMap::tile_castle_back);
 
 	this.getShape().getConsts().mapCollisions = false;
-	
-	this.getCurrentScript().tickFrequency = 89; //check autograb blobs
+}
+
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
+{
+	if (blob is null) return;
+
+	if (blob.getName() == "grain")
+	{
+		this.server_PutInInventory(blob);
+	}
 }
 
 void onTick(CBlob@ this)
 {
-	if (isServer())
+	const f32 millpow = this.get_f32("mill power");
+	CInventory@ inventory = this.getInventory();
+	const u8 itemsCount = inventory.getItemsCount();
+	if (itemsCount > 0 && this.hasBlob("grain", 1))
 	{
-		CBlob@[] overlapping;
-		if (getMap().getBlobsInRadius(this.getPosition() + Vec2f(0 , 20), 20, @overlapping))
-		{
-			const u8 overlappingLength = overlapping.length;
-			for (u8 i = 0; i < overlappingLength; i++)
-			{
-				CBlob@ b = overlapping[i];
-				if (b.isOnGround() && !b.isAttached() && b.getName() == "grain")
-				{
-					this.server_PutInInventory(b);
-				}
-			}
-		}
-	}
-}
-
-void onTick(CInventory@ this)
-{
-	CBlob@ mill = this.getBlob();
-	const f32 millpow = mill.get_f32("mill power");
-	const u8 itemsCount = this.getItemsCount();
-	if (itemsCount > 0 && mill.hasBlob("grain", 1))
-	{
-		mill.set_f32("mill power", Maths::Min(millpow + millpow/100 + 0.002f, 5));
+		this.set_f32("mill power", Maths::Min(millpow + millpow/100 + 0.002f, 5));
 		
 		//grind grain into flour
-		if (getGameTime() % (conversion_seconds * getTicksASecond()) == (mill.getNetworkID() % 30))
+		if (getGameTime() % (conversion_seconds * getTicksASecond()) == (this.getNetworkID() % 30))
 		{
 			for (u8 i = 0; i < itemsCount; i++)
 			{
-				CBlob@ item = this.getItem(i);
+				CBlob@ item = inventory.getItem(i);
 				if (item.getName() == "grain")
 				{
-					convertToFlour(mill, item);
+					convertToFlour(this, item);
 					break;
 				}
 			}
@@ -58,10 +46,10 @@ void onTick(CInventory@ this)
 	}
 	else
 	{
-		mill.set_f32("mill power", Maths::Max(millpow - millpow/110 - 0.0001f, 0));
+		this.set_f32("mill power", Maths::Max(millpow - millpow/110 - 0.0001f, 0));
 	}
 	
-	CSprite@ sprite = mill.getSprite();
+	CSprite@ sprite = this.getSprite();
 	if (millpow > 0.5f)
 	{
 		if (sprite.getEmitSoundPaused())
@@ -73,7 +61,7 @@ void onTick(CInventory@ this)
 	}
 }
 
-void convertToFlour(CBlob@ mill, CBlob@ grain)
+void convertToFlour(CBlob@ this, CBlob@ grain)
 {
 	if (isServer())
 	{
@@ -87,11 +75,11 @@ void convertToFlour(CBlob@ mill, CBlob@ grain)
 		flour.Init();
 		flour.server_SetQuantity(10+XORRandom(7));
 		
-		//if (!mill.server_PutInInventory(flour))
-			flour.setPosition(mill.getPosition() + Vec2f(8, 24));
+		//if (!this.server_PutInInventory(flour))
+			flour.setPosition(this.getPosition() + Vec2f(8, 24));
 	}
 	
-	mill.getSprite().PlaySound("StoreSound.ogg");
+	this.getSprite().PlaySound("StoreSound.ogg");
 }
 
 void onAddToInventory(CBlob@ this, CBlob@ blob)
