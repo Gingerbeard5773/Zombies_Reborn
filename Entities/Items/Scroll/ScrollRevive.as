@@ -53,8 +53,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					
 					RevivePlayer(player, b);
 					this.server_Die();
-					
-					break;
 				}
 			}
 		}
