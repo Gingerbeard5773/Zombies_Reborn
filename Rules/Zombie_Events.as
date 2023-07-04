@@ -83,7 +83,7 @@ void checkHourChange(CRules@ this)
 
 void doMigrantEvent(CRules@ this, CMap@ map)
 {
-	//if (this.get_u8("day_number") % 2 != 0) return; //every other day
+	if (this.get_u8("day_number") % 2 != 0) return; //every other day
 
 	if (this.get_u16("undead count") > 15) return; //don't if too many zombies
 	
