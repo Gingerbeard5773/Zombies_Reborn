@@ -25,6 +25,23 @@ void onStateChange(CRules@ this, const u8 oldState)
 	}
 }
 
+void onInit(CRules@ this)
+{
+	Reset(this);
+}
+
+void onRestart(CRules@ this)
+{
+	Reset(this);
+}
+
+void Reset(CRules@ this)
+{
+	//setup skelepede night event
+	const u8[] skelepede_possible_days = {6, 7, 8, 11, 12}; 
+	this.set_u8("skelepede day", skelepede_possible_days[XORRandom(skelepede_possible_days.length)]);
+}
+
 void onTick(CRules@ this)
 {
 	if (!isServer()) return;
@@ -173,4 +190,12 @@ void doSkelepedeEvent(CRules@ this, CMap@ map)
 		Vec2f spawn(XORRandom(dim.x), dim.y + 50 + XORRandom(600));
 		server_CreateBlob("skelepede", -1, spawn);
 	}
+	
+	//setup next skelepede night event (while making sure we dont overlap on sedgwick)
+	u8 next_skelepede_day;
+	do 
+		next_skelepede_day = this.get_u8("day_number") + 5 + XORRandom(5);
+	while((next_skelepede_day+1) % 5 == 0);
+	
+	this.set_u8("skelepede day", next_skelepede_day);
 }

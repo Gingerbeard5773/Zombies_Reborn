@@ -41,10 +41,6 @@ void Reset(CRules@ this)
 	this.set_u8("day_number", 1);
 	this.Sync("day_number", true);
 
-	//setup skelepede night event
-	const u8[] skelepede_possible_days = {6, 7, 8, 11, 12}; 
-	this.set_u8("skelepede day", skelepede_possible_days[XORRandom(skelepede_possible_days.length)]);
-
 	seconds_till_nextmap = nextmap_seconds;
 	this.SetCurrentState(WARMUP);
 }
