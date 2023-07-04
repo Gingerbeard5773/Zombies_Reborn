@@ -19,8 +19,6 @@ void onInit(CBlob@ this)
 	this.chatBubbleOffset = Vec2f(0, 48);
 	this.SetChatBubbleFont("menu");
 	
-	this.server_setTeamNum(XORRandom(8));
-	
 	this.SetMapEdgeFlags(u8(CBlob::map_collide_sides));
 	
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_none);
