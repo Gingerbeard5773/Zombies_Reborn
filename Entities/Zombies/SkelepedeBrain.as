@@ -8,7 +8,7 @@ void onInit(CBrain@ this)
 	CBlob@ blob = this.getBlob();
 
 	if (!blob.exists("brain_target_rad"))
-		blob.set_f32("brain_target_rad", 250.0f);
+		blob.set_f32("brain_target_rad", 220.0f);
 
 	this.getCurrentScript().removeIfTag	= "dead";
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
