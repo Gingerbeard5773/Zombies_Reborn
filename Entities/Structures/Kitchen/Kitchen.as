@@ -198,7 +198,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	while (!bs.isBufferEnd())
 	{
-		ReadRequirement(bs, "", name, "", 0);
+		string unused = "";
+		ReadRequirement(bs, unused, name, unused, 0);
 
 		if (blob.getName() == name)
 		{
