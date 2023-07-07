@@ -45,11 +45,12 @@ void onTick(CBrain@ this)
 			// should we be mad?
 			// auto-enrage after some time if we cannot get to target
 			const s32 timer = blob.get_s32("auto_enrage_time") - getGameTime();
-			if ((target.getPosition() - blob.getPosition()).Length() < blob.get_f32("explosive_radius") || timer < 0)
+			if (!blob.hasTag("exploding") && ((target.getPosition() - blob.getPosition()).Length() < blob.get_f32("explosive_radius") || timer < 0))
 			{
 				// get mad
-				blob.Tag("enraged");
-				blob.Sync("enraged", true);
+				CBitStream params;
+				params.write_bool(true);
+				blob.SendCommand(blob.getCommandID("enrage"), params);
 			}
 		}
 		else
@@ -127,7 +128,7 @@ void DetectForwardObstructions(CBlob@ blob, CMap@ map)
 
 void StayAboveGroundLevel(CBlob@ blob, CMap@ map)
 {
-	if (blob.hasTag("enraged")) return;
+	if (blob.hasTag("exploding")) return;
 	
 	if (getFlyHeight(blob.getPosition().x, map) < blob.getPosition().y)
 	{

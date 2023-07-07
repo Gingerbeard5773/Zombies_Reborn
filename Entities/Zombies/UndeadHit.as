@@ -33,7 +33,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 	
 	//player controlled wraiths don't damage as much
-	if (hitterBlob.getPlayer() !is null && hitterBlob.hasTag("enraged"))
+	if (hitterBlob.getPlayer() !is null && hitterBlob.hasTag("exploding"))
 	{
 		damage *= 0.15f;
 	}
