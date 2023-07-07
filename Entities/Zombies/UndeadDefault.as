@@ -5,6 +5,8 @@ void onInit(CBlob@ this)
 	
 	this.set_u8("knocked", 1);
 	this.addCommandID("knocked"); //unused atm, only added to stop console spam
+	
+	this.getSprite().ReloadSprites(3, 0); //change team visual color to purple
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
