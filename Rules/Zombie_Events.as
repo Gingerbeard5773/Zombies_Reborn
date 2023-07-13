@@ -169,6 +169,17 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 
 void doSkelepedeEvent(CRules@ this, CMap@ map)
 {
+	//setup next skelepede night event (while making sure we dont overlap on sedgwick)
+	if (this.get_u8("day_number") > this.get_u8("skelepede day"))
+	{
+		u8 next_skelepede_day;
+		do 
+			next_skelepede_day = this.get_u8("day_number") + 5 + XORRandom(5);
+		while((next_skelepede_day+1) % 5 == 0);
+		
+		this.set_u8("skelepede day", next_skelepede_day);
+	}
+
 	if (this.get_u8("day_number") != this.get_u8("skelepede day")) return;
 
 	Vec2f dim = map.getMapDimensions();
@@ -184,18 +195,11 @@ void doSkelepedeEvent(CRules@ this, CMap@ map)
 
 		survivorsCount++;
 	}
-	survivorsCount /= 4;
-	for (u8 i = 0; i < 3 + survivorsCount; ++i)
+
+	const u8 amount = 3 + Maths::Min(survivorsCount / 5, 3);
+	for (u8 i = 0; i < amount; ++i)
 	{
 		Vec2f spawn(XORRandom(dim.x), dim.y + 50 + XORRandom(600));
 		server_CreateBlob("skelepede", -1, spawn);
 	}
-	
-	//setup next skelepede night event (while making sure we dont overlap on sedgwick)
-	u8 next_skelepede_day;
-	do 
-		next_skelepede_day = this.get_u8("day_number") + 5 + XORRandom(5);
-	while((next_skelepede_day+1) % 5 == 0);
-	
-	this.set_u8("skelepede day", next_skelepede_day);
 }
