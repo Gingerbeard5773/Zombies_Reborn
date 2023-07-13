@@ -1,7 +1,6 @@
 // scroll script that spawns chickens
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 
 const u8 chicken_num = 3;
 
@@ -24,7 +23,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 		params.write_Vec2f(spawnPos);
 	}
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn chickens"), ZombieDesc::scroll_fowl, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn chickens"), "Use this to summon a flock of chickens.", params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

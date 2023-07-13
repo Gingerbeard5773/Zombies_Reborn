@@ -3,7 +3,6 @@
 #include "MakeScroll.as";
 #include "Hitters.as";
 #include "EmotesCommon.as";
-#include "Zombie_Translation.as";
 #include "ParticleTeleport.as";
 
 const u8 stay_minutes = 2;
@@ -43,7 +42,7 @@ void onInit(CBlob@ this)
 	{
 		case 0:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Carnage", "$scroll_carnage$", "scroll_carnage", ZombieDesc::carnage_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Carnage", "$scroll_carnage$", "scroll_carnage", "Sedgwick really doesn't want me to have this.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
 			AddStock(s, 1);
@@ -51,7 +50,7 @@ void onInit(CBlob@ this)
 		}
 		case 1:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Midas", "$scroll_midas$", "scroll_midas", ZombieDesc::midas_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Midas", "$scroll_midas$", "scroll_midas", "Makes the rocks shiny.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
 			AddStock(s, 1);
@@ -59,7 +58,7 @@ void onInit(CBlob@ this)
 		}
 		case 2:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Sea", "$scroll_sea$", "scroll_sea", ZombieDesc::sea_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Sea", "$scroll_sea$", "scroll_sea", "A powerful spell known to flood entire villages.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
 			AddStock(s, 1);
@@ -67,7 +66,7 @@ void onInit(CBlob@ this)
 		}
 		case 3:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Conveyance", "$scroll_teleport$", "scroll_teleport", ZombieDesc::teleport_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Conveyance", "$scroll_teleport$", "scroll_teleport", "This one can take you anywhere.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 			AddStock(s, 2);
@@ -75,7 +74,7 @@ void onInit(CBlob@ this)
 		}
 		case 4:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Quarry", "$scroll_stone$", "scroll_stone", ZombieDesc::stone_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Quarry", "$scroll_stone$", "scroll_stone", "If you need rocks.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 1);
@@ -86,7 +85,7 @@ void onInit(CBlob@ this)
 	{
 		case 0:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Ressurection", "$scroll_revive$", "scroll_revive", ZombieDesc::revive_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Ressurection", "$scroll_revive$", "scroll_revive", "Bring back a friend of yours, or maybe even yourself.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 1);
@@ -94,7 +93,7 @@ void onInit(CBlob@ this)
 		}
 		case 1:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Compaction", "$scroll_crate$", "scroll_crate", ZombieDesc::crate_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Compaction", "$scroll_crate$", "scroll_crate", "It can put anything in a box.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 2);
@@ -102,7 +101,7 @@ void onInit(CBlob@ this)
 		}
 		case 2:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Duplication", "$scroll_clone$", "scroll_clone", ZombieDesc::clone_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Duplication", "$scroll_clone$", "scroll_clone", "Long lost magic that appears to make a copy of anything!", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
 			AddStock(s, 1);
@@ -110,7 +109,7 @@ void onInit(CBlob@ this)
 		}
 		case 3:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Drought", "$scroll_drought$", "scroll_drought", ZombieDesc::drought_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Drought", "$scroll_drought$", "scroll_drought", "Vaporizes bodies of water.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 30);
 			AddStock(s, 2);
@@ -118,7 +117,7 @@ void onInit(CBlob@ this)
 		}
 		case 4:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Harvest", "$scroll_flora$", "scroll_flora", ZombieDesc::flora_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Harvest", "$scroll_flora$", "scroll_flora", "Creates various plants from thin air.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 2);
@@ -129,7 +128,7 @@ void onInit(CBlob@ this)
 	{
 		case 0:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Royalty", "$scroll_royalty$", "scroll_royalty", ZombieDesc::royalty_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Royalty", "$scroll_royalty$", "scroll_royalty", "I forgot what this one did.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 40);
 			AddStock(s, 3);
@@ -137,7 +136,7 @@ void onInit(CBlob@ this)
 		}
 		case 1:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Wisent", "$scroll_wisent$", "scroll_wisent", ZombieDesc::wisent_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Wisent", "$scroll_wisent$", "scroll_wisent", "Summons a bison. Good for meat!", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 1);
@@ -145,7 +144,7 @@ void onInit(CBlob@ this)
 		}
 		case 2:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Fowl", "$scroll_fowl$", "scroll_fowl", ZombieDesc::fowl_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Fowl", "$scroll_fowl$", "scroll_fowl", "If you need some eggs.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 			AddStock(s, 1);
@@ -153,7 +152,7 @@ void onInit(CBlob@ this)
 		}
 		case 3:
 		{
-			ShopItem@ s = addShopItem(this, "Scroll of Fish", "$scroll_fish$", "scroll_fish", ZombieDesc::fish_desc, true);
+			ShopItem@ s = addShopItem(this, "Scroll of Fish", "$scroll_fish$", "scroll_fish", "Summons a bloodthirsty shark.", true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 			AddStock(s, 1);

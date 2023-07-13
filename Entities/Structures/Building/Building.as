@@ -7,7 +7,6 @@
 #include "CheckSpam.as"
 #include "GenericButtonCommon.as"
 #include "TeamIconToken.as"
-#include "Zombie_Translation.as"
 
 //are builders the only ones that can finish construction?
 const bool builder_only = false;
@@ -75,7 +74,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::quarry_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Factory", getTeamIcon("factory", "Factory.png", team_num, Vec2f(40, 24), 3), "factory", ZombieDesc::factory);
+		ShopItem@ s = addShopItem(this, "Factory", getTeamIcon("factory", "Factory.png", team_num, Vec2f(40, 24), 3), "factory", "A generic factory for various items. Requires a free worker to produce items.");
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 100);
 	}
 }

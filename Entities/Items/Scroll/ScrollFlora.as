@@ -1,7 +1,6 @@
 // scroll script that spawns plants nearby
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 
 const int radius = 14;
 
@@ -14,7 +13,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn flora"), ZombieDesc::scroll_flora);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn flora"), "Use this to create plants nearby.");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

@@ -1,7 +1,6 @@
 // scroll script that teleports the player
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 #include "ParticleTeleport.as";
 
 void onInit(CBlob@ this)
@@ -16,7 +15,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	CBitStream params;
 	params.write_netid(caller.getNetworkID());
 	params.write_Vec2f(caller.getAimPos());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("teleport"), ZombieDesc::scroll_teleport, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("teleport"), "Use this to teleport to the area you are pointing to.", params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

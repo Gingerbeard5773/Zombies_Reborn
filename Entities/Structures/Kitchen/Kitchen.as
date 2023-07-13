@@ -2,7 +2,6 @@
 
 #include "Requirements.as";
 #include "FireParticle.as";
-#include "Zombie_Translation.as";
 
 const u16 craft_time_seconds = 30;
 const Vec2f craft_menu_size(5, 1);
@@ -55,28 +54,28 @@ void addRecipes()
 	if (items.length > 0) return;
 	
 	{
-		CraftItem i("bread", 1, ZombieDesc::bread, 4);
+		CraftItem i("bread", 1, "Bread\nDelicious crunchy whole-wheat bread.\n$heart_full$$heart_half$", 4);
 		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 20);
 		items.push_back(i);
 	}
 	{
-		CraftItem i("cake", 1, ZombieDesc::cake, 5);
+		CraftItem i("cake", 1, "Cake\nFluffy cake made from egg and wheat.\n$heart_full$$heart_full$$heart_full$", 5);
 		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 15);
 		AddRequirement(i.reqs, "blob", "egg", "Egg", 1);
 		items.push_back(i);
 	}
 	{
-		CraftItem i("cookedfish", 1, ZombieDesc::cooked_fish, 1);
+		CraftItem i("cookedfish", 1, "Cooked Fish\nA cooked fish on a stick.\n$heart_full$$heart_full$$heart_full$", 1);
 		AddRequirement(i.reqs, "blob", "fishy", "Fish", 1);
 		items.push_back(i);
 	}
 	{
-		CraftItem i("cookedsteak", 1, ZombieDesc::cooked_steak, 0);
+		CraftItem i("cookedsteak", 1, "Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_half$", 0);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
 		items.push_back(i);
 	}
 	{
-		CraftItem i("food", 1, ZombieDesc::burger, 6);
+		CraftItem i("food", 1, "Burger\nSeared meat in a bun, bisons love it!\n$heart_full$$heart_full$$heart_full$$heart_full$", 6);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
 		AddRequirement(i.reqs, "blob", "bread", "Bread", 1);
 		items.push_back(i);

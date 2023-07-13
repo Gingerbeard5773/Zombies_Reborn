@@ -32,7 +32,6 @@
 #include "Requirements.as"
 #include "Costs.as"
 #include "TeamIconToken.as"
-#include "Zombie_Translation.as";
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
@@ -110,7 +109,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	BuildBlock[] page_1;
 	blocks.push_back(page_1);
 	{
-		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 102), 1), ZombieDesc::windmill);
+		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 102), 1), "Wind Mill\nA grain mill for producing flour.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 200);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 250);
 		b.buildOnGround = true;
@@ -118,7 +117,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "kitchen", getTeamIcon("kitchen", "Kitchen.png", team_num, Vec2f(40, 32)), ZombieDesc::kitchen);
+		BuildBlock b(0, "kitchen", getTeamIcon("kitchen", "Kitchen.png", team_num, Vec2f(40, 32)), "Kitchen\nCreate various foods for healing.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 100);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 100);
 		b.buildOnGround = true;
@@ -126,7 +125,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), ZombieDesc::nursery);
+		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), "Nursery\nA plant nursery for agricultural purposes.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 400);
 		AddRequirement(b.reqs, "blob", "seed", "Seed", 1);
 		b.buildOnGround = true;

@@ -1,7 +1,6 @@
 // scroll script that revives a player within a radius
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 #include "RespawnCommon.as";
 
 void onInit(CBlob@ this)
@@ -16,7 +15,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	CBitStream params;
 	params.write_netid(caller.getNetworkID());
 	params.write_bool(false);
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("revive"), ZombieDesc::scroll_revive, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("revive"), "Use this near a dead body to ressurect them.", params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

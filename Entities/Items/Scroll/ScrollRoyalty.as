@@ -1,7 +1,6 @@
 // scroll script that spawns a geti
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -14,7 +13,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	CBitStream params;
 	params.write_u8(caller.getTeamNum());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn geti"), ZombieDesc::scroll_royalty, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn geti"), "Use this to summon a geti.", params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

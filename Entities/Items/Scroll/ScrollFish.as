@@ -1,7 +1,6 @@
 // scroll script that spawns a shark
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -19,7 +18,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	CBitStream params;
 	params.write_Vec2f(spawnPos);
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn shark"), ZombieDesc::scroll_fish, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn shark"), "Use this to summon a shark.", params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

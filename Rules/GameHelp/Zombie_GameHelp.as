@@ -2,12 +2,22 @@
 
 #define CLIENT_ONLY
 
-#include "Zombie_Translation.as";
-
 bool mousePress = false;
 u8 page = 0;
 
 const u8 pages = 7;
+
+const string[] page_tips =
+{
+	"Build a great castle and endure the masses of zombies!",
+	"When night arrives, the undead will appear at these gateways.",
+	"A dead body will transform into a zombie after some time.",
+	"Use water to temporarily stop a burning wraith.",
+	"Head shots deal additional damage.",
+	"If there is not many zombies, a trader will visit at mid-day.",
+	"Respawns are instant if there is no zombies during day light.",
+	"Migrants will come every other day if the undead population is low."
+};
 
 void onInit(CRules@ this)
 {
@@ -65,21 +75,21 @@ void managePages(Vec2f&in imageSize, Vec2f&in center)
 {
 	switch(page)
 	{
-		case 0: drawPage(imageSize, center, ZombieDesc::title, Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
+		case 0: drawPage(imageSize, center, "ZOMBIE FORTRESS", Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
 			break;
-		//case 1: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3), 1);
+		//case 1: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3), 1);
 			//break;
-		case 1: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 2);
+		case 1: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 2);
 			break;
-		case 2: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 3);
+		case 2: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 3);
 			break;
-		case 3: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 4);
+		case 3: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 4);
 			break;
-		case 4: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 5);
+		case 4: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 5);
 			break;
-		case 5: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 6);
+		case 5: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 6);
 			break;
-		case 6: drawPage(imageSize, center, ZombieDesc::tips, Vec2f(center.x - imageSize.x + 200, center.y - imageSize.y/3), 7);
+		case 6: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 200, center.y - imageSize.y/3), 7);
 			break;
 	};
 }

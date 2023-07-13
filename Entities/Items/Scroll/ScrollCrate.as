@@ -1,7 +1,6 @@
 // scroll script that puts any item into a crate
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 #include "MakeCrate.as";
 
 void onInit(CBlob@ this)
@@ -14,7 +13,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 	CBitStream params;
 	params.write_Vec2f(caller.getAimPos());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("put in crate"), ZombieDesc::scroll_crate, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("put in crate"), "Use this to crate an object you are pointing at.", params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

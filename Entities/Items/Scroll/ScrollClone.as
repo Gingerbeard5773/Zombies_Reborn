@@ -1,7 +1,6 @@
 // scroll script that duplicates an object completely
 
 #include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
 #include "MakeScroll.as";
 #include "MakeSeed.as";
 #include "MakeCrate.as";
@@ -16,7 +15,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 	CBitStream params;
 	params.write_Vec2f(caller.getAimPos());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("clone"), ZombieDesc::scroll_clone, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("clone"), "Use this to duplicate an object you are pointing to.", params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
