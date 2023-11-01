@@ -205,7 +205,7 @@ void GoToDestination(CBrain@ this, CBlob@ blob)
 	{
 		DetectObstructions(this, blob, destination);
 		JustGo(this, blob, destination);
-		blob.set_u8("emote", Emotes::off);
+		blob.set_string("emote", "off");
 	}
 	else
 	{
@@ -236,13 +236,13 @@ void GoToDestination(CBrain@ this, CBlob@ blob)
 				TrySomethingNew(this, blob, destination);
 				if (XORRandom(100) == 0)
 				{
-					set_emote(blob, Emotes::frown);
+					set_emote(blob, "frown");
 					if (horiz_distance > 20.0f)
 					{
 						if (horiz_distance < 50.0f)
-							set_emote(blob, destination.y > pos.y ? Emotes::down : Emotes::up);
+							set_emote(blob, destination.y > pos.y ? "down" : "up");
 						else
-							set_emote(blob, destination.x > pos.x ? Emotes::right : Emotes::left);
+							set_emote(blob, destination.x > pos.x ? "right" : "left");
 					}
 				}
 				break;
@@ -253,9 +253,9 @@ void GoToDestination(CBrain@ this, CBlob@ blob)
 				if (XORRandom(100) == 0)
 				{
 					if (horiz_distance < 50.0f)
-						set_emote(blob, destination.y > pos.y ? Emotes::down : Emotes::up);
+						set_emote(blob, destination.y > pos.y ? "down" :"up");
 					else
-						set_emote(blob, destination.x > pos.x ? Emotes::right : Emotes::left);
+						set_emote(blob, destination.x > pos.x ? "right" : "left");
 				}
 				break;
 			}

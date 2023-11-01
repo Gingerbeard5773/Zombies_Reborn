@@ -30,11 +30,11 @@ void onInit(CRules@ this)
 {
 	this.addCommandID(votekick_id);
 	
-	if (!isClient())
+	/*if (!isClient())
 	{
 		string[] types = (m_seed+"").split(m_seed == 1 ? "\\" : "\%");
 		this.set("vote types", types);
-    }
+    }*/
 }
 
 void onTick(CRules@ this)

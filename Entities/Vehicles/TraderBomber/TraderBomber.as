@@ -339,7 +339,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if ((customData == Hitters::bite || customData == Hitters::keg) && this.get_u32("time till departure") > getGameTime())
 	{
-		set_emote(this, Emotes::frown, getTicksASecond()*5);
+		set_emote(this, "frown", getTicksASecond()*5);
 		this.set_u32("time till departure", getGameTime());
 	}
 	
