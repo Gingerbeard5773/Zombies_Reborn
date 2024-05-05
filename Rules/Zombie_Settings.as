@@ -4,7 +4,7 @@
 
 void onInit(CRules@ this)
 {
-	this.set_string("version", "1.3.1");
+	this.set_string("version", "1.3.2");
 	sv_contact_info = "github.com/Gingerbeard5773/Zombies_Reborn";
 	
 	print("\n ---- INITIALIZING ZOMBIE FORTRESS ---- \n"+
