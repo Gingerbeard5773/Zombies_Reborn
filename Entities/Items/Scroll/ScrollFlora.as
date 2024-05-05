@@ -6,87 +6,97 @@ const int radius = 14;
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("spawn flora");
+	this.addCommandID("server_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
+	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, "Use this to create plants nearby.");
+}
 
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn flora"), "Use this to create plants nearby.");
+void Callback_Spell(CBlob@ this, CBlob@ caller)
+{
+	CreateFlora(this);
+
+	Vec2f pos = this.getPosition();
+	Sound::Play("MagicWand.ogg", pos);
+	Sound::Play("OrbExplosion.ogg", pos, 3.5f);
+
+	if (!isServer())
+		this.SendCommand(this.getCommandID("server_execute_spell"));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("spawn flora"))
+	if (cmd == this.getCommandID("server_execute_spell"))
 	{
-		CMap@ map = getMap();
-		Vec2f pos = this.getPosition();
-		const f32 radsq = radius * 8 * radius * 8;
+		CreateFlora(this);
+	}
+}
 
-		for (int x_step = -radius; x_step < radius; ++x_step)
+void CreateFlora(CBlob@ this)
+{
+	CMap@ map = getMap();
+	Vec2f pos = this.getPosition();
+	const f32 radsq = radius * 8 * radius * 8;
+
+	for (int x_step = -radius; x_step < radius; ++x_step)
+	{
+		for (int y_step = -radius; y_step < radius; ++y_step)
 		{
-			for (int y_step = -radius; y_step < radius; ++y_step)
+			Vec2f off(x_step * map.tilesize, y_step * map.tilesize);
+
+			if (off.LengthSquared() > radsq) continue;
+
+			Vec2f tpos = pos + off;
+
+			TileType t = map.getTile(tpos).type;
+			if (t == CMap::tile_empty && map.isTileGround(map.getTile(tpos+Vec2f(0,8)).type))
 			{
-				Vec2f off(x_step * map.tilesize, y_step * map.tilesize);
-
-				if (off.LengthSquared() > radsq) continue;
-
-				Vec2f tpos = pos + off;
-
-				TileType t = map.getTile(tpos).type;
-				if (t == CMap::tile_empty && map.isTileGround(map.getTile(tpos+Vec2f(0,8)).type))
+				map.server_SetTile(tpos, CMap::tile_grass);
+			}
+			else if (t == CMap::tile_castle && XORRandom(3) == 0)
+			{
+				map.server_SetTile(tpos, CMap::tile_castle_moss);
+			}
+			else if (t == CMap::tile_castle_back && XORRandom(3) == 0)
+			{
+				map.server_SetTile(tpos, CMap::tile_castle_back_moss);
+			}
+			
+			if (!map.isTileSolid(t) && map.isTileGround(map.getTile(tpos+Vec2f(0,8)).type))
+			{
+				Vec2f vel = getRandomVelocity(90, 1 + float(XORRandom(500)/100), 20);
+				string blob_name = "flowers";
+				
+				if (XORRandom(2) == 0)
 				{
-					map.server_SetTile(tpos, CMap::tile_grass);
+					blob_name = "bush";
 				}
-				else if (t == CMap::tile_castle && XORRandom(3) == 0)
+				else if (XORRandom(3) == 0)
 				{
-					map.server_SetTile(tpos, CMap::tile_castle_moss);
+					vel *= 1.2f;
+					blob_name = "grain_plant";
 				}
-				else if (t == CMap::tile_castle_back && XORRandom(3) == 0)
+				else if (XORRandom(8) == 0)
 				{
-					map.server_SetTile(tpos, CMap::tile_castle_back_moss);
+					vel *= 1.5f;
+					blob_name = "tree_bushy";
 				}
 				
-				if (!map.isTileSolid(t) && map.isTileGround(map.getTile(tpos+Vec2f(0,8)).type))
+				if (isServer())
 				{
-					Vec2f vel = getRandomVelocity(90, 1 + float(XORRandom(500)/100), 20);
-					string blob_name = "flowers";
-					
-					if (XORRandom(2) == 0)
-					{
-						blob_name = "bush";
-					}
-					else if (XORRandom(3) == 0)
-					{
-						vel *= 1.2f;
-						blob_name = "grain_plant";
-					}
-					else if (XORRandom(8) == 0)
-					{
-						vel *= 1.5f;
-						blob_name = "tree_bushy";
-					}
-					
-					if (isServer())
-					{
-						server_CreateBlob(blob_name, -1, tpos);
-					}
-					
-					if (isClient())
-					{
-						makeGibParticle("GenericGibs.png", tpos, vel, 7, 1+XORRandom(4), Vec2f(8, 8), 2.0f, 20, "fall2");
-					}
+					server_CreateBlob(blob_name, -1, tpos);
+				}
+				
+				if (isClient())
+				{
+					makeGibParticle("GenericGibs.png", tpos, vel, 7, 1+XORRandom(4), Vec2f(8, 8), 2.0f, 20, "fall2");
 				}
 			}
 		}
-		
-		if (isClient())
-		{
-			Sound::Play("MagicWand.ogg", pos);
-			Sound::Play("OrbExplosion.ogg", pos, 3.5f);
-		}
-		
-		this.server_Die();
 	}
+	
+	this.server_Die();
 }

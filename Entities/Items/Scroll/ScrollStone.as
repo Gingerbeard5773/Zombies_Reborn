@@ -6,19 +6,19 @@ const int radius = 10;
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("stone");
+	this.addCommandID("server_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("stone"), "Use this to convert nearby stone into thick stone.");
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), "Use this to convert nearby stone into thick stone.");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("stone"))
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
 		bool acted = false;
 		CMap@ map = getMap();
@@ -48,11 +48,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 
-
 		if (acted)
 		{
-			Sound::Play("MagicWand.ogg", pos);
 			this.server_Die();
 		}
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	Sound::Play("MagicWand.ogg", this.getPosition());
 }

@@ -2,6 +2,7 @@
 
 #include "UndeadTargeting.as";
 #include "PressOldKeys.as";
+#include "WraithCommon.as";
 
 void onInit(CBrain@ this)
 {
@@ -45,12 +46,10 @@ void onTick(CBrain@ this)
 			// should we be mad?
 			// auto-enrage after some time if we cannot get to target
 			const s32 timer = blob.get_s32("auto_enrage_time") - getGameTime();
-			if (!blob.hasTag("exploding") && ((target.getPosition() - blob.getPosition()).Length() < blob.get_f32("explosive_radius") || timer < 0))
+			if (((target.getPosition() - blob.getPosition()).Length() < blob.get_f32("explosive_radius") || timer < 0))
 			{
 				// get mad
-				CBitStream params;
-				params.write_bool(true);
-				blob.SendCommand(blob.getCommandID("enrage"), params);
+				server_SetEnraged(blob);
 			}
 		}
 		else

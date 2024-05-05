@@ -4,43 +4,29 @@
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("spawn geti");
+	this.addCommandID("server_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
+	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, "Use this to summon a geti.");
+}
 
-	CBitStream params;
-	params.write_u8(caller.getTeamNum());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("spawn geti"), "Use this to summon a geti.", params);
+void Callback_Spell(CBlob@ this, CBlob@ caller)
+{
+	Vec2f pos = this.getPosition();
+	Sound::Play("MigrantSayHello.ogg", pos);
+	Sound::Play("AchievementUnlocked.ogg", pos, 2.0f);
+	
+	this.SendCommand(this.getCommandID("server_execute_spell"));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("spawn geti"))
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
-		const u8 team = params.read_u8();
-		
-		u8 rand_team = XORRandom(7);
-		while(rand_team == team)
-		{
-			rand_team = XORRandom(7);
-		}
-		
-		Vec2f pos = this.getPosition();
-		
-		if (isClient())
-		{
-			//effects
-			Sound::Play("MigrantSayHello.ogg", pos);
-			Sound::Play("AchievementUnlocked.ogg", pos, 2.0f);
-		}
-
-		if (isServer())
-		{
-			server_CreateBlob("princess", rand_team, pos);
-			this.server_Die();
-		}
+		server_CreateBlob("princess", XORRandom(7), this.getPosition());
+		this.server_Die();
 	}
 }

@@ -6,7 +6,7 @@ const int radius = 30;
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("drought");
+	this.addCommandID("server_execute_spell");
 
 	this.set_u32("drought_called", 0);
 }
@@ -14,13 +14,12 @@ void onInit(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
-
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("drought"), getTranslatedString("Use this to dry up an orb of water."));
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), getTranslatedString("Use this to dry up an orb of water."));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("drought"))
+	if (cmd == this.getCommandID("server_execute_spell"))
 	{
 		const u32 timer = getGameTime() - this.get_u32("drought_called");
 		if (timer < 30) return;
@@ -48,11 +47,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 
-
 		if (acted)
 		{
 			this.server_Die();
-			Sound::Play("MagicWand.ogg", pos, 1.0f, 0.75f);
 		}
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	Sound::Play("MagicWand.ogg", this.getPosition(), 1.0f, 0.75f);
 }

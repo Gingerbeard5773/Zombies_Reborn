@@ -54,7 +54,7 @@ void onInit(CBlob@ this)
 	if (!this.isLight())
 		this.SetLight(false);
 	
-	this.addCommandID("activate portal");
+	this.addCommandID("client_activate_portal");
 	
 	if (isServer())
 	{
@@ -66,7 +66,8 @@ void onInit(CBlob@ this)
 		
 		if (this.hasTag("portal_activated"))
 		{
-			this.SendCommand(this.getCommandID("activate portal"));
+			this.SetLight(true);
+			this.SendCommand(this.getCommandID("client_activate_portal"));
 		}
 	}
 }
@@ -95,12 +96,25 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-	else
+	else 
 	{
-		CBlob@ localBlob = getLocalPlayerBlob();
-		if (localBlob !is null && !localBlob.hasTag("undead") && localBlob.getDistanceTo(this) <= activation_radius)
+		if (isServer())
 		{
-			this.SendCommand(this.getCommandID("activate portal"));
+			//check if players are within bounds to activate the portal
+			const u8 playerCount = getPlayerCount();
+			for (u8 i = 0; i < playerCount; i++)
+			{
+				CPlayer@ ply = getPlayer(i);
+				if (ply is null) continue;
+				
+				CBlob@ plyBlob = ply.getBlob();
+				if (plyBlob !is null && !plyBlob.hasTag("undead") && plyBlob.getDistanceTo(this) <= activation_radius)
+				{
+					this.SetLight(true);
+					this.Tag("portal_activated");
+					this.SendCommand(this.getCommandID("client_activate_portal"));
+				}
+			}
 		}
 	}
 }
@@ -131,11 +145,10 @@ void onDie(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("activate portal"))
+	if (cmd == this.getCommandID("client_activate_portal"))
 	{
 		this.getSprite().PlaySound("PortalBreach");
 		this.SetLight(true);
-		
 		this.Tag("portal_activated");
 	}
 }

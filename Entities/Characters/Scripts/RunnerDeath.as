@@ -24,14 +24,14 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		if (attach !is null)
 		{
 			CBlob@ held = attach.getOccupied();
-			if (held !is null && held.hasCommandID("revive"))
+			if (held !is null && held.hasCommandID("server_revive"))
 			{
-				if (isServer())
+				if (this.isMyPlayer())
 				{
 					CBitStream params;
 					params.write_netid(this.getNetworkID());
 					params.write_bool(true);
-					held.SendCommand(held.getCommandID("revive"), params);
+					held.SendCommand(held.getCommandID("server_revive"), params);
 				}
 				
 				return 0.0f;

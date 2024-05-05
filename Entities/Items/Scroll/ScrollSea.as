@@ -6,19 +6,19 @@ const u8 required_ground_at_Y = 8; //amount of ground tiles at the scroll's Y le
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("create water");
+	this.addCommandID("server_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("create water"), "Use this to generate a source of water.");
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), "Use this to generate a source of water.");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("create water"))
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
 		CMap@ map = getMap();
 		Vec2f pos = this.getPosition();
@@ -32,21 +32,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			ground_tiles++;
 			if (ground_tiles >= required_ground_at_Y)
 			{
-				if (isClient())
-				{
-					//effects
-					ParticleZombieLightning(pos);
-					Sound::Play("ResearchComplete.ogg");
-				}
-				
-				if (isServer())
-				{
-					map.server_setFloodWaterWorldspace(pos, true);
-					this.server_Die();
-				}
+				map.server_setFloodWaterWorldspace(pos, true);
+				this.server_Die();
 				
 				break;
 			}
 		}
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	ParticleZombieLightning(this.getPosition());
+	Sound::Play("ResearchComplete.ogg");
 }

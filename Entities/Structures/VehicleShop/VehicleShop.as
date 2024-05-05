@@ -11,6 +11,9 @@
 void onInit(CBlob@ this)
 {
 	this.set_TileType("background tile", CMap::tile_wood_back);
+	
+	ShopMadeItem@ onMadeItem = @onShopMadeItem;
+	this.set("onShopMadeItem handle", @onMadeItem);
 
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
@@ -81,26 +84,35 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	this.set_bool("shop available", this.isOverlapping(caller));
 }
 
+void onShopMadeItem(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id, caller_id, item_id;
+	string name;
+
+	if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	{
+		return;
+	}
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	if (name == "bomber")
+	{
+		// makes crate still drop gold if it breaks before it's unpacked
+		// Crate.as prevents gold from dropping if it dies after unpack
+		CBlob@ box = getBlobByNetworkID(item_id);
+		if (box !is null) box.set_s32("gold building amount", 50);
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
-		u16 caller, item;
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
-		{
-			return;
-		}
-		string name = params.read_string();
-		{
-			if (name == "bomber")
-			{
-				// makes crate still drop gold if it breaks before it's unpacked
-				// Crate.as prevents gold from dropping if it dies after unpack
-				CBlob@ box = getBlobByNetworkID(item);
-				if (box !is null) box.set_s32("gold building amount", 50);
-			}
-		}
 	}
 }
 

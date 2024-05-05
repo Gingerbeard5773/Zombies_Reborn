@@ -22,13 +22,11 @@ void onInit(CBlob@ this)
 {
 	this.Tag("huffpuff production");   // for production.as
 
-	this.addCommandID("upgrade factory menu");
 	this.addCommandID("upgrade factory");
-	this.addCommandID("complete upgrade factory");
+	this.addCommandID("client_upgrade_factory");
 	this.addCommandID("pause production");
 	this.addCommandID("unpause production");
 	this.addCommandID("attach worker");
-	this.addCommandID("sync worker tag bullshit");
 
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
@@ -58,9 +56,11 @@ void onTick(CBlob@ this)
 			CBitStream params;
 			params.write_netid(getWorkerID(this));
 			this.SendCommand(this.getCommandID(worker_out_cmd), params);
-
-			this.SendCommand(this.getCommandID("sync worker tag bullshit")); //why the fuck does .sync not fucking work i hate kag so fucking much.
-			//NOTHING EVER WORKS.
+			
+			this.Tag("production paused");
+			returnWorker(this, getHallsFor(this, BASE_RADIUS), worker);
+			this.Untag(worker_tag);
+			this.Sync(worker_tag, true);
 		
 			worker.set_netid("owner id", 0);
 		}
@@ -94,7 +94,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	else if (!hasTech(this) && caller.isOverlapping(this))
 	{
 		params.write_netid(caller.getNetworkID());
-		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), getTranslatedString("Convert Factory"), params);
+		caller.CreateGenericButton(12, Vec2f(0, 0), this, BuildUpgradeMenu, getTranslatedString("Convert Factory"));
 	}
 	else if (!this.hasTag(worker_tag))
 	{
@@ -109,6 +109,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 void AttachMigrantToFactory(CBlob@ this, CBlob@ migrant)
 {
 	migrant.server_DetachFromAll();
+	attachWorker(this, migrant, this.getShape().getHeight());
+	this.Tag(worker_tag);
+	this.Untag("production paused");
 	CBitStream params;
 	params.write_netid(migrant.getNetworkID());
 	this.SendCommand(this.getCommandID(worker_in_cmd), params);
@@ -118,12 +121,10 @@ void AttachMigrantToFactory(CBlob@ this, CBlob@ migrant)
 void BuildUpgradeMenu(CBlob@ this, CBlob@ caller)
 {
 	ScrollSet@ set = getScrollSet("factory options");
-	if (caller !is null && caller.isMyPlayer() && set !is null)
+	if (caller !is null && set !is null)
 	{
 		caller.ClearMenus();
-		//caller.Tag("dont clear menus"); // dont clear menus in StandardControls.as
 
-		CControls@ controls = caller.getControls();
 		int size = Maths::Ceil(Maths::Sqrt(set.names.length));
 		CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + Vec2f(0.0f, 50.0f), this, Vec2f(size, size), getTranslatedString("Upgrade to..."));
 		if (menu !is null)
@@ -189,12 +190,7 @@ void AddButtonsForSet(CBlob@ this, CBlob@ caller, CGridMenu@ menu, ScrollSet@ se
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("upgrade factory menu"))
-	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		BuildUpgradeMenu(this, caller);
-	}
-	else if (cmd == this.getCommandID("upgrade factory"))
+	if (cmd == this.getCommandID("upgrade factory"))
 	{
 		if (isServer() && this.get_string("tech name").size() == 0)
 		{
@@ -211,23 +207,25 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			if (this.get_u8("migrants count") > 0 || this.hasTag(worker_tag))
 			{
+				this.Untag("production paused");
 				this.SendCommand(this.getCommandID("unpause production"));
 			}
 			else
 			{
+				this.Tag("production paused");
 				this.SendCommand(this.getCommandID("pause production"));
 			}
 
+			AddProductionItemsFromTech(this, defname);
 			CBitStream bs;
 			bs.write_string(defname);
-			this.SendCommand(this.getCommandID("complete upgrade factory"), bs); //shitcode,  i dont really care... LOL !!!!
+			this.SendCommand(this.getCommandID("client_upgrade_factory"), bs); //shitcode,  i dont really care... LOL !!!!
 		}
 	}
-	else if (cmd == this.getCommandID("complete upgrade factory"))
+	else if (cmd == this.getCommandID("client_upgrade_factory"))
 	{
 		const string defname = params.read_string();
 
-		this.set_string("tech name", defname);
 		AddProductionItemsFromTech(this, defname);
 		this.getSprite().PlaySound("/ConstructShort.ogg");
 	}
@@ -241,20 +239,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.Untag("production paused");
 		this.getSprite().PlaySound("/PowerUp.ogg");
 	}
-	else if (cmd == this.getCommandID("attach worker"))
+	else if (cmd == this.getCommandID("attach worker") && isServer())
 	{
-		if (isServer())
+		CBlob@ worker = getBlobByNetworkID(params.read_netid());
+		if (worker !is null && !this.hasTag(worker_tag))
 		{
-			CBlob@ worker = getBlobByNetworkID(params.read_netid());
-			if (worker !is null && !this.hasTag(worker_tag))
-			{
-				AttachMigrantToFactory(this, worker);
-			}
+			AttachMigrantToFactory(this, worker);
 		}
-	}
-	else if (cmd == this.getCommandID("sync worker tag bullshit"))
-	{
-		this.Untag(worker_tag);
 	}
 }
 void AddProductionItemsFromTech(CBlob@ this, const string &in defname)
@@ -277,7 +268,11 @@ void AddProductionItemsFromTech(CBlob@ this, const string &in defname)
 			}
 		}
 
-		this.set_string("tech name", defname);
+		if (isServer())
+		{
+			this.set_string("tech name", defname);
+			this.Sync("tech name", true);
+		}
 		this.setInventoryName(def.name + " Factory");
 		this.inventoryIconFrame = def.scrollFrame;
 

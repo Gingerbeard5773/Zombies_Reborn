@@ -1,6 +1,6 @@
 #include "VehicleCommon.as"
 #include "Hitters.as"
-#include "ThrowCommon.as"
+#include "ActivationThrowCommon.as"
 
 // Boat logic
 
@@ -145,7 +145,7 @@ void HandleBombing(CBlob@ this)
 					item.setPosition(this.getPosition() + Vec2f(0, 12));
 					if (item.hasTag("activatable"))
 					{
-						server_ActivateCommand(this, item);
+						server_Activate(item);
 					}
 				}
 			}

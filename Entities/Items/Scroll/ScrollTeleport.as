@@ -5,46 +5,40 @@
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("teleport");
+	this.addCommandID("server_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
+	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, "Use this to teleport to the area you are pointing to.");
+}
 
-	CBitStream params;
-	params.write_netid(caller.getNetworkID());
-	params.write_Vec2f(caller.getAimPos());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("teleport"), "Use this to teleport to the area you are pointing to.", params);
+void Callback_Spell(CBlob@ this, CBlob@ caller)
+{
+	Vec2f aim = caller.getAimPos();
+	Vec2f pos = this.getPosition();
+	if ((aim - pos).Length() < 100.0f) return;
+	
+	CMap@ map = getMap();
+	TileType t = map.getTile(aim).type;
+	if (map.isTileSolid(t)) return;
+	
+	if (caller.isMyPlayer())
+	{
+		caller.setPosition(aim);
+	}
+	
+	ParticleTeleport(pos);
+	ParticleZombieLightning(aim);
+
+	this.SendCommand(this.getCommandID("server_execute_spell"));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("teleport"))
-	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		if (caller is null) return;
-		
-		Vec2f aim = params.read_Vec2f();
-		Vec2f pos = this.getPosition();
-		if ((aim - pos).Length() < 100.0f) return;
-		
-		CMap@ map = getMap();
-		TileType t = map.getTile(aim).type;
-		if (map.isTileSolid(t)) return;
-		
-		if (isClient())
-		{
-			//effects
-			ParticleTeleport(pos);
-			ParticleZombieLightning(aim);
-		}
-		
-		if (caller.isMyPlayer())
-		{
-			caller.setPosition(aim);
-		}
-		
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
+	{	
 		this.server_Die();
 	}
 }

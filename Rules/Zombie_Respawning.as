@@ -142,11 +142,13 @@ CBlob@ spawnPlayer(CRules@ this, CPlayer@ player)
 		newBlob.server_SetPlayer(player);
 		
 		//give the blob a parachute if spawning at roof
-		if (this.hasCommandID("give_parachute") && spawnPos.y <= 16)
+		if (this.hasCommandID("client_give_parachute") && spawnPos.y <= 16)
 		{
+			newBlob.AddScript("ParachuteEffect.as");
+
 			CBitStream bs;
 			bs.write_netid(newBlob.getNetworkID());
-			this.SendCommand(this.getCommandID("give_parachute"), bs);
+			this.SendCommand(this.getCommandID("client_give_parachute"), bs);
 		}
 		
 		return newBlob;

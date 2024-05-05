@@ -2,7 +2,7 @@
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("undead_attack");
+	this.addCommandID("undead_attack_client");
 }
 
 void onTick(CBlob@ this)
@@ -45,11 +45,8 @@ void onTick(CBlob@ this)
 				Vec2f bpos = b.getPosition();
 				if (!b.hasTag("player") && !b.hasTag("invincible") && (this.isFacingLeft() ? bpos.x < pos.x : bpos.x > pos.x))
 				{
-					CBitStream bs;
-					bs.write_netid(b.getNetworkID());
-					bs.write_f32(attackVars.damage * (b.hasTag("stone") ? 0.2f : 1));
-					bs.write_bool(false);
-					this.SendCommand(this.getCommandID("undead_attack"), bs);
+					server_UndeadAttack(this, b, attackVars.damage * (b.hasTag("stone") ? 0.2f : 1), false, attackVars);
+					this.SendCommand(this.getCommandID("undead_attack_client"));
 				}
 			}
 		}
@@ -66,8 +63,6 @@ void onTick(CBlob@ this)
 			Vec2f vec = this.getAimPos() - pos;
 			const f32 angle = vec.Angle();
 			
-			u16 hitID = 0;
-			
 			HitInfo@[] hitInfos;
 			if (map.getHitInfosFromArc(pos, -angle, 90.0f, this.getRadius() * 2 + attackVars.arc_length, this, @hitInfos))
 			{
@@ -75,48 +70,37 @@ void onTick(CBlob@ this)
 				for (u16 i = 0; i < hitLength; i++)
 				{
 					CBlob@ b = hitInfos[i].blob;
-					if (b !is null && b is target)
+					if (b is target)
 					{
-						hitID = b.getNetworkID();
+						server_UndeadAttack(this, b, attackVars.damage, true, attackVars);
 						break;
 					}
 				}
 			}
-			
-			CBitStream bs;
-			bs.write_netid(hitID);
-			bs.write_f32(attackVars.damage);
-			bs.write_bool(true);
-			this.SendCommand(this.getCommandID("undead_attack"), bs);
+
+			this.SendCommand(this.getCommandID("undead_attack_client"));
 		}
 	}
 }
 
+void server_UndeadAttack(CBlob@ this, CBlob@ target, const f32&in damage, const bool&in set_next, UndeadAttackVars@ attackVars)
+{
+	const Vec2f hitvel = target.getPosition() - this.getPosition();
+	this.server_Hit(target, target.getPosition(), hitvel, damage, attackVars.hitter, true);
+	
+	if (set_next)
+		attackVars.next_attack = getGameTime() + attackVars.frequency;
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("undead_attack"))
+	if (cmd == this.getCommandID("undead_attack_client") && isClient())
 	{
 		UndeadAttackVars@ attackVars;
 		if (!this.get("attackVars", @attackVars)) return;
-		
-		if (isClient())
-		{
-			CSprite@ sprite = this.getSprite();
-			sprite.SetAnimation("attack");
-			sprite.PlayRandomSound(attackVars.sound);
-		}
-		
-		if (isServer())
-		{
-			CBlob@ target = getBlobByNetworkID(params.read_netid());
-			if (target !is null)
-			{
-				const Vec2f hitvel = target.getPosition() - this.getPosition();
-				this.server_Hit(target, target.getPosition(), hitvel, params.read_f32(), attackVars.hitter, true);
-				
-				if (params.read_bool())
-					attackVars.next_attack = getGameTime() + attackVars.frequency;
-			}
-		}
+
+		CSprite@ sprite = this.getSprite();
+		sprite.SetAnimation("attack");
+		sprite.PlayRandomSound(attackVars.sound);
 	}
 }

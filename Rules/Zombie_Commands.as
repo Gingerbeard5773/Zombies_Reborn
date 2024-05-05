@@ -1,6 +1,7 @@
 // Zombie Fortress chat commands
 
 #include "RespawnCommon.as";
+#include "Zombie_SoftBansCommon.as";
 
 const string commandslist()
 {
@@ -72,17 +73,13 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 						warn("!softban:: missing perameters");
 						return false;
 					}
-					if (!this.hasCommandID("server_softban"))
-					{
-						warn("!softban:: CMD 'server_soft_ban' missing");
-						return false;
-					}
 					
-					CBitStream params;
-					params.write_string(tokens[1]);
-					params.write_string(tokens.length > 3 ? tokens[3] : "");
-					params.write_s32(parseInt(tokens[2])*60);
-					this.SendCommand(this.getCommandID("server_softban"), params, false);
+					SoftBan(tokens[1], tokens.length > 3 ? tokens[3] : "", parseInt(tokens[2])*60);
+					CPlayer@ bannedPlayer = getPlayerByUsername(tokens[1]);
+					if (bannedPlayer !is null)
+					{
+						SetUndead(this, bannedPlayer);
+					}
 				}
 			}
 			else

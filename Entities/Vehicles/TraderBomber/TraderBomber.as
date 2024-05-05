@@ -24,6 +24,9 @@ void onInit(CBlob@ this)
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 9, Vec2f(8, 8));
 	this.SetMinimapRenderAlways(true);
 	
+	ShopMadeItem@ onMadeItem = @onShopMadeItem;
+	this.set("onShopMadeItem handle", @onMadeItem);
+	
 	if (isServer())
 	{
 		//hack
@@ -253,53 +256,60 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	//this.set_bool("shop available", this.isOverlapping(caller));
 }
 
+void onShopMadeItem(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u8 s_index;
+	u16 this_id, caller_id, item_id;
+	string name;
+
+	if (!params.saferead_u8(s_index) || !params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	{
+		return;
+	}
+	
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	string[] spl = name.split("_");
+	if (name.findFirst("scroll") != -1)
+	{
+		CBlob@ scroll = server_MakePredefinedScroll(this.getPosition(), spl[1]);
+		if (scroll !is null)
+		{
+			if (caller !is null && !caller.server_PutInInventory(scroll))
+			{
+				scroll.setPosition(caller.getPosition());
+			}
+		}
+	}
+	else if (spl[0] == "coin")
+	{
+		CPlayer@ callerPlayer = caller.getPlayer();
+		if (callerPlayer is null) return;
+
+		callerPlayer.server_setCoins(callerPlayer.getCoins() +  parseInt(spl[1]));
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 		
-		u16 caller_netid, item;
-		if (!params.saferead_netid(caller_netid) || !params.saferead_netid(item))
-			return;
-
-		const string name = params.read_string();
 		const u8 s_index = params.read_u8();
-		
+
 		ShopItem[]@ shop_items;
 		if (!this.get(SHOP_ARRAY, @shop_items)) return;
 		
 		if (s_index >= shop_items.length) return;
 		ShopItem@ s = shop_items[s_index];
-		if (isClient())
-		{
-			s.customData = s.customData == 255 ? 255 : Maths::Max(s.customData - 1, 0);
-		}
-		
-		CBlob@ caller = getBlobByNetworkID(caller_netid);
-
-		if (isServer())
-		{
-			string[] spl = name.split("_");
-			if (name.findFirst("scroll") != -1)
-			{
-				CBlob@ scroll = server_MakePredefinedScroll(this.getPosition(), spl[1]);
-				if (scroll !is null)
-				{
-					if (caller !is null && !caller.server_PutInInventory(scroll))
-					{
-						scroll.setPosition(caller.getPosition());
-					}
-				}
-			}
-			else if (spl[0] == "coin")
-			{
-				CPlayer@ callerPlayer = caller.getPlayer();
-				if (callerPlayer is null) return;
-
-				callerPlayer.server_setCoins(callerPlayer.getCoins() +  parseInt(spl[1]));
-			}
-		}
+		s.customData = s.customData == 255 ? 255 : Maths::Max(s.customData - 1, 0);
 	}
 }
 

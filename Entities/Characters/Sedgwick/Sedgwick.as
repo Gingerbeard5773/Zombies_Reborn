@@ -34,8 +34,6 @@ void onInit(CBlob@ this)
 	this.SetLight(false);
 	this.SetLightRadius(75.0f);
 	this.SetLightColor(SColor(255, 150, 240, 171));
-	
-	this.addCommandID("cast spell");
 
 	server_SetSpell(this, XORRandom(spell_end));
 }
@@ -71,22 +69,8 @@ void onTick(CBlob@ this)
 			this.getShape().SetStatic(true);
 		}
 		
-		if (isServer())
-		{
-			CBitStream params;
-			params.write_u8(this.get_u8("spell num"));
-			params.write_u8(this.get_u8("spell countdown"));
-			this.SendCommand(this.getCommandID("cast spell"), params);
-		}
-	}
-}
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
-{
-	if (cmd == this.getCommandID("cast spell"))
-	{
-		const u8 spell = params.read_u8();
-		const u8 countdown = params.read_u8();
+		const u8 spell = this.get_u8("spell num");
+		const u8 countdown = this.get_u8("spell countdown");
 		switch(spell)
 		{
 			case spell_skeleton:  SpellSkeletonRain(this, countdown);  break;
@@ -95,10 +79,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			case spell_portal:    SpellPortal(this, countdown);        break;
 			case spell_end:       SedgwickDeparture(this, countdown);  break;
 		}
-		
+
 		if (isServer())
 		{
 			this.set_u8("spell countdown", Maths::Max(this.get_u8("spell countdown") - 1, 0));
+			this.Sync("spell countdown", true);
 		}
 	}
 }
@@ -382,7 +367,9 @@ void server_SetSpell(CBlob@ this, const u8&in spell_num)
 	if (!isServer()) return;
 	
 	this.set_u8("spell num", spell_num);
+	this.Sync("spell num", true);
 	this.set_u8("spell countdown", spell_countdown[spell_num]);
+	this.Sync("spell countdown", true);
 	
 	if (spell_num == spell_portal)
 	{

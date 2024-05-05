@@ -1,6 +1,5 @@
 ﻿#include "Hitters.as";
-const u8 TIME_TO_EXPLODE = 5; //seconds
-const s32 TIME_TO_ENRAGE = 45 * 30;
+#include "WraithCommon.as";
 
 const int COINS_ON_DEATH = 10;
 
@@ -37,7 +36,7 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().removeIfTag = "dead";
 	
-	this.addCommandID("enrage");
+	this.addCommandID("enrage_client");
 }
 
 void onTick(CBlob@ this)
@@ -52,7 +51,7 @@ void onTick(CBlob@ this)
 			const u8 delay = this.get_u8("brain_delay");
 			if ((this.isKeyPressed(key_action1) && delay == 0 && !this.hasTag("exploding")) || auto_explode_timer < 0)
 			{
-				SetEnraged(this);
+				server_SetEnraged(this);
 			}
 			this.set_u8("brain_delay", Maths::Max(0, delay - 1));
 		}
@@ -61,16 +60,6 @@ void onTick(CBlob@ this)
 	if (isClient() && this.hasTag("exploding") && XORRandom(128) == 0)
 	{
 		this.getSprite().PlaySound("/WraithDie");
-	}
-}
-
-void SetEnraged(CBlob@ this, const bool &in enrage = true)
-{
-	if (isServer())
-	{
-		CBitStream params;
-		params.write_bool(enrage);
-		this.SendCommand(this.getCommandID("enrage"), params);
 	}
 }
 
@@ -96,15 +85,15 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	
 	if (customData == Hitters::fire)
 	{
-		SetEnraged(this);
+		server_SetEnraged(this);
 	}
 	else if (isWaterHitter(customData) && this.hasTag("exploding"))
 	{
-		SetEnraged(this, false);
+		server_SetEnraged(this, false);
 	}
 	else if (this.getPlayer() !is null && customData == Hitters::suicide)
 	{
-		SetEnraged(this);
+		server_SetEnraged(this);
 		return 0.0f; //don't allow insta explode
 	}
 
@@ -113,16 +102,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("enrage"))
+	if (cmd == this.getCommandID("enrage_client") && isClient())
 	{
 		const bool enrage = params.read_bool();
 		if (enrage)
 		{
-			//get mad!
-
-			this.Tag("exploding");
-			this.server_SetTimeToDie(TIME_TO_EXPLODE);
-
 			this.getSprite().PlaySound("/WraithDie");
 
 			this.SetLight(true);
@@ -131,26 +115,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		}
 		else
 		{
-			//reset back to normal
-
-			this.Untag("exploding");
-			this.server_SetTimeToDie(-1); //-1 stops the timer
-
-			this.getBrain().SetTarget(null);
-			this.set_u8("brain_delay", 250); //do a fake stun
-
 			this.SetLight(false);
-
-			if (isClient())
+			this.getSprite().PlaySound("Steam.ogg");
+			
+			//steam particles
+			for (u8 i = 0; i < 5; i++)
 			{
-				this.getSprite().PlaySound("Steam.ogg");
-				
-				//steam particles
-				for (u8 i = 0; i < 5; i++)
-				{
-					Vec2f vel = getRandomVelocity(-90.0f, 2, 360.0f);
-					ParticleAnimated("MediumSteam", this.getPosition(), vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, false);
-				}
+				Vec2f vel = getRandomVelocity(-90.0f, 2, 360.0f);
+				ParticleAnimated("MediumSteam", this.getPosition(), vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, false);
 			}
 		}
 	}

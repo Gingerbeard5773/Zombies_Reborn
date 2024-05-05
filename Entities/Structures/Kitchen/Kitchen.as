@@ -18,7 +18,7 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().tickFrequency = 30; //once a second
 	
-	this.addCommandID("set");
+	this.addCommandID("server_set_crafting");
 
 	this.set_u8("crafting", 0);
 	this.set_u16("craft_time", craft_time_seconds);
@@ -107,43 +107,52 @@ shared class CraftItem
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!isInventoryAccessible(this, caller)) return;
-	
-	CBitStream params;
-	params.write_u16(caller.getNetworkID());
-
 	CButton@ button = caller.CreateGenericButton("$craft_icon"+this.get_u8("crafting")+"$", Vec2f(4,0), this, CraftMenu, "Set Recipe");
 }
 
 void CraftMenu(CBlob@ this, CBlob@ caller)
 {
-	if (caller.isMyPlayer())
+	if (!caller.isMyPlayer()) return;
+
+	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, 0.0f), this, craft_menu_size, "Recipes");
+	if (menu !is null)
 	{
-		CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, 0.0f), this, craft_menu_size, "Recipes");
-		if (menu !is null)
+		for (u8 i = 0; i < items.length; i++)
 		{
-			for (u8 i = 0; i < items.length; i++)
-			{
-				CraftItem@ item = items[i];
+			CraftItem@ item = items[i];
 
-				CBitStream pack;
-				pack.write_u8(i);
-				
-				const bool isSelected = this.get_u8("crafting") == i;
-				const string food_name = item.title.split("\n")[0];
+			CBitStream params;
+			params.write_netid(this.getNetworkID());
+			params.write_u8(i);
+			
+			const bool isSelected = this.get_u8("crafting") == i;
+			const string food_name = item.title.split("\n")[0];
 
-				const string text = (isSelected ? "Current" : "Set") + " Recipe: " + food_name;
+			const string text = (isSelected ? "Current" : "Set") + " Recipe: " + food_name;
 
-				CGridButton@ butt = menu.AddButton("$craft_icon" + i + "$", text, this.getCommandID("set"), pack);
-				butt.hoverText = item.title + "\n\n" + getButtonRequirementsText(item.reqs, false);
-				butt.SetEnabled(!isSelected);
-			}
+			CGridButton@ butt = menu.AddButton("$craft_icon" + i + "$", text, "Kitchen.as", "Callback_SetCrafting", params);
+			butt.hoverText = item.title + "\n\n" + getButtonRequirementsText(item.reqs, false);
+			butt.SetEnabled(!isSelected);
 		}
 	}
 }
 
+void Callback_SetCrafting(CBitStream@ params)
+{
+	CBlob@ this = getBlobByNetworkID(params.read_netid());
+	if (this is null) return;
+
+	const u8 id = params.read_u8();
+	this.set_u8("crafting", id);
+	
+	CBitStream bs;
+	bs.write_u8(id);
+	this.SendCommand(this.getCommandID("server_set_crafting"), bs);
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("set"))
+	if (cmd == this.getCommandID("server_set_crafting") && isServer())
 	{
 		this.set_u8("crafting", params.read_u8());
 	}

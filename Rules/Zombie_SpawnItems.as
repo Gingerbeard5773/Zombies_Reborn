@@ -138,19 +138,16 @@ void server_SpawnMats(CBlob@ blob, const string&in name, const int&in quantity)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID(give_items_cmd))
+	if (cmd == this.getCommandID(give_items_cmd) && isServer())
 	{
-		if (isServer())
-		{
-			CPlayer@ player = getPlayerByNetworkId(params.read_u16());
-			CBlob@ blob = getBlobByNetworkID(params.read_netid());
-			if (player is null || blob is null) return;
-			
-			const bool checkTimeAlive = params.read_bool();
-			if (checkTimeAlive && blob.getTickSinceCreated() > 10) return;
-			
-			server_GiveMats(this, player, blob);
-		}
+		CPlayer@ player = getPlayerByNetworkId(params.read_u16());
+		CBlob@ blob = getBlobByNetworkID(params.read_netid());
+		if (player is null || blob is null) return;
+		
+		const bool checkTimeAlive = params.read_bool();
+		if (checkTimeAlive && blob.getTickSinceCreated() > 10) return;
+		
+		server_GiveMats(this, player, blob);
 	}
 }
 

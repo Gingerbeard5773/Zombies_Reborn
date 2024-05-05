@@ -1,6 +1,5 @@
 // Zombie Fortress settings
 
-#include "GameplayEvents.as";
 #include "Zombie_Scrolls.as";
 
 void onInit(CRules@ this)
@@ -17,11 +16,8 @@ void onInit(CRules@ this)
 	
 	AddIcons();
 	AddFonts();
-	
-	SetupGameplayEvents(this);
+
 	SetupScrolls(this);
-	
-	this.addCommandID("server_softban"); //Zombie_SoftBans.as
 }
 
 void AddIcons()

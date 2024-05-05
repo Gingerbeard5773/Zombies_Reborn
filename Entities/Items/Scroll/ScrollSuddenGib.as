@@ -5,7 +5,7 @@
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("sudden gib");
+	this.addCommandID("server_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -14,15 +14,14 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	CBitStream params;
 	params.write_netid(caller.getNetworkID());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("sudden gib"), getTranslatedString("Use this to make all visible enemies instantly turn into a pile of gibs."), params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), getTranslatedString("Use this to make all visible enemies instantly turn into a pile of gibs."), params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("sudden gib"))
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
 		Vec2f pos = this.getPosition();
-		ParticleZombieLightning(pos);
 
 		bool hit = false;
 		CBlob@ caller = getBlobByNetworkID(params.read_netid());
@@ -50,7 +49,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (hit)
 		{
 			this.server_Die();
-			Sound::Play("SuddenGib.ogg");
 		}
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	ParticleZombieLightning(this.getPosition());
+	Sound::Play("SuddenGib.ogg");
 }
