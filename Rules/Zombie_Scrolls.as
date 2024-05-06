@@ -7,7 +7,7 @@
 // 1) set the scroll information here, such as the name, frame, and scripts the scroll uses.
 // 2) create the scripts the scroll will use.
 // 3) add the scroll's scripts to LoadScripts.cfg, otherwise the scripts will not work on server
-// 5) test out your scroll by typing '!scroll [scrollname]' in chat
+// 4) test out your scroll by typing '!scroll [scrollname]' in chat
 
 void SetupScrolls(CRules@ this)
 {

@@ -35,6 +35,7 @@ void Heal(CBlob@ this, CBlob@ food)
 	if (isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() && !food.hasTag("healed") && exists)
 	{
 		u8 heal_amount = getHealingAmount(food);
+		if (heal_amount <= 0) return;
 
 		if (heal_amount == 255)
 		{
