@@ -13,15 +13,12 @@ class MountedBowInfo : VehicleInfo
 			f32 angle = wep_angle * sign;
 			angle += (XORRandom(512) - 256) / 64.0f;
 
-			const f32 arrow_speed = 25.0f;
+			const f32 arrow_speed = 20.0f;
 			Vec2f vel = Vec2f(arrow_speed * sign, 0.0f).RotateBy(angle);
 			bullet.setVelocity(vel);
 
-			// set much higher drag than archer arrow
-			bullet.getShape().setDrag(bullet.getShape().getDrag() * 2.0f);
-
 			bullet.server_SetTimeToDie(-1);   // override lock
-			bullet.server_SetTimeToDie(0.69f);
+			bullet.server_SetTimeToDie(2.69f);
 			bullet.Tag("bow arrow");
 		}
 	}
@@ -112,14 +109,6 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 		gunner.offsetZ = 5.0f;
 		Vec2f aimpos = operator.getPlayer() is null ? operator.getAimPos() : gunner.getAimPos();
 		Vec2f aim_vec = gunner.getPosition() - aimpos;
-		
-		if (isServer() && operator.getPlayer() is null && operator.isKeyPressed(key_action1) && v.canFire())
-		{
-			CBitStream fireParams;
-			fireParams.write_u16(operator.getNetworkID());
-			fireParams.write_u8(0);
-			this.SendCommand(this.getCommandID("fire"), fireParams);
-		}
 
 		if (this.isAttached())
 		{

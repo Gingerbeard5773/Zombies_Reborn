@@ -60,11 +60,13 @@ class VehicleInfo
 	{
 		return (getGameTime() > fire_time);
 	}
-
-	bool canFire(CBlob@ blob, AttachmentPoint@ ap)
+	
+	bool canFire(CBlob@ blob, AttachmentPoint@ ap, CBlob@ caller = null)
 	{
 		// OVERLOAD ME
-		return ap.isKeyPressed(key_action1) || blob.isKeyPressed(key_action1);
+		if (caller !is null)
+			return ap.isKeyPressed(key_action1) || caller.isKeyPressed(key_action1);
+		return ap.isKeyPressed(key_action1);
 	}
 
 	void onFire(CBlob@ blob, CBlob@ bullet, const u16 &in fired_charge)
@@ -479,7 +481,7 @@ void Vehicle_GunnerControls(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, Vehic
 	
 	//allow non-players to shoot vehicle weapons
     const bool isBot = blob.getPlayer() is null || (blob.getPlayer() !is null && blob.getPlayer().isBot());
-    if (isServer() && v.canFire(this, ap) && isBot && v.canFire())
+    if (isServer() && v.canFire(this, ap, blob) && isBot && v.canFire())
     {
         CBitStream bt;
         bt.write_u16(blob.getNetworkID());

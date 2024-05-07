@@ -46,8 +46,9 @@ void onTick(CBrain@ this)
 			if (blob.isAttachedToPoint("GUNNER") && target !is null && target.getHealth() > target.get_f32("gib health"))
 			{
 				//turret mode
+				if ((blob.getAimPos() - target.getPosition()).Length() < 15 && !getMap().rayCastSolid(blob.getPosition(), target.getPosition()))
+					blob.setKeyPressed(key_action1, true);
 				blob.setAimPos(target.getPosition());
-				blob.setKeyPressed(key_action1, true);
 			}
 			else if (!Runaway(this, blob, target))
 			{
