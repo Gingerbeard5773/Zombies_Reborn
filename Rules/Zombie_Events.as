@@ -196,7 +196,7 @@ void doSkelepedeEvent(CRules@ this, CMap@ map)
 		survivorsCount++;
 	}
 
-	const u8 amount = 3 + Maths::Min(survivorsCount / 5, 3);
+	const u8 amount = 1 + Maths::Floor(survivorsCount / 8);
 	for (u8 i = 0; i < amount; ++i)
 	{
 		Vec2f spawn(XORRandom(dim.x), dim.y + 50 + XORRandom(600));

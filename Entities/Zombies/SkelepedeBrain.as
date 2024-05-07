@@ -25,7 +25,7 @@ void onTick(CBrain@ this)
 	{
 		destination = target.getPosition();
 		// check if the target needs to be dropped
-		if (ShouldLoseTarget(blob, target))
+		if (ShouldLoseTarget(blob, target) || XORRandom(70) == 0)
 		{
 			this.SetTarget(null);
 			return;
@@ -33,7 +33,8 @@ void onTick(CBrain@ this)
 	}
 	else
 	{
-		SetBestTarget(this, blob, blob.get_f32("brain_target_rad"));
+		if (XORRandom(10) == 0)
+			SetBestTarget(this, blob, blob.get_f32("brain_target_rad"));
 
 		destination = blob.get_Vec2f("brain_destination");
 		if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 60 || XORRandom(70) == 0)
@@ -58,7 +59,7 @@ void NewDestination(CBlob@ blob, CMap@ map)
 	if (x >= dim.x || x <= 0.0f) //stay within map boundaries
 		destination = Vec2f_zero;
 	else
-		destination = Vec2f(x, map.getLandYAtX(x / map.tilesize) * map.tilesize);
+		destination = Vec2f(x, (map.getLandYAtX(x / map.tilesize) * map.tilesize) - XORRandom(140) + 40);
 
 	// set destination
 	blob.set_Vec2f("brain_destination", destination);

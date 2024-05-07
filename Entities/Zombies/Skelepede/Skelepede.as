@@ -1,5 +1,6 @@
 ﻿#include "UndeadAttackCommon.as";
 #include "MakeDustParticle.as";
+#include "Hitters.as";
 
 const int COINS_ON_DEATH = 100;
 
@@ -13,13 +14,14 @@ void onInit(CBlob@ this)
 	this.set("attackVars", attackVars);
 	
 	if (!this.exists("skelepede_segment_amount"))
-		this.set_u8("skelepede_segment_amount", 25);
-
-	CSprite@ sprite = this.getSprite();
-	sprite.SetEmitSound("SkelepedeDig");
-	sprite.SetEmitSoundPaused(false);
+		this.set_u8("skelepede_segment_amount", 34);
 
 	this.getAttachments().getAttachmentPointByName("PICKUP").offsetZ = -5;
+	
+	CSprite@ sprite = this.getSprite();
+	sprite.SetEmitSound("subchattercentipede");
+	sprite.SetEmitSoundPaused(false);
+	sprite.SetEmitSoundVolume(0.1f);
 
 	CShape@ shape = this.getShape();
 	//shape.getConsts().net_threshold_multiplier = -1;
@@ -38,6 +40,8 @@ void onInit(CBlob@ this)
 	this.Tag("winged");
 	this.Tag("flesh");
 	this.Tag("see_through_walls");
+	this.Tag("ignore_saw");
+	this.Tag("sawed"); //dont get sawed
 	
 	this.getCurrentScript().removeIfTag = "dead";
 	
@@ -60,11 +64,6 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (isClient() && XORRandom(768) == 0)
-	{
-		//this.getSprite().PlaySound("/SkeletonSayDuh");
-	}
-
 	this.setAngleDegrees(90 * (this.isFacingLeft() ? -1 : 1) - this.getVelocity().AngleDegrees());
 
 	GoSomewhere(this);
@@ -81,35 +80,78 @@ void GoSomewhere(CBlob@ this)
     CSprite@ sprite = this.getSprite();
     Vec2f destination = this.getAimPos();
 
-    const bool solidGround = map.isTileSolid(pos);
-    const bool wasSolidGround = map.isTileSolid(this.getOldPosition());
-    const bool inGround = solidGround || areSegmentsInGround(this, map) || pos.y >= map.getMapDimensions().y;
+    const bool inGround = map.isTileSolid(pos) || pos.y >= map.getMapDimensions().y;
+    const bool wasSolidGround = map.isTileSolid(this.getOldPosition()) || this.getOldPosition().y >= map.getMapDimensions().y;
+	const bool SegmentsInGround = areSegmentsInGround(this, map);
+	
+	//effects
     if (isClient())
     {
-        if ((!solidGround && wasSolidGround) || (solidGround && !wasSolidGround) && pos.y < map.getMapDimensions().y - map.tilesize)
+		//effects when surfacing
+        if ((!inGround && wasSolidGround) || (inGround && !wasSolidGround) && pos.y < map.getMapDimensions().y - map.tilesize)
         {
-            sprite.PlaySound("/rocks_explode"+(1+XORRandom(2)), 0.4f, 0.8f);
+           // sprite.PlaySound("/rocks_explode"+(1+XORRandom(2)), 0.4f, 0.8f);
             MakeDustParticle(this.getPosition(), "/Dust2.png");
         }
+		
+		//particle effects in front of the skelepede's path, to help players expect where it will surface
+		if (inGround && getGameTime() % 3 == 0)
+		{
+			//fake raycasting
+			Vec2f dir = this.getVelocity();
+			dir.Normalize();
+			const f32 step = map.tilesize * 0.5f;
+			Vec2f checkPos = this.getPosition() + dir * step;
+			for (u8 i = 0; i < 20; i++)
+			{
+				if (!map.isTileSolid(checkPos))
+				{
+					MakeDustParticle(checkPos, "/Dust2.png");
+					break;
+				}
+				checkPos += dir * step;
+			}
+		}
+		
+		//set a second emitsound
+		u16[] segment_netids;
+		if (this.get("skelepede_segment_netids", segment_netids) && segment_netids.length > 1)
+		{
+			CBlob@ second_segment = getBlobByNetworkID(segment_netids[1]);
+			if (second_segment !is null)
+			{
+				CSprite@ segment_sprite = second_segment.getSprite();
+				segment_sprite.SetEmitSound("chattercentipede2");
+				segment_sprite.SetEmitSoundPaused(false);
+				const f32 volume = segment_sprite.getEmitSoundVolume() + (inGround ? -0.014f : 0.01f);
+				segment_sprite.SetEmitSoundVolume(Maths::Clamp(volume, 0.0f, 0.4f));
+			}
+		}
+		
+		//sound when surfacing for the first time
+		if (!inGround && !this.hasTag("skelepede roar"))
+		{
+			sprite.PlaySound("spawncentipede", 1.2f, 1.0f);
+			this.Tag("skelepede roar");
+		}
     }
 
-    if (inGround)
+    if (inGround || SegmentsInGround)
     {
         ShakeScreen(25, 8, pos);
-        sprite.SetEmitSoundVolume(vel.Length() * 0.2f);
+        sprite.SetEmitSoundVolume(vel.Length() * 0.15f);
         shape.setDrag(0.61);
         shape.SetGravityScale(0);
     }
     else
     {
-        if (XORRandom(250) == 0)
-            sprite.PlaySound("SkelepedeAttack", 0.8f, 2.0f);
         sprite.SetEmitSoundVolume(sprite.getEmitSoundVolume() * 0.85f);
         shape.setDrag(0.042);
         shape.SetGravityScale(0.5);
     }
 
-	if (inGround)
+	//movement
+	if (inGround || SegmentsInGround)
     {
         Vec2f vec(0,0);
         if (this.hasAttached())
@@ -122,7 +164,7 @@ void GoSomewhere(CBlob@ this)
             // Directly target the player
             vec = destination - Vec2f(0.0f, 128.0f) - pos;
         }
-        else if (vel.Length() < 1.8f && (destination - pos).Length() < this.get_f32("brain_target_rad"))
+        else if (vel.Length() < 1.8f && (destination - pos).Length() < this.get_f32("brain_target_rad") && Maths::Abs(destination.x - pos.x) > 16.0f)
         {
             // Move below ground
             vec = Vec2f(destination.x, map.getMapDimensions().y) - pos;
@@ -148,7 +190,7 @@ void GoSomewhere(CBlob@ this)
 
         vec.Normalize();
         vec *= 0.3;
-        this.setVelocity(cappedVel(vel + vec, 4.4f));
+        this.setVelocity(cappedVel(vel + vec, 3.2f));
     }
 }
 
@@ -157,7 +199,7 @@ Vec2f cappedVel(Vec2f &in velocity, f32 &in cap)
     return Vec2f(Maths::Clamp(velocity.x, -cap, cap), Maths::Clamp(velocity.y, -cap, cap));
 }
 
-bool areSegmentsInGround(CBlob@ this, CMap@ map, const u8 &in segmentsToCheck = 7)
+bool areSegmentsInGround(CBlob@ this, CMap@ map, const u8 &in segmentsToCheck = 13)
 {
 	u16[] segment_netids;
 	if (!this.get("skelepede_segment_netids", segment_netids)) return false;
@@ -232,6 +274,20 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	if (!isServer() || blob is null) return;
 	
+	//dont allow players to hide in crates
+	if (blob.getName() == "crate")
+	{
+		CInventory@ inv = blob.getInventory();
+		for (int i = 0; i < inv.getItemsCount(); i++)
+		{
+			CBlob@ item = inv.getItem(i);
+			if (item.hasTag("player"))
+			{
+				blob.server_Die();
+				break;
+			}
+		}
+	}
 	if (blob.hasTag("player") && !blob.hasTag("undead") && !blob.hasTag("dead") && !this.hasAttached())
 	{
 		//attach victim to mouth
@@ -264,6 +320,15 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		this.getSprite().PlaySound("/SkeletonHit");
 	}
+	
+	switch(customData)
+	{
+		case Hitters::ballista:     damage *= 3.5f; break;
+		case Hitters::cata_boulder: damage *= 2.0f; break;
+		case Hitters::bomb_arrow:   damage *= 4.2f; break;
+		case Hitters::arrow:        damage *= 1.2f; break;
+		case Hitters::suddengib:    damage *= 4.0f; break;
+	}
 
 	if (damage > this.getHealth() && !this.hasTag("dead"))
 	{
@@ -279,7 +344,7 @@ void onDie(CBlob@ this)
 {
 	if (isClient())
 	{
-		this.getSprite().PlaySound("GregRoar.ogg", 1.5f, 0.8f);
+		this.getSprite().PlaySound("killcentipede.ogg", 1.5f, 0.8f);
 	}
 	
 	//kill all segments if this dies
@@ -347,6 +412,18 @@ bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 		{
 			warn("Skelepede::onReceiveCreateData - missing segmentID");
 			return false;
+		}
+		
+		if (i == 1)
+		{
+			CBlob@ second_segment = getBlobByNetworkID(segmentID);
+			if (second_segment !is null)
+			{
+				CSprite@ segment_sprite = second_segment.getSprite();
+				segment_sprite.SetEmitSound("chattercentipede2");
+				segment_sprite.SetEmitSoundPaused(false);
+				segment_sprite.SetEmitSoundVolume(0.0f);
+			}
 		}
 		
 		this.push("skelepede_segment_netids", segmentID);

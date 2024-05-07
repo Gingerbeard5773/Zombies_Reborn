@@ -34,7 +34,7 @@ void AssignBodySize(CBlob@ this)
 {
 	CSprite@ sprite = this.getSprite();
 	CBlob@ head = getBlobByNetworkID(this.get_netid("skelepede_head_netid"));
-	const u8 total_segments = head !is null ? head.get_u8("skelepede_segment_amount") : 25;
+	const u8 total_segments = head !is null ? head.get_u8("skelepede_segment_amount") : 34;
 
 	//set body sprite depending on where we are in the chain
 	const u8 body_num = this.get_u8("skelepede_body_num");
