@@ -37,7 +37,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		return;
 	}
 
-	if (this.getName() == "heart" && isServer() && !blob.hasTag("dead"))
+	if ((this.getName() == "heart" || this.getName() == "flowers") && isServer() && !blob.hasTag("dead"))
 	{
 		Heal(blob, this);
 	}
