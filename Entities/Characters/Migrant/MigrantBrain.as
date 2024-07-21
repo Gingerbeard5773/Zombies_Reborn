@@ -52,6 +52,8 @@ void onTick(CBrain@ this)
 			}
 			else if (!Runaway(this, blob, target))
 			{
+				if (blob.getHealth() <= blob.getInitialHealth() - blob.getInitialHealth() / 4.0f) //missing atleast a fourth of our health
+					FindDormitory(blob);
 				blob.set_u8("strategy", Strategy::find_teammate);
 				this.SetTarget(null);
 			}
@@ -105,6 +107,22 @@ void SetStrategy(CBlob@ blob, const u8 &in strategy)
 {
 	blob.set_u8("strategy", strategy);
 	blob.Sync("strategy", true);
+}
+
+void FindDormitory(CBlob@ blob)
+{
+	CBlob@[] dorms;
+	if (!getBlobsByName("dorm", @dorms)) return;
+	
+	for (u8 i = 0; i < dorms.length; i++)
+	{
+		CBlob@ dorm = dorms[i];
+		if (blob.getDistanceTo(dorm) < 300.0f)
+		{
+			blob.set_Vec2f("brain_destination", dorm.getPosition());
+			break;
+		}
+	}
 }
 
 Vec2f getWaypoint(Vec2f &in position)

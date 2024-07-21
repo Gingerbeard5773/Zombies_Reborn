@@ -137,7 +137,9 @@ CBlob@ spawnPlayer(CRules@ this, CPlayer@ player)
 			blob.server_Die();
 		}
 
-		Vec2f spawnPos = getSpawnLocation();
+		CBlob@ respawn_point = getBlobByNetworkID(player.getSpawnPoint());
+		Vec2f spawnPos = respawn_point !is null ? respawn_point.getPosition() : getSpawnLocation();
+
 		CBlob@ newBlob = server_CreateBlob(startClass, 0, spawnPos);
 		newBlob.server_SetPlayer(player);
 		

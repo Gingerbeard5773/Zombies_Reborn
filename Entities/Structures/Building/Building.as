@@ -83,6 +83,12 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Factory", getTeamIcon("factory", "Factory.png", team_num, Vec2f(40, 24), 3), "factory", "A generic factory for various items. Requires a free worker to produce items.");
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 100);
 	}
+	{
+		ShopItem@ s = addShopItem(this, "Dormitory", getTeamIcon("dorm", "Dorm.png", team_num, Vec2f(40, 24), 5), "dorm", "A dorm for recruiting and healing workers. Functions as a respawn point.");
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", 100);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 100);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
