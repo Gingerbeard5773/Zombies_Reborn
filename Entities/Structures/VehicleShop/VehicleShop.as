@@ -45,7 +45,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		const string bomber_icon = getTeamIcon("bomber", "Icon_Bomber.png", team_num, Vec2f(44, 74), 0);
-		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", "A balloon capable of flying. Allows vehicle attachments.", false, true);
+		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", "A balloon capable of flying. Allows vehicle attachments. Press [Space] to drop bombs.", false, true);
 		s.crate_icon = 7;
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
