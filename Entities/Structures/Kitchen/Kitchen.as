@@ -1,12 +1,8 @@
 ﻿// Kitchen
 
 #include "Requirements.as";
+#include "CraftItemCommon.as"
 #include "FireParticle.as";
-
-const u16 craft_time_seconds = 30;
-const Vec2f craft_menu_size(5, 1);
-
-CraftItem@[] items;
 
 void onInit(CBlob@ this)
 {
@@ -17,11 +13,6 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 
 	this.getCurrentScript().tickFrequency = 30; //once a second
-	
-	this.addCommandID("server_set_crafting");
-
-	this.set_u8("crafting", 0);
-	this.set_u16("craft_time", craft_time_seconds);
 
 	this.SetLight(false);
 	this.SetLightRadius(75.0f);
@@ -41,190 +32,48 @@ void onInit(CBlob@ this)
 		addFoodItem(this, "Russian Burger", 6, "A hamburger made of a veiny old person.", 30, 1, @requirements);
 	}*/
 	
-	addRecipes();
-}
-
-void onReload(CBlob@ this) //for dev
-{
-	addRecipes();
-}
-
-void addRecipes()
-{
-	if (items.length > 0) return;
+	Craft craft();
+	craft.menu_size = Vec2f(5, 1);
+	craft.button_offset = Vec2f(4, 0);
+	craft.produce_sound = "Cooked.ogg";
+	craft.icon_image = "Food.png";
+	this.set("Craft", @craft); 
 	
 	{
-		CraftItem i("bread", 1, "Bread\nDelicious crunchy whole-wheat bread.\n$heart_full$$heart_half$", 4);
+		CraftItem i("bread", "Bread\nDelicious crunchy whole-wheat bread.\n$heart_full$$heart_half$", 4, 30);
 		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 20);
-		items.push_back(i);
+		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("cake", 1, "Cake\nFluffy cake made from egg and wheat.\n$heart_full$$heart_full$$heart_full$", 5);
+		CraftItem i("cake", "Cake\nFluffy cake made from egg and wheat.\n$heart_full$$heart_full$$heart_full$", 5, 30);
 		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 15);
 		AddRequirement(i.reqs, "blob", "egg", "Egg", 1);
-		items.push_back(i);
+		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("cookedfish", 1, "Cooked Fish\nA cooked fish on a stick.\n$heart_full$$heart_full$$heart_full$$heart_half$", 1);
+		CraftItem i("cookedfish", "Cooked Fish\nA cooked fish on a stick.\n$heart_full$$heart_full$$heart_full$$heart_half$", 1, 30);
 		AddRequirement(i.reqs, "blob", "fishy", "Fish", 1);
-		items.push_back(i);
+		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("cookedsteak", 1, "Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_full$", 0);
+		CraftItem i("cookedsteak", "Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_full$", 0, 30);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
-		items.push_back(i);
+		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("food", 1, "Burger\nSeared meat in a bun, bisons love it!\n$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_half$", 6);
+		CraftItem i("food", "Burger\nSeared meat in a bun, bisons love it!\n$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_half$", 6, 30);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
 		AddRequirement(i.reqs, "blob", "bread", "Bread", 1);
-		items.push_back(i);
-	}
-	
-	for (u8 i = 0; i < items.length; i++)
-	{
-		AddIconToken("$craft_icon" + i + "$", "Food.png", Vec2f(16, 16), items[i].icon);
-	}
-}
-
-shared class CraftItem
-{
-	string resultname;
-	u32 resultcount;
-	u8 icon;
-	string title;
-	CBitStream reqs;
-
-	CraftItem(const string resultname, const u32 resultcount, const string title, const u8 icon)
-	{
-		this.resultname = resultname;
-		this.resultcount = resultcount;
-		this.title = title;
-		this.icon = icon;
-	}
-}
-
-void GetButtonsFor(CBlob@ this, CBlob@ caller)
-{
-	if (!isInventoryAccessible(this, caller)) return;
-	CButton@ button = caller.CreateGenericButton("$craft_icon"+this.get_u8("crafting")+"$", Vec2f(4,0), this, CraftMenu, "Set Recipe");
-}
-
-void CraftMenu(CBlob@ this, CBlob@ caller)
-{
-	if (!caller.isMyPlayer()) return;
-
-	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, 0.0f), this, craft_menu_size, "Recipes");
-	if (menu !is null)
-	{
-		for (u8 i = 0; i < items.length; i++)
-		{
-			CraftItem@ item = items[i];
-
-			CBitStream params;
-			params.write_netid(this.getNetworkID());
-			params.write_u8(i);
-			
-			const bool isSelected = this.get_u8("crafting") == i;
-			const string food_name = item.title.split("\n")[0];
-
-			const string text = (isSelected ? "Current" : "Set") + " Recipe: " + food_name;
-
-			CGridButton@ butt = menu.AddButton("$craft_icon" + i + "$", text, "Kitchen.as", "Callback_SetCrafting", params);
-			butt.hoverText = item.title + "\n\n" + getButtonRequirementsText(item.reqs, false);
-			butt.SetEnabled(!isSelected);
-		}
-	}
-}
-
-void Callback_SetCrafting(CBitStream@ params)
-{
-	CBlob@ this = getBlobByNetworkID(params.read_netid());
-	if (this is null) return;
-
-	const u8 id = params.read_u8();
-	this.set_u8("crafting", id);
-	
-	CBitStream bs;
-	bs.write_u8(id);
-	this.SendCommand(this.getCommandID("server_set_crafting"), bs);
-}
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == this.getCommandID("server_set_crafting") && isServer())
-	{
-		this.set_u8("crafting", params.read_u8());
+		craft.addItem(this, i);
 	}
 }
 
 void onTick(CBlob@ this)
 {
-	CraftItem@ item = items[this.get_u8("crafting")];
-	CInventory@ inv = this.getInventory();
+	Craft@ craft = getCraft(this);
+	if (craft is null) return;
 
-	CBitStream missing;
-	if (hasRequirements(inv, item.reqs, missing))
-	{
-		this.SetLight(true);
-		
-		const u16 craft_time = this.get_u16("craft_time");
-		this.set_u16("craft_time", Maths::Max(craft_time-1, 0));
-		if (craft_time <= 0)
-		{
-			if (isServer())
-			{
-				CBlob@ mat = server_CreateBlob(item.resultname, this.getTeamNum(), this.getPosition());
-				mat.server_SetQuantity(item.resultcount);
-
-				server_TakeRequirements(inv, item.reqs);
-			}
-
-			if (isClient())
-			{
-				this.getSprite().PlaySound("Cooked.ogg");
-			}
-			
-			this.set_u16("craft_time", craft_time_seconds - 1);
-		}
-	}
-	else
-	{
-		this.SetLight(false);
-		this.set_u16("craft_time", craft_time_seconds);
-	}
-}
-
-void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{
-	if (blob is null) return;
-
-	CraftItem@ item = items[this.get_u8("crafting")];
-	CBitStream bs = item.reqs;
-	bs.ResetBitIndex();
-	string name;
-
-	while (!bs.isBufferEnd())
-	{
-		string unused = "";
-		ReadRequirement(bs, unused, name, unused, 0);
-
-		if (blob.getName() == name)
-		{
-			this.server_PutInInventory(blob);
-			break;
-		}
-	}
-}
-
-bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
-{
-	return forBlob.getTeamNum() == this.getTeamNum() && forBlob.isOverlapping(this);
-}
-
-void onAddToInventory(CBlob@ this, CBlob@ blob)
-{
-	this.getSprite().PlaySound("/PopIn");
+	this.SetLight(craft.time > 0);
 }
 
 // SPRITE
@@ -267,9 +116,12 @@ void onInit(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
+	Craft@ craft = getCraft(blob);
+	if (craft is null) return;
+
 	CSpriteLayer@ fire_bg = this.getSpriteLayer("fire_bg");
 	CSpriteLayer@ fire = this.getSpriteLayer("fire_animation_large");
-	if (blob.get_u16("craft_time") < craft_time_seconds)
+	if (craft.time > 0)
 	{
 		this.SetEmitSoundPaused(false);
 		fire.SetVisible(true);
@@ -285,41 +137,3 @@ void onTick(CSprite@ this)
 		fire_bg.SetVisible(false);
 	}
 }
-
-/*void onRender(CSprite@ this)
-{
-	CBlob@ localBlob = getLocalPlayerBlob();
-	if (localBlob is null) return;
-	
-	CCamera@ camera = getCamera();
-	if (camera is null) return;
-		
-	CBlob@ blob = this.getBlob();
-	Vec2f pos = blob.getPosition();
-	Vec2f mouseWorld = getControls().getMouseWorldPos();
-	const f32 renderRadius = (blob.getRadius()) * 0.95f;
-	const bool mouseOnBlob = (mouseWorld - pos).getLength() < renderRadius;
-	if (mouseOnBlob && getHUD().hasButtons() && !getHUD().hasMenus())
-	{
-		const u16 craft_time = blob.get_u16("craft_time");
-		if (craft_time >= craft_time_seconds - 1) return;
-		
-		const f32 camFactor = camera.targetDistance;
-		Vec2f pos2d = getDriver().getScreenPosFromWorldPos(pos);
-
-		const f32 hwidth = 50 * camFactor;
-		const f32 hheight = 10 * camFactor;
-
-		pos2d.y -= 40 * camFactor;
-		const f32 padding = 4.0f * camFactor;
-		const f32 shift = 15.0f;
-		const f32 progress = (1.1f - float(craft_time) / float(craft_time_seconds))*(hwidth*2-(13* camFactor)); //13 is a magic number used to perfectly align progress
-		
-		GUI::DrawPane(Vec2f(pos2d.x - hwidth + padding, pos2d.y + hheight - shift - padding),
-				      Vec2f(pos2d.x + hwidth - padding, pos2d.y + hheight - padding),
-				      SColor(175,200,207,197)); //draw capture bar background
-		GUI::DrawPane(Vec2f(pos2d.x - hwidth + padding, pos2d.y + hheight - shift - padding),
-					  Vec2f((pos2d.x - hwidth + padding) + progress, pos2d.y + hheight - padding),
-					  SColor(255, 60, 255, 30));
-	}
-}*/
