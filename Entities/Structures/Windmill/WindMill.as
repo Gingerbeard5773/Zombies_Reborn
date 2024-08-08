@@ -9,6 +9,8 @@ void onInit(CBlob@ this)
 	this.set_TileType("background tile", CMap::tile_castle_back);
 
 	this.getShape().getConsts().mapCollisions = false;
+	
+	this.addCommandID("sv_store");
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
@@ -91,6 +93,48 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
 	return (forBlob.getTeamNum() == this.getTeamNum() && forBlob.isOverlapping(this));
+}
+
+void GetButtonsFor(CBlob@ this, CBlob@ caller)
+{
+	if (isInventoryAccessible(this, caller))
+	{
+		CInventory@ inv = caller.getInventory();
+		if (inv is null) return;
+		
+		if (inv.getItem("grain") !is null)
+		{
+			CButton@ buttonOwner = caller.CreateGenericButton(28, Vec2f(0, 0), this, this.getCommandID("sv_store"), "Store");
+		}
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("sv_store"))
+	{
+		if (!isServer()) return;
+
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
+		CBlob@ caller = player.getBlob();
+		if (caller is null) return;
+
+		CInventory@ inv = caller.getInventory();
+		if (inv is null) return;
+
+		for (int i = 0; i < inv.getItemsCount(); i++)
+		{
+			CBlob@ item = inv.getItem(i);
+			if (item.getName() == "grain")
+			{
+				caller.server_PutOutInventory(item);
+				this.server_PutInInventory(item);
+				i--;
+			}
+		}
+	}
 }
 
 // SPRITE
