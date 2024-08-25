@@ -22,6 +22,7 @@ shared class Craft
 {
 	u8 selected;
 	u16 time;
+	bool can_craft;
 	Vec2f menu_size;
 	Vec2f button_offset;
 	string produce_sound;
@@ -32,6 +33,7 @@ shared class Craft
 	{
 		selected = 0;
 		time = 0;
+		can_craft = true;
 		menu_size = Vec2f(1, 1);
 		button_offset = Vec2f_zero;
 	}

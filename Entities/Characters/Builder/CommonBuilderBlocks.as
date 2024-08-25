@@ -32,6 +32,7 @@
 #include "Requirements.as"
 #include "Costs.as"
 #include "TeamIconToken.as"
+#include "CustomTiles.as"
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
@@ -40,6 +41,10 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 {
 	InitCosts();
 	CRules@ rules = getRules();
+
+	AddIconToken("$iron_block$", "World.png", Vec2f(8, 8), CMap::tile_iron);
+	AddIconToken("$biron_block$", "World.png", Vec2f(8, 8), CMap::tile_biron);
+	AddIconToken("$iron_platform$", "IronPlatform.png", Vec2f(8, 8), 0);
 
 	BuildBlock[] page_0;
 	blocks.push_back(page_0);
@@ -105,6 +110,26 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::spikes);
 		blocks[0].push_back(b);
 	}
+	{
+		BuildBlock b(CMap::tile_iron, "iron_block", "$iron_block$", "Iron Block\nResistant to explosions.");
+		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 2);
+		blocks[0].push_back(b);
+	}
+	{
+		BuildBlock b(CMap::tile_biron, "biron_block", "$biron_block$", "Back Iron Wall\nDurable Support.");
+		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 1);
+		blocks[0].push_back(b);
+	}
+	{
+		BuildBlock b(0, "iron_door", getTeamIcon("iron_door", "1x1IronDoor.png", team_num, Vec2f(16, 8)), "Iron Door\nPlace next to walls");
+		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 4);
+		blocks[0].push_back(b);
+	}
+	{
+		BuildBlock b(0, "iron_platform", "$iron_platform$", "Iron Platform\nOne way platform");
+		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
+		blocks[0].push_back(b);
+	}
 	
 	BuildBlock[] page_1;
 	blocks.push_back(page_1);
@@ -125,6 +150,14 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
+		BuildBlock b(0, "forge", getTeamIcon("forge", "Forge.png", team_num, Vec2f(56, 40)), "Forge\nSmelt raw ore into ingots.");
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 300);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 200);
+		b.buildOnGround = true;
+		b.size.Set(56, 40);
+		blocks[1].push_back(b);
+	}	
+	{
 		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), "Nursery\nA plant nursery for agricultural purposes.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 400);
 		AddRequirement(b.reqs, "blob", "seed", "Seed", 1);
@@ -132,6 +165,23 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		b.size.Set(40, 32);
 		blocks[1].push_back(b);
 	}
+	{
+		BuildBlock b(0, "armory", getTeamIcon("armory", "Armory.png", team_num, Vec2f(56, 40)), "Armory\nBuild weapons and change your class.");
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 300);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 200);
+		b.buildOnGround = true;
+		b.size.Set(56, 40);
+		blocks[1].push_back(b);
+	}
+	/*{
+		BuildBlock b(0, "library", getTeamIcon("library", "LibraryIcon.png", team_num, Vec2f(32, 19)), "Library\nA place of study to obtain new technologies.");
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 300);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 150);
+		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 50);
+		b.buildOnGround = true;
+		b.size.Set(56, 40);
+		blocks[1].push_back(b);
+	}*/
 }
 
 ConfigFile@ openBlockBindingsConfig()

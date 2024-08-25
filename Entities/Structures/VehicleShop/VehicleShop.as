@@ -25,12 +25,27 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(6, 4));
+	this.set_Vec2f("shop menu size", Vec2f(9, 4));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
 	const u8 team_num = this.getTeamNum();
 
+	{
+		const string bomber_icon = getTeamIcon("bomber", "Icon_Bomber.png", team_num, Vec2f(44, 74), 0);
+		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", "A balloon capable of flying. Allows attachments. Press [Space] to drop bombs.", false, true);
+		s.crate_icon = 7;
+		AddRequirement(s.requirements, "coin", "", "Coins", 150);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 200);
+	}
+	{
+		const string bomber_icon = getTeamIcon("armoredbomber", "Icon_ArmoredBomber.png", team_num, Vec2f(44, 74), 0);
+		ShopItem@ s = addShopItem(this, "Armored Bomber", bomber_icon, "armoredbomber", "A balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", false, true);
+		s.crate_icon = 7;
+		AddRequirement(s.requirements, "coin", "", "Coins", 200);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 200);
+	}
 	{
 		const string cata_icon = getTeamIcon("catapult", "VehicleIcons.png", team_num, Vec2f(32, 32), 0);
 		ShopItem@ s = addShopItem(this, "Catapult", cata_icon, "catapult", cata_icon + "\n\n\n" + Descriptions::catapult, false, true);
@@ -44,12 +59,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
 	}
 	{
-		const string bomber_icon = getTeamIcon("bomber", "Icon_Bomber.png", team_num, Vec2f(44, 74), 0);
-		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", "A balloon capable of flying. Allows vehicle attachments. Press [Space] to drop bombs.", false, true);
-		s.crate_icon = 7;
+		const string bomber_icon = getTeamIcon("tank", "Icon_tank.png", team_num, Vec2f(55, 32), 0);
+		ShopItem@ s = addShopItem(this, "Tank", bomber_icon, "tank", "A seige tank. Allows attachments.", false, true);
+		s.crate_icon = 11;
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 200);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 300);
 	}
 	{
 		const string bow_icon = getTeamIcon("mounted_bow", "MountedBow.png", team_num, Vec2f(16, 16), 6);
@@ -65,7 +79,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
 		s.crate_icon = 5;
 		s.customButton = true;
-		s.buttonwidth = 2;
+		s.buttonwidth = 1;
 		s.buttonheight = 1;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_ammo);
 	}
@@ -73,7 +87,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista Shells", "$mat_bomb_bolts$", "mat_bomb_bolts", "$mat_bomb_bolts$\n\n\n" + Descriptions::ballista_bomb_ammo, false, false);
 		s.crate_icon = 5;
 		s.customButton = true;
-		s.buttonwidth = 2;
+		s.buttonwidth = 1;
 		s.buttonheight = 1;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_bomb_ammo);
 	}
@@ -98,14 +112,6 @@ void onShopMadeItem(CBitStream@ params)
 
 	CBlob@ caller = getBlobByNetworkID(caller_id);
 	if (caller is null) return;
-
-	if (name == "bomber")
-	{
-		// makes crate still drop gold if it breaks before it's unpacked
-		// Crate.as prevents gold from dropping if it dies after unpack
-		CBlob@ box = getBlobByNetworkID(item_id);
-		if (box !is null) box.set_s32("gold building amount", 50);
-	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

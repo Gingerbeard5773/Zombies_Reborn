@@ -1,5 +1,6 @@
 ﻿#include "Requirements.as";
 #include "CraftItemCommon.as";
+#include "MaterialCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -55,6 +56,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("server_set_crafting") && isServer())
 	{
 		craft.selected = params.read_u8();
+		craft.time = 0;
 		
 		CBitStream stream;
 		stream.write_u8(craft.selected);
@@ -63,6 +65,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	else if (cmd == this.getCommandID("client_set_crafting") && isClient())
 	{
 		craft.selected = params.read_u8();
+		craft.time = 0;
 	}
 }
 
@@ -75,15 +78,17 @@ void onTick(CBlob@ this)
 	CInventory@ inv = this.getInventory();
 
 	CBitStream missing;
-	if (hasRequirements(inv, item.reqs, missing))
+	if (hasRequirements(inv, item.reqs, missing) && craft.can_craft)
 	{	
 		craft.time += 1;
 		if (craft.time >= item.seconds_to_produce)
 		{
 			if (isServer())
 			{
-				CBlob@ mat = server_CreateBlob(item.result_name, this.getTeamNum(), this.getPosition());
-				mat.server_SetQuantity(item.result_count);
+				//CBlob@ mat = server_CreateBlob(item.result_name, this.getTeamNum(), this.getPosition());
+				//mat.server_SetQuantity(item.result_count);
+				
+				Material::createFor(this, item.result_name, item.result_count);
 
 				server_TakeRequirements(inv, item.reqs);
 			}
@@ -146,6 +151,7 @@ void onSendCreateData(CBlob@ this, CBitStream@ params)
 
 	params.write_u8(craft.selected);
 	params.write_u16(craft.time);
+	params.write_bool(craft.can_craft);
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
@@ -155,6 +161,7 @@ bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
 
 	if (!params.saferead_u8(craft.selected)) return false;
 	if (!params.saferead_u16(craft.time)) return false;
+	if (!params.saferead_bool(craft.can_craft)) return false;
 
 	return true;
 }

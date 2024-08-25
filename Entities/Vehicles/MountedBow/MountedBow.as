@@ -190,7 +190,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob !is null)
 	{
-		TryToAttachVehicle(this, blob);
+		TryToAttachVehicle(this, blob, "PASSENGER");
 	}
 }
 
@@ -199,7 +199,7 @@ void onInventoryQuantityChange(CBlob@ this, CBlob@ blob, int oldQuantity)
 {
 	if (!isServer()) return;
 
-	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("VEHICLE");
+	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PASSENGER");
 	if (ap is null) return;
 	
 	CBlob@ vehicle = ap.getOccupied();
@@ -221,4 +221,15 @@ void onInventoryQuantityChange(CBlob@ this, CBlob@ blob, int oldQuantity)
 			break;
 		}
 	}
+}
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	if (this.hasTag("invincible") && !attached.hasTag("vehicle"))
+		attached.Tag("invincible");
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	detached.Untag("invincible");
 }

@@ -1,8 +1,9 @@
-void TryToAttachVehicle(CBlob@ blob, CBlob@ toBlob = null)
+
+void TryToAttachVehicle(CBlob@ blob, CBlob@ toBlob = null, const string&in ap_name = "VEHICLE")
 {
 	if (blob is null || blob.getAttachments() is null) return;
 
-	AttachmentPoint@ bap1 = blob.getAttachments().getAttachmentPointByName("VEHICLE");
+	AttachmentPoint@ bap1 = blob.getAttachments().getAttachmentPointByName(ap_name);
 	if (bap1 is null || bap1.socket || bap1.getOccupied() !is null) return;
 
 	CBlob@[] blobsInRadius;
@@ -22,7 +23,7 @@ void TryToAttachVehicle(CBlob@ blob, CBlob@ toBlob = null)
 			for (uint i = 0; i < aps.length; i++)
 			{
 				AttachmentPoint@ ap = aps[i];
-				if (ap.socket && ap.getOccupied() is null && ap.name == "VEHICLE")
+				if (ap.socket && ap.getOccupied() is null && ap.name == ap_name)
 				{
 					b.server_AttachTo(blob, ap);
 					break;

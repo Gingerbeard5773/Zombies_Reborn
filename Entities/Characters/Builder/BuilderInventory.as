@@ -28,8 +28,8 @@ const string[] PAGE_NAME =
 
 const Vec2f[] PAGE_SIZE =
 {
-	Vec2f(3, 4),
-	Vec2f(5, 5)
+	Vec2f(3, 5),
+	Vec2f(8, 5)
 };
 
 const u8 GRID_SIZE = 48;
