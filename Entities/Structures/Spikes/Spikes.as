@@ -61,23 +61,23 @@ void tileCheck(CBlob@ this, CMap@ map, Vec2f pos, f32 angle, facing_direction se
 {
 	if (params.placedOnStone) return; //do nothing if we've already found stone
 
-	TileType t = map.getTile(pos).type;
+	Tile tile = map.getTile(pos);
 
 	if (params.onSurface)
 	{
-		if (map.isTileCastle(t))
+		if (map.isTileCastle(tile.type))
 		{
 			params.facing = set_facing;
 			this.setAngleDegrees(angle);
 			params.placedOnStone = true;
 		}
 	}
-	else if (map.isTileSolid(t))
+	else if (map.isTileSolid(tile))
 	{
 		params.onSurface = true;
 		params.facing = set_facing;
 		this.setAngleDegrees(angle);
-		params.placedOnStone = map.isTileCastle(t);
+		params.placedOnStone = map.isTileCastle(tile.type);
 	}
 }
 
