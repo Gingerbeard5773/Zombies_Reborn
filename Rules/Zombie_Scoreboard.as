@@ -291,7 +291,7 @@ void drawServerInfo(CRules@ this, const f32 y)
 
 	const string info = getTranslatedString(this.gamemode_name) + ": " + getTranslatedString(this.gamemode_info);
 	const string mapName = getTranslatedString("Map name : ") + this.get_string("map_name");
-	const string dayCount = "Day: " + this.get_u8("day_number");
+	const string dayCount = "Day: " + this.get_u16("day_number");
 	
 	Vec2f dim;
 	GUI::GetTextDimensions(info, dim);

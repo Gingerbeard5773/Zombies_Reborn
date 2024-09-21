@@ -4,7 +4,6 @@
 
 #include "ZombieSpawnPos.as";
 
-u8 warmup_days = 2;          //days of warmup-time we give to players
 u8 days_to_survive = 15;     //days players must survive to win, as well as the power creep of zombies
 f32 game_difficulty = 2.5f;  //zombie spawnrate multiplier
 u16 maximum_zombies = 400;   //maximum amount of zombies that can be on the map at once
@@ -20,7 +19,6 @@ void onInit(CRules@ this)
 	if (cfg.loadFile("Zombie_Vars.cfg"))
 	{
 		//edit these vars in Zombie_Vars.cfg
-		warmup_days     = cfg.exists("warmup_days")     ? cfg.read_u8("warmup_days")      : 2;
 		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u8("days_to_survive")  : 15;
 		game_difficulty = cfg.exists("game_difficulty") ? cfg.read_f32("game_difficulty") : 2.5f;
 		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
@@ -38,11 +36,11 @@ void onRestart(CRules@ this)
 void Reset(CRules@ this)
 {
 	this.set_u8("message_timer", 1);
-	this.set_u8("day_number", 1);
+	this.set_u16("day_number", 1);
 	this.Sync("day_number", true);
 
 	seconds_till_nextmap = nextmap_seconds;
-	this.SetCurrentState(WARMUP);
+	this.SetCurrentState(GAME);
 }
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
@@ -104,17 +102,15 @@ void spawnZombie(CRules@ this, CMap@ map, const u8&in dayNumber)
 void checkDayChange(CRules@ this, const u8&in dayNumber)
 {
 	//has the day changed?
-	if (dayNumber != this.get_u8("day_number"))
+	if (dayNumber != this.get_u16("day_number"))
 	{
 		string dayMessage = "Day "+dayNumber;
 		
-		//end warmup phase
-		if (dayNumber == warmup_days)
+		if (dayNumber == 2)
 		{
 			dayMessage = "Warmup over. Day "+dayNumber;
-			this.SetCurrentState(GAME);
 		}
-		
+
 		setTimedGlobalMessage(this, dayMessage, 10);
 		
 		//end game if we reached the last day
@@ -126,7 +122,7 @@ void checkDayChange(CRules@ this, const u8&in dayNumber)
 			setTimedGlobalMessage(this, dayMessage, nextmap_seconds);
 		}
 		
-		this.set_u8("day_number", dayNumber);
+		this.set_u16("day_number", dayNumber);
 		this.Sync("day_number", true);
 	}
 }
@@ -181,7 +177,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 
 void checkGameEnded(CRules@ this, CPlayer@ player)
 {
-	if (this.isWarmup()) return;
+	if (this.get_u16("day_number") < 2) return;
 	
 	//have all players died?
 	if (!isGameLost(player)) return;

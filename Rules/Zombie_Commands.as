@@ -1,6 +1,5 @@
 // Zombie Fortress chat commands
 
-#include "RespawnCommon.as";
 #include "Zombie_SoftBansCommon.as";
 
 const string commandslist()
@@ -14,8 +13,7 @@ const string commandslist()
 	"\n !respawn [username] : respawn a player"+
 	"\n !softban [username / IP] [minutes / -1 for permanent] [reason] : soft ban a player"+ 
 	"\n !carnage : kill all zombies on the map"+
-	"\n !undeadcount : print the amount of zombies on the map"+
-	"\n !state : toggle warmup on or off\n";
+	"\n !undeadcount : print the amount of zombies on the map";
 }
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
@@ -107,32 +105,12 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					print(undeads.length+" undeads found");
 					return false;
 				}
-				else if (tokens[0] == "!state")
-				{
-					this.SetCurrentState(this.getCurrentState() == WARMUP ? GAME : WARMUP);
-					this.SetGlobalMessage(this.getCurrentState() == GAME ? "Gamestate: GAME" : "Gamestate: WARMUP");
-					this.set_u8("message_timer", 5);
-					return false;
-				}
 			}
 			
 			if (tokens[0] == "!respawn") //respawn player
 			{
-				Respawn[]@ respawns;
-				if (!this.get("respawns", @respawns))
-				{
-					warn("!respawn:: Respawns not found!");
-					return false;
-				}
-				
 				const string ply_name = tokens.length > 1 ? tokens[1] : player.getUsername();
-				for (u8 i = 0; i < respawns.length; i++)
-				{
-					Respawn@ r = respawns[i];
-					if (r.username != ply_name) continue;
-					
-					r.timeStarted = 0;
-				}
+				this.set_u32(ply_name+" respawn time", getGameTime());
 			}
 		}
 	}

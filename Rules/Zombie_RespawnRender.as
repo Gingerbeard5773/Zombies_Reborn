@@ -11,15 +11,15 @@ void onRender(CRules@ this)
 	if (localBlob !is null) return;
 
 	const u32 gameTime = getGameTime();
-	const u32 time = this.get_u32("respawn time") + 30;
+	const u32 time = this.get_u32(player.getUsername()+" respawn time") + 30;
 	const s32 time_left = (time - gameTime) / getTicksASecond();
 	
 	string text = time_left > 100 ? "Waiting for dawn..." : getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + time_left);
 	SColor col = SColor(0xFFE0BA16);
 	
-	if (player.getTeamNum() == u8(-2)) //undead player
+	if (player.getTeamNum() == 200) //undead player
 	{
-		text = "Waiting for wraiths...";
+		text = "Waiting to spawn as a wraith...";
 		col = SColor(0xFFDB5743);
 	}
 	

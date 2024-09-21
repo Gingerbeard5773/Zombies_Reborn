@@ -264,7 +264,7 @@ void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
 
 u32 getCurrentBuildDelay(CBlob@ this)
 {
-	return (getRules().getCurrentState() != GAME ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+	return (getRules().get_u16("day_number") < 2 ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
 }
 
 f32 getMaxBuildDistance(CBlob@ this)

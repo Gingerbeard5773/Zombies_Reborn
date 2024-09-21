@@ -1,7 +1,6 @@
 // scroll script that revives a player within a radius
 
 #include "GenericButtonCommon.as";
-#include "RespawnCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -54,6 +53,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						CPlayer@ player = getPlayerByUsername(b.get_string("player_username")); //RunnerDeath.as
 						if ((player is null || player.getBlob() !is null) && b.getName() != "migrant") continue;
 						
+						if (player.getTeamNum() == 200) continue;
+						
 						RevivePlayer(player, b);
 						revived_positions.push_back(b.getPosition());
 						this.server_Die();
@@ -99,19 +100,6 @@ void RevivePlayer(CPlayer@ player, CBlob@ b)
 	if (player !is null)
 	{
 		newBlob.server_SetPlayer(player);
-
-		//remove respawn
-		Respawn[]@ respawns;
-		if (getRules().get("respawns", @respawns))
-		{
-			for (u8 i = 0; i < respawns.length; i++)
-			{
-				if (respawns[i].username != player.getUsername()) continue;
-				
-				respawns.erase(i);
-				break;
-			}
-		}
 	}
 	
 	//kill dead body

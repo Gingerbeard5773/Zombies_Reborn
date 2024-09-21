@@ -2,7 +2,6 @@
 
 #define SERVER_ONLY;
 
-#include "RespawnCommon.as";
 #include "KnockedCommon.as";
 
 const u32 unused_time_required = 30*60*2; //time it takes for a sleeper to be available for respawning players to use
@@ -95,10 +94,7 @@ void KnockSleepers()
 }
 
 void UseSleepersAsRespawn(CRules@ this)
-{	
-	Respawn[]@ respawns;
-	if (!this.get("respawns", @respawns)) return;
-	
+{
 	CBlob@[] sleepers;
 	if (!getBlobsByTag("sleeper", @sleepers)) return;
 	
@@ -108,14 +104,13 @@ void UseSleepersAsRespawn(CRules@ this)
 		CBlob@ sleeper = sleepers[i];
 		if (!sleeper.hasTag("dead") && sleeper.get_u32("sleeper_time") < getGameTime() - unused_time_required)
 		{
-			for (u8 q = 0; q < respawns.length; q++)
+			const u8 plyCount = getPlayerCount();
+			for (u8 p = 0; p < plyCount; p++)
 			{
-				CPlayer@ player = getPlayerByUsername(respawns[q].username);
-				if (player is null || player.getBlob() !is null) continue;
-				
+				CPlayer@ player = getPlayer(p);
+				if (player is null || player.getBlob() !is null || player.getTeamNum() == 200) continue;
+			
 				WakeupSleeper(sleeper, player);
-				
-				respawns.erase(q);
 				break;
 			}
 		}

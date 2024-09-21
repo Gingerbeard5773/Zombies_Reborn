@@ -1,7 +1,6 @@
 // Punish players by forcing them to become zombies for the duration of their ban
 // A better alternative to hard-bans, since players can still 'play' while being punished.
-
-#include "RespawnCommon.as";
+// Lets griefers grief legally i suppose? >:)
 
 const string FileName = "Zombie_SoftBans.cfg";
 
@@ -109,24 +108,9 @@ const bool RemoveSoftBan(CRules@ this, CPlayer@ player, const string&in playerKe
 
 void SetUndead(CRules@ this, CPlayer@ player)
 {
-	Respawn[]@ respawns;
-	if (!this.get("respawns", @respawns))
-	{
-		warn("SetUndead:: failed to access respawns!");
-		return;
-	}
-	
-	//remove any previous respawn
 	const string username = player.getUsername();
-	for (u8 i = 0; i < respawns.length; i++)
-	{
-		Respawn@ r = respawns[i];
-		if (r.username != username) continue;
-		respawns.erase(i);
-		break;
-	}
-	
-	player.server_setTeamNum(-2);
+
+	player.server_setTeamNum(200);
 	CBlob@ blob = player.getBlob();
 	if (blob !is null)
 	{

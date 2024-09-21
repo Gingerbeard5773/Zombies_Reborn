@@ -96,7 +96,7 @@ void server_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob)
 	const string name = getRecieverName(blob);
 	if (name == "builder")
 	{
-		if (this.isWarmup())
+		if (this.get_u16("day_number") < 2)
 		{
 			server_SpawnMats(blob, "mat_wood", 200);
 			server_SpawnMats(blob, "mat_stone", 50);
@@ -168,7 +168,7 @@ void onRender(CRules@ this)
 		if (next_items > gameTime)
 		{
 			string action = (name == "builder" ? "Go Build" : "Go Fight");
-			if (this.isWarmup())
+			if (this.get_u16("day_number") < 2)
 			{
 				action = "Prepare for Battle";
 			}

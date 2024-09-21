@@ -83,7 +83,7 @@ void checkHourChange(CRules@ this)
 
 void doMigrantEvent(CRules@ this, CMap@ map)
 {
-	if (this.get_u8("day_number") % 2 != 0) return; //every other day
+	if (this.get_u16("day_number") % 2 != 0) return; //every other day
 
 	if (this.get_u16("undead count") > 15) return; //don't if too many zombies
 	
@@ -141,7 +141,7 @@ void doTraderEvent(CRules@ this, CMap@ map)
 
 void doSedgwickEvent(CRules@ this, CMap@ map)
 {
-	if ((this.get_u8("day_number")+1) % 5 != 0) return; //night before every fifth day
+	if ((this.get_u16("day_number")+1) % 5 != 0) return; //night before every fifth day
 	
 	Vec2f[] spawns;
 	if (!map.getMarkers("zombie_spawn", spawns)) //no markers? spawn on someone
@@ -170,17 +170,17 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 void doSkelepedeEvent(CRules@ this, CMap@ map)
 {
 	//setup next skelepede night event (while making sure we dont overlap on sedgwick)
-	if (this.get_u8("day_number") > this.get_u8("skelepede day"))
+	if (this.get_u16("day_number") > this.get_u8("skelepede day"))
 	{
 		u8 next_skelepede_day;
 		do 
-			next_skelepede_day = this.get_u8("day_number") + 5 + XORRandom(5);
+			next_skelepede_day = this.get_u16("day_number") + 5 + XORRandom(5);
 		while((next_skelepede_day+1) % 5 == 0);
 		
 		this.set_u8("skelepede day", next_skelepede_day);
 	}
 
-	if (this.get_u8("day_number") != this.get_u8("skelepede day")) return;
+	if (this.get_u16("day_number") != this.get_u8("skelepede day")) return;
 
 	Vec2f dim = map.getMapDimensions();
 	u8 survivorsCount = 0;
