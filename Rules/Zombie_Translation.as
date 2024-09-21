@@ -6,10 +6,8 @@
 
 shared const string Translate(const string&in en, const string&in ru)
 {
-	if (g_locale == "en") //english
-		return en;
-	if (g_locale == "ru") //russian
-		return ru;
+	if (g_locale == "en") return en; //english
+	if (g_locale == "ru") return ru; //russian 
 
 	return en;
 }
