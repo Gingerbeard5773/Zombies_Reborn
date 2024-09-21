@@ -31,14 +31,15 @@ void AddIcons()
 
 void AddFonts()
 {
+	const bool isRussian = g_locale == "ru";
 	if (!GUI::isFontLoaded("big font"))
 	{
-        GUI::LoadFont("big font", g_locale == "ru" ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Bold.ttf", 50, true);
+        GUI::LoadFont("big font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Bold.ttf", isRussian ? 25 : 50, true);
     }
 	
 	if (!GUI::isFontLoaded("medium font"))
 	{
-        GUI::LoadFont("medium font", g_locale == "ru" ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Regular.ttf", 20, true);
+        GUI::LoadFont("medium font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Regular.ttf", isRussian ? 10 : 20, true);
     }
 }
 

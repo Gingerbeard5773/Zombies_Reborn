@@ -2,6 +2,8 @@
 
 #define CLIENT_ONLY
 
+#include "Zombie_Translation.as";
+
 bool mousePress = false;
 u8 page = 0;
 
@@ -9,14 +11,14 @@ const u8 pages = 7;
 
 const string[] page_tips =
 {
-	"Build a great castle and endure the masses of zombies!",
-	"When night arrives, the undead will appear at these gateways.",
-	"A dead body will transform into a zombie after some time.",
-	"Use water to temporarily stop a burning wraith.",
-	"Head shots deal additional damage.",
-	"If there is not many zombies, a trader will visit at mid-day.",
-	"Respawns are instant if there is no zombies during day light.",
-	"Migrants will come every other day if the undead population is low."
+	Translate::Tip0,
+	Translate::Tip1,
+	Translate::Tip2,
+	Translate::Tip3,
+	Translate::Tip4,
+	Translate::Tip5,
+	Translate::Tip6,
+	Translate::Tip7
 };
 
 void onInit(CRules@ this)
