@@ -15,7 +15,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(-10, 0));
-	this.set_Vec2f("shop menu size", Vec2f(3, 3));
+	this.set_Vec2f("shop menu size", Vec2f(3, 4));
 	this.set_string("shop description", "Armory");
 	this.set_u8("shop icon", 25);
 
@@ -64,6 +64,15 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "Molotov", "$molotov$", "molotov", "Molotov\nA flask of fire which can be thrown at the enemy. Space to activate.", false);
 		AddRequirement(s.requirements, "coin", "", "Coins", 45);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Steel Drill", getTeamIcon("steeldrill", "SteelDrill.png", team_num, Vec2f(32, 16), 0), "steeldrill", "Steel Drill", false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 2);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
+		AddRequirement(s.requirements, "coin", "", "Coins", 100);
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 1;
 	}
 	/*{
 		ShopItem@ s = addShopItem(this, "Blunderbuss", getTeamIcon("blunderbuss", "Blunderbuss.png", team_num, Vec2f(29, 9), 0), "blunderbuss", "Blunderbuss", false);
