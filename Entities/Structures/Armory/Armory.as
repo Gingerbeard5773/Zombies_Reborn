@@ -66,6 +66,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 45);
 	}
 	{
+		ShopItem@ s = addShopItem(this, "Scuba Mask", "$scubagear$", "scubagear", "Scuba Mask\nAllows infinite breathing under water.", false);
+		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 3);
+		AddRequirement(s.requirements, "coin", "", "Coins", 75);
+	}
+	{
 		ShopItem@ s = addShopItem(this, "Steel Drill", getTeamIcon("steeldrill", "SteelDrill.png", team_num, Vec2f(32, 16), 0), "steeldrill", "Steel Drill", false);
 		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 2);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
