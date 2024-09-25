@@ -7,8 +7,6 @@ const int radius = 30;
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
-
-	this.set_u32("drought_called", 0);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -21,10 +19,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell"))
 	{
-		const u32 timer = getGameTime() - this.get_u32("drought_called");
-		if (timer < 30) return;
-		
-		this.set_u32("drought_called", getGameTime());
+		if (this.hasTag("dead")) return;
 
 		bool acted = false;
 		CMap@ map = getMap();
@@ -49,6 +44,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (acted)
 		{
+			this.Tag("dead");
 			this.server_Die();
 		}
 	}

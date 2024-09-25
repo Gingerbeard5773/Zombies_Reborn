@@ -17,8 +17,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("server_execute_spell"))
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		if (this.hasTag("dead")) return;
 		bool acted = false;
 		CMap@ map = getMap();
 		Vec2f pos = this.getPosition();
@@ -47,6 +48,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (acted)
 		{
+			this.Tag("dead");
 			this.server_Die();
 		}
 	}

@@ -21,6 +21,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		if (this.hasTag("dead")) return;
+
 		Vec2f pos = this.getPosition();
 
 		bool hit = false;
@@ -48,6 +50,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (hit)
 		{
+			this.Tag("dead");
 			this.server_Die();
 		}
 	}

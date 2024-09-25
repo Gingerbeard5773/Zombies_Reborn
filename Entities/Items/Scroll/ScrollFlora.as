@@ -7,31 +7,36 @@ const int radius = 14;
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
-	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, "Use this to create plants nearby.");
-}
-
-void Callback_Spell(CBlob@ this, CBlob@ caller)
-{
-	CreateFlora(this);
-
-	Vec2f pos = this.getPosition();
-	Sound::Play("MagicWand.ogg", pos);
-	Sound::Play("OrbExplosion.ogg", pos, 3.5f);
-
-	if (!isServer())
-		this.SendCommand(this.getCommandID("server_execute_spell"));
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), "Use this to create plants nearby.");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("server_execute_spell"))
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		if (this.hasTag("dead")) return;
+		this.Tag("dead");
+
 		CreateFlora(this);
+		
+		this.SendCommand(this.getCommandID("client_execute_spell"));
+	}
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		Vec2f pos = this.getPosition();
+		Sound::Play("MagicWand.ogg", pos);
+		Sound::Play("OrbExplosion.ogg", pos, 3.5f);
+
+		if (!isServer()) //no localhost
+		{
+			CreateFlora(this);
+		}
 	}
 }
 

@@ -21,8 +21,6 @@ void Callback_Spell(CBlob@ this, CBlob@ caller)
 	CBlob@ aimBlob = getMap().getBlobAtPosition(caller.getAimPos());
 	if (aimBlob is null || aimBlob is this || !canClone(aimBlob)) return;
 
-	Sound::Play("MagicWand.ogg", this.getPosition());
-
 	CBitStream params;
 	params.write_netid(aimBlob.getNetworkID());
 	this.SendCommand(this.getCommandID("server_execute_spell"), params);
@@ -34,6 +32,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		CBlob@ aimBlob = getBlobByNetworkID(params.read_netid());
 		if (aimBlob is null) return;
+		
+		if (this.hasTag("dead")) return;
+		this.Tag("dead");
 
 		CBlob@ clone = server_CreateClone(aimBlob, this.getPosition() + Vec2f(0, (this.getHeight() - aimBlob.getHeight()) / 2 + 4));
 		copyInventory(aimBlob, clone);
@@ -89,4 +90,9 @@ CBlob@ server_CreateClone(CBlob@ blob, Vec2f pos)
 const bool canClone(CBlob@ blob)
 {
 	return (!blob.hasTag("invincible") || !blob.getShape().isStatic()) && blob.getPlayer() is null;
+}
+
+void onDie(CBlob@ this)
+{
+	Sound::Play("MagicWand.ogg", this.getPosition());
 }

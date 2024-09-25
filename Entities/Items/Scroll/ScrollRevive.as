@@ -27,6 +27,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = getBlobByNetworkID(params.read_netid());
 		if (caller is null) return;
 		
+		if (this.hasTag("dead")) return;
+		
 		Vec2f[] revived_positions;
 		
 		if (params.read_bool()) //reviving self
@@ -36,6 +38,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				RevivePlayer(player, caller);
 				revived_positions.push_back(caller.getPosition());
+				this.Tag("dead");
 				this.server_Die();
 			}
 		}
@@ -57,6 +60,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						
 						RevivePlayer(player, b);
 						revived_positions.push_back(b.getPosition());
+						this.Tag("dead");
 						this.server_Die();
 					}
 				}

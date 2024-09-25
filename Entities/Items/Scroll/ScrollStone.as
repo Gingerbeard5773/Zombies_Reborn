@@ -20,6 +20,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		if (this.hasTag("dead")) return;
+
 		bool acted = false;
 		CMap@ map = getMap();
 		Vec2f pos = this.getPosition();
@@ -40,7 +42,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					map.server_SetTile(tpos, CMap::tile_thickstone);
 					acted = true;
 				}
-				else if (map.isTileGround(t) && XORRandom(4) == 0)
+				else if (map.isTileGround(t))
 				{
 					map.server_SetTile(tpos, CMap::tile_stone);
 					acted = true;
@@ -50,6 +52,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (acted)
 		{
+			this.Tag("dead");
 			this.server_Die();
 		}
 	}

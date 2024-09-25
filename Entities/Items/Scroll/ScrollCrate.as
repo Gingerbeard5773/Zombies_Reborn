@@ -19,10 +19,6 @@ void Callback_Spell(CBlob@ this, CBlob@ caller)
 	CBlob@ aimBlob = getMap().getBlobAtPosition(caller.getAimPos());
 	if (aimBlob is null || !canCrate(aimBlob)) return;
 	
-	Vec2f aimBlobPos = aimBlob.getPosition();
-	ParticlesFromSprite(aimBlob.getSprite(), aimBlobPos, Vec2f(0, -1), 1, 1);
-	Sound::Play("MagicWand.ogg", aimBlobPos);
-	
 	CBitStream params;
 	params.write_netid(aimBlob.getNetworkID());
 	this.SendCommand(this.getCommandID("server_execute_spell"), params);
@@ -34,6 +30,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		CBlob@ aimBlob = getBlobByNetworkID(params.read_netid());
 		if (aimBlob is null) return;
+		
+		if (this.hasTag("dead")) return;
+		this.Tag("dead");
 
 		CBlob@ crate = server_MakeCrate(aimBlob.getName(), "Crate with "+aimBlob.getInventoryName(), 0, aimBlob.getTeamNum(), aimBlob.getPosition());
 		CShape@ shape = aimBlob.getShape();
@@ -47,4 +46,9 @@ const bool canCrate(CBlob@ blob)
 {
 	const string name = blob.getName();
 	return !blob.hasTag("invincible") && name != "scroll" && name != "crate" && blob.getPlayer() is null;
+}
+
+void onDie(CBlob@ this)
+{
+	Sound::Play("MagicWand.ogg", this.getPosition());
 }

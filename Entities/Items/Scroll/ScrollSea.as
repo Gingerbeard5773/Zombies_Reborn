@@ -20,6 +20,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		if (this.hasTag("dead")) return;
+
 		CMap@ map = getMap();
 		Vec2f pos = this.getPosition();
 		
@@ -34,6 +36,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				map.server_setFloodWaterWorldspace(pos, true);
 				this.server_Die();
+				this.Tag("dead");
 				
 				break;
 			}
