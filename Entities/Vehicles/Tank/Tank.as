@@ -30,6 +30,8 @@ void onInit(CBlob@ this)
 	this.getShape().SetCenterOfMassOffset(Vec2f(0, 8));
 	
 	this.set_f32("map dmg modifier", 0.0f);
+	
+	this.Tag("invincible attachments");
 
 	{
 		Vec2f[] shape = { Vec2f(2,  8),

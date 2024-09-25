@@ -22,6 +22,7 @@ void onInit(CBlob@ this)
 	
 	this.Tag("blocks sword");
 	this.Tag("heavy weight");
+	this.Tag("invincible attachments");
 
 	this.set_f32("map dmg modifier", 35.0f);
 
@@ -241,14 +242,4 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return dmg;
-}
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	attached.Tag("invincible");
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{
-	detached.Untag("invincible");
 }
