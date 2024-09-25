@@ -14,7 +14,7 @@ void onStateChange(CRules@ this, const u8 oldState)
 	{
 		case GAME_OVER:
 		{
-			Sound::Play("FanfareLose.ogg");
+			Sound::Play("PortalBreach.ogg");
 			break;
 		}
 		case GAME_WON:

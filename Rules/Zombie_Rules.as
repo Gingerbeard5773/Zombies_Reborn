@@ -71,8 +71,6 @@ void onTick(CRules@ this)
 		checkDayChange(this, dayNumber);
 		
 		onGameEnd(this);
-		
-		resetTimedGlobalMessage(this);
 	}
 }
 
@@ -183,7 +181,7 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 	if (!isGameLost(player)) return;
 	
 	this.SetCurrentState(GAME_OVER);
-	setTimedGlobalMessage(this, "Game over! All survivors perished! You lasted "+this.get_u8("day_number")+" days.", nextmap_seconds);
+	setTimedGlobalMessage(this, "Game over! All players perished! You survived "+this.get_u16("day_number")+" days.", nextmap_seconds);
 }
 
 // Check if we lost the game
