@@ -20,7 +20,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 	
 	CBlob@ gunner = this.getAttachments().getAttachmentPointByName("GUNNER").getOccupied();
-	if (gunner !is null)
+	if (gunner !is null && gunner.hasTag("migrant"))
 	{
 		params.write_netid(gunner.getNetworkID());
 		CButton@ button = caller.CreateGenericButton("$worker_migrant$", Vec2f(0, 0), this, this.getCommandID("attach worker"), "Unassign Worker", params);

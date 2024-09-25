@@ -1,7 +1,5 @@
 // requires VEHICLE attachment point
 
-#include "GenericButtonCommon.as"
-
 void onInit(CBlob@ this)
 {
 	this.addCommandID("detach vehicle");
@@ -11,25 +9,22 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller) || caller.getTeamNum() != this.getTeamNum())
-		return;
+	if (caller.getTeamNum() != this.getTeamNum()) return;
 
 	AttachmentPoint@[] aps;
 	if (!this.getAttachmentPoints(@aps)) return;
 
-	for (uint i = 0; i < aps.length; i++)
+	for (u8 i = 0; i < aps.length; i++)
 	{
 		AttachmentPoint@ ap = aps[i];
-		if (ap.socket && ap.name == "VEHICLE" || ap.name == "PASSENGER")
+		if (ap.socket && (ap.name == "VEHICLE" || ap.name == "PASSENGER"))
 		{
 			CBlob@ occBlob = ap.getOccupied();
 			if (occBlob !is null && occBlob.hasTag("vehicle")) //detach button
 			{
-				if (this.isOnGround())
-				{
-					string text = getTranslatedString("Detach {ITEM}").replace("{ITEM}", getTranslatedString(occBlob.getInventoryName()));
-					caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), text);
-				}
+				CBitStream params;
+				params.write_netid(occBlob.getNetworkID());
+				caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), "Detach " + occBlob.getInventoryName(), params);
 			}
 		}
 	}
@@ -37,34 +32,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("detach vehicle") && isServer())
+	if (isServer() && cmd == this.getCommandID("detach vehicle"))
 	{
-		CPlayer@ p = getNet().getActiveCommandPlayer();
-		if (p is null) return;
-
-		CBlob@ b = p.getBlob();
-		if (b is null) return;
-
-		AttachmentPoint@[] aps;
-		if (!this.getAttachmentPoints(@aps)) return;
-
-		for (uint i = 0; i < aps.length; i++)
+		CBlob@ vehicle = getBlobByNetworkID(params.read_netid());
+		if (vehicle !is null)
 		{
-			AttachmentPoint@ ap = aps[i];
-			if (ap.socket && ap.name == "VEHICLE" || ap.name == "PASSENGER")
-			{
-				CBlob@ occBlob = ap.getOccupied();
-				if (occBlob !is null && occBlob.hasTag("vehicle")) //detach button
-				{
-					// range check
-					if (this.getDistanceTo(b) > 64.0f) return;
-
-					if (this.isOnGround())
-					{
-						occBlob.server_DetachFrom(this);
-					}
-				}
-			}
+			vehicle.server_DetachFrom(this);
 		}
 	}
 }
