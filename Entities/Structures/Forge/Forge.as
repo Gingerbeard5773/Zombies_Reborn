@@ -6,8 +6,8 @@
 const string fuel_prop = "fuel_level";
 const int max_fuel = 500;
 
-const string[] fuel_names = {"mat_wood", "mat_coal"};
-const int[] fuel_strength = { 1, 3 };
+const string[] fuel_names = {"mat_coal", "mat_wood"};
+const int[] fuel_strength = { 3, 1 };
 
 void onInit(CBlob@ this)
 {
