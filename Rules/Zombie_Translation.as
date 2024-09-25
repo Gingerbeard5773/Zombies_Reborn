@@ -21,7 +21,7 @@ namespace Translate
 	Tip2 = Translate("A dead body will transform into a zombie after some time.",             "Труп игрока через некоторое время превратится в зомби"),
 	Tip3 = Translate("Use water to temporarily stop a burning wraith.",                       "Используйте воду, чтобы потушить горящего призрака"),
 	Tip4 = Translate("Head shots deal additional damage.",                                    "Выстрелы в голову наносят больше урона"),
-	Tip5 = Translate("If there is not many zombies, a trader will visit at mid-day.",         "Если зомби немного, торговец прилетит к полудню"),
+	Tip5 = Translate("A trader will visit at mid-day if it can land safely.",                 "Если зомби немного, торговец прилетит к полудню"),
 	Tip6 = Translate("Respawns are instant if there is no zombies during day light.",         "Возрождения происходят мгновенно, если днём нет зомби"),
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.",   "Мигранты будут приходить к вам через каждый день,\nесли популяция нежити будет низкая");
 }

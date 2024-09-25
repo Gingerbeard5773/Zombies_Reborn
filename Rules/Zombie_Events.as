@@ -105,9 +105,8 @@ void doMigrantEvent(CRules@ this, CMap@ map)
 
 void doTraderEvent(CRules@ this, CMap@ map)
 {
-	if (this.get_u16("undead count") > 10) return; //don't spawn trader if there is too many zombies
-	
 	//find a proper spawning position near an elegible player
+	const bool doGroundCheck = this.get_u16("undead count") > 20;
 	Vec2f[] spawns;
 	const u8 playersLength = getPlayerCount();
 	for (u8 i = 0; i < playersLength; ++i)
@@ -118,7 +117,32 @@ void doTraderEvent(CRules@ this, CMap@ map)
 		CBlob@ playerBlob = player.getBlob();
 		if (playerBlob is null || playerBlob.hasTag("undead")) continue;
 		
-		spawns.push_back(playerBlob.getPosition());
+		Vec2f blobpos = playerBlob.getPosition();
+		Vec2f groundpos;
+		//raycast from sky to ground
+		if (map.rayCastSolid(Vec2f(blobpos.x, 0), Vec2f(blobpos.x, map.tilemapheight * map.tilesize), groundpos))
+		{
+			CBlob@[] blobs;
+			map.getBlobsInRadius(groundpos, 240.0f, @blobs);
+
+			bool isGroundClearOfUndead = true;
+			if (doGroundCheck)
+			{
+				for (u16 i = 0; i < blobs.length; i++)
+				{
+					CBlob@ blob = blobs[i];
+					if (!blob.hasTag("undead")) continue;
+					
+					isGroundClearOfUndead = false;
+					break;
+				}
+			}
+			
+			if (isGroundClearOfUndead)
+			{
+				spawns.push_back(blobpos);
+			}
+		}
 	}
 	
 	if (spawns.length <= 0) return;
@@ -126,15 +150,7 @@ void doTraderEvent(CRules@ this, CMap@ map)
 	this.SetGlobalMessage("A flying merchant has arrived!");
 	this.set_u8("message_timer", 6);
 	
-	Vec2f spawn(spawns[XORRandom(spawns.length)].x + 200 - XORRandom(400), 0);
-	
-	if (map.isTileSolid(map.getTile(spawn)))
-	{
-		//in case of roof
-		Vec2f[] markers;
-		if (map.getMarkers("zombie_spawn", markers))
-			spawn = markers[XORRandom(markers.length)];
-	}
+	Vec2f spawn(spawns[XORRandom(spawns.length)].x + 80 - XORRandom(160), 0);
 	
 	server_CreateBlob("traderbomber", 0, spawn);
 }
