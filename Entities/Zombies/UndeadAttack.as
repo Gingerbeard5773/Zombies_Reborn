@@ -42,8 +42,10 @@ void onTick(CBlob@ this)
 			for (u8 i = 0; i < overlappingLength; i++)
 			{
 				CBlob@ b = overlapping[i];
+				if (b.hasTag("dead") || b.hasTag("player") || b.hasTag("invincible")) continue;
 				Vec2f bpos = b.getPosition();
-				if (!b.hasTag("player") && !b.hasTag("invincible") && (this.isFacingLeft() ? bpos.x < pos.x : bpos.x > pos.x))
+				const bool isFacingBlob = this.isFacingLeft() ? bpos.x < pos.x : bpos.x > pos.x;
+				if (isFacingBlob)
 				{
 					server_UndeadAttack(this, b, attackVars.damage * (b.hasTag("stone") ? 0.2f : 1), false, attackVars);
 					this.SendCommand(this.getCommandID("undead_attack_client"));

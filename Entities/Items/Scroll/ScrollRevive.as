@@ -14,18 +14,18 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 
 	CBitStream params;
-	params.write_netid(caller.getNetworkID());
 	params.write_bool(false);
 	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_revive"), Translate::ScrollRevive, params);
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("server_revive") && isServer())
 	{
-		Vec2f pos = this.getPosition();
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
 
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		CBlob@ caller = player.getBlob();
 		if (caller is null) return;
 		
 		if (this.hasTag("dead")) return;
@@ -34,49 +34,42 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		
 		if (params.read_bool()) //reviving self
 		{
-			CPlayer@ player = caller.getPlayer();
-			if (player !is null)
-			{
-				RevivePlayer(player, caller);
-				revived_positions.push_back(caller.getPosition());
-				this.Tag("dead");
-				this.server_Die();
-			}
+			RevivePlayer(player, caller);
+			revived_positions.push_back(caller.getPosition());
 		}
-		else
+
+		CBlob@[] blobsInRadius;
+		getMap().getBlobsInRadius(this.getPosition(), 40.0f, @blobsInRadius);
+
+		const u16 blobsLength = blobsInRadius.length;
+		for (u16 i = 0; i < blobsLength; i++)
 		{
-			CBlob@[] blobsInRadius;
-			if (getMap().getBlobsInRadius(pos, 40.0f, @blobsInRadius))
+			CBlob@ b = blobsInRadius[i];
+			if (!b.hasTag("dead") || b.hasTag("undead")) continue;
+
+			CPlayer@ dead_player = getPlayerByUsername(b.get_string("player_username")); //RunnerDeath.as
+			if ((dead_player !is null && dead_player.getBlob() is null) || b.getName() == "migrant")
 			{
-				const u16 blobsLength = blobsInRadius.length;
-				for (u16 i = 0; i < blobsLength; i++)
-				{
-					CBlob@ b = blobsInRadius[i];
-					if (b.hasTag("dead") && !b.hasTag("undead"))
-					{
-						CPlayer@ player = getPlayerByUsername(b.get_string("player_username")); //RunnerDeath.as
-						if ((player is null || player.getBlob() !is null) && b.getName() != "migrant") continue;
-						
-						if (player.getTeamNum() == 200) continue;
-						
-						RevivePlayer(player, b);
-						revived_positions.push_back(b.getPosition());
-						this.Tag("dead");
-						this.server_Die();
-					}
-				}
+				if (dead_player.getTeamNum() == 200) continue;
+				
+				RevivePlayer(dead_player, b);
+				revived_positions.push_back(b.getPosition());
 			}
 		}
+
 		const u8 revived_count = revived_positions.length;
 		if (revived_count > 0)
 		{
-			CBitStream bs;
-			bs.write_u8(revived_count);
-			for (u16 i = 0; i < revived_count; i++)
+			CBitStream stream;
+			stream.write_u8(revived_count);
+			for (u8 i = 0; i < revived_count; i++)
 			{
-				bs.write_Vec2f(revived_positions[i]);
+				stream.write_Vec2f(revived_positions[i]);
 			}
-			this.SendCommand(this.getCommandID("client_revive"), bs);
+			this.SendCommand(this.getCommandID("client_revive"), stream);
+			
+			this.Tag("dead");
+			this.server_Die();
 		}
 	}
 	else if (cmd == this.getCommandID("client_revive") && isClient())
@@ -105,6 +98,7 @@ void RevivePlayer(CPlayer@ player, CBlob@ b)
 	if (player !is null)
 	{
 		newBlob.server_SetPlayer(player);
+		newBlob.server_SetHealth(newBlob.getInitialHealth() * 2.0f);
 	}
 	
 	//kill dead body

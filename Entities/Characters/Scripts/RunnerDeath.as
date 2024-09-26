@@ -1,7 +1,7 @@
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
 
-const u32 VANISH_BODY_SECS = 100;
+const u32 VANISH_BODY_SECS = 200;
 const f32 CARRIED_BLOB_VEL_SCALE = 1.0;
 const f32 MEDIUM_CARRIED_BLOB_VEL_SCALE = 0.8;
 const f32 HEAVY_CARRIED_BLOB_VEL_SCALE = 0.6;
@@ -18,24 +18,18 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	// make sure this script is at the end of onHit scripts for it gets the final health
 	if (this.getHealth() <= 0.0f && !this.hasTag("dead"))
 	{
-		
 		//revive this if this is holding a revival scroll
-		AttachmentPoint@ attach = this.getAttachmentPoint(0);
-		if (attach !is null)
+		CBlob@ scroll = getRevivalScroll(this);
+		if (scroll !is null)
 		{
-			CBlob@ held = attach.getOccupied();
-			if (held !is null && held.hasCommandID("server_revive"))
+			if (this.isMyPlayer())
 			{
-				if (this.isMyPlayer())
-				{
-					CBitStream params;
-					params.write_netid(this.getNetworkID());
-					params.write_bool(true);
-					held.SendCommand(held.getCommandID("server_revive"), params);
-				}
-				
-				return 0.0f;
+				CBitStream params;
+				params.write_bool(true);
+				scroll.SendCommand(scroll.getCommandID("server_revive"), params);
 			}
+			
+			return 0.0f;
 		}
 		
 		this.Tag("dead");
@@ -207,4 +201,22 @@ void StuffFallsOut(CBlob@ this)
 		this.server_PutOutInventory(blob);
 		blob.setVelocity(this.getVelocity() + getRandomVelocity(90, 4.0f, 40));
 	}
+}
+
+CBlob@ getRevivalScroll(CBlob@ this)
+{
+	CBlob@ carried = this.getCarriedBlob();
+	if (carried !is null && carried.hasCommandID("server_revive")) return carried;
+
+	CInventory@ inventory = this.getInventory();
+	if (inventory !is null)
+	{
+		for (u8 i = 0; i < inventory.getItemsCount(); ++i)
+		{
+			CBlob@ blob = inventory.getItem(i);
+			if (blob.hasCommandID("server_revive")) return blob;
+		}
+	}
+
+	return null;
 }
