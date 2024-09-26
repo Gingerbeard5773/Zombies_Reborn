@@ -3,6 +3,7 @@
 #include "Requirements.as";
 #include "CraftItemCommon.as"
 #include "FireParticle.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -40,28 +41,28 @@ void onInit(CBlob@ this)
 	this.set("Craft", @craft); 
 	
 	{
-		CraftItem i("bread", "Bread\nDelicious crunchy whole-wheat bread.\n$heart_full$$heart_half$", 4, 30);
+		CraftItem i("bread", Translate::Bread+"\n$heart_full$$heart_half$", 4, 30);
 		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 20);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("cake", "Cake\nFluffy cake made from egg and wheat.\n$heart_full$$heart_full$$heart_full$", 5, 30);
+		CraftItem i("cake", Translate::Cake+"\n$heart_full$$heart_full$$heart_full$", 5, 30);
 		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 15);
 		AddRequirement(i.reqs, "blob", "egg", "Egg", 1);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("cookedfish", "Cooked Fish\nA cooked fish on a stick.\n$heart_full$$heart_full$$heart_full$$heart_half$", 1, 30);
+		CraftItem i("cookedfish", Translate::Cookedfish+"\n$heart_full$$heart_full$$heart_full$$heart_half$", 1, 30);
 		AddRequirement(i.reqs, "blob", "fishy", "Fish", 1);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("cookedsteak", "Cooked Steak\nA meat chop with sauce.\n$heart_full$$heart_full$$heart_full$$heart_full$", 0, 30);
+		CraftItem i("cookedsteak", Translate::Cookedsteak+"\n$heart_full$$heart_full$$heart_full$$heart_full$", 0, 30);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("food", "Burger\nSeared meat in a bun, bisons love it!\n$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_half$", 6, 30);
+		CraftItem i("food", Translate::Burger+"\n$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_half$", 6, 30);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
 		AddRequirement(i.reqs, "blob", "bread", "Bread", 1);
 		craft.addItem(this, i);

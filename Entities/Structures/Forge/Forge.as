@@ -2,6 +2,7 @@
 #include "Requirements.as"
 #include "CraftItemCommon.as"
 #include "FireParticle.as"
+#include "Zombie_Translation.as"
 
 const string fuel_prop = "fuel_level";
 const int max_fuel = 500;
@@ -34,12 +35,12 @@ void onInit(CBlob@ this)
 	this.set("Craft", @craft); 
 	
 	{
-		CraftItem i("mat_ironingot", "Iron Ingot\nCan be used to create weapons and equipment", 0, 10);
+		CraftItem i("mat_ironingot", Translate::IronIngot, 0, 10);
 		AddRequirement(i.reqs, "blob", "mat_iron", "Iron Ore", 15);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("mat_steelingot", "Steel Ingot\nCan be used to create weapons and equipment", 1, 20);
+		CraftItem i("mat_steelingot", Translate::SteelIngot, 1, 20);
 		AddRequirement(i.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
 		AddRequirement(i.reqs, "blob", "mat_coal", "Coal", 25);
 		craft.addItem(this, i);

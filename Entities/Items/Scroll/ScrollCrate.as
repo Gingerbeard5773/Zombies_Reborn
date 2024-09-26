@@ -2,6 +2,7 @@
 
 #include "GenericButtonCommon.as";
 #include "MakeCrate.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -11,7 +12,7 @@ void onInit(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
-	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, "Use this to crate an object you are pointing at.");
+	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, Translate::ScrollCrate);
 }
 
 void Callback_Spell(CBlob@ this, CBlob@ caller)

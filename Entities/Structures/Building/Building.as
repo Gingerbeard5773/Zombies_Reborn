@@ -8,6 +8,7 @@
 #include "CheckSpam.as"
 #include "GenericButtonCommon.as"
 #include "TeamIconToken.as"
+#include "Zombie_Translation.as"
 
 //are builders the only ones that can finish construction?
 const bool builder_only = false;
@@ -80,11 +81,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::quarry_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Factory", getTeamIcon("factory", "Factory.png", team_num, Vec2f(40, 24), 3), "factory", "A generic factory for various items. Requires a free worker to produce items.");
+		ShopItem@ s = addShopItem(this, "Factory", getTeamIcon("factory", "Factory.png", team_num, Vec2f(40, 24), 3), "factory", Translate::Factory);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 100);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Dormitory", getTeamIcon("dorm", "Dorm.png", team_num, Vec2f(40, 24), 5), "dorm", "A dorm for recruiting and healing workers. Functions as a respawn point.");
+		ShopItem@ s = addShopItem(this, "Dormitory", getTeamIcon("dorm", "Dorm.png", team_num, Vec2f(40, 24), 5), "dorm", Translate::Dormitory);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", 100);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 100);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);

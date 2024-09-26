@@ -1,6 +1,7 @@
 // scroll script that converts stone ore into thick stone
 
 #include "GenericButtonCommon.as";
+#include "Zombie_Translation.as";
 
 const int radius = 10;
 
@@ -13,7 +14,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), "Use this to convert nearby stone into thick stone.");
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), Translate::ScrollStone);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

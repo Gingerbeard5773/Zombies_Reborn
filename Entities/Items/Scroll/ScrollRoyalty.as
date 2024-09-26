@@ -1,6 +1,7 @@
 // scroll script that spawns a geti
 
 #include "GenericButtonCommon.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -10,7 +11,7 @@ void onInit(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), "Use this to summon a geti.");
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), Translate::ScrollRoyalty);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

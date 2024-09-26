@@ -77,21 +77,21 @@ void managePages(Vec2f&in imageSize, Vec2f&in center)
 {
 	switch(page)
 	{
-		case 0: drawPage(imageSize, center, "ZOMBIE FORTRESS", Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
+		case 0: drawPage(imageSize, center, Translate::ZF, Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
 			break;
-		//case 1: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3), 1);
+		//case 1: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3), 1);
 			//break;
-		case 1: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 2);
+		case 1: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 2);
 			break;
-		case 2: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 3);
+		case 2: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 3);
 			break;
-		case 3: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 4);
+		case 3: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 4);
 			break;
-		case 4: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 5);
+		case 4: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 5);
 			break;
-		case 5: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 6);
+		case 5: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 6);
 			break;
-		case 6: drawPage(imageSize, center, "TIPS", Vec2f(center.x - imageSize.x + 200, center.y - imageSize.y/3), 7);
+		case 6: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 200, center.y - imageSize.y/3), 7);
 			break;
 	};
 }

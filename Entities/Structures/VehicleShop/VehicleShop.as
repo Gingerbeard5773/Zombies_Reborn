@@ -7,6 +7,7 @@
 #include "Costs.as"
 #include "CheckSpam.as"
 #include "TeamIconToken.as"
+#include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
 {
@@ -33,14 +34,14 @@ void onInit(CBlob@ this)
 
 	{
 		const string bomber_icon = getTeamIcon("bomber", "Icon_Bomber.png", team_num, Vec2f(44, 74), 0);
-		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", "A balloon capable of flying. Allows attachments. Press [Space] to drop bombs.", false, true);
+		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", Translate::Bomber, false, true);
 		s.crate_icon = 7;
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 200);
 	}
 	{
 		const string bomber_icon = getTeamIcon("armoredbomber", "Icon_ArmoredBomber.png", team_num, Vec2f(44, 74), 0);
-		ShopItem@ s = addShopItem(this, "Armored Bomber", bomber_icon, "armoredbomber", "A balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", false, true);
+		ShopItem@ s = addShopItem(this, "Armored Bomber", bomber_icon, "armoredbomber", Translate::Armoredbomber, false, true);
 		s.crate_icon = 7;
 		AddRequirement(s.requirements, "coin", "", "Coins", 200);
 		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
@@ -60,14 +61,14 @@ void onInit(CBlob@ this)
 	}
 	{
 		const string bomber_icon = getTeamIcon("tank", "Icon_tank.png", team_num, Vec2f(55, 32), 0);
-		ShopItem@ s = addShopItem(this, "Tank", bomber_icon, "tank", "A seige tank. Allows attachments.", false, true);
+		ShopItem@ s = addShopItem(this, "Tank", bomber_icon, "tank", Translate::Tank, false, true);
 		s.crate_icon = 11;
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 300);
 	}
 	{
 		const string bow_icon = getTeamIcon("mounted_bow", "MountedBow.png", team_num, Vec2f(16, 16), 6);
-		ShopItem@ s = addShopItem(this, "Mounted Bow", bow_icon, "mounted_bow", "A portable arrow-firing death machine. Can be attached to some vehicles.", false, true);
+		ShopItem@ s = addShopItem(this, "Mounted Bow", bow_icon, "mounted_bow", Translate::Mountedbow, false, true);
 		s.crate_icon = 6;
 		s.customButton = true;
 		s.buttonwidth = 2;

@@ -33,6 +33,7 @@
 #include "Costs.as"
 #include "TeamIconToken.as"
 #include "CustomTiles.as"
+#include "Zombie_Translation.as"
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
@@ -42,9 +43,9 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	InitCosts();
 	CRules@ rules = getRules();
 
-	AddIconToken("$iron_block$", "World.png", Vec2f(8, 8), CMap::tile_iron);
-	AddIconToken("$biron_block$", "World.png", Vec2f(8, 8), CMap::tile_biron);
-	AddIconToken("$iron_platform$", "IronPlatform.png", Vec2f(8, 8), 0);
+	AddIconToken("$iron_block_ZF$", "World.png", Vec2f(8, 8), CMap::tile_iron);
+	AddIconToken("$biron_block_ZF$", "World.png", Vec2f(8, 8), CMap::tile_biron);
+	AddIconToken("$iron_platform_ZF$", "IronPlatform.png", Vec2f(8, 8), 0);
 
 	BuildBlock[] page_0;
 	blocks.push_back(page_0);
@@ -111,22 +112,22 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_iron, "iron_block", "$iron_block$", "Iron Block\nResistant to explosions.");
+		BuildBlock b(CMap::tile_iron, "iron_block_ZF", "$iron_block_ZF$", Translate::IronBlock);
 		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 2);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_biron, "biron_block", "$biron_block$", "Back Iron Wall\nDurable Support.");
+		BuildBlock b(CMap::tile_biron, "biron_block_ZF", "$biron_block_ZF$", Translate::IronBlockBack);
 		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 1);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "iron_door", getTeamIcon("iron_door", "1x1IronDoor.png", team_num, Vec2f(16, 8)), "Iron Door\nPlace next to walls");
+		BuildBlock b(0, "iron_door", getTeamIcon("iron_door", "1x1IronDoor.png", team_num, Vec2f(16, 8)), Translate::IronDoor);
 		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 4);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "iron_platform", "$iron_platform$", "Iron Platform\nOne way platform");
+		BuildBlock b(0, "iron_platform", "$iron_platform_ZF$", Translate::IronPlatform);
 		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
 		blocks[0].push_back(b);
 	}
@@ -134,7 +135,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	BuildBlock[] page_1;
 	blocks.push_back(page_1);
 	{
-		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 102), 1), "Wind Mill\nA grain mill for producing flour.");
+		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 102), 1), Translate::Windmill);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 200);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 250);
 		b.buildOnGround = true;
@@ -142,7 +143,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "kitchen", getTeamIcon("kitchen", "Kitchen.png", team_num, Vec2f(40, 32)), "Kitchen\nCreate various foods for healing.");
+		BuildBlock b(0, "kitchen", getTeamIcon("kitchen", "Kitchen.png", team_num, Vec2f(40, 32)), Translate::Kitchen);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 100);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 100);
 		b.buildOnGround = true;
@@ -150,7 +151,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "forge", getTeamIcon("forge", "Forge.png", team_num, Vec2f(56, 40)), "Forge\nSmelt raw ore into ingots.");
+		BuildBlock b(0, "forge", getTeamIcon("forge", "Forge.png", team_num, Vec2f(56, 40)), Translate::Forge);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 200);
 		b.buildOnGround = true;
@@ -158,7 +159,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}	
 	{
-		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), "Nursery\nA plant nursery for agricultural purposes.");
+		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), Translate::Nursery);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 400);
 		AddRequirement(b.reqs, "blob", "seed", "Seed", 1);
 		b.buildOnGround = true;
@@ -166,7 +167,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "armory", getTeamIcon("armory", "Armory.png", team_num, Vec2f(56, 40)), "Armory\nBuild weapons and change your class.");
+		BuildBlock b(0, "armory", getTeamIcon("armory", "Armory.png", team_num, Vec2f(56, 40)), Translate::Armory);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 200);
 		b.buildOnGround = true;
@@ -174,7 +175,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	/*{
-		BuildBlock b(0, "library", getTeamIcon("library", "LibraryIcon.png", team_num, Vec2f(32, 19)), "Library\nA place of study to obtain new technologies.");
+		BuildBlock b(0, "library", getTeamIcon("library", "LibraryIcon.png", team_num, Vec2f(32, 19)), Translate::Library);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 150);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 50);
