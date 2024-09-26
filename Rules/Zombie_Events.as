@@ -99,8 +99,7 @@ void doMigrantEvent(CRules@ this, CMap@ map)
 		CreateMigant(spawn + offset, 0);
 	}
 
-	this.SetGlobalMessage(amount == 1 ? "A refugee has arrived!": "Refugees have arrived!");
-	this.set_u8("message_timer", 6);
+	setTimedGlobalMessage(this, amount == 1 ? 5 : 6, 6);
 }
 
 void doTraderEvent(CRules@ this, CMap@ map)
@@ -146,10 +145,9 @@ void doTraderEvent(CRules@ this, CMap@ map)
 	}
 	
 	if (spawns.length <= 0) return;
-	
-	this.SetGlobalMessage("A flying merchant has arrived!");
-	this.set_u8("message_timer", 6);
-	
+
+	setTimedGlobalMessage(this, 3, 6);
+
 	Vec2f spawn(spawns[XORRandom(spawns.length)].x + 80 - XORRandom(160), 0);
 	
 	server_CreateBlob("traderbomber", 0, spawn);
@@ -177,9 +175,7 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 		if (spawns.length <= 0) return;
 	}
 	
-	this.SetGlobalMessage("Sedgwick the necromancer has appeared!");
-	this.set_u8("message_timer", 6);
-	
+	setTimedGlobalMessage(this, 4, 6);
 	server_CreateBlob("sedgwick", -1, spawns[XORRandom(spawns.length)]);
 }
 
@@ -218,4 +214,14 @@ void doSkelepedeEvent(CRules@ this, CMap@ map)
 		Vec2f spawn(XORRandom(dim.x), dim.y + 50 + XORRandom(600));
 		server_CreateBlob("skelepede", -1, spawn);
 	}
+}
+
+// Set a global message with a timer to remove itself
+void setTimedGlobalMessage(CRules@ this, const u8&in index, const u8&in seconds)
+{
+	//consult Zombie_GlobalMessages.as
+	this.set_u8("global_message_index", index);
+	this.set_u8("global_message_timer", seconds);
+	this.Sync("global_message_index", true);
+	this.Sync("global_message_timer", true);
 }

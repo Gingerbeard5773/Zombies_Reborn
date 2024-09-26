@@ -35,7 +35,6 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	this.set_u8("message_timer", 1);
 	this.set_u16("day_number", 1);
 	this.Sync("day_number", true);
 
@@ -102,22 +101,15 @@ void checkDayChange(CRules@ this, const u8&in dayNumber)
 	//has the day changed?
 	if (dayNumber != this.get_u16("day_number"))
 	{
-		string dayMessage = "Day "+dayNumber;
-		
-		if (dayNumber == 2)
-		{
-			dayMessage = "Warmup over. Day "+dayNumber;
-		}
-
-		setTimedGlobalMessage(this, dayMessage, 10);
-		
 		//end game if we reached the last day
 		if (dayNumber >= days_to_survive && !infinite_days)
 		{
-			dayMessage = "Day "+days_to_survive+" Reached! You win!";
 			this.SetCurrentState(GAME_WON);
-			
-			setTimedGlobalMessage(this, dayMessage, nextmap_seconds);
+			setTimedGlobalMessage(this, 2, nextmap_seconds);
+		}
+		else
+		{
+			setTimedGlobalMessage(this, 0, 10);
 		}
 		
 		this.set_u16("day_number", dayNumber);
@@ -126,25 +118,13 @@ void checkDayChange(CRules@ this, const u8&in dayNumber)
 }
 
 // Set a global message with a timer to remove itself
-void setTimedGlobalMessage(CRules@ this, const string&in text, const u8&in seconds)
+void setTimedGlobalMessage(CRules@ this, const u8&in index, const u8&in seconds)
 {
-	this.SetGlobalMessage(text);
-	this.set_u8("message_timer", seconds);
-}
-
-// See if the global message should be cleared
-void resetTimedGlobalMessage(CRules@ this)
-{
-	u8 message_time = this.get_u8("message_timer");
-	if (message_time > 0)
-	{
-		message_time--;
-		
-		if (message_time == 0)
-			this.SetGlobalMessage("");
-		
-		this.set_u8("message_timer", message_time);
-	}
+	//consult Zombie_GlobalMessages.as
+	this.set_u8("global_message_index", index);
+	this.set_u8("global_message_timer", seconds);
+	this.Sync("global_message_index", true);
+	this.Sync("global_message_timer", true);
 }
 
 // Protocols for when the game ends
@@ -181,7 +161,7 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 	if (!isGameLost(player)) return;
 	
 	this.SetCurrentState(GAME_OVER);
-	setTimedGlobalMessage(this, "Game over! All players perished! You survived "+this.get_u16("day_number")+" days.", nextmap_seconds);
+	setTimedGlobalMessage(this, 1, nextmap_seconds);
 }
 
 // Check if we lost the game
