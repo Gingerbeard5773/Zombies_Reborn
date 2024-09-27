@@ -61,19 +61,29 @@ void onTick(CRules@ this)
 	}
 }
 
-void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
+void SetPlayerRespawn(CRules@ this, CPlayer@ player)
 {
-	if (victim.getTeamNum() == 200) return;
+	if (player.getTeamNum() == 200) return;
 
 	const u32 gameTime = getGameTime();
 	const u32 day_cycle = this.daycycle_speed * 60;
 	const u32 timeElapsed = (gameTime / 30) % day_cycle;
 	const int timeTillDawn = (day_cycle - timeElapsed) * 30;
-	
+
 	const u32 respawn_time = canRespawnQuick(this, timeElapsed, getMap()) ? spawnTimeSeconds*30 : timeTillDawn;
 
-	this.set_u32(victim.getUsername()+" respawn time", respawn_time + gameTime);
-	this.SyncToPlayer(victim.getUsername()+" respawn time", victim);
+	this.set_u32(player.getUsername()+" respawn time", respawn_time + gameTime);
+	this.SyncToPlayer(player.getUsername()+" respawn time", player);
+}
+
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+{
+	SetPlayerRespawn(this, player);
+}
+
+void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
+{
+	SetPlayerRespawn(this, victim);
 }
 
 bool canRespawnQuick(CRules@ this, const u32&in timeElapsed, CMap@ map)
