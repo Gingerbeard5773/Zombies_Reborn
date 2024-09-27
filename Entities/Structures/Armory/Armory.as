@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(-10, 0));
-	this.set_Vec2f("shop menu size", Vec2f(3, 4));
+	this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	this.set_string("shop description", "Armory");
 	this.set_u8("shop icon", 25);
 
@@ -79,6 +79,16 @@ void onInit(CBlob@ this)
 		s.customButton = true;
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Steel Helmet", getTeamIcon("steelhelmet", "SteelHelmet.png", team_num, Vec2f(16, 16), 0), "steelhelmet", Translate::SteelHelmet, false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 1);
+		AddRequirement(s.requirements, "coin", "", "Coins", 50);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Steel Chestplate", getTeamIcon("steelarmor", "SteelArmor.png", team_num, Vec2f(16, 16), 0), "steelarmor", Translate::SteelArmor, false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
+		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 	}
 }
 

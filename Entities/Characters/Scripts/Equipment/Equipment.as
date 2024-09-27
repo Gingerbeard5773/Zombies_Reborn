@@ -4,8 +4,8 @@
 
 const string[] equipment =
 {
-	"head"
-	//"torso",
+	"head",
+	"torso"
 	//"feet"
 };
 
@@ -19,20 +19,20 @@ void onInit(CBlob@ this)
 		AddIconToken("$"+equipment[i]+"_empty$", "Equipment.png", Vec2f(24, 24), i);
 	}
 	
-	u32[] ids(equipment.length);
+	u16[] ids(equipment.length);
 	this.set("equipment_ids", ids);
 }
 
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu@ gridmenu)
 {
 	Vec2f MENU_POS = gridmenu.getUpperLeftPosition() + Vec2f(-25, 48);
-	CGridMenu@ equipment_menu = CreateGridMenu(MENU_POS, this, Vec2f(1, equipment.length), "equipment");
+	CGridMenu@ equipment_menu = CreateGridMenu(MENU_POS, this, Vec2f(1, equipment.length), "equipment_menu");
 	if (equipment_menu is null) return;
 
 	equipment_menu.SetCaptionEnabled(false);
 	equipment_menu.deleteAfterClick = false;
 
-	u32[] ids;
+	u16[] ids;
 	if (!this.get("equipment_ids", ids)) return;
 
 	CBlob@ carried = this.getCarriedBlob();
@@ -58,7 +58,9 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu@ gridmenu)
 		params.write_u8(i);
 		CGridButton@ button = equipment_menu.AddButton(icon, "", "Equipment.as", "Callback_Equip", Vec2f(1, 1), params);
 		if (button !is null)
+		{
 			button.SetHoverText(hover);
+		}
 	}
 }
 
@@ -85,10 +87,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("server_equip") && isServer())
 	{
-		u32[] ids;
+		u16[] ids;
 		this.get("equipment_ids", ids);
-		u32 equipped = 0;
-		u32 unequipped = 0;
+		u16 equipped = 0;
+		u16 unequipped = 0;
 		const u8 slot = params.read_u8();
 		
 		//unequip
@@ -150,6 +152,7 @@ void EquipBlob(CBlob@ this, CBlob@ equipment)
 	{
 		shape.server_SetActive(false);
 		shape.doTickScripts = false;
+		shape.SetGravityScale(0.0f);
 		ShapeConsts@ consts = shape.getConsts();
 		consts.collidable = false;
 		consts.mapCollisions = false;
@@ -184,7 +187,7 @@ void UnequipBlob(CBlob@ this, CBlob@ equipment)
 
 void onTick(CBlob@ this)
 {
-	u32[] ids;
+	u16[] ids;
 	if (!this.get("equipment_ids", ids)) return;
 	for (u8 i = 0; i < ids.length; i++)
 	{
@@ -200,7 +203,7 @@ void onTick(CBlob@ this)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-	u32[] ids;
+	u16[] ids;
 	if (!blob.get("equipment_ids", ids)) return;
 	for (u8 i = 0; i < ids.length; i++)
 	{
@@ -215,7 +218,7 @@ void onTick(CSprite@ this)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	u32[] ids;
+	u16[] ids;
 	if (!this.get("equipment_ids", ids)) return damage;
 	for (u8 i = 0; i < ids.length; i++)
 	{
@@ -224,26 +227,30 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		onHitHandle@ onHitOwner;
 		if (equippedblob.get("onHitOwner handle", @onHitOwner))
+		{
 			damage = onHitOwner(equippedblob, this, worldPoint, velocity, damage, hitterBlob, customData);
+		}
 	}
 	return damage;
 }
 
 void onDie(CBlob@ this)
 {
-	u32[] ids;
+	u16[] ids;
 	if (!this.get("equipment_ids", ids)) return;
 	for (u8 i = 0; i < ids.length; i++)
 	{
 		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
-		if (equippedblob !is null)
-			UnequipBlob(this, equippedblob);
+		if (equippedblob is null) continue;
+
+		UnequipBlob(this, equippedblob);
+		equippedblob.setPosition(this.getPosition());
 	}
 }
 
 ///NETWORK
 
-void SerializeEquipment(u32[] ids, CBitStream@ params)
+void SerializeEquipment(u16[] ids, CBitStream@ params)
 {
 	params.write_u8(ids.length);
 	for (u8 i = 0; i < ids.length; i++)
@@ -257,10 +264,10 @@ bool UnserializeEquipment(CBlob@ this, CBitStream@ params)
 	u8 ids_length;
 	if (!params.saferead_u8(ids_length)) return false;
 	
-	u32[] ids(ids_length);
+	u16[] ids(ids_length);
 	for (u8 i = 0; i < ids_length; i++)
 	{
-		u32 id;
+		u16 id;
 		if (!params.saferead_netid(id)) return false;
 		ids[i] = id; //copy over netids
 	}
@@ -271,12 +278,26 @@ bool UnserializeEquipment(CBlob@ this, CBitStream@ params)
 
 void onSendCreateData(CBlob@ this, CBitStream@ params)
 {
-	u32[] ids;
+	u16[] ids;
 	if (this.get("equipment_ids", ids))
 		SerializeEquipment(ids, params);
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
 {
-	return UnserializeEquipment(this, params);
+	if (!UnserializeEquipment(this, params)) return false;
+
+	u16[] ids;
+	this.get("equipment_ids", ids);
+	for (u8 i = 0; i < ids.length; i++)
+	{
+		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
+		if (equippedblob is null) continue;
+
+		onClientJoinHandle@ onClientJoin;
+		if (equippedblob.get("onClientJoin handle", @onClientJoin)) 
+			onClientJoin(equippedblob, this);
+	}
+
+	return true;
 }
