@@ -37,7 +37,9 @@ void onTick(CRules@ this)
 			server_CreateBlob("wraith", -1, skeletons[2].getPosition());
 			for (u8 i = 0; i < 4; i++)
 			{
-				skeletons[i].server_Die();
+				CBlob@ skeleton = skeletons[i];
+				skeleton.SetPlayerOfRecentDamage(null, 1.0f);
+				skeleton.server_Die();
 			}
 		}
 	}
@@ -48,7 +50,9 @@ void onTick(CRules@ this)
 			server_CreateBlob("zombieknight", -1, zombies[1].getPosition());
 			for (u8 i = 0; i < 2; i++)
 			{
-				zombies[i].server_Die();
+				CBlob@ zombie = zombies[i];
+				zombie.SetPlayerOfRecentDamage(null, 1.0f);
+				zombie.server_Die();
 			}
 		}
 	}
