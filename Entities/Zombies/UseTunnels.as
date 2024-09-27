@@ -24,11 +24,15 @@ void onTick(CBlob@ this)
 			CBlob@[] tunnels;
 			if (blob.hasTag("travel tunnel") && getTunnels(blob, @tunnels))
 			{
+				CBlob@ tunnel = tunnels[XORRandom(tunnels.length)];
+				Vec2f travel_pos = tunnel.getPosition();
+				this.setPosition(travel_pos);
+
 				CBitStream params;
 				params.write_u16(this.getNetworkID());
-				params.write_u16(tunnels[XORRandom(tunnels.length)].getNetworkID());
-				blob.SendCommand(blob.getCommandID("travel to"), params);
-				
+				params.write_u16(tunnel.getNetworkID());
+				blob.SendCommand(blob.getCommandID("travel to client"), params);
+
 				this.set_Vec2f("brain_destination", Vec2f_zero);
 			}
 		}
