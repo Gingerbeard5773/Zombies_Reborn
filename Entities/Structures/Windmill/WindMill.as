@@ -11,6 +11,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 	
 	this.addCommandID("sv_store");
+	this.addCommandID("pull_items");
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
@@ -107,6 +108,10 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			CButton@ buttonOwner = caller.CreateGenericButton(28, Vec2f(0, 0), this, this.getCommandID("sv_store"), "Store");
 		}
 	}
+	if (this.isOverlapping(caller))
+	{
+		CButton@ buttonOwner = caller.CreateGenericButton(28, Vec2f(0, -4), this, this.getCommandID("pull_items"), "Take Grain from other Storages");
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -132,6 +137,33 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				caller.server_PutOutInventory(item);
 				this.server_PutInInventory(item);
 				i--;
+			}
+		}
+	}
+	else if (cmd == this.getCommandID("pull_items"))
+	{
+		if (!isServer()) return;
+		CBlob@[] storages;
+		getBlobsByName("storage", @storages);
+		getBlobsByName("crate", @storages);
+		getBlobsByName("dinghy", @storages);
+
+		for (int j = 0; j < storages.length; j++)
+		{
+			CBlob@ storage = storages[j];
+			if (storage is null || storage.getDistanceTo(this) > 200) continue;
+			CInventory@ inv = storage.getInventory();
+			if (inv is null) return;
+
+			for (int i = 0; i < inv.getItemsCount(); i++)
+			{
+				CBlob@ item = inv.getItem(i);
+				if (item.getName() == "grain")
+				{
+					storage.server_PutOutInventory(item);
+					this.server_PutInInventory(item);
+					i--;
+				}
 			}
 		}
 	}

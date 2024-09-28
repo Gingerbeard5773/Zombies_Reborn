@@ -60,7 +60,7 @@ void onTick(CSprite@ sprite)
 		for (uint i = current_stage; i < processed_blobs.length; i += update_latency)
 		{
 			CBlob@ blob = getBlobByNetworkID(processed_blobs[i]);
-			if (blob !is null && !blob.isInInventory() && highlight_items[class_index].find(blob.getConfig()) >= 0 || blob.hasTag("material"))
+			if (blob !is null && !blob.isInInventory() && (highlight_items[class_index].find(blob.getConfig()) >= 0 || blob.hasTag("material")))
 			{
 				back_buffer.push_back(blob.getNetworkID());
 			}

@@ -170,9 +170,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		{
 			Vec2f vel = getRandomVelocity(angle, -8.0f + XORRandom(700)/100, 30);
 
-			CParticle@ p = ParticleAnimated("GenericSmoke.png", pos, vel, float(XORRandom(360)), 1.0f, 6 + XORRandom(8), 0.0f, true);
-			p.scale = 0.6f + shotrandom.NextFloat()*0.5f;
-			p.damping = 0.85f;
+			CParticle@ p = ParticleAnimated("GenericSmoke.png", pos, vel, XORRandom(360), 1.0f, 6 + XORRandom(8), 0.0f, true);
+			if (p !is null)
+			{
+				p.scale = 0.6f + shotrandom.NextFloat()*0.5f;
+				p.damping = 0.85f;
+			}
 		}
 		
 		if (!isServer()) //dont repeat on localhost

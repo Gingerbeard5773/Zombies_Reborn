@@ -2,18 +2,22 @@
 
 #include "Zombie_SoftBansCommon.as";
 
-const string commandslist()
+void printcommandslist()
 {
-	return
-	"\n     --- ZOMBIE FORTRESS COMMANDS --- \n"+
-	"\n !time [day time] : set the time of day"+
-	"\n !dayspeed [minutes] : set the speed of the day"+
-	"\n !class [name] : set your character's blob"+
-	"\n !cursor [blobname] [amount] : spawn a blob at your cursor"+
-	"\n !respawn [username] : respawn a player"+
-	"\n !softban [username / IP] [minutes / -1 for permanent] [reason] : soft ban a player"+ 
-	"\n !carnage : kill all zombies on the map"+
-	"\n !undeadcount : print the amount of zombies on the map";
+	print("");
+	print("     --- ZOMBIE FORTRESS COMMANDS --- ",                                              color_white);
+	print(" !time [day time] : set the time of day",                                             color_white);
+	print(" !dayspeed [minutes] : set the speed of the day",                                     color_white);
+	print(" !day [day number] : set the day",                                                    color_white);
+	print(" !dayreset : sets the day based off game time",                                       color_white);
+	print(" !class [name] : set your character's blob",                                          color_white);
+	print(" !cursor [blobname] [amount] : spawn a blob at your cursor",                          color_white);
+	print(" !respawn [username] : respawn a player",                                             color_white);
+	print(" !softban [username / IP] [minutes / -1 for permanent] [reason] : soft ban a player", color_white);
+	print(" !carnage : kill all zombies on the map",                                             color_white);
+	print(" !spawnrates [days to print] [player number] : prints out a prediction of the rates", color_white);
+	print(" !difficulty [difficulty] : sets the game difficulty",                                color_white);
+	print("");
 }
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
@@ -64,6 +68,12 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				{
 					this.daycycle_speed = parseInt(tokens[1]);
 				}
+				else if (tokens[0] == "!day") //set the day
+				{
+					this.set_u16("day_number", parseInt(tokens[1]));
+					this.Sync("day_number", true);
+					//getMap().SetDayTime(this.daycycle_start);
+				}
 				else if (tokens[0] == "!softban") //soft ban a player
 				{
 					if (tokens.length < 3)
@@ -84,7 +94,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			{
 				if (tokens[0] == "!list") //print of a list of all these commands
 				{
-					print(commandslist(), color_white);
+					printcommandslist();
 					return false;
 				}
 				else if (tokens[0] == "!carnage") //kill all undeads
@@ -98,12 +108,13 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 						blob.server_Die();
 					}
 				}
-				else if (tokens[0] == "!undeadcount") //print the amount of undeads
+				else if (tokens[0] == "!dayreset") //sets the day based off the current gametime
 				{
-					CBlob@[] undeads;
-					getBlobsByTag("undead", @undeads);
-					print(undeads.length+" undeads found");
-					return false;
+					const u32 day_cycle = this.daycycle_speed * 60;
+					const u16 dayNumber = (getGameTime() / getTicksASecond() / day_cycle) + 1;
+					
+					this.set_u16("day_number", dayNumber);
+					this.Sync("day_number", true);
 				}
 			}
 			

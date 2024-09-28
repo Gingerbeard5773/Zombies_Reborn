@@ -26,9 +26,10 @@ void onInit(CBlob@ this)
 	
 	this.Tag("builder always hit");
 	this.addCommandID("add fuel");
+	this.addCommandID("pull_items");
 
 	Craft craft();
-	craft.menu_size = Vec2f(2, 1);
+	craft.menu_size = Vec2f(3, 1);
 	craft.button_offset = Vec2f(5.8, -5);
 	craft.produce_sound = "Anvil.ogg";
 	craft.icon_image = "ForgeIcons.png";
@@ -37,6 +38,11 @@ void onInit(CBlob@ this)
 	{
 		CraftItem i("mat_ironingot", Translate::IronIngot, 0, 10);
 		AddRequirement(i.reqs, "blob", "mat_iron", "Iron Ore", 15);
+		craft.addItem(this, i);
+	}
+	{
+		CraftItem i("mat_coal", Translate::CharCoal, 2, 10, 10);
+		AddRequirement(i.reqs, "blob", "mat_wood", "Wood", 25);
 		craft.addItem(this, i);
 	}
 	{
@@ -72,6 +78,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!this.isInventoryAccessible(caller)) return;
 
+	if (this.isOverlapping(caller))
+	{
+		CButton@ buttonOwner = caller.CreateGenericButton(28, Vec2f(-5, -5), this, this.getCommandID("pull_items"), "Take Ores from other Storages");
+	}
+
 	if (this.get_s16(fuel_prop) >= max_fuel) return;
 
 	for (uint i = 0; i < fuel_names.length; i++)
@@ -81,7 +92,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			CBitStream params;
 			params.write_u8(i);
-			CButton@ button = caller.CreateGenericButton("$"+name+"$", Vec2f(-4.0f, 0.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
+			CButton@ button = caller.CreateGenericButton("$"+name+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
 			if (button !is null)
 			{
 				button.deleteAfterClick = false;
@@ -116,6 +127,33 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			caller.TakeBlob(fuel_name, amountToStore);
 			this.set_s16(fuel_prop, this.get_s16(fuel_prop) + amountToStore*fuel_amount);
 			this.Sync(fuel_prop, true);
+		}
+	}
+	else if (cmd == this.getCommandID("pull_items"))
+	{
+		if (!isServer()) return;
+		CBlob@[] storages;
+		getBlobsByName("storage", @storages);
+		getBlobsByName("crate", @storages);
+		getBlobsByName("dinghy", @storages);
+
+		for (int j = 0; j < storages.length; j++)
+		{
+			CBlob@ storage = storages[j];
+			if (storage is null || storage.getDistanceTo(this) > 200) continue;
+			CInventory@ inv = storage.getInventory();
+			if (inv is null) return;
+
+			for (int i = 0; i < inv.getItemsCount(); i++)
+			{
+				CBlob@ item = inv.getItem(i);
+				if (item.getName() == "mat_iron" || item.getName() == "mat_coal")
+				{
+					storage.server_PutOutInventory(item);
+					this.server_PutInInventory(item);
+					i--;
+				}
+			}
 		}
 	}
 }

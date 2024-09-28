@@ -1,6 +1,6 @@
 //temporary invincibility after spawning
 
-const int INVINCIBILITY_SECONDS = 2;
+const int INVINCIBILITY_SECONDS = 3;
 
 void onInit(CBlob@ this)
 {

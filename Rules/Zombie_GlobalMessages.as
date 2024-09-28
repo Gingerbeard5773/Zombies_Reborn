@@ -60,7 +60,7 @@ void onRender(CRules@ this)
 {
 	if (global_message.isEmpty()) return;
 	
-	Vec2f drawpos(getScreenWidth()*0.5f, getScreenHeight()*0.25);
+	Vec2f drawpos(getScreenWidth()*0.5f, getScreenHeight()*0.22);
 	GUI::SetFont("menu");
 	GUI::DrawShadowedTextCentered(global_message, drawpos, color_white);
 }

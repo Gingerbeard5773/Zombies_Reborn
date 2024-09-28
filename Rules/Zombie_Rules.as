@@ -2,15 +2,12 @@
 
 #define SERVER_ONLY
 
-#include "ZombieSpawnPos.as";
-
-u8 days_to_survive = 15;     //days players must survive to win, as well as the power creep of zombies
-f32 game_difficulty = 2.5f;  //zombie spawnrate multiplier
-u16 maximum_zombies = 400;   //maximum amount of zombies that can be on the map at once
+u16 days_to_survive = 15;     //days players must survive to win, as well as the power creep of zombies
 bool infinite_days = false;  //decide if the game ends at days_to_survive
 
 const u8 GAME_WON = 5;
 const u8 nextmap_seconds = 15;
+f32 lastDayHour;
 u8 seconds_till_nextmap = nextmap_seconds;
 
 void onInit(CRules@ this)
@@ -19,9 +16,7 @@ void onInit(CRules@ this)
 	if (cfg.loadFile("Zombie_Vars.cfg"))
 	{
 		//edit these vars in Zombie_Vars.cfg
-		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u8("days_to_survive")  : 15;
-		game_difficulty = cfg.exists("game_difficulty") ? cfg.read_f32("game_difficulty") : 2.5f;
-		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
+		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u16("days_to_survive")  : 15;
 		infinite_days   = cfg.exists("infinite_days")   ? cfg.read_bool("infinite_days")  : false;
 	}
 	
@@ -35,7 +30,8 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	this.set_u16("day_number", 1);
+	lastDayHour = 0.0f;
+	this.set_u16("day_number", 0);
 	this.Sync("day_number", true);
 
 	seconds_till_nextmap = nextmap_seconds;
@@ -50,71 +46,38 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 
 void onTick(CRules@ this)
 {
-	CMap@ map = getMap();
-	
-	const u32 gameTime = getGameTime();
-	const u32 day_cycle = this.daycycle_speed * 60;
-	const u8 dayNumber = (gameTime / getTicksASecond() / day_cycle) + 1;
-	
-	//spawn zombies at night-time
-	const f32 difficulty = days_to_survive / (dayNumber * game_difficulty);
-	const u32 spawnRate = getTicksASecond() * difficulty;
-	
-	if (gameTime % spawnRate == 0)
+	if (getGameTime() % getTicksASecond() == 0) //once every second
 	{
-		spawnZombie(this, map, dayNumber);
-	}
-	
-	if (gameTime % getTicksASecond() == 0) //once every second
-	{
-		checkDayChange(this, dayNumber);
-		
+		checkDayChange(this);
+
 		onGameEnd(this);
 	}
 }
 
-// Spawn various zombie blobs on the map
-void spawnZombie(CRules@ this, CMap@ map, const u8&in dayNumber)
-{
-	if (map.getDayTime() > 0.8f || map.getDayTime() < 0.1f)
-	{
-		if (dayNumber == this.get_u8("skelepede day")) return;
-
-		if (maximum_zombies != 999 && this.get_u16("undead count") >= maximum_zombies) return;
-		
-		const u32 r = XORRandom(100);
-		
-		string blobname = "skeleton"; //leftover       // 40%
-		
-		if (r >= 95)       blobname = "greg";          // 5%
-		else if (r >= 90)  blobname = "wraith";        // 5%
-		else if (r >= 75)  blobname = "zombieknight";  // 15%
-		else if (r >= 40)  blobname = "zombie";        // 35%
-		
-		server_CreateBlob(blobname, -1, getZombieSpawnPos(map));
-	}
-}
-
 // Protocols when the day changes
-void checkDayChange(CRules@ this, const u8&in dayNumber)
+void checkDayChange(CRules@ this)
 {
-	//has the day changed?
-	if (dayNumber != this.get_u16("day_number"))
+	const f32 dayHour = Maths::Roundf(getMap().getDayTime()*10)/10;
+	if (dayHour == lastDayHour) return;
+	lastDayHour = dayHour;
+
+	if (dayHour != this.daycycle_start) return;
+
+	const u16 dayNumber = this.get_u16("day_number") + 1;
+
+	//end game if we reached the last day
+	if (dayNumber >= days_to_survive && !infinite_days)
 	{
-		//end game if we reached the last day
-		if (dayNumber >= days_to_survive && !infinite_days)
-		{
-			this.SetCurrentState(GAME_WON);
-			setTimedGlobalMessage(this, 2, nextmap_seconds);
-		}
-		else
-		{
-			setTimedGlobalMessage(this, 0, 10);
-		}
-		
-		this.set_u16("day_number", dayNumber);
-		this.Sync("day_number", true);
+		this.SetCurrentState(GAME_WON);
+		setTimedGlobalMessage(this, 2, nextmap_seconds);
 	}
+	else
+	{
+		setTimedGlobalMessage(this, 0, 10);
+	}
+
+	this.set_u16("day_number", dayNumber);
+	this.Sync("day_number", true);
 }
 
 // Set a global message with a timer to remove itself
