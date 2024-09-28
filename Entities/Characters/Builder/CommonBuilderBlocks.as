@@ -79,11 +79,11 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_door);
 		blocks[0].push_back(b);
 	}
-	/*{
+	{
 		BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block\nOnly enemies can pass");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
 		blocks[0].push_back(b);
-	}*/
+	}
 	{
 		BuildBlock b(0, "bridge", getTeamIcon("bridge", "Bridge.png", team_num), "Trap Bridge\nOnly your team can stand on it");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::bridge);
@@ -131,6 +131,15 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
 		blocks[0].push_back(b);
 	}
+	//lantern is useful enough. no real reason to add the fireplace
+	/*{
+		BuildBlock b(0, "fireplace", "$fireplace$", "Campfire");
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 50);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 100);
+		b.buildOnGround = true;
+		b.size.Set(16, 16);
+		blocks[0].push_back(b);
+	}*/
 	
 	BuildBlock[] page_1;
 	blocks.push_back(page_1);

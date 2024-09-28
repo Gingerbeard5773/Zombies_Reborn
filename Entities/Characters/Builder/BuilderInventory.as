@@ -28,7 +28,7 @@ const string[] PAGE_NAME =
 
 const Vec2f[] PAGE_SIZE =
 {
-	Vec2f(3, 5),
+	Vec2f(3, 6),
 	Vec2f(8, 5)
 };
 
