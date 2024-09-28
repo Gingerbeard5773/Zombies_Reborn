@@ -84,6 +84,7 @@ namespace Translate
 	
 	//forge
 	IronIngot      = Translate("Iron Ingot\nCan be used to create weapons and equipment",         ""),
+	CharCoal       = Translate("Coal\nCan be used for fuel or be used to refine steel.", ""),
 	SteelIngot     = Translate("Steel Ingot\nCan be used to create strong weapons and equipment", ""),
 	
 	//armory
