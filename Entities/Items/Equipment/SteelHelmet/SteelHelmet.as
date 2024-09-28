@@ -6,6 +6,8 @@
 void onInit(CBlob@ this)
 {
 	this.set_string("equipment_slot", "head");
+	this.Tag("ignore_saw");
+	this.Tag("sawed");//hack
 
 	addOnEquip(this, @OnEquip);
 	addOnUnequip(this, @OnUnequip);
