@@ -25,23 +25,6 @@ void onStateChange(CRules@ this, const u8 oldState)
 	}
 }
 
-void onInit(CRules@ this)
-{
-	Reset(this);
-}
-
-void onRestart(CRules@ this)
-{
-	Reset(this);
-}
-
-void Reset(CRules@ this)
-{
-	//setup skelepede night event
-	const u8[] skelepede_possible_days = {6, 7, 8, 11, 12}; 
-	this.set_u8("skelepede day", skelepede_possible_days[XORRandom(skelepede_possible_days.length)]);
-}
-
 void onTick(CRules@ this)
 {
 	if (!isServer()) return;
@@ -74,7 +57,6 @@ void checkHourChange(CRules@ this)
 			case 10: //midnight
 			{
 				doSedgwickEvent(this, map);
-				doSkelepedeEvent(this, map);
 				break;
 			}
 		}
@@ -177,43 +159,6 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 	
 	setTimedGlobalMessage(this, 4, 6);
 	server_CreateBlob("sedgwick", -1, spawns[XORRandom(spawns.length)]);
-}
-
-void doSkelepedeEvent(CRules@ this, CMap@ map)
-{
-	//setup next skelepede night event (while making sure we dont overlap on sedgwick)
-	if (this.get_u16("day_number") > this.get_u8("skelepede day"))
-	{
-		u8 next_skelepede_day;
-		do 
-			next_skelepede_day = this.get_u16("day_number") + 5 + XORRandom(5);
-		while((next_skelepede_day+1) % 5 == 0);
-		
-		this.set_u8("skelepede day", next_skelepede_day);
-	}
-
-	if (this.get_u16("day_number") != this.get_u8("skelepede day")) return;
-
-	Vec2f dim = map.getMapDimensions();
-	u8 survivorsCount = 0;
-	const u8 playersLength = getPlayerCount();
-	for (u8 i = 0; i < playersLength; ++i)
-	{
-		CPlayer@ player = getPlayer(i);
-		if (player is null) continue;
-		
-		CBlob@ playerBlob = player.getBlob();
-		if (playerBlob is null || playerBlob.hasTag("undead")) continue;
-
-		survivorsCount++;
-	}
-
-	const u8 amount = 1 + Maths::Floor(survivorsCount / 8);
-	for (u8 i = 0; i < amount; ++i)
-	{
-		Vec2f spawn(XORRandom(dim.x), dim.y + 50 + XORRandom(600));
-		server_CreateBlob("skelepede", -1, spawn);
-	}
 }
 
 // Set a global message with a timer to remove itself
