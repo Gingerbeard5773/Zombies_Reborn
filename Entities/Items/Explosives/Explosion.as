@@ -516,12 +516,6 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 
 	if (bother_raycasting) // have we already checked the rays?
 	{
-		// no wall in front
-
-		if (map.rayCastSolidNoBlobs(pos, hit_blob_pos, wall_hit)) { return false; }
-
-		// no blobs in front
-
 		HitInfo@[] hitInfos;
 		if (map.getHitInfosFromRay(pos, -hitvec.getAngle(), hitvec.getLength(), this, @hitInfos))
 		{
@@ -529,45 +523,44 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 			{
 				HitInfo@ hi = hitInfos[i];
 
-				if (hi.blob !is null) // blob
+				if (hi.blob is null) return false; //hit solid tile
+
+				// mapPos == position ignores blobs that are tiles when the explosion starts in the same tile
+				if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable() || mapPos == hi.blob.getPosition())
 				{
-                    // mapPos == position ignores blobs that are tiles when the explosion starts in the same tile
-					if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable() || mapPos == hi.blob.getPosition())
+					continue;
+				}
+
+				CBlob@ b = hi.blob;
+				if (b.isPlatform())
+				{
+					ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+					Vec2f dir = plat.direction;
+					if (!plat.ignore_rotations)
 					{
-						continue;
+						dir.RotateBy(b.getAngleDegrees());
 					}
 
-                    CBlob@ b = hi.blob;
-                    if (b.isPlatform())
-                    {
-                        ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
-                        Vec2f dir = plat.direction;
-                        if (!plat.ignore_rotations)
-                        {
-                            dir.RotateBy(b.getAngleDegrees());
-                        }
+					// Does the platform block damage
+					Vec2f hitvec_dir = -hitvec;
+					if (hit_blob.isPlatform())
+					{
+						hitvec_dir = hitvec;
+					}
 
-                        // Does the platform block damage
-                        Vec2f hitvec_dir = -hitvec;
-                        if (hit_blob.isPlatform())
-                        {
-                            hitvec_dir = hitvec;
-                        }
-
-                        if(Maths::Abs(dir.AngleWith(hitvec_dir)) < plat.angleLimit)
-                        {
-                            return false;
-                        }
-                        continue;
-                    }
-
-					// only shield and heavy things block explosions
-					if (hi.blob.hasTag("heavy weight") ||
-					        hi.blob.getMass() > 500 || hi.blob.getShape().isStatic() ||
-					        (hi.blob.hasTag("shielded") && blockAttack(hi.blob, hitvec, 0.0f)))
+					if(Maths::Abs(dir.AngleWith(hitvec_dir)) < plat.angleLimit)
 					{
 						return false;
 					}
+					continue;
+				}
+
+				// only shield and heavy things block explosions
+				if (hi.blob.hasTag("heavy weight") ||
+						hi.blob.getMass() > 500 || hi.blob.getShape().isStatic() ||
+						(hi.blob.hasTag("shielded") && blockAttack(hi.blob, hitvec, 0.0f)))
+				{
+					return false;
 				}
 			}
 		}
