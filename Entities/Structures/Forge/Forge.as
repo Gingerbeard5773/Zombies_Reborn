@@ -29,7 +29,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("pull_items");
 
 	Craft craft();
-	craft.menu_size = Vec2f(2, 1);
+	craft.menu_size = Vec2f(3, 1);
 	craft.button_offset = Vec2f(5.8, -5);
 	craft.produce_sound = "Anvil.ogg";
 	craft.icon_image = "ForgeIcons.png";
@@ -38,6 +38,11 @@ void onInit(CBlob@ this)
 	{
 		CraftItem i("mat_ironingot", Translate::IronIngot, 0, 10);
 		AddRequirement(i.reqs, "blob", "mat_iron", "Iron Ore", 15);
+		craft.addItem(this, i);
+	}
+	{
+		CraftItem i("mat_coal", Translate::CharCoal, 2, 10, 10);
+		AddRequirement(i.reqs, "blob", "mat_wood", "Wood", 25);
 		craft.addItem(this, i);
 	}
 	{
