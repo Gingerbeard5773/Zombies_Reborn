@@ -1,4 +1,5 @@
 #include "Hitters.as"
+#include "CustomTiles.as"
 
 enum facing_direction
 {
@@ -65,7 +66,7 @@ void tileCheck(CBlob@ this, CMap@ map, Vec2f pos, f32 angle, facing_direction se
 
 	if (params.onSurface)
 	{
-		if (map.isTileCastle(tile.type))
+		if (canRetractSpike(tile.type))
 		{
 			params.facing = set_facing;
 			this.setAngleDegrees(angle);
@@ -77,7 +78,7 @@ void tileCheck(CBlob@ this, CMap@ map, Vec2f pos, f32 angle, facing_direction se
 		params.onSurface = true;
 		params.facing = set_facing;
 		this.setAngleDegrees(angle);
-		params.placedOnStone = map.isTileCastle(tile.type);
+		params.placedOnStone = canRetractSpike(tile.type);
 	}
 }
 
@@ -423,4 +424,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			break;
 	}
 	return dmg;
+}
+
+bool canRetractSpike(TileType tile)
+{
+	CMap@ map = getMap();
+	return map.isTileCastle(tile) || isTileIron(tile);
 }
