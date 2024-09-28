@@ -1,5 +1,7 @@
 ///Minimap Code
 
+#include "CustomTiles.as"
+
 namespace Minimap
 {
 	enum color
