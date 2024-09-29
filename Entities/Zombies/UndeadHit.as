@@ -46,7 +46,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		this.getSprite().Gib();
 		
-		givePartialCoinsOnDeath(this, hitterBlob);
+		givePartialCoinsOnDeath(this);
 		this.server_Die();
 	}
 
@@ -54,7 +54,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 }
 
 // directly gives player 20% of coins, 80% dropped onto floor
-void givePartialCoinsOnDeath(CBlob@ this, CBlob@ killer)
+void givePartialCoinsOnDeath(CBlob@ this)
 {
 	u16 coins = this.get_u16("coins on death");
 	Vec2f floor_pos = this.getPosition() + Vec2f(0, -3.0f);
