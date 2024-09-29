@@ -104,7 +104,7 @@ void server_ScytheAttack(CBlob@ this, CBlob@ holder, const f32&in aimAngle)
 			CBlob@ b = hi.blob;
 			if (b !is null)
 			{
-				if (b.hasTag("has grain") || b.getName() == "bush")
+				if (b.hasTag("has grain") || b.getName() == "bush" || b.getName() == "flowers" || b.getName() == "grain")
 				{
 					this.server_Hit(b, b.getPosition(), Vec2f_zero, b.getInitialHealth() + 1.0f, Hitters::sword, true);
 				}
