@@ -19,8 +19,8 @@ namespace Translate
 {
 	const string
 
-	//gamehelp
-	ZF   = Translate("ZOMBIE FORTRESS",                                                     "Крепость Зомби"),
+	//gamehelp (Translated)
+	ZF   = Translate("ZOMBIE FORTRESS",                                                     "ЗОМБИ КРЕПОСТЬ"),
 	Tips = Translate("TIPS",                                                                "СОВЕТЫ"),
 	Tip0 = Translate("Build a great castle and endure the masses of zombies!",              "Постройте большой замок и выдержите толпу зомби!"),
 	Tip1 = Translate("When night arrives, the undead will appear at these gateways.",       "Когда наступит ночь, нежить появится у этих ворот"),
@@ -31,14 +31,14 @@ namespace Translate
 	Tip6 = Translate("Respawns are instant if there is no zombies during day light.",       "Возрождения происходят мгновенно, если днём нет зомби"),
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.", "Мигранты будут приходить к вам через каждый день,\nесли популяция нежити будет низкая"),
 
-	//global messages
-	Day      = Translate("Day {DAYS}",                                                 ""),
-	GameOver = Translate("Game over! All players perished! You survived {DAYS} days.", ""),
-	GameWin  = Translate("Day {DAYS} Reached! You win!",                               ""),
-	Trader   = Translate("A flying merchant has arrived!",                             ""),
-	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                     ""),
-	Migrant1 = Translate("A refugee has arrived!",                                     ""),
-	Migrant2 = Translate("Refugees have arrived!",                                     ""),
+	//global messages (Translated)
+	Day      = Translate("Day {DAYS}",                                                 "День {DAYS}"),
+	GameOver = Translate("Game over! All players perished! You survived {DAYS} days.", "Игра закончена! Все игроки погибли! Вы выживали на протяжении {DAYS} дней."),
+	GameWin  = Translate("Day {DAYS} Reached! You win!",                               "День {DAYS} Наступил! Вы выиграли!"),
+	Trader   = Translate("A flying merchant has arrived!",                             "Прибыл летающий-торговец!"),
+	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                     "Некромант Седжвик появился!"),
+	Migrant1 = Translate("A refugee has arrived!",                                     "Прибыл Беженец!"),
+	Migrant2 = Translate("Refugees have arrived!",                                     "Прибыли Беженцы!"),
 	
 	//scrolls
 	ScrollClone    = Translate("Use this to duplicate an object you are pointing to.",                         ""),
@@ -53,12 +53,12 @@ namespace Translate
 	ScrollStone    = Translate("Use this to convert nearby stone into thick stone.",                           ""),
 	ScrollWisent   = Translate("Use this to summon a bison.",                                                  ""),
 	
-	//builder
-	IronBlock      = Translate("Iron Block\nResistant to explosions.",                  ""),
-	IronBlockBack  = Translate("Back Iron Wall\nDurable Support.",                      ""),
+	//builder (TODO)
+	IronBlock      = Translate("Iron Block\nResistant to explosions.",                  "Железный Блок\nВзрывоустойчивый."),
+	IronBlockBack  = Translate("Back Iron Wall\nDurable Support.",                      "Железная Стена\nПрочная опора."),
 	IronDoor       = Translate("Iron Door\nPlace next to walls.",                       ""),
 	IronPlatform   = Translate("Iron Platform\nOne way platform",                       ""),
-	Windmill       = Translate("Wind Mill\nA grain mill for producing flour.",          ""),
+	Windmill       = Translate("Wind Mill\nA grain mill for producing flour.",          "Мельница\nПревращяет зерно в муку."),
 	Kitchen        = Translate("Kitchen\nCreate various foods for healing.",            ""),
 	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     ""),
 	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes.",   ""),
@@ -91,17 +91,17 @@ namespace Translate
 	CharCoal       = Translate("Coal\nCan be used for fuel or be used to refine steel.",          ""),
 	SteelIngot     = Translate("Steel Ingot\nCan be used to create strong weapons and equipment", ""),
 	
-	//armory
-	Scythe         = Translate("Scythe\nA tool for cutting crops fast.\nAllows for grain auto-pickup.",                 ""),
-	Crossbow       = Translate("Crossbow\nFires any arrow type.\nHold right mouse button to reload.",                   ""),
-	Musket         = Translate("Musket\nFires musket balls.\nHold right mouse button to reload.",                       ""),
-	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              ""),
-	Chainsaw       = Translate("Chainsaw\nCuts through wood fast.",                                                     ""),
-	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", ""),
-	ScubaGear      = Translate("Scuba Gear\nAllows breathing under water.",                                             ""),
-	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             ""),
-	SteelHelmet    = Translate("Steel Helmet\nA durable helmet to protect your head.",                                  ""),
-	SteelArmor     = Translate("Steel Chestplate\nA durable chestplate to protect your body.",                          ""),
+	//armory (Translated)
+	Scythe         = Translate("Scythe\nA tool for cutting crops fast.\nAllows for grain auto-pickup.",                 "Коса\n"Инструмент для срезания травы быстро.\nПозволяет поднямать зерна автоматически.),
+	Crossbow       = Translate("Crossbow\nFires any arrow type.\nHold right mouse button to reload.",                   "Арбалет\nСтреляет Любыми стрелами\nЗажмите ПКМ, чтобы перезарядить."),
+	Musket         = Translate("Musket\nFires musket balls.\nHold right mouse button to reload.",                       "Мушкет\nСтреляет патронами для Мушкета.\nЗажмите ПКМ, чтобы перезарядить."),
+	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              "Пули Мушкета\nПатроны для Мушкета"),
+	Chainsaw       = Translate("Chainsaw\nCuts through wood fast.",                                                     "Бензопила\nРежет дерево быстрее."),
+	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", "Коктейль Молотова\nФляга с горючей жидкостью которую можно бросить во врага. Нажмите [Space] для активации"),
+	ScubaGear      = Translate("Scuba Gear\nAllows breathing under water.",                                             "Акваланг\nПозволяет дышать под водой"),
+	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             "Железный Бур\nСильный бур, может копать больше руды."),
+	SteelHelmet    = Translate("Steel Helmet\nA durable helmet to protect your head.",                                  "Железный Шлем\nПрочный шлем который защитит вашу голову."),
+	SteelArmor     = Translate("Steel Chestplate\nA durable chestplate to protect your body.",                          "Железный Нагрудник\nПрочный нагрудник способный защитить ваше тело."),
 	
 	//trader
 	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            ""),
