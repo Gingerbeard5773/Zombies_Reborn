@@ -1,4 +1,5 @@
 #include "UndeadAttackCommon.as";
+#include "CustomTiles.as";
 
 void onInit(CBlob@ this)
 {
@@ -25,7 +26,8 @@ void onTick(CBlob@ this)
 			dir.Normalize();
 			Vec2f tp = pos + dir * (this.getRadius() + 4.0f);
 			TileType tile = map.getTile(tp).type;
-			if (!map.isTileGroundStuff(tile))
+			const u8 tile_strength = getTileStrength(map, tile);
+			if (XORRandom(tile_strength) == 0)
 			{
 				map.server_DestroyTile(tp, 0.1f, this);
 			}
@@ -105,4 +107,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		sprite.SetAnimation("attack");
 		sprite.PlayRandomSound(attackVars.sound);
 	}
+}
+
+u8 getTileStrength(CMap@ map, TileType tile)
+{
+	if (isTileGroundStuff(map, tile)) return 2;
+	if (isTileIron(tile))             return 5; //iron STRONG.
+	return 0;
 }

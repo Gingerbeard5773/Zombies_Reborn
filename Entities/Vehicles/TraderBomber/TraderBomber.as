@@ -31,7 +31,7 @@ void onInit(CBlob@ this)
 	if (isServer())
 	{
 		//hack
-		this.set_string("shop seed", XORRandom(5)+"-"+XORRandom(5)+"-"+XORRandom(4));
+		this.set_string("shop seed", XORRandom(4)+"-"+XORRandom(5)+"-"+XORRandom(4));
 		this.Sync("shop seed", true);
 	}
 	
@@ -60,14 +60,14 @@ void onInit(CBlob@ this)
 			AddStock(s, 1);
 			break;
 		}
-		case 2:
+		/*case 2:
 		{
 			ShopItem@ s = addShopItem(this, "Scroll of Sea", "$scroll_sea$", "scroll_sea", Translate::TradeScrollSea, true);
 			s.spawnNothing = true;
 			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
 			AddStock(s, 1);
 			break;
-		}
+		}*/
 		case 3:
 		{
 			ShopItem@ s = addShopItem(this, "Scroll of Conveyance", "$scroll_teleport$", "scroll_teleport", Translate::TradeScrollTeleport, true);
