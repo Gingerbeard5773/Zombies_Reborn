@@ -11,7 +11,7 @@ namespace Crossbow
 	const int READY_TIME = 35;
 }
 
-const string[] arrowTypeNames = { "mat_arrows", "mat_waterarrows", "mat_firearrows", "mat_bombarrows" };
+const string[] arrowTypeNames = { "mat_arrows", "mat_waterarrows", "mat_firearrows", "mat_bombarrows", "mat_molotovarrows" };
 
 namespace ArrowType
 {
@@ -21,7 +21,8 @@ namespace ArrowType
 		water,
 		fire,
 		bomb,
-		count
+		molotov,
+		count,
 	};
 }
 

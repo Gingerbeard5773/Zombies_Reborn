@@ -11,6 +11,7 @@ void onInit(CSprite@ this)
 		anim.AddFrame(9); //water
 		anim.AddFrame(8); //fire
 		anim.AddFrame(14); //bomb
+		anim.AddFrame(16); //molotov
 		arrow.SetRelativeZ(-0.1f);
 		arrow.SetOffset(Vec2f(-6, 0.5f));
 		arrow.SetAnimation("default");

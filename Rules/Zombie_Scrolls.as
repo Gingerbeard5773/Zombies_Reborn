@@ -176,8 +176,8 @@ void SetupScrolls(CRules@ this)
 		def.name = "Pyrotechnics";
 		def.scrollFrame = FactoryFrame::pyro;
 		def.level = 50;
-		addScrollItemsToArray("Molotov", "molotov", 15, false, 3, @def.items);
-		addScrollItemsToArray("Fire Arrows", "mat_firearrows", 15, false, 3, @def.items);
+		addScrollItemsToArray("Molotov", "molotov", 25, false, 3, @def.items);
+		addScrollItemsToArray("Molotov Arrows", "mat_molotovarrows", 25, false, 3, @def.items);
 		tech.scrolls.set("pyro", def);
 	}
 	{
