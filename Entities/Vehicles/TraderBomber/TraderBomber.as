@@ -250,12 +250,12 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "Buy Pine Tree (1)", "$tree_pine$", "tree_pine", "Buy 1 Pine tree for 500 $COIN$", true);
 		s.spawnNothing = true;
-		AddRequirement(s.requirements, "coin", "", "Coins", 500);
+		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 600 $COIN$", true);
 		s.spawnNothing = true;
-		AddRequirement(s.requirements, "coin", "", "Coins", 600);
+		AddRequirement(s.requirements, "coin", "", "Coins", 1250);
 	}
 	
 	//VEHICLE
