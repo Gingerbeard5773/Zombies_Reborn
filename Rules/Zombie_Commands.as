@@ -50,13 +50,15 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				
 				if (tokens[0] == "!cursor") //spawn a blob at cursor position
 				{
-					server_CreateBlob(tokens[1], -1, getControls().getMouseWorldPos());
+					CBlob@ pBlob = player.getBlob();
+					Vec2f pos = pBlob !is null ? pBlob.getAimPos() : getControls().getMouseWorldPos();
+					server_CreateBlob(tokens[1], -1, pos);
 					if (tokens.length > 2)
 					{
 						const u8 amount = parseInt(tokens[2])-1;
 						for (u8 i = 0; i < amount; ++i)
 						{
-							server_CreateBlob(tokens[1], -1, getControls().getMouseWorldPos());
+							server_CreateBlob(tokens[1], -1, pos);
 						}
 					}
 				}

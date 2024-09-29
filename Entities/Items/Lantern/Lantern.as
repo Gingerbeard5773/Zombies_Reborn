@@ -5,6 +5,11 @@ void onInit(CBlob@ this)
 {
 	this.SetLight(true);
 	this.SetLightRadius(64.0f);
+
+	#ifdef STAGING
+	this.SetLightRadius(90.0f);
+	#endif
+
 	this.SetLightColor(SColor(255, 255, 240, 171));
 
 	this.Tag("activatable");
