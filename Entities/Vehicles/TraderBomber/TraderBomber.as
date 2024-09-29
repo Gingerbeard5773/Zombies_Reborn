@@ -68,7 +68,7 @@ void onInit(CBlob@ this)
 			AddStock(s, 1);
 			break;
 		}*/
-		case 3:
+		case 2:
 		{
 			ShopItem@ s = addShopItem(this, "Scroll of Conveyance", "$scroll_teleport$", "scroll_teleport", Translate::TradeScrollTeleport, true);
 			s.spawnNothing = true;
@@ -76,7 +76,7 @@ void onInit(CBlob@ this)
 			AddStock(s, 2);
 			break;
 		}
-		case 4:
+		case 3:
 		{
 			ShopItem@ s = addShopItem(this, "Scroll of Quarry", "$scroll_stone$", "scroll_stone", Translate::TradeScrollStone, true);
 			s.spawnNothing = true;
