@@ -10,25 +10,28 @@ shared class Spawn
 	int weight;        //higher number equals higher chance of being picked
 	f32 difficulty;    //difficulty required to start spawning this
 	f32 time_modifier; //removes this much weight from the spawn each day
+	int weight_minimum; //amount of our weight that the spawn will always have no matter what
 
-	Spawn(const string&in name, const int&in weight, const f32&in difficulty, const f32&in time_modifier)
+	Spawn(const string&in name, const int&in weight, const f32&in difficulty, const f32&in time_modifier, const int&in weight_minimum)
 	{
 		this.name = name;
 		this.weight = weight;
 		this.difficulty = difficulty;
-		this.time_modifier;
+		this.time_modifier = time_modifier;
+		this.weight_minimum = weight_minimum;
 	}
 }
 
+// name - weight - difficulty requirement - time modifier - time modifier cap
 const Spawn@[] spawns =
 {
-	Spawn("skeleton",      1000, 0.0f, 60.0f),
-	Spawn("zombie",        600,  0.5f, 10.0f),
-	Spawn("zombieknight",  150,  1.0f, 0.0f),
-	Spawn("greg",          35,   1.5f, 0.0f),
-	Spawn("wraith",        30,   2.0f, 0.0f),
-	Spawn("skelepede",     7,    2.5f, 0.0f),
-	Spawn("sedgwick",      1,    1.5f, 0.0f)
+	Spawn("skeleton",      1000, 0.0f, 60.0f, 50),
+	Spawn("zombie",        600,  0.4f, 10.0f, 60),
+	Spawn("zombieknight",  150,  1.0f, 0.0f,  0),
+	Spawn("greg",          35,   1.5f, 0.0f,  0),
+	Spawn("wraith",        30,   2.0f, 0.0f,  0),
+	Spawn("skelepede",     7,    2.5f, 0.0f,  0),
+	Spawn("sedgwick",      1,    1.5f, 0.0f,  0)
 };
 
 f32 game_difficulty = 1.0f;  //zombie spawnrate multiplier
@@ -107,9 +110,9 @@ void SpawnZombie(CMap@ map, const u16&in dayNumber, const f32&in difficulty)
 
 		if (random_spawn.time_modifier > 0.0f)
 		{
-			//terrible method but its ok for now
+			//could be improved, it does the job though
 			const int rand = XORRandom(random_spawn.weight);
-			const f32 time_mod = Maths::Min(random_spawn.time_modifier * dayNumber, random_spawn.weight * 0.5f);
+			const int time_mod = Maths::Min(random_spawn.time_modifier * dayNumber, random_spawn.weight - random_spawn.weight_minimum);
 			if (rand < time_mod) continue;
 		}
 
