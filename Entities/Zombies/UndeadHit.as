@@ -46,9 +46,31 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		this.getSprite().Gib();
 		
-		server_DropCoins(this.getPosition() + Vec2f(0, -3.0f), this.get_u16("coins on death"));
+		givePartialCoinsOnDeath(this, hitterBlob);
 		this.server_Die();
 	}
 
 	return 0.0f;
+}
+
+// directly gives player 20% of coins, 80% dropped onto floor
+void givePartialCoinsOnDeath(CBlob@ this, CBlob@ killer)
+{
+	u16 coins = this.get_u16("coins on death");
+	Vec2f floor_pos = this.getPosition() + Vec2f(0, -3.0f);
+	if (coins <= 0) return;
+
+	// drop 100% of coins to floor
+	CPlayer@ player = this.getPlayerOfRecentDamage();
+	if(player is null)
+	{
+		server_DropCoins(floor_pos, coins);
+		return;
+	}
+
+	// drop 80% of coins to floor, give 20% to player
+	u16 coinsToDrop = Maths::Floor(coins * 0.80f);
+	u16 coinsLeft = coins - coinsToDrop;
+	server_DropCoins(floor_pos, coinsToDrop);
+	player.server_setCoins(player.getCoins() + coinsLeft);
 }
