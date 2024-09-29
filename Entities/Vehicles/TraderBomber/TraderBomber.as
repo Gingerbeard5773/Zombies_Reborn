@@ -37,10 +37,13 @@ void onInit(CBlob@ this)
 	
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(3, 6));
+	this.set_Vec2f("shop menu size", Vec2f(3, 7));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
-	
+
+	AddIconToken("$tree_pine$",  "Trees.png", Vec2f(16, 16), 20);
+	AddIconToken("$tree_bushy$", "Trees.png", Vec2f(16, 16), 4);
+
 	string[]@ seeds = this.get_string("shop seed").split("-");
 	switch(parseInt(seeds[0]))
 	{
@@ -244,6 +247,16 @@ void onInit(CBlob@ this)
 		s.customData = 255;
 		AddRequirement(s.requirements, "coin", "", "Coins", 2000);
 	}
+	{
+		ShopItem@ s = addShopItem(this, "Buy Pine Tree (1)", "$tree_pine$", "tree_pine", "Buy 1 Pine tree for 500 $COIN$", true);
+		s.spawnNothing = true;
+		AddRequirement(s.requirements, "coin", "", "Coins", 500);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 600 $COIN$", true);
+		s.spawnNothing = true;
+		AddRequirement(s.requirements, "coin", "", "Coins", 600);
+	}
 	
 	//VEHICLE
 	Vehicle_Setup(this, 47.0f, 0.19f, Vec2f(0.0f, 0.0f), false);
@@ -309,6 +322,28 @@ void onShopMadeItem(CBitStream@ params)
 		if (callerPlayer is null) return;
 
 		callerPlayer.server_setCoins(callerPlayer.getCoins() +  parseInt(spl[1]));
+	}
+	// required because otherwise tree spawns as planted
+	else if (name == "tree_pine" || name == "tree_bushy")
+	{
+		CBlob@ b = server_CreateBlobNoInit("seed");
+		b.setPosition(caller.getPosition());
+		b.set_string("seed_grow_blobname", name);
+		b.set_u8("sprite index", name == "tree_pine" ? 2 : 3);
+		b.set_u16("seed_grow_time", 600);
+		b.Init();
+		CInventory@ callerinv = caller.getInventory();
+		print("" + caller.getPlayer().getUsername());
+		if (callerinv !is null)
+		{
+			// .isFull() isn't working correctly here, not sure why
+			// Try to put blob in inventory, then pick it up if it cant
+			caller.server_PutInInventory(b);
+			if (!b.isInInventory() && caller.getCarriedBlob() is null)
+			{
+				caller.server_Pickup(b);
+			}
+		}
 	}
 }
 
