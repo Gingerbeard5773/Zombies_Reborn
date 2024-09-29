@@ -75,6 +75,10 @@ namespace Translate
 	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            ""),
 	Tank           = Translate("A seige tank. Allows attachments.",                                                   ""),
 	
+	//archershop
+	MolotovArrows  = Translate("Molotov arrows to incinerate the enemy.",   ""),
+	FireworkArrows = Translate("Firework rockets. Explodes where you aim.", ""),
+	
 	//kitchen
 	Bread          = Translate("Bread\nDelicious crunchy whole-wheat bread.", ""),
 	Cake           = Translate("Cake\nFluffy cake made from egg and wheat.",  ""),
@@ -84,7 +88,7 @@ namespace Translate
 	
 	//forge
 	IronIngot      = Translate("Iron Ingot\nCan be used to create weapons and equipment",         ""),
-	CharCoal       = Translate("Coal\nCan be used for fuel or be used to refine steel.", ""),
+	CharCoal       = Translate("Coal\nCan be used for fuel or be used to refine steel.",          ""),
 	SteelIngot     = Translate("Steel Ingot\nCan be used to create strong weapons and equipment", ""),
 	
 	//armory
@@ -117,6 +121,7 @@ namespace Translate
 	
 	//library
 	RequiresTech    = Translate("Requires previous upgrade",                                         ""),
+	UpgradeComplete = Translate("{UPGRADE} upgrade complete",                                        ""),
 	HardyWheat      = Translate("Hardy Wheat\nWheat can grow on stone and gold.",                    ""),
 	PlentifulWheat  = Translate("Plentiful Wheat\nWheat can yield an extra grain.",                  ""),
 	Metallurgy      = Translate("Metallurgy\nForging time is halved.",                               ""),
@@ -124,8 +129,9 @@ namespace Translate
 	MetallurgyIII   = Translate("Metallurgy III\nQuarrys have a chance to yield iron ore.",          ""),
 	MetallurgyIV    = Translate("Metallurgy IV\nQuarrys have a chance to yield gold ore.",           ""),
 	Shrapnel        = Translate("Shrapnel\nBombs and kegs deal more damage.",                        ""),
-	Swords          = Translate("Sharpening Stone\nSwords deal an additional +1/2 heart of damage.", ""),
-	SwordsII        = Translate("Damascus Steel\nSwords deal an additional +1/2 heart of damage.",   ""),
+	Swords          = Translate("Sharpening Stone\nSwords deal an extra +1/2 heart of damage.",      ""),
+	SwordsII        = Translate("Damascus Steel\nSwords deal an extra +1/2 heart of damage.",        ""),
+	CombatPickaxes  = Translate("Combat Pickaxes\nPickaxes deal an extra +1/2 heart of damage.",     ""),
 	BlastShields    = Translate("Blast Shields\nShields are resistant to strong explosions.",        ""),
 	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              ""),
 	RegenerationII  = Translate("Regeneration II\nSurvivors heal an additional heart every day",     "");
