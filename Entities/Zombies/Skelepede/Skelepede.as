@@ -288,7 +288,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 	}
-	if (blob.hasTag("player") && !blob.hasTag("undead") && !blob.hasTag("dead") && !this.hasAttached())
+	else if (blob.getName() == "trampoline")
+	{
+		this.server_Hit(blob, blob.getPosition(), Vec2f_zero, 10.0f, Hitters::crush, true);
+	}
+	else if (blob.hasTag("player") && !blob.hasTag("undead") && !blob.hasTag("dead") && !this.hasAttached())
 	{
 		//attach victim to mouth
 		Vec2f mouth(0, -5);
