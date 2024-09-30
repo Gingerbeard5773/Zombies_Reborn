@@ -49,6 +49,7 @@ namespace ArrowType
 		fire,
 		bomb,
 		molotov,
+		firework,
 		count
 	};
 }
@@ -184,21 +185,24 @@ const string[] arrowTypeNames = { "mat_arrows",
                                   "mat_waterarrows",
                                   "mat_firearrows",
                                   "mat_bombarrows",
-                                  "mat_molotovarrows"
+                                  "mat_molotovarrows",
+                                  "mat_fireworkarrows"
                                 };
 
 const string[] arrowNames = { "Regular arrows",
                               "Water arrows",
                               "Fire arrows",
                               "Bomb arrow",
-                              "Molotov arrows"
+                              "Molotov arrows",
+                              "Firework Rockets"
                             };
 
 const string[] arrowIcons = { "$Arrow$",
                               "$WaterArrow$",
                               "$FireArrow$",
                               "$BombArrow$",
-                              "$MolotovArrow$"
+                              "$MolotovArrow$",
+                              "$FireworkArrow$"
                             };
 
 

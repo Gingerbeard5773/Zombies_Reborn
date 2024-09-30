@@ -98,6 +98,7 @@ void LoadSprites(CSprite@ this)
 		anim.AddFrame(8); //fire
 		anim.AddFrame(14); //bomb
 		anim.AddFrame(16); //molotov
+		anim.AddFrame(18); //firework
 		arrow.SetOffset(Vec2f(-1.0f, 5.0f + config_offset));
 		arrow.SetAnimation("default");
 		arrow.SetVisible(false);

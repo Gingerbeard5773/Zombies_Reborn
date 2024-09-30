@@ -47,15 +47,20 @@ void onInit(CBlob@ this)
 	const u8 arrowType = this.get_u8("arrow type");
 
 	//I CANNOT BE ASSED TO MESS WITH ARROW.AS!!!
-	//ENJOY MY HACK
+	//ENJOY MY ADDSCRIPT HACK
 	if (arrowType == ArrowType::molotov)
 	{
 		this.AddScript("MolotovArrow.as");
 		this.getCurrentScript().runFlags |= Script::remove_after_this;
 		return;
 	}
-
-	if (arrowType == ArrowType::bomb)
+	else if (arrowType == ArrowType::firework)
+	{
+		this.AddScript("FireworkArrow.as");
+		this.getCurrentScript().runFlags |= Script::remove_after_this;
+		return;
+	}
+	else if (arrowType == ArrowType::bomb)
 	{
 		SetupBomb(this, bomb_fuse, 48.0f, 1.5f, 24.0f, 0.5f, true);
 		this.set_u8("custom_hitter", Hitters::bomb_arrow);

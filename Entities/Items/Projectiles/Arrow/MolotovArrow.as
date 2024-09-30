@@ -72,17 +72,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			Vec2f betweenpos = (this.getPosition() + this.getOldPosition()) * 0.5;
 			this.setPosition(betweenpos - (velnorm * vellen));
 		}*/
-
 		this.Tag("collided");
+		this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 1.0f, Hitters::fire);
 		this.server_Die();
 	}
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("projectile")) return false;
-
-	if (blob.hasTag("ignore_arrow")) return false;
+	if (blob.hasTag("projectile") || blob.hasTag("ignore_arrow") || blob.hasTag("material")) return false;
 
 	const bool willExplode = this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic(); 
 	return blob.isCollidable() && willExplode;
