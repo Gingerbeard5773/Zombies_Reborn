@@ -32,77 +32,77 @@ namespace Translate
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.", "Мигранты будут приходить к вам через каждый день,\nесли популяция нежити будет низкая"),
 
 	//global messages
-	Day      = Translate("Day {DAYS}",                                                 ""),
-	GameOver = Translate("Game over! All players perished! You survived {DAYS} days.", ""),
-	GameWin  = Translate("Day {DAYS} Reached! You win!",                               ""),
-	Trader   = Translate("A flying merchant has arrived!",                             ""),
-	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                     ""),
-	Migrant1 = Translate("A refugee has arrived!",                                     ""),
-	Migrant2 = Translate("Refugees have arrived!",                                     ""),
-	
+	Day      = Translate("Day {DAYS}",                                                 "День {DAYS}"),
+	GameOver = Translate("Game over! All players perished! You survived {DAYS} days.", "Игра закончена! Все игроки погибли! Вы выживали на протяжении {DAYS} дней."),
+	GameWin  = Translate("Day {DAYS} Reached! You win!",                               "День {DAYS} Наступил! Вы выиграли!"),
+	Trader   = Translate("A flying merchant has arrived!",                             "Прибыл летающий-торговец!"),
+	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                     "Некромант Седжвик появился!"),
+	Migrant1 = Translate("A refugee has arrived!",                                     "Прибыл Беженец!"),
+	Migrant2 = Translate("Refugees have arrived!",                                     "Прибыли Беженцы!"),
+
 	//scrolls
-	ScrollClone    = Translate("Use this to duplicate an object you are pointing to.",                         ""),
-	ScrollCrate    = Translate("Use this to crate an object you are pointing at.",                             ""),
-	ScrollFish     = Translate("Use this to summon a shark.",                                                  ""),
-	ScrollFlora    = Translate("Use this to create plants nearby.",                                            ""),
-	ScrollFowl     = Translate("Use this to summon a flock of chickens.",                                      ""),
-	ScrollRevive   = Translate("Use this near a dead body to ressurect them.\nCan auto-resurrect the holder.", ""),
-	ScrollRoyalty  = Translate("Use this to summon a geti.",                                                   ""),
-	ScrollSea      = Translate("Use this to generate a source of water.",                                      ""),
-	ScrollTeleport = Translate("Use this to teleport to the area you are pointing to.",                        ""),
-	ScrollStone    = Translate("Use this to convert nearby stone into thick stone.",                           ""),
-	ScrollWisent   = Translate("Use this to summon a bison.",                                                  ""),
-	
+	ScrollClone    = Translate("Use this to duplicate an object you are pointing to.",                         "Изпользуйте это для клонирования объекта, куда вы смотрете."),
+	ScrollCrate    = Translate("Use this to crate an object you are pointing at.",                             "Изпользуйте это для помещения объекта  в ящик, куда вы целитесь."),
+	ScrollFish     = Translate("Use this to summon a shark.",                                                  "Изпользуйте это для того чтобы призвать акулу."),
+	ScrollFlora    = Translate("Use this to create plants nearby.",                                            "Изпользуйте это для того чтобы создать растения рядом от вас."),
+	ScrollFowl     = Translate("Use this to summon a flock of chickens.",                                      "Изпользуйте это для призыва огромного количества кур."),
+	ScrollRevive   = Translate("Use this near a dead body to ressurect them.\nCan auto-resurrect the holder.", "Используйте это рядом с мертвым телом, чтобы воскресить его.\nМожно автоматически воскресить владельца."),
+	ScrollRoyalty  = Translate("Use this to summon a geti.",                                                   "Изпользуйте это для того чтобы призвать Гети."),
+	ScrollSea      = Translate("Use this to generate a source of water.",                                      "Изпользуйте это для создания источника воды."),
+	ScrollTeleport = Translate("Use this to teleport to the area you are pointing to.",                        "Изпользуйте для телепортации в то место, куда вы целитесь."),
+	ScrollStone    = Translate("Use this to convert nearby stone into thick stone.",                           "Используйте это для превращения камня рядом с вами в более насыщенный камень."),
+	ScrollWisent   = Translate("Use this to summon a bison.",                                                  "Изпользуйте это для того чтобы призвать бизона."),
+
 	//builder
-	IronBlock      = Translate("Iron Block\nResistant to explosions.",                  ""),
-	IronBlockBack  = Translate("Back Iron Wall\nDurable Support.",                      ""),
-	IronDoor       = Translate("Iron Door\nPlace next to walls.",                       ""),
-	IronPlatform   = Translate("Iron Platform\nOne way platform",                       ""),
-	Windmill       = Translate("Wind Mill\nA grain mill for producing flour.",          ""),
-	Kitchen        = Translate("Kitchen\nCreate various foods for healing.",            ""),
-	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     ""),
-	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes.",   ""),
-	Armory         = Translate("Armory\nBuild weapons and change your class.",          ""),
-	Library        = Translate("Library\nA place of study to obtain new technologies.", ""),
-	
+	IronBlock      = Translate("Iron Block\nResistant to explosions.",                  "Железный Блок\nВзрывоустойчивый Блок."),
+	IronBlockBack  = Translate("Back Iron Wall\nDurable Support.",                      "Железная Стена\nПрочная опора."),
+	IronDoor       = Translate("Iron Door\nPlace next to walls.",                       "Железная Дверь\nСтавьте на стены."),
+	IronPlatform   = Translate("Iron Platform\nOne way platform",                       "Железная Платформа\nОдносторонняя платформа."),
+	Windmill       = Translate("Wind Mill\nA grain mill for producing flour.",          "Мельница\nМельница для производства муки"),
+	Kitchen        = Translate("Kitchen\nCreate various foods for healing.",            "Кухня\nСоздавайте различную еду для регенерации."),
+	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     "Печька\nПереплавляет железную руды в слитки."),
+	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes.",   "Сад\nСад растение для сельскохозяйственных культур."),
+	Armory         = Translate("Armory\nBuild weapons and change your class.",          "Оружейная\nСтройте оружие, и меняйте свой класс."),
+	Library        = Translate("Library\nA place of study to obtain new technologies.", "Библиотека\nМесто для учебы, чтобы освоить новые технологии"),
+
 	//building
-	Factory        = Translate("A generic factory for various items. Requires a free worker to produce items.", ""),
-	Dormitory      = Translate("A dorm for recruiting and healing workers. Functions as a respawn point.",      ""),
-	
+	Factory        = Translate("A generic factory for various items. Requires a free worker to produce items.", "Общая фабрика для различных предметов. Для производства предметов требуется свободный рабочий."),
+	Dormitory      = Translate("A dorm for recruiting and healing workers. Functions as a respawn point.",      "Общежитие для набора и лечения рабочих. Функционирует как точка возрождения."),
+
 	//vehicleshop
-	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs."        ""),
-	Armoredbomber  = Translate("A balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", ""),
-	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            ""),
-	Tank           = Translate("A seige tank. Allows attachments.",                                                   ""),
-	
+	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs."        "Воздушный шар, способный летать. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
+	Armoredbomber  = Translate("A balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", "Воздушный шар с защитным покрытием. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
+	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            "Переносная стреляющая стрелами машина смерти. Может быть установлена ​​на некоторые транспортные средства."),
+	Tank           = Translate("A seige tank. Allows attachments.",                                                   "Осадный танк. Позволяет устанавливать навесное оборудование."),
+
 	//archershop
-	MolotovArrows  = Translate("Molotov arrows to incinerate the enemy.",   ""),
-	FireworkArrows = Translate("Firework rockets. Explodes where you aim.", ""),
-	
+	MolotovArrows  = Translate("Molotov arrows to incinerate the enemy.",   "Стрелы в коктейле Молотова для поджигания врага."),
+	FireworkArrows = Translate("Firework rockets. Explodes where you aim.", "Фейерверки. Взрываются, куда вы целитесь"),
+
 	//kitchen
-	Bread          = Translate("Bread\nDelicious crunchy whole-wheat bread.", ""),
-	Cake           = Translate("Cake\nFluffy cake made from egg and wheat.",  ""),
-	Cookedfish     = Translate("Cooked Fish\nA cooked fish on a stick.",      ""),
-	Cookedsteak    = Translate("Cooked Steak\nA meat chop with sauce.",       ""),
-	Burger         = Translate("Burger\nSeared meat in a bun!",               ""),
-	
+	Bread          = Translate("Bread\nDelicious crunchy whole-wheat bread.", "Хлеб\nВкусный хрустящий цельнозерновой хлеб."),
+	Cake           = Translate("Cake\nFluffy cake made from egg and wheat.",  "Торт\nиз яиц и пшеницы."),
+	Cookedfish     = Translate("Cooked Fish\nA cooked fish on a stick.",      "Приготовленная Рыба\nПриготовленная рыба на палочке."),
+	Cookedsteak    = Translate("Cooked Steak\nA meat chop with sauce.",       "Пригоитовленый Стейк\nОтбивная с соусом."),
+	Burger         = Translate("Burger\nSeared meat in a bun!",               "Бургер\nМясо обжареное в булочке!"),
+
 	//forge
-	IronIngot      = Translate("Iron Ingot\nCan be used to create weapons and equipment",         ""),
-	CharCoal       = Translate("Coal\nCan be used for fuel or be used to refine steel.",          ""),
-	SteelIngot     = Translate("Steel Ingot\nCan be used to create strong weapons and equipment", ""),
-	
+	IronIngot      = Translate("Iron Ingot\nCan be used to create weapons and equipment",         "Железный слиток\nМожно использовать для создания оружия и снаряжения"),
+	CharCoal       = Translate("Coal\nCan be used for fuel or be used to refine steel.",          "Уголь\nМожно использовать в качестве топлива или для очистки стали."),
+	SteelIngot     = Translate("Steel Ingot\nCan be used to create strong weapons and equipment", "Стальной слиток\nМожно использовать для создания прочного оружия и снаряжения."),
+
 	//armory
-	Scythe         = Translate("Scythe\nA tool for cutting crops fast.\nAllows for grain auto-pickup.",                 ""),
-	Crossbow       = Translate("Crossbow\nFires any arrow type.\nHold right mouse button to reload.",                   ""),
-	Musket         = Translate("Musket\nFires musket balls.\nHold right mouse button to reload.",                       ""),
-	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              ""),
-	Chainsaw       = Translate("Chainsaw\nCuts through wood fast.",                                                     ""),
-	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", ""),
+	Scythe         = Translate("Scythe\nA tool for cutting crops fast.\nAllows for grain auto-pickup.",                 "Коса\nИнструмент для быстрого срезания урожая.\nПозволяет поднямать зерна автоматически."),
+	Crossbow       = Translate("Crossbow\nFires any arrow type.\nHold right mouse button to reload.",                   "Арбалет\nСтреляет Любыми стрелами\nЗажмите ПКМ, чтобы перезарядить."),
+	Musket         = Translate("Musket\nFires musket balls.\nHold right mouse button to reload.",                       "Мушкет\nСтреляет патронами для Мушкета.\nЗажмите ПКМ, чтобы перезарядить."),
+	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              "Пули Мушкета\nПатроны для Мушкета"),
+	Chainsaw       = Translate("Chainsaw\nCuts through wood fast.",                                                     "Бензопила\nРежет дерево быстрее."),
+	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", "Коктейль Молотова\nФляга с горючей жидкостью которую можно бросить во врага. Нажмите [Space] для активации"),
 	ScubaGear      = Translate("Scuba Gear\nAllows breathing under water.",                                             ""),
 	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             ""),
 	SteelHelmet    = Translate("Steel Helmet\nA durable helmet to protect your head.",                                  ""),
 	SteelArmor     = Translate("Steel Chestplate\nA durable chestplate to protect your body.",                          ""),
-	
+
 	//trader
 	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            ""),
 	TradeScrollMidas    = Translate("Makes the rocks shiny.",                                   ""),
@@ -118,7 +118,7 @@ namespace Translate
 	TradeScrollWisent   = Translate("Summons a bison. Good for meat!",                          ""),
 	TradeScrollFowl     = Translate("If you need some eggs.",                                   ""),
 	TradeScrollFish     = Translate("Summons a bloodthirsty shark.",                            ""),
-	
+
 	//library
 	RequiresTech    = Translate("Requires previous upgrade",                                         ""),
 	UpgradeComplete = Translate("{UPGRADE} upgrade complete",                                        ""),
@@ -132,6 +132,9 @@ namespace Translate
 	Swords          = Translate("Sharpening Stone\nSwords deal an extra +1/2 heart of damage.",      ""),
 	SwordsII        = Translate("Damascus Steel\nSwords deal an extra +1/2 heart of damage.",        ""),
 	CombatPickaxes  = Translate("Combat Pickaxes\nPickaxes deal an extra +1/2 heart of damage.",     ""),
+	Repeaters       = Translate("Repeaters\nCrossbows are automatic.",                               ""),
+	RifledBarrels   = Translate("Rifled Barrels\nMuskets' damage and penetration increased.",        ""),
+	GreekFire       = Translate("Greek Fire\nIncendiary weapons deal twice as much damage",          ""),
 	BlastShields    = Translate("Blast Shields\nShields are resistant to strong explosions.",        ""),
 	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              ""),
 	RegenerationII  = Translate("Regeneration II\nSurvivors heal an additional heart every day",     "");
