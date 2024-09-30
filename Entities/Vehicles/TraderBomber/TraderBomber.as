@@ -5,6 +5,7 @@
 #include "EmotesCommon.as";
 #include "ParticleTeleport.as";
 #include "Zombie_Translation.as";
+#include "MakeSeed.as";
 
 const u8 stay_minutes = 2;
 const f32 up_speed = 1.0f;
@@ -248,14 +249,9 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 2000);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Pine Tree (1)", "$tree_pine$", "tree_pine", "Buy 1 Pine tree for 500 $COIN$", true);
-		s.spawnNothing = true;
-		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
-	}
-	{
 		ShopItem@ s = addShopItem(this, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 600 $COIN$", true);
 		s.spawnNothing = true;
-		AddRequirement(s.requirements, "coin", "", "Coins", 1250);
+		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
 	}
 	
 	//VEHICLE
@@ -326,22 +322,16 @@ void onShopMadeItem(CBitStream@ params)
 	// required because otherwise tree spawns as planted
 	else if (name == "tree_pine" || name == "tree_bushy")
 	{
-		CBlob@ b = server_CreateBlobNoInit("seed");
-		b.setPosition(caller.getPosition());
-		b.set_string("seed_grow_blobname", name);
-		b.set_u8("sprite index", name == "tree_pine" ? 2 : 3);
-		b.set_u16("seed_grow_time", 600);
-		b.Init();
+		CBlob@ seed = server_MakeSeed(caller.getPosition(), name);
 		CInventory@ callerinv = caller.getInventory();
-		print("" + caller.getPlayer().getUsername());
 		if (callerinv !is null)
 		{
 			// .isFull() isn't working correctly here, not sure why
 			// Try to put blob in inventory, then pick it up if it cant
-			caller.server_PutInInventory(b);
-			if (!b.isInInventory() && caller.getCarriedBlob() is null)
+			caller.server_PutInInventory(seed);
+			if (!seed.isInInventory() && caller.getCarriedBlob() is null)
 			{
-				caller.server_Pickup(b);
+				caller.server_Pickup(seed);
 			}
 		}
 	}
