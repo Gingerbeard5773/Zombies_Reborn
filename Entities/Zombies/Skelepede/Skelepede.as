@@ -157,7 +157,7 @@ void GoSomewhere(CBlob@ this)
         if (this.hasAttached())
         {
             // Move to the void
-            vec = Vec2f(destination.x, map.getMapDimensions().y) - pos;
+            vec = Vec2f(destination.x, map.getMapDimensions().y + 24) - pos;
         }
         else if (vel.Length() > 3.75f && destination.y < pos.y)
         {
