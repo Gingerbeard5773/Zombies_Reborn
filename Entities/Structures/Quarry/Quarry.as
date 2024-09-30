@@ -4,6 +4,7 @@
 #include "GenericButtonCommon.as"
 
 const string[] fuel_names = {"mat_coal", "mat_wood"};
+const string[] fuel_icons = {"mat_coal_icon", "mat_wood"};
 const int[] fuel_strength = { 3, 1 };
 
 //balance
@@ -147,7 +148,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			CBitStream params;
 			params.write_u8(i);
-			CButton@ button = caller.CreateGenericButton("$"+name+"$", Vec2f(), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
+			CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
 			if (button !is null)
 			{
 				button.deleteAfterClick = false;

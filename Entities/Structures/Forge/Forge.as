@@ -8,6 +8,7 @@ const string fuel_prop = "fuel_level";
 const int max_fuel = 500;
 
 const string[] fuel_names = {"mat_coal", "mat_wood"};
+const string[] fuel_icons = {"mat_coal_icon", "mat_wood"};
 const int[] fuel_strength = { 3, 1 };
 
 void onInit(CBlob@ this)
@@ -92,7 +93,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			CBitStream params;
 			params.write_u8(i);
-			CButton@ button = caller.CreateGenericButton("$"+name+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
+			CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
 			if (button !is null)
 			{
 				button.deleteAfterClick = false;
