@@ -5,6 +5,7 @@
 #include "EmotesCommon.as";
 #include "ParticleTeleport.as";
 #include "Zombie_Translation.as";
+#include "MakeSeed.as";
 
 const u8 stay_minutes = 2;
 const f32 up_speed = 1.0f;
@@ -37,10 +38,13 @@ void onInit(CBlob@ this)
 	
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(3, 6));
+	this.set_Vec2f("shop menu size", Vec2f(3, 7));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
-	
+
+	AddIconToken("$tree_pine$",  "Trees.png", Vec2f(16, 16), 20);
+	AddIconToken("$tree_bushy$", "Trees.png", Vec2f(16, 16), 4);
+
 	string[]@ seeds = this.get_string("shop seed").split("-");
 	switch(parseInt(seeds[0]))
 	{
@@ -244,6 +248,11 @@ void onInit(CBlob@ this)
 		s.customData = 255;
 		AddRequirement(s.requirements, "coin", "", "Coins", 2000);
 	}
+	{
+		ShopItem@ s = addShopItem(this, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 600 $COIN$", true);
+		s.spawnNothing = true;
+		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
+	}
 	
 	//VEHICLE
 	Vehicle_Setup(this, 47.0f, 0.19f, Vec2f(0.0f, 0.0f), false);
@@ -309,6 +318,22 @@ void onShopMadeItem(CBitStream@ params)
 		if (callerPlayer is null) return;
 
 		callerPlayer.server_setCoins(callerPlayer.getCoins() +  parseInt(spl[1]));
+	}
+	// required because otherwise tree spawns as planted
+	else if (name == "tree_pine" || name == "tree_bushy")
+	{
+		CBlob@ seed = server_MakeSeed(caller.getPosition(), name);
+		CInventory@ callerinv = caller.getInventory();
+		if (callerinv !is null)
+		{
+			// .isFull() isn't working correctly here, not sure why
+			// Try to put blob in inventory, then pick it up if it cant
+			caller.server_PutInInventory(seed);
+			if (!seed.isInInventory() && caller.getCarriedBlob() is null)
+			{
+				caller.server_Pickup(seed);
+			}
+		}
 	}
 }
 
