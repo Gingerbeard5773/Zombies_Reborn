@@ -16,6 +16,11 @@ void server_SetEnraged(CBlob@ this, const bool&in enrage = true)
 	{
 		this.getBrain().SetTarget(null);
 		this.set_u8("brain_delay", 250); //do a fake stun
+
+		this.setKeyPressed(key_left, false);
+		this.setKeyPressed(key_right, false);
+		this.setKeyPressed(key_up, false);
+		this.setKeyPressed(key_down, false);
 	}
 	
 	//why the fuck does kag need light on server to work. fuckers

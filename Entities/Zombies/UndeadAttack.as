@@ -13,6 +13,8 @@ void onTick(CBlob@ this)
 	UndeadAttackVars@ attackVars;
 	if (!this.get("attackVars", @attackVars)) return;
 	
+	if (this.exists("stun_time") && this.get_u32("stun_time") > getGameTime()) return;
+	
 	CMap@ map = getMap();
 	const u32 gameTime = getGameTime();
 	Vec2f pos = this.getPosition();

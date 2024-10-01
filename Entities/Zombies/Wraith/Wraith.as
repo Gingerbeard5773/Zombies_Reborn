@@ -117,7 +117,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		{
 			this.SetLight(false);
 			this.getSprite().PlaySound("Steam.ogg");
-			
+
+			this.set_u32("stun_time", getGameTime() + 250);
+
 			//steam particles
 			for (u8 i = 0; i < 5; i++)
 			{
