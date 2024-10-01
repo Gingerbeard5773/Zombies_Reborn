@@ -64,14 +64,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("collided"))
 	{
-		/*CShape@ shape = blob.getShape();
-		if (shape !is null && !shape.isStatic())
-		{
-			Vec2f velnorm = this.getVelocity();
-			f32 vellen = Maths::Min(this.getRadius(), velnorm.Normalize() * (1.0f / 30.0f));
-			Vec2f betweenpos = (this.getPosition() + this.getOldPosition()) * 0.5;
-			this.setPosition(betweenpos - (velnorm * vellen));
-		}*/
+		if (blob.isPlatform() && !solid) return;
+
 		this.Tag("collided");
 		this.server_Hit(blob, blob.getPosition(), this.getVelocity(), 1.0f, Hitters::fire);
 		this.server_Die();

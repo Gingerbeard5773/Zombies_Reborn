@@ -129,6 +129,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("collided"))
 	{
+		if (blob.isPlatform() && !solid) return;
+
 		this.Tag("collided");
 		this.server_Die();
 	}
