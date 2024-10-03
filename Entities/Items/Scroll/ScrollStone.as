@@ -2,8 +2,9 @@
 
 #include "GenericButtonCommon.as";
 #include "Zombie_Translation.as";
+#include "CustomTiles.as";
 
-const int radius = 10;
+const int radius = 15;
 
 void onInit(CBlob@ this)
 {
@@ -17,7 +18,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), Translate::ScrollStone);
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
@@ -40,12 +41,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				TileType t = map.getTile(tpos).type;
 				if (map.isTileStone(t) && !map.isTileThickStone(t))
 				{
-					map.server_SetTile(tpos, CMap::tile_thickstone);
+					const u16 tile = XORRandom(2) == 1 ? u16(CMap::tile_ironore) : u16(CMap::tile_thickstone);
+					map.server_SetTile(tpos, tile);
 					acted = true;
 				}
 				else if (map.isTileGround(t))
 				{
-					map.server_SetTile(tpos, CMap::tile_stone);
+					const u16 tile = XORRandom(4) == 1 ? u16(CMap::tile_ironore) : u16(CMap::tile_stone);
+					map.server_SetTile(tpos, tile);
 					acted = true;
 				}
 			}

@@ -3,7 +3,7 @@
 #include "GenericButtonCommon.as";
 #include "Zombie_Translation.as";
 
-const u8 chicken_num = 3;
+const u8 chicken_num = 6;
 
 void onInit(CBlob@ this)
 {
