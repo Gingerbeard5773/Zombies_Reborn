@@ -13,6 +13,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		this.Tag("dead");
 		this.set_u32("death time", getGameTime());
+		
+		if (isClient())
+		{
+			const string sound = this.getName() == "zombieknight" ? "ZombieKnightDie" : "ZombieDie";
+			this.getSprite().PlaySound(sound);
+		}
 
 		// add pickup attachment so we can pickup body
 		CAttachment@ a = this.getAttachments();
@@ -37,7 +43,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		// fall out of attachments/seats // drop all held things
 		this.server_DetachAll();
 	}
-	else
+	else if (this.hasTag("dead"))
 	{
 		this.set_u32("death time", getGameTime());
 	}

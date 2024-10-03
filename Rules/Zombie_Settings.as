@@ -13,6 +13,8 @@ void onInit(CRules@ this)
 		  "\n  Test mode: "+sv_test+
 		  "\n  Localhost: "+(isClient() && isServer())+"\n"+
 		  "\n -------------------------------------- \n", 0xff66C6FF);
+	sv_visiblity_scale = 1.10f;
+	
 	
 	AddIcons();
 	AddFonts();

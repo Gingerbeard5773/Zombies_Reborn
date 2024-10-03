@@ -1,3 +1,10 @@
+//Zombie Animations
+
+void onInit(CSprite@ this)
+{
+	this.getCurrentScript().runFlags |= Script::tick_onscreen;
+}
+
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -8,7 +15,6 @@ void onTick(CSprite@ this)
 		{
 			this.SetAnimation("dead");
 			this.animation.time = 0;
-			this.PlaySound("/ZombieDie");
 		}
 		
 		this.SetFrameIndex(blob.getVelocity().Length() > 1.0f ? 2 : 3);
