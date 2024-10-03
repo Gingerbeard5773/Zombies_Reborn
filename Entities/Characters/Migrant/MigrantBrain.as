@@ -4,7 +4,7 @@
 
 #include "/Entities/Common/Emotes/EmotesCommon.as"
 #include "MigrantCommon.as"
-#include "HallCommon.as"
+#include "AssignWorkerCommon.as"
 
 void onInit(CBrain@ this)
 {
@@ -12,7 +12,6 @@ void onInit(CBrain@ this)
 	blob.set_bool("justgo", true);
 
 	this.getCurrentScript().removeIfTag = "dead";   //won't be removed if not bot cause it isnt run
-	//this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	
 	SetStrategy(blob, Strategy::find_teammate);
 	
@@ -30,8 +29,7 @@ void onTick(CBrain@ this)
 		CBlob@ attacker = getAttacker(this, blob);
 		if (attacker !is null)
 		{
-			if (!getMap().rayCastSolid(blob.getPosition(), attacker.getPosition()))
-				DitchOwner(blob);
+			DitchAssigned(blob);
 			SetStrategy(blob, Strategy::runaway);
 		}
 
@@ -46,9 +44,14 @@ void onTick(CBrain@ this)
 			if (blob.isAttachedToPoint("GUNNER") && target !is null && target.getHealth() > target.get_f32("gib health"))
 			{
 				//turret mode
-				if ((blob.getAimPos() - target.getPosition()).Length() < 15 && !getMap().rayCastSolid(blob.getPosition(), target.getPosition()))
+				Vec2f targetPos = target.getPosition();
+				if (!getMap().rayCastSolidNoBlobs(blob.getPosition(), targetPos))
 					blob.setKeyPressed(key_action1, true);
-				blob.setAimPos(target.getPosition());
+				
+				const f32 distance = (blob.getPosition() - targetPos).Length();
+				Vec2f aimpos = targetPos + (target.getVelocity() * Maths::FastSqrt(distance) * 1.0f / 1.0f);
+				ParticleZombieLightning(aimpos);
+				blob.setAimPos(aimpos);
 			}
 			else if (!Runaway(this, blob, target))
 			{
@@ -71,16 +74,16 @@ void onTick(CBrain@ this)
 	}
 }
 
-void DitchOwner(CBlob@ blob)
+void DitchAssigned(CBlob@ blob)
 {
-	//un-owner
-	CBlob@ owner = getOwner(blob);
-	if (owner !is null)
+	if (!blob.exists("assigned netid") || blob.isAttached()) return;
+
+	CBlob@ assigned = getBlobByNetworkID(blob.get_netid("assigned netid"));
+	if (assigned !is null)
 	{
-		detachWorker(owner, blob);
-		setWorker(owner, null);
+		UnassignWorker(assigned, blob);
+		Client_DetachWorker(assigned, blob);
 	}
-	ResetWorker(blob);   //unstatic
 }
 
 void DetectObstructions(CBrain@ this, CBlob@ blob, Vec2f &in destination)
@@ -174,11 +177,17 @@ CBlob@ getAttacker(CBrain@ this, CBlob@ blob)
 	CBlob@[] blobsInRadius;
 	map.getBlobsInRadius(pos, range, @blobsInRadius);
 
-	for (uint i = 0; i < blobsInRadius.length; i++)
+	for (u16 i = 0; i < blobsInRadius.length; i++)
 	{
 		CBlob@ b = blobsInRadius[i];
-		if ((b.hasTag("undead") || b.hasTag("animal")) && !map.rayCastSolidNoBlobs(pos, b.getPosition()))
+		if (!b.hasTag("undead")) continue;
+		
+		if (!blob.isAttached() && b.hasTag("dead")) continue;
+
+		if (canSeeUndead(blob, pos, b, map))
 		{
+			if (b.getName() == "wraith") return b; //prioritize wraiths
+
 			if (closest is null || blob.getDistanceTo(b) < blob.getDistanceTo(closest))
 			{
 				@closest = b;
@@ -186,6 +195,26 @@ CBlob@ getAttacker(CBrain@ this, CBlob@ blob)
 		}
 	}
 	return closest;
+}
+
+bool canSeeUndead(CBlob@ this, Vec2f pos, CBlob@ target, CMap@ map)
+{
+	if (!this.isAttachedToPoint("GUNNER")) //cheap raycast
+		return !map.rayCastSolid(pos, target.getPosition());
+
+	Vec2f aimvec = target.getPosition() - pos;
+	HitInfo@[] hitinfos;
+	map.getHitInfosFromRay(pos, -aimvec.Angle(), aimvec.Length(), null, hitinfos);
+	for (u16 i = 0; i < hitinfos.length; i++)
+	{
+		HitInfo@ hit = hitinfos[i];
+		if (hit.blob is null) return false; //hit solid tile
+
+		if (hit.blob.getShape().isStatic() && hit.blob.isCollidable() && !hit.blob.isPlatform()) return false;
+
+		if (hit.blob is target) return true;
+	}
+	return false;
 }
 
 void Repath(CBrain@ this, Vec2f &in destination)
@@ -301,12 +330,13 @@ void TrySomethingNew(CBrain@ this, CBlob@ blob, Vec2f &in destination)
 void JumpOverObstacles(CBlob@ blob)
 {
 	Vec2f pos = blob.getPosition();
-	if (!blob.isOnLadder())
-		if ((blob.isKeyPressed(key_right) && (getMap().isTileSolid(pos + Vec2f(1.3f * blob.getRadius(), blob.getRadius()) * 1.0f) || blob.getShape().vellen < 0.1f)) ||
-		        (blob.isKeyPressed(key_left)  && (getMap().isTileSolid(pos + Vec2f(-1.3f * blob.getRadius(), blob.getRadius()) * 1.0f) || blob.getShape().vellen < 0.1f)))
-		{
-			blob.setKeyPressed(key_up, true);
-		}
+	if (blob.isOnLadder()) return;
+
+	if ((blob.isKeyPressed(key_right) && (getMap().isTileSolid(pos + Vec2f(1.3f * blob.getRadius(), blob.getRadius()) * 1.0f) || blob.getShape().vellen < 0.1f)) ||
+	    (blob.isKeyPressed(key_left)  && (getMap().isTileSolid(pos + Vec2f(-1.3f * blob.getRadius(), blob.getRadius()) * 1.0f) || blob.getShape().vellen < 0.1f)))
+	{
+		blob.setKeyPressed(key_up, true);
+	}
 }
 
 bool JustGo(CBrain@ this, CBlob@ blob, Vec2f &in destination)

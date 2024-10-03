@@ -32,6 +32,7 @@ void AddIcons()
 	AddIconToken("$FireworkArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 5, 0);
 	AddIconToken("$mat_coal_icon$", "MaterialCoal.png", Vec2f(16, 16), 3, 0);
 	AddIconToken("$mat_iron_icon$", "MaterialIron.png", Vec2f(16, 16), 3, 0);
+	AddIconToken("$flowers_icon$", "Flowers.png", Vec2f(16, 16), 6, 0);
 }
 
 void AddFonts()

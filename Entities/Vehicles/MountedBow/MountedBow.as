@@ -1,5 +1,6 @@
 #include "VehicleCommon.as"
 #include "GenericButtonCommon.as"
+#include "AssignWorkerCommon.as"
 
 // Mounted Bow logic
 
@@ -91,11 +92,9 @@ void onInit(CBlob@ this)
 			ammo.server_Die();
 		}
 	}
-
-	CMap@ map = getMap();
-	if (map is null) return;
-
-	this.SetFacingLeft(this.getPosition().x > (map.tilemapwidth * map.tilesize) / 2);
+	
+	addOnAssignWorker(this, @onAssignWorker);
+	addOnUnassignWorker(this, @onUnassignWorker);
 }
 
 f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
@@ -180,8 +179,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (!Vehicle_AddFlipButton(this, caller))
+	if (!AssignWorkerButton(this, caller))
 	{
+		UnassignWorkerButton(this, caller, Vec2f(0, -8));
 		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
@@ -223,13 +223,16 @@ void onInventoryQuantityChange(CBlob@ this, CBlob@ blob, int oldQuantity)
 	}
 }
 
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+void onAssignWorker(CBlob@ this, CBlob@ worker)
 {
-	if (this.hasTag("invincible") && !attached.hasTag("vehicle"))
-		attached.Tag("invincible");
+	AttachmentPoint@ gun = this.getAttachments().getAttachmentPointByName("GUNNER");
+	if (gun !is null && gun.getOccupied() is null)
+	{
+		this.server_AttachTo(worker, @gun);
+	}
 }
 
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+void onUnassignWorker(CBlob@ this, CBlob@ worker)
 {
-	detached.Untag("invincible");
+	this.server_DetachFrom(worker);
 }

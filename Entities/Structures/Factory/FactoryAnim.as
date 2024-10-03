@@ -1,5 +1,5 @@
 #include "LayerSetup.as";
-#include "ProductionCommon.as";
+#include "FactoryProductionCommon.as";
 
 //factory
 
@@ -64,18 +64,6 @@ void onInit(CSprite@ this)
 
 	blob.set("layer setups", @layers);
 
-	/* off until we find nice lighting solution
-	//setup the dynamic foreground layer :)
-	CSpriteLayer@ front = this.addSpriteLayer( "front layer", this.getFilename() , 48, 16, blob.getTeamNum(), blob.getSkinNum() );
-
-	if (front !is null)
-	{
-		front.SetOffset(Vec2f(0,7));
-		Animation@ anim = front.addAnimation( "default", 0, false );
-		anim.AddFrame(6);
-		front.SetRelativeZ( 1000 );
-	}*/
-
 	this.SetZ(-50);
 	blob.Untag("icon layer");
 }
@@ -83,23 +71,24 @@ void onInit(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-	if (blob.hasTag("production paused"))
-		return;
+	if (!blob.hasTag("can produce")) return;
 
 	LayerSetup[]@ layers;
 	if (!blob.get("layer setups", @layers)) return;
+	
+	Production@ production;
+	if (!blob.get("production", @production)) return;
 
-	const bool producing = isProducing(blob);
-	const bool hasTech = blob.get_string("tech name").size() != 0;
+	const bool hasProduction = blob.exists("production");
+	const bool isProducing = production.isProducing();
+	const f32 hp_frame_ratio = 1.0f - (blob.getHealth() / blob.getInitialHealth());
 
-	//s32 time = (getGameTime() + blob.getNetworkID()*31);
-	f32 hp_frame_ratio = 1.0f - (blob.getHealth() / blob.getInitialHealth());
 	for (uint step = 0; step < layers.length; ++step)
 	{
 		LayerSetup@ setup = layers[step];
 		CSpriteLayer@ layer = getLayerFromSetup(this, setup);
 
-		if (!hasTech)
+		if (!hasProduction)
 		{
 			if (step == 5) //HACK
 			{
@@ -111,37 +100,33 @@ void onTick(CSprite@ this)
 		{
 			if (!blob.hasTag("icon layer"))
 			{
-				AddSignLayerFrom(this, blob);
+				AddSignLayerFrom(this, blob, production);
 				blob.Tag("icon layer");
 			}
 		}
 		layer.SetVisible(true);
 
-		if (producing && setup.vars & rotates != 0)
+		if (isProducing && setup.vars & rotates != 0)
 		{
-			layer.RotateBy(setup.rotationCache , Vec2f_zero);
+			layer.RotateBy(setup.rotationCache, Vec2f_zero);
 		}
 		if (setup.vars & damage_an != 0)
 		{
 			layer.animation.frame = hp_frame_ratio * layer.animation.getFramesCount();
 		}
 	}
-
 }
 
-void AddSignLayerFrom(CSprite@ this, CBlob@ scroll)
+void AddSignLayerFrom(CSprite@ this, CBlob@ blob, Production@ production)
 {
 	RemoveSignLayer(this);
 
-	CBlob@ blob = this.getBlob();
+	const u8 team = blob.getTeamNum();
 
-	int team = blob.getTeamNum();
-	int skin = blob.getSkinNum();
+	const int x = 4 - XORRandom(8);
+	const int rot = 15 - XORRandom(30);
 
-	int x = 4 - XORRandom(8);
-	int rot = 15 - XORRandom(30);
-
-	CSpriteLayer@ sign = this.addSpriteLayer("sign", this.getFilename() , 32, 16, team, skin);
+	CSpriteLayer@ sign = this.addSpriteLayer("sign", this.getFilename() , 32, 16, team, 0);
 	{
 		Animation@ anim = sign.addAnimation("default", 0, false);
 		anim.AddFrame(11);
@@ -150,11 +135,11 @@ void AddSignLayerFrom(CSprite@ this, CBlob@ scroll)
 		sign.RotateBy(rot, Vec2f());
 	}
 
-	CSpriteLayer@ icon = this.addSpriteLayer("icon", "/MiniIcons.png" , 16, 16, team, skin);
+	CSpriteLayer@ icon = this.addSpriteLayer("icon", "/MiniIcons.png" , 16, 16, team, 0);
 	if (icon !is null)
 	{
 		Animation@ anim = icon.addAnimation("default", 0, false);
-		anim.AddFrame(scroll.inventoryIconFrame);
+		anim.AddFrame(production.frame);
 		icon.SetOffset(Vec2f(x, -12));
 		icon.SetRelativeZ(1015);
 		icon.RotateBy(rot, Vec2f());
@@ -167,29 +152,25 @@ void RemoveSignLayer(CSprite@ this)
 	this.RemoveSpriteLayer("icon");
 }
 
-
-void onRender(CSprite@ this)
+/*void onRender(CSprite@ this)
 {
 	CBlob@ localBlob = getLocalPlayerBlob();
-	if (localBlob is null)
-		return;
+	if (localBlob is null) return;
 
+	if (!localBlob.isKeyPressed(key_use) || getHUD().hasMenus()) return;
+	
 	CBlob@ blob = this.getBlob();
-	Vec2f center = blob.getPosition();
-	Vec2f mouseWorld = getControls().getMouseWorldPos();
-	const f32 renderRadius = (blob.getRadius()) * 0.95f;
-	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
-	if ((mouseOnBlob || (localBlob.getPosition() - center).getLength() < renderRadius) &&
-	        (getHUD().hasButtons() && !getHUD().hasMenus())
-	   )
+	if (!blob.exists("production") || blob.hasTag("can produce")) return;
+
+	Vec2f pos = blob.getPosition();
+	Vec2f pos2d = blob.getScreenPos();
+	Vec2f mouseworld = getControls().getMouseWorldPos();
+	const bool mouseOnBlob = (mouseworld - pos).getLength() < blob.getRadius();
+	if (mouseOnBlob || (localBlob.getPosition() - pos).getLength() < blob.getRadius())
 	{
-		if (blob.hasTag("production paused") && blob.get_string("tech name").size() > 0)
-		{
-			Vec2f pos2d = blob.getScreenPos();
-			Vec2f upperleft(pos2d.x - 100, pos2d.y - 50.0f);
-			Vec2f lowerright(pos2d.x + 100, pos2d.y);
-			GUI::SetFont("menu");
-			GUI::DrawText(getTranslatedString("Requires a Worker"), upperleft, lowerright, SColor(255, 240, 10, 10), false, false, true);
-		}
-	}  // E
-}
+		Vec2f upperleft(pos2d.x - 100, pos2d.y - 50.0f);
+		Vec2f lowerright(pos2d.x + 100, pos2d.y);
+		GUI::SetFont("menu");
+		GUI::DrawText(getTranslatedString("Requires a Worker"), upperleft, lowerright, SColor(255, 240, 10, 10), false, false, true);
+	}
+}*/

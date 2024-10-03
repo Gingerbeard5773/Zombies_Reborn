@@ -1,104 +1,124 @@
 ﻿// Factory
 
-#include "ShopCommon.as"
-#include "ProductionCommon.as"
-#include "TechsCommon.as"
-#include "Requirements_Tech.as"
-#include "MakeScroll.as"
+#include "FactoryProductionCommon.as"
+#include "Requirements.as"
 #include "Help.as"
-#include "HallCommon.as"
-#include "GenericButtonCommon.as"
-#include "TeamIconToken.as"
+#include "MiniIconsInc.as"
+#include "AssignWorkerCommon.as"
 
-const string children_destructible_tag = "children destructible";
-const string children_destructible_label = "children destruct label";
+Vec2f menu_size(3, 4);
 
-bool hasTech(CBlob@ this)
-{
-	return this.get_string("tech name").size() > 0;
-}
+const f32 building_gold_percent = 0.80f; //percent of the gold we get back from the building when it is destroyed
 
 void onInit(CBlob@ this)
 {
-	this.Tag("huffpuff production");   // for production.as
+	this.Tag("huffpuff production");
 
-	this.addCommandID("upgrade factory");
+	this.addCommandID("server_upgrade_factory");
 	this.addCommandID("client_upgrade_factory");
-	this.addCommandID("pause production");
-	this.addCommandID("unpause production");
-	this.addCommandID("attach worker");
 
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
 	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert factory    $KEY_E$"), "", 3);
 
-	if (hasTech(this))
-	{
-		AddProductionItemsFromTech(this, this.get_string("tech name"));
-	}
-
-	this.set_u8("population usage", 1);
 	this.set_Vec2f("production offset", Vec2f(-8.0f, 0.0f));
 	this.set_s32("gold building amount", 0);
 	
-	this.getCurrentScript().tickFrequency = 90;
+	addOnAssignWorker(this, @onAssignWorker);
+	addOnUnassignWorker(this, @onUnassignWorker);
+	
+	SetupProductionSet();
 }
 
-void onTick(CBlob@ this)
+void SetupProductionSet()
 {
-	if (!isServer()) return;
+	if (getRules().exists("factory_production_set")) return;
 
-	if (this.hasTag(worker_tag))
+	Production@[] production_set;
 	{
-		CBlob@ worker = getWorker(this);
-		if (worker !is null && worker.getDistanceTo(this) > this.getRadius())
-		{
-			CBitStream params;
-			params.write_netid(getWorkerID(this));
-			this.SendCommand(this.getCommandID(worker_out_cmd), params);
-			
-			this.Tag("production paused");
-			returnWorker(this, getHallsFor(this, BASE_RADIUS), worker);
-			this.Untag(worker_tag);
-			this.Sync(worker_tag, true);
-		
-			worker.set_netid("owner id", 0);
-		}
-		return;
+		Production tech("Bombs", FactoryFrame::military_basics);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 35);
+		tech.addProductionItem("mat_bombs", "Bombs", "", 10, 5);
+		production_set.push_back(tech);
 	}
-
-	CBlob@[] overlapping;
-	if (!this.getOverlapping(overlapping)) return;
-
-	for (uint i = 0; i < overlapping.length; i++)
 	{
-		CBlob@ b = overlapping[i];
-		if (!b.hasTag("migrant") || b.isAttached() || b.get_u8("strategy") == Strategy::runaway || b.get_netid("owner id") > 0) continue;
-		AttachMigrantToFactory(this, b);
-		break;
+		Production tech("Catapult", FactoryFrame::catapult);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("catapult", "Catapult", "", 60, 1, Product::crate);
+		production_set.push_back(tech);
 	}
+	{
+		Production tech("Ballista", FactoryFrame::ballista);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 100);
+		tech.addProductionItem("ballista", "Ballista", "", 60, 1, Product::crate);
+		tech.addProductionItem("mat_bolts", "Ballista Bolts", "", 60, 1);
+		tech.addProductionItem("mat_bomb_bolts", "Ballista Shells", "", 60, 1);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Bomber", 7);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 150);
+		tech.addProductionItem("bomber", "Bomber", "", 80, 1, Product::crate);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Tank", 11);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 150);
+		tech.addProductionItem("tank", "Tank", "", 80, 1, Product::crate);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Mounted Bow", FactoryFrame::mounted_bow);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("mounted_bow", "Mounted Bow", "", 40, 2, Product::crate);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Kegs", FactoryFrame::explosives);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
+		tech.addProductionItem("keg", "Kegs", "", 40, 1);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Mines", 18);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("mine", "Mines", "", 20, 4);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Pyrotechnics", FactoryFrame::pyro);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("molotov", "Molotov", "", 25, 2);
+		tech.addProductionItem("mat_molotovarrows", "Molotov Arrows", "", 35, 2);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Water Ammo", FactoryFrame::water_ammo);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 25);
+		tech.addProductionItem("mat_waterarrows", "Water Arrows", "", 25, 3);
+		tech.addProductionItem("mat_waterbombs", "Water Bombs", "", 25, 3);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Bomb Arrows", FactoryFrame::expl_ammo);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("mat_bombarrows", "Bomb Arrows", "", 35, 4);
+		production_set.push_back(tech);
+	}
+	getRules().set("factory_production_set", production_set);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (this.getDistanceTo(caller) > this.getRadius()) return;
 
-	CBitStream params;
-	
-	CBlob@ carried = caller.getCarriedBlob();
-	if (carried !is null && carried.hasTag("migrant") && !this.hasTag(worker_tag))
+	if (!this.exists("production"))
 	{
-		params.write_netid(carried.getNetworkID());
-		caller.CreateGenericButton("$worker_migrant$", Vec2f(0, 0), this, this.getCommandID("attach worker"), getTranslatedString("Assign Worker"), params);
-	}
-	else if (!hasTech(this) && caller.isOverlapping(this))
-	{
-		params.write_netid(caller.getNetworkID());
 		caller.CreateGenericButton(12, Vec2f(0, 0), this, BuildUpgradeMenu, getTranslatedString("Convert Factory"));
 	}
-	else if (!this.hasTag(worker_tag))
+	else if (!AssignWorkerButton(this, caller) && !UnassignWorkerButton(this, caller, Vec2f(0, -14)))
 	{
-		CButton@ button = caller.CreateGenericButton("$worker_migrant$", Vec2f(0, 0), this, 0, getTranslatedString("Requires a free worker"));
+		CButton@ button = caller.CreateGenericButton("$worker_migrant$", Vec2f(0, 0), this, 0, "Requires a worker");
 		if (button !is null)
 		{
 			button.SetEnabled(false);
@@ -106,187 +126,177 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 }
 
-void AttachMigrantToFactory(CBlob@ this, CBlob@ migrant)
-{
-	migrant.server_DetachFromAll();
-	attachWorker(this, migrant, this.getShape().getHeight());
-	this.Tag(worker_tag);
-	this.Untag("production paused");
-	CBitStream params;
-	params.write_netid(migrant.getNetworkID());
-	this.SendCommand(this.getCommandID(worker_in_cmd), params);
-	migrant.set_Vec2f("brain_destination", this.getPosition());
-}
-
 void BuildUpgradeMenu(CBlob@ this, CBlob@ caller)
 {
-	ScrollSet@ set = getScrollSet("factory options");
-	if (caller !is null && set !is null)
-	{
-		caller.ClearMenus();
+	caller.ClearMenus();
 
-		int size = Maths::Ceil(Maths::Sqrt(set.names.length));
-		CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + Vec2f(0.0f, 50.0f), this, Vec2f(size, size), getTranslatedString("Upgrade to..."));
-		if (menu !is null)
-		{
-			menu.deleteAfterClick = true;
-			AddButtonsForSet(this, caller, menu, set);
-		}
-	}
+	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + Vec2f(0.0f, 50.0f), this, menu_size, getTranslatedString("Upgrade to..."));
+	if (menu is null) return;
+
+	menu.deleteAfterClick = true;
+	AddButtonsForSet(this, caller, menu);
 }
 
-void AddButtonsForSet(CBlob@ this, CBlob@ caller, CGridMenu@ menu, ScrollSet@ set)
+void AddButtonsForSet(CBlob@ this, CBlob@ caller, CGridMenu@ menu)
 {
+	Production@[]@ production_set;
+	if (!getRules().get("factory_production_set", @production_set)) return;
+
 	CInventory@ inv = caller.getInventory();
-	for (uint i = 0; i < set.names.length; i++)
+	for (u8 i = 0; i < production_set.length; i++)
 	{
-		const string defname = set.names[i];
-		ScrollDef@ def;
-		set.scrolls.get(defname, @def);
-		if (def !is null && def.items.length > 0)
-		{
-			CBitStream params;
-			params.write_netid(caller.getNetworkID());
-			params.write_string(defname);
-			params.write_u16(def.level);
-			CGridButton@ button = menu.AddButton("MiniIcons.png", def.scrollFrame, Vec2f(16, 16), getTranslatedString(def.name), this.getCommandID("upgrade factory"), Vec2f(1, 1), params);
-			if (button !is null)
-			{
-				CBitStream reqs, missing;
-				AddRequirement(reqs, "blob", "mat_gold", "Gold", def.level);
-				SetItemDescription(button, caller, reqs, getTranslatedString(def.name));
-				if (!hasRequirements(inv, reqs, missing))
-				{
-					button.SetEnabled(false);
-				}
-				else
-				{
-					// set number of already made factories of this kind
-					const s32 team = this.getTeamNum();
-					int sameFactoryCount = 0;
-					CBlob@[] factories;
-					if (getBlobsByName("factory", @factories))
-					{
-						for (uint step = 0; step < factories.length; ++step)
-						{
-							CBlob@ factory = factories[step];
-							if (factory.getTeamNum() == team)
-							{
-								const string factoryTechName = factory.get_string("tech name");
-								if (factoryTechName == defname)
-								{
-									sameFactoryCount++;
-								}
-							}
-						}
-					}
+		Production@ production = production_set[i];
+		
+		CBitStream stream;
+		stream.write_u8(i);
+		CGridButton@ button = menu.AddButton("MiniIcons.png", production.frame, Vec2f(16, 16), getTranslatedString(production.name), this.getCommandID("server_upgrade_factory"), Vec2f(1, 1), stream);
+		if (button is null) continue;
 
-					button.SetNumber(sameFactoryCount);
+		CBitStream missing;
+		SetItemDescription(button, caller, production.reqs, getTranslatedString(production.name));
+		if (!hasRequirements(inv, production.reqs, missing))
+		{
+			button.SetEnabled(false);
+		}
+		else
+		{
+			// set number of already made factories of this kind
+			const s32 team = this.getTeamNum();
+			int sameFactoryCount = 0;
+			CBlob@[] factories;
+			getBlobsByName("factory", @factories);
+
+			for (u16 f = 0; f < factories.length; ++f)
+			{
+				CBlob@ factory = factories[f];
+				if (factory.getTeamNum() != team || !factory.exists("production")) continue;
+				
+				Production@ factory_production;
+				if (!factory.get("production", @factory_production)) continue;
+				
+				if (factory_production.name == production.name)
+				{
+					sameFactoryCount++;
 				}
 			}
+
+			button.SetNumber(sameFactoryCount);
 		}
 	}
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("upgrade factory"))
+	Production@[]@ production_set;
+	if (!getRules().get("factory_production_set", @production_set)) return;
+
+	if (cmd == this.getCommandID("server_upgrade_factory") && isServer())
 	{
-		if (isServer() && this.get_string("tech name").size() == 0)
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
+		CBlob@ caller = player.getBlob();
+		if (caller is null) return;
+		
+		CInventory@ inv = caller.getInventory();
+		if (inv is null) return;
+
+		const u8 index = params.read_u8();
+		if (index >= production_set.length)
 		{
-			CBlob@ caller = getBlobByNetworkID(params.read_netid());
-			if (caller is null) return;
-
-			const string defname = params.read_string();
-			const u16 gold_cost = params.read_u16();
-
-			if (caller.getInventory().getCount("mat_gold") < gold_cost) return;
-			caller.TakeBlob("mat_gold", gold_cost);
-			
-			this.set_s32("gold building amount", gold_cost);
-
-			if (this.get_u8("migrants count") > 0 || this.hasTag(worker_tag))
-			{
-				this.Untag("production paused");
-				this.SendCommand(this.getCommandID("unpause production"));
-			}
-			else
-			{
-				this.Tag("production paused");
-				this.SendCommand(this.getCommandID("pause production"));
-			}
-
-			AddProductionItemsFromTech(this, defname);
-			CBitStream bs;
-			bs.write_string(defname);
-			this.SendCommand(this.getCommandID("client_upgrade_factory"), bs); //shitcode,  i dont really care... LOL !!!!
+			error("Production Set length does not match index! :: Factory.as, server_upgrade_factory");
+			return;
 		}
-	}
-	else if (cmd == this.getCommandID("client_upgrade_factory"))
-	{
-		const string defname = params.read_string();
+		Production@ production = production_set[index];
+		
+		CBitStream missing;
+		if (!hasRequirements(inv, production.reqs, missing)) return;
+		
+		server_TakeRequirements(inv, production.reqs);
+		
+		this.Tag("auto_assign_worker");
+		
+		Production factory_production(production);
+		factory_production.ResetProduction();
+		this.set("production", @factory_production);
+		
+		string req, blobName, friendlyName;
+		u16 quantity = 0;
+		production.reqs.ResetBitIndex();
+		while (!production.reqs.isBufferEnd())
+		{
+			ReadRequirement(production.reqs, req, blobName, friendlyName, quantity);
+			if (blobName == "mat_gold")
+			{
+				this.set_s32("gold building amount", quantity * building_gold_percent);
+				break;
+			}
+		}
 
-		AddProductionItemsFromTech(this, defname);
+		CBitStream stream;
+		stream.write_u8(index);
+		this.SendCommand(this.getCommandID("client_upgrade_factory"), stream);
+	}
+	else if (cmd == this.getCommandID("client_upgrade_factory") && isClient())
+	{
+		const u8 index = params.read_u8();
+		if (index >= production_set.length)
+		{
+			error("Production Set length does not match index! :: Factory.as, client_upgrade_factory");
+			return;
+		}
+
+		Production factory_production(production_set[index]);
+		factory_production.ResetProduction();
+		this.set("production", @factory_production);
+		
+		RemoveHelps(this, "help use");
+		SetHelp(this, "help use", "", getTranslatedString("Check production    $KEY_E$"), "", 2);
+
 		this.getSprite().PlaySound("/ConstructShort.ogg");
 	}
-	else if (cmd == this.getCommandID("pause production") || (hasTech(this) && cmd == this.getCommandID(worker_out_cmd)))
-	{
-		this.Tag("production paused");
-		this.getSprite().PlaySound("/PowerDown.ogg");
-	}
-	else if (cmd == this.getCommandID("unpause production") || (hasTech(this) && cmd == this.getCommandID(worker_in_cmd)))
-	{
-		this.Untag("production paused");
-		this.getSprite().PlaySound("/PowerUp.ogg");
-	}
-	else if (cmd == this.getCommandID("attach worker") && isServer())
-	{
-		CBlob@ worker = getBlobByNetworkID(params.read_netid());
-		if (worker !is null && !this.hasTag(worker_tag))
-		{
-			AttachMigrantToFactory(this, worker);
-		}
-	}
 }
-void AddProductionItemsFromTech(CBlob@ this, const string &in defname)
+
+void onAssignWorker(CBlob@ this, CBlob@ worker)
 {
-	ScrollSet@ set = getScrollSet("factory options");
-	ScrollDef@ def;
-	set.scrolls.get(defname, @def);
-	if (def !is null)
+	SetStandardWorkerPosition(this, worker);
+	SetWorkerStatic(worker, true);
+
+	this.getSprite().PlaySound("/PowerUp.ogg");
+	this.set_bool("can produce", true);
+	
+	if (isServer())
 	{
-		RemoveProductionItems(this);
-
-		for (uint i = 0 ; i < def.items.length; i++)
+		Production@ production;
+		if (!this.get("production", @production)) return;
+		
+		for (u8 i = 0; i < production.production_items.length; i++)
 		{
-			ShopItem @item = def.items[i];
-			ShopItem@ s = addProductionItem(this, item.name, item.iconName, item.blobName, item.description, 1, item.spawnInCrate, item.quantityLimit, item.requirements);
-			if (s !is null)
-			{
-				s.ticksToMake = item.ticksToMake * getTicksASecond();
-				s.customData = item.customData;
-			}
-		}
+			ProductionItem@ item = production.production_items[i];
+			if (item.produced.length >= item.maximum_produced) continue;
 
-		if (isServer())
-		{
-			this.set_string("tech name", defname);
-			this.Sync("tech name", true);
-		}
-		this.setInventoryName(def.name + " Factory");
-		this.inventoryIconFrame = def.scrollFrame;
-
-		if (isClient())
-		{
-			RemoveHelps(this, "help use");
-			SetHelp(this, "help use", "", getTranslatedString("Check production    $KEY_E$"), "", 2);
+			item.next_time_to_produce = getGameTime() + item.seconds_to_produce*30;
+			
+			CBitStream stream;
+			stream.write_u8(i);
+			stream.write_u32(item.next_time_to_produce);
+			this.SendCommand(this.getCommandID("client_set_produce_time"), stream);
 		}
 	}
 }
 
-void RemoveProductionItems(CBlob@ this)
+void onUnassignWorker(CBlob@ this, CBlob@ worker)
 {
-	this.clear(TECH_ARRAY);
-	this.clear(PRODUCTION_ARRAY);
-	this.inventoryIconFrame = 0;
+	SetWorkerStatic(worker, false);
+
+	this.getSprite().PlaySound("/PowerDown.ogg");
+	this.set_bool("can produce", false);
+}
+
+void SetStandardWorkerPosition(CBlob@ this, CBlob@ worker)
+{
+	Random rand(this.getNetworkID() + worker.getNetworkID());
+	const f32 width = int(rand.NextRanged(this.getWidth()*0.5f)) - (this.getWidth() * 0.25f);
+	Vec2f offset = Vec2f(width, (this.getHeight() - worker.getHeight()) * 0.5f);
+	worker.setPosition(this.getPosition() + offset);
 }
