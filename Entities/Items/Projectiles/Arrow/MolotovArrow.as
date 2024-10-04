@@ -74,10 +74,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("projectile") || blob.hasTag("ignore_arrow") || blob.hasTag("material")) return false;
+	if (this.getTeamNum() != blob.getTeamNum())
+	{
+		if (blob.hasTag("flesh") || blob.hasTag("vehicle") || blob.hasTag("player"))
+			return true;
+	}
 
-	const bool willExplode = this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic(); 
-	return blob.isCollidable() && willExplode;
+	return blob.isCollidable() && blob.getShape().isStatic();
 }
 
 void Pierce(CBlob@ this, CBlob@ blob = null)
