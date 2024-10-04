@@ -53,12 +53,14 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("server_set_explosion_time");
 
+	this.server_SetTimeToDie(1.0f);
 	SetExplosionTime(this);
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	if (this.getDamageOwnerPlayer().isMyPlayer())
+	CPlayer@ player = this.getDamageOwnerPlayer();
+	if (player !is null && player.isMyPlayer())
 	{
 		CBitStream stream;
 		stream.write_Vec2f(getControls().getMouseWorldPos());
