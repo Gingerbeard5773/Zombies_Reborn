@@ -39,7 +39,7 @@ void onTick(CSprite@ this)
 	}
 	
 	CShape@ shape = blob.getShape();
-	if (shape.isStatic() || !shape.isActive()) //check frozen
+	if (shape.isStatic() || !blob.isActive()) //check frozen
 	{
 		this.SetAnimation("default");
 		return;

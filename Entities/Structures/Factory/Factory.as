@@ -222,10 +222,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		
 		string req, blobName, friendlyName;
 		u16 quantity = 0;
-		production.reqs.ResetBitIndex();
-		while (!production.reqs.isBufferEnd())
+		factory_production.reqs.ResetBitIndex();
+		while (!factory_production.reqs.isBufferEnd())
 		{
-			ReadRequirement(production.reqs, req, blobName, friendlyName, quantity);
+			ReadRequirement(factory_production.reqs, req, blobName, friendlyName, quantity);
 			if (blobName == "mat_gold")
 			{
 				this.set_s32("gold building amount", quantity * building_gold_percent);
