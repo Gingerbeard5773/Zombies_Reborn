@@ -24,6 +24,8 @@ void onInit(CRules@ this)
 	AddFonts();
 
 	SetupScrolls(this);
+	
+	this.addCommandID("client_send_global_message"); //Zombie_GlobalMessages.as
 }
 
 void AddIcons()

@@ -2,6 +2,8 @@
 
 #define SERVER_ONLY
 
+#include "Zombie_GlobalMessagesCommon.as";
+
 u16 days_to_survive = 15;     //days players must survive to win, as well as the power creep of zombies
 bool infinite_days = false;  //decide if the game ends at days_to_survive
 
@@ -69,25 +71,15 @@ void checkDayChange(CRules@ this)
 	if (dayNumber >= days_to_survive && !infinite_days)
 	{
 		this.SetCurrentState(GAME_WON);
-		setTimedGlobalMessage(this, 2, nextmap_seconds);
+		server_SendGlobalMessage(this, 2, nextmap_seconds);
 	}
 	else
 	{
-		setTimedGlobalMessage(this, 0, 10);
+		server_SendGlobalMessage(this, 0, 10);
 	}
 
 	this.set_u16("day_number", dayNumber);
 	this.Sync("day_number", true);
-}
-
-// Set a global message with a timer to remove itself
-void setTimedGlobalMessage(CRules@ this, const u8&in index, const u8&in seconds)
-{
-	//consult Zombie_GlobalMessages.as
-	this.set_u8("global_message_index", index);
-	this.set_u8("global_message_timer", seconds);
-	this.Sync("global_message_index", true);
-	this.Sync("global_message_timer", true);
 }
 
 // Protocols for when the game ends
@@ -124,7 +116,7 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 	if (!isGameLost(player)) return;
 	
 	this.SetCurrentState(GAME_OVER);
-	setTimedGlobalMessage(this, 1, nextmap_seconds);
+	server_SendGlobalMessage(this, 1, nextmap_seconds);
 }
 
 // Check if we lost the game

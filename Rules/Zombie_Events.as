@@ -2,6 +2,7 @@
 
 #include "MigrantCommon.as";
 #include "ZombieSpawnPos.as";
+#include "Zombie_GlobalMessagesCommon.as";
 
 const u8 GAME_WON = 5;
 f32 lastDayHour;
@@ -81,7 +82,7 @@ void doMigrantEvent(CRules@ this, CMap@ map)
 		CreateMigant(spawn + offset, 0);
 	}
 
-	setTimedGlobalMessage(this, amount == 1 ? 5 : 6, 6);
+	server_SendGlobalMessage(this, amount == 1 ? 5 : 6, 6);
 }
 
 void doTraderEvent(CRules@ this, CMap@ map)
@@ -128,7 +129,7 @@ void doTraderEvent(CRules@ this, CMap@ map)
 	
 	if (spawns.length <= 0) return;
 
-	setTimedGlobalMessage(this, 3, 6);
+	server_SendGlobalMessage(this, 3, 8);
 
 	Vec2f spawn(spawns[XORRandom(spawns.length)].x + 80 - XORRandom(160), 0);
 	
@@ -157,16 +158,6 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 		if (spawns.length <= 0) return;
 	}
 	
-	setTimedGlobalMessage(this, 4, 6);
+	server_SendGlobalMessage(this, 4, 6);
 	server_CreateBlob("sedgwick", -1, spawns[XORRandom(spawns.length)]);
-}
-
-// Set a global message with a timer to remove itself
-void setTimedGlobalMessage(CRules@ this, const u8&in index, const u8&in seconds)
-{
-	//consult Zombie_GlobalMessages.as
-	this.set_u8("global_message_index", index);
-	this.set_u8("global_message_timer", seconds);
-	this.Sync("global_message_index", true);
-	this.Sync("global_message_timer", true);
 }
