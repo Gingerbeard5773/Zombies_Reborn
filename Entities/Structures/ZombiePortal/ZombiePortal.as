@@ -8,21 +8,16 @@ u16 maximum_zombies = 400;
 void onInit(CBlob@ this)
 {
 	CSprite@ sprite = this.getSprite();
-	sprite.SetZ(-50); //background
-	sprite.getConsts().accurateLighting = true;
 	CSpriteLayer@ portal = sprite.addSpriteLayer("portal", "ZombiePortal.png" , 64, 64, 3, -1);
 	portal.SetFrame(1);
 	portal.SetRelativeZ(1000);
-	
-	CShape@ shape = this.getShape();
-	shape.getConsts().mapCollisions = false;
 	
 	//kill overlapped buildings
 	CBlob@[] buildings;
 	if (getBlobsByTag("building", buildings))
 	{
 		Vec2f mypos = this.getPosition();
-		Vec2f myhalfsize = Vec2f(shape.getWidth(), shape.getHeight()) * 0.5f;
+		Vec2f myhalfsize = Vec2f(this.getWidth(), this.getHeight()) * 0.5f;
 		for (uint i = 0; i < buildings.length; ++i)
 		{
 			CBlob@ building = buildings[i];
@@ -46,9 +41,8 @@ void onInit(CBlob@ this)
 		}
 	}
 	
-	this.set_TileType("background tile", CMap::tile_castle_back_moss);
+	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.Tag("builder always hit");
-	this.Tag("building");
 	
 	this.SetLightRadius(64.0f);
 	if (!this.isLight())
@@ -145,7 +139,7 @@ void onDie(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("client_activate_portal"))
+	if (cmd == this.getCommandID("client_activate_portal") && isClient())
 	{
 		this.getSprite().PlaySound("PortalBreach");
 		this.SetLight(true);
