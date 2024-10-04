@@ -156,9 +156,43 @@ void onTick(CBlob@ this)
 			arm.animation.frame = v.getCurrentAmmo().loaded_ammo > 0 ? 1 : 0;
 		}
 
-		Vehicle_StandardControls(this, v);
+		Vehicle_MountedBowControls(this, v);
+		
 	}
 	this.set_bool("facing", this.isFacingLeft());
+}
+
+void Vehicle_MountedBowControls(CBlob@ this, VehicleInfo@ v)
+{
+	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("GUNNER");
+	CBlob@ blob = ap.getOccupied();
+	if (blob is null) return;
+	
+	// get out of seat
+	if (isServer() && ap.isKeyJustPressed(key_up))
+	{
+		this.server_DetachFrom(blob);
+		return;
+	}
+	
+	//allow non-players to shoot vehicle weapons
+    const bool isBot = blob.getPlayer() is null;
+    if (isServer() && isBot && blob.isKeyPressed(key_action1) && v.canFire())
+    {
+        CBitStream bt;
+        bt.write_u16(blob.getNetworkID());
+        bt.write_u16(v.charge);
+        this.SendCommand(this.getCommandID("fire client"), bt);
+
+        Fire(this, v, blob, v.charge);
+    }
+
+	const bool canFireLocally = blob.isMyPlayer() && v.canFire() && getGameTime() > v.network_fire_time;
+	if (v.canFire(this, ap) && canFireLocally)
+	{
+		v.network_fire_time = getGameTime() + v.getCurrentAmmo().fire_delay;
+		client_Fire(this, blob);
+	}
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)

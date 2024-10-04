@@ -50,7 +50,6 @@ void onTick(CBrain@ this)
 				
 				const f32 distance = (blob.getPosition() - targetPos).Length();
 				Vec2f aimpos = targetPos + (target.getVelocity() * Maths::FastSqrt(distance) * 1.0f / 1.0f);
-				ParticleZombieLightning(aimpos);
 				blob.setAimPos(aimpos);
 			}
 			else if (!Runaway(this, blob, target))
