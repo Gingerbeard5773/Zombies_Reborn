@@ -66,6 +66,8 @@ void checkDayChange(CRules@ this)
 	if (dayHour != this.daycycle_start) return;
 
 	const u16 dayNumber = this.get_u16("day_number") + 1;
+	this.set_u16("day_number", dayNumber);
+	this.Sync("day_number", true);
 
 	//end game if we reached the last day
 	if (dayNumber >= days_to_survive && !infinite_days)
@@ -77,9 +79,6 @@ void checkDayChange(CRules@ this)
 	{
 		server_SendGlobalMessage(this, 0, 10);
 	}
-
-	this.set_u16("day_number", dayNumber);
-	this.Sync("day_number", true);
 }
 
 // Protocols for when the game ends
