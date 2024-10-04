@@ -51,7 +51,7 @@ void AssignWorker(CBlob@ this, CBlob@ worker)
 
 	this.set_netid("assigned netid", worker.getNetworkID());
 	worker.set_netid("assigned netid", this.getNetworkID());
-	//worker.set_Vec2f("brain_destination", this.getPosition());
+	worker.set_Vec2f("brain_destination", this.getPosition());
 
 	CSprite@ sprite = worker.getSprite();
 	sprite.SetZ(-40);
