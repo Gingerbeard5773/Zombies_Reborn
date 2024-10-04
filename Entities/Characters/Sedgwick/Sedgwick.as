@@ -34,6 +34,19 @@ void onInit(CBlob@ this)
 	this.SetLight(false);
 	this.SetLightRadius(75.0f);
 	this.SetLightColor(SColor(255, 150, 240, 171));
+	
+	if (isServer())
+	{
+		CMap@ map = getMap();
+		Vec2f dim = map.getMapDimensions();
+		
+		const int x = dim.x/4 + XORRandom((dim.x/4)*2);
+		const int ceiling = getMapCeiling(map, x);
+		
+		Vec2f end;
+		map.rayCastSolidNoBlobs(Vec2f(x, ceiling), Vec2f(x, dim.y), end);
+		this.set_Vec2f("teleport pos", Vec2f(x, ceiling + (end.y - ceiling) / 2));
+	}
 
 	server_SetSpell(this, XORRandom(spell_end));
 }
@@ -49,20 +62,7 @@ void onTick(CBlob@ this)
 		if (!this.getShape().isStatic()) //teleport to new area
 		{
 			ParticleTeleport(this.getPosition());
-			
-			if (isServer())
-			{
-				CMap@ map = getMap();
-				Vec2f dim = map.getMapDimensions();
-				
-				const int x = dim.x/4 + XORRandom((dim.x/4)*2);
-				const int ceiling = getMapCeiling(map, x);
-				
-				Vec2f end;
-				map.rayCastSolidNoBlobs(Vec2f(x, ceiling), Vec2f(x, dim.y), end);
-				this.set_Vec2f("teleport pos", Vec2f(x, ceiling + (end.y - ceiling) / 2));
-				this.Sync("teleport pos", true);
-			}
+
 			this.setPosition(this.get_Vec2f("teleport pos"));
 			
 			this.SetLight(true);
