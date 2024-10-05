@@ -1,6 +1,7 @@
 // Zombie Fortress chat commands
 
 #include "Zombie_SoftBansCommon.as";
+#include "Zombie_GlobalMessagesCommon.as";
 
 void printcommandslist()
 {
@@ -17,6 +18,8 @@ void printcommandslist()
 	print(" !carnage : kill all zombies on the map",                                             color_white);
 	print(" !spawnrates [days to print] [player number] : prints out a prediction of the rates", color_white);
 	print(" !difficulty [difficulty] : sets the game difficulty",                                color_white);
+	print(" !loadgen [seed] : load a procedurally generated map using a seed",                   color_white);
+	print(" !seed : get the map seed",                                                           color_white);
 	print("");
 }
 
@@ -118,12 +121,25 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					this.set_u16("day_number", dayNumber);
 					this.Sync("day_number", true);
 				}
+				else if (tokens[0] == "!seed")
+				{
+					const string message = "MAP SEED : "+getMap().get_s32("map seed");
+					print(message);
+					server_SendGlobalMessage(this, message, 10);
+					return false;
+				}
 			}
 			
 			if (tokens[0] == "!respawn") //respawn player
 			{
 				const string ply_name = tokens.length > 1 ? tokens[1] : player.getUsername();
 				this.set_u32(ply_name+" respawn time", getGameTime());
+			}
+			else if (tokens[0] == "!loadgen")
+			{
+				const int map_seed = tokens.length > 1 ? parseInt(tokens[1]) : getMap().get_s32("map seed");
+				this.set_s32("new map seed", map_seed);
+				LoadNextMap();
 			}
 		}
 	}

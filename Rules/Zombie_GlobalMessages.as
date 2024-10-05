@@ -53,16 +53,23 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client_send_global_message"))
 	{
-		const u8 index = params.read_u8();
-		const u8 message_seconds = params.read_u8();
-		const u32 message_color = params.read_u32();
-		if (index > server_messages.length)
+		global_message_time = params.read_u8();
+		global_message_color = params.read_u32();
+		
+		const bool isIndex = params.read_bool();
+		if (isIndex)
 		{
-			error("server message from index does not exist! :: "+getCurrentScriptName()); return; 
+			const u8 index = params.read_u8();
+			if (index > server_messages.length)
+			{
+				error("server message from index does not exist! :: "+getCurrentScriptName()); return; 
+			}
+			global_message = server_messages[index].replace("{DAYS}", ""+this.get_u16("day_number"));
 		}
-		global_message = server_messages[index].replace("{DAYS}", ""+this.get_u16("day_number"));
-		global_message_time = message_seconds;
-		global_message_color = message_color;
+		else
+		{
+			global_message = params.read_string();
+		}
 	}
 }
 

@@ -7,9 +7,20 @@ void addOnRecieveGlobalMessage(CRules@ this, onRecieveGlobalMessageHandle@ handl
 void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&in message_seconds, const u32&in message_color = color_white.color)
 {
 	CBitStream stream;
-	stream.write_u8(message_index);
 	stream.write_u8(message_seconds);
 	stream.write_u32(message_color);
+	stream.write_bool(true);
+	stream.write_u8(message_index);
+	this.SendCommand(this.getCommandID("client_send_global_message"), stream);
+}
+
+void server_SendGlobalMessage(CRules@ this, const string&in message, const u8&in message_seconds, const u32&in message_color = color_white.color)
+{
+	CBitStream stream;
+	stream.write_u8(message_seconds);
+	stream.write_u32(message_color);
+	stream.write_bool(false);
+	stream.write_string(message);
 	this.SendCommand(this.getCommandID("client_send_global_message"), stream);
 }
 
