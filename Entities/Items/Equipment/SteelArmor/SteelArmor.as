@@ -84,6 +84,7 @@ f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f
 		case Hitters::explosion:
 		case Hitters::keg:
 		case Hitters::mine:
+		case Hitters::mine_special:
 			DoMetalHitEffects(equipper, damage, worldPoint, velocity);
 			damage *= 0.25f;
 			break;
