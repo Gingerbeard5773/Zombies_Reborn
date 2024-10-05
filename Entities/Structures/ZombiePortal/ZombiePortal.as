@@ -41,6 +41,11 @@ void onInit(CBlob@ this)
 		}
 	}
 	
+	sprite.SetZ(-50); //background
+	this.getShape().getConsts().mapCollisions = false;
+	this.getSprite().getConsts().accurateLighting = true;
+	this.Tag("building");
+	
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.Tag("builder always hit");
 	
