@@ -46,6 +46,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
 		
+		caller.server_DetachFromAll();
+		
 		caller.setPosition(aim);
 
 		this.server_Die();
