@@ -260,6 +260,10 @@ void AttackStuff(CBlob@ this)
 	const u32 gameTime = getGameTime();
 	if (gameTime >= attackVars.next_attack)
 	{
+		if (this.getPosition().y >= getMap().getMapDimensions().y)
+		{
+			carried.server_DetachFromAll(); // drop ppl into hell
+		}
 		this.server_Hit(carried, carried.getPosition(), Vec2f_zero, attackVars.damage, attackVars.hitter, true);
 		attackVars.next_attack = gameTime + attackVars.frequency;
 	}
