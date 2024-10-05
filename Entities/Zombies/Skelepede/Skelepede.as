@@ -332,6 +332,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::bomb_arrow:   damage *= 4.2f; break;
 		case Hitters::arrow:        damage *= 1.2f; break;
 		case Hitters::suddengib:    damage *= 4.0f; break;
+		case Hitters::drill:        damage *= 3.0f; break;
+		case Hitters::builder:      damage *= 2.0f; break;
 	}
 
 	if (damage > this.getHealth() && !this.hasTag("dead"))
