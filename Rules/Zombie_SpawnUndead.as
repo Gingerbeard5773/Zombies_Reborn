@@ -92,10 +92,10 @@ void onTick(CRules@ this)
 //Calculate our spawn rates and gamemode-difficulty based on the day number and amount of players on the server
 void getSpawnRates(const u16&in dayNumber, u32&out spawnRate, f32&out difficulty, const u8&in playerCount = getPlayersCount())
 {
-	const f32 player_modifier = Maths::Pow(playerCount - 1, 1.01f) * 0.25f;
+	const f32 player_modifier = Maths::Pow(playerCount - 1, 1.01f) * 0.2f;
 	const f32 difficulty_ramp = Maths::Pow(dayNumber * 0.25f, 1.0001f);
 
-	difficulty = (difficulty_ramp + player_modifier) * game_difficulty;
+	difficulty = (difficulty_ramp + player_modifier) * game_difficulty * 0.85f;
 	spawnRate = Maths::Max(getTicksASecond() / difficulty, 1);
 }
 
