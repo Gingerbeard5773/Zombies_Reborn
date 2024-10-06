@@ -32,7 +32,7 @@ const string[] components =
 	"dispenser",
 	"obstructor",
 	"spiker"
-}
+};
 
 string[] names;
 
