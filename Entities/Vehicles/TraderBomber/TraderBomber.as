@@ -26,6 +26,8 @@ void onInit(CBlob@ this)
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 9, Vec2f(8, 8));
 	this.SetMinimapRenderAlways(true);
 	
+	this.sendonlyvisible = false;
+	
 	ShopMadeItem@ onMadeItem = @onShopMadeItem;
 	this.set("onShopMadeItem handle", @onMadeItem);
 	
