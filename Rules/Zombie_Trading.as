@@ -11,6 +11,7 @@ const int coinsOnBuildStoneDoor = 5;
 const int coinsOnBuildWood = 1;
 const int coinsOnBuildWorkshop = 10;
 const int coinsOnBuildStructure = 30;
+const int coinsOnBuildComponent = 5;
 const int coinsOnBuildIron = 5;
 const int coinsOnBuildIronDoor = 10;
 
@@ -25,12 +26,26 @@ const string[] structures =
 	"apothecary"
 };
 
+const string[] components =
+{
+	"bolter",
+	"dispenser",
+	"obstructor",
+	"spiker"
+}
+
 string[] names;
 
 void onInit(CRules@ this)
 {
 	CGameplayEvent@ func = @awardCoins;
-	getRules().set("awardCoins handle", @func);
+	this.set("awardCoins handle", @func);
+}
+
+void onReload(CRules@ this)
+{
+	CGameplayEvent@ func = @awardCoins;
+	this.set("awardCoins handle", @func);
 }
 
 void onRestart(CRules@ this)
@@ -140,6 +155,10 @@ void awardCoins(CBitStream@ params)
 		else if (structures.find(name) > -1)
 		{
 			coins = coinsOnBuildStructure;
+		}
+		else if (components.find(name) > -1)
+		{
+			coins = coinsOnBuildComponent;
 		}
 		else if (name == "iron_door" || name == "iron_platform")
 		{
