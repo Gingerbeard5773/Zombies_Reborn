@@ -11,6 +11,24 @@ void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&
 	stream.write_u32(message_color);
 	stream.write_bool(true);
 	stream.write_u8(message_index);
+	stream.write_u8(0);
+	this.SendCommand(this.getCommandID("client_send_global_message"), stream);
+}
+
+void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&in message_seconds, const string[]@ inputs, const u32&in message_color = color_white.color)
+{
+	CBitStream stream;
+	stream.write_u8(message_seconds);
+	stream.write_u32(message_color);
+	stream.write_bool(true);
+	stream.write_u8(message_index);
+
+	stream.write_u8(inputs.length);
+	for (u8 i = 0; i < inputs.length; i++)
+	{
+		stream.write_string(inputs[i]);
+	}
+
 	this.SendCommand(this.getCommandID("client_send_global_message"), stream);
 }
 

@@ -2,6 +2,8 @@
 
 #define CLIENT_ONLY
 
+#include "Zombie_Translation.as";
+
 const f32 scoreboardMargin = 52.0f;
 const f32 scrollSpeed = 4.0f;
 const f32 maxMenuWidth = 380;
@@ -39,7 +41,7 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 	//draw team info
 	GUI::DrawText(rules.getTeam(teamNum).getName(), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + playersLength), Vec2f(bottomright.x - 470, topleft.y), SColor(0xffffffff));
-	GUI::DrawText("Zombies: " + zombies, Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(Translate::Zombies.replace("{AMOUNT}", zombies+""), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
 
 	topleft.y += stepheight * 2;
 	
@@ -291,7 +293,7 @@ void drawServerInfo(CRules@ this, const f32 y)
 
 	const string info = getTranslatedString(this.gamemode_name) + ": " + getTranslatedString(this.gamemode_info);
 	const string mapName = getTranslatedString("Map name : ") + this.get_string("map_name");
-	const string dayCount = "Day: " + this.get_u16("day_number");
+	const string dayCount = Translate::DayNum.replace("{DAYS}", this.get_u16("day_number")+"");
 	
 	Vec2f dim;
 	GUI::GetTextDimensions(info, dim);
@@ -319,7 +321,7 @@ void drawServerInfo(CRules@ this, const f32 y)
 
 void drawManualPointer(const f32 y)
 {
-	const string openHelp = "Press {KEY} to toggle the help manual on/off.".replace("{KEY}", "["+getControls().getActionKeyKeyName(AK_MENU)+"]");
+	const string openHelp = Translate::Manual.replace("{KEY}", "["+getControls().getActionKeyKeyName(AK_MENU)+"]");
 	
 	Vec2f dim;
 	GUI::GetTextDimensions(openHelp, dim);

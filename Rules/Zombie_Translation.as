@@ -30,15 +30,28 @@ namespace Translate
 	Tip5 = Translate("A trader will visit at mid-day if it can land safely.",               "Если зомби немного, торговец прилетит к полудню"),
 	Tip6 = Translate("Respawns are instant if there is no zombies during day light.",       "Возрождения происходят мгновенно, если днём нет зомби"),
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.", "Мигранты будут приходить к вам через каждый день,\nесли популяция нежити будет низкая"),
-
+	
+	//scoreboard
+	Manual   = Translate("Press {KEY} to toggle the help manual on/off.", ""),
+	DayNum   = Translate("Day: {DAYS}",                                   "День: {DAYS}"),
+	Zombies  = Translate("Zombies: {AMOUNT}",                             ""),
+	
 	//global messages
-	Day      = Translate("Day {DAYS}",                                                 "День {DAYS}"),
-	GameOver = Translate("Game over! All players perished! You survived {DAYS} days.", "Игра закончена! Все игроки погибли! Вы выживали на протяжении {DAYS} дней."),
-	GameWin  = Translate("Day {DAYS} Reached! You win!",                               "День {DAYS} Наступил! Вы выиграли!"),
-	Trader   = Translate("A flying merchant has arrived!",                             "Прибыл летающий-торговец!"),
-	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                     "Некромант Седжвик появился!"),
-	Migrant1 = Translate("A refugee has arrived!",                                     "Прибыл Беженец!"),
-	Migrant2 = Translate("Refugees have arrived!",                                     "Прибыли Беженцы!"),
+	Day      = Translate("Day {INPUT}",                                                 "День {INPUT}"),
+	Record   = Translate("Day {INPUT}\n\nNew record!",                                  ""),
+	GameOver = Translate("Game over! All players perished! You survived {INPUT} days.", "Игра закончена! Все игроки погибли! Вы выживали на протяжении {INPUT} дней."),
+	GameWin  = Translate("Day {INPUT} Reached! You win!",                               "День {INPUT} Наступил! Вы выиграли!"),
+	Trader   = Translate("A flying merchant has arrived!",                              "Прибыл летающий-торговец!"),
+	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                      "Некромант Седжвик появился!"),
+	Migrant1 = Translate("A refugee has arrived!",                                      "Прибыл Беженец!"),
+	Migrant2 = Translate("Refugees have arrived!",                                      "Прибыли Беженцы!"),
+
+	//stats
+	Stat0 = Translate("Total zombies killed: {INPUT}",   ""),
+	Stat1 = Translate("Most blocks placed: {INPUT}",     ""),
+	Stat2 = Translate("Most kills: {INPUT}",             ""),
+	Stat3 = Translate("Most deaths: {INPUT}",            ""),
+	Stat4 = Translate("All-time record: {INPUT} Days",   ""),
 
 	//scrolls
 	ScrollClone    = Translate("Use this to duplicate an object you are pointing to.",                         "Изпользуйте это для клонирования объекта, куда вы смотрете."),
@@ -123,6 +136,7 @@ namespace Translate
 	RequiresTech    = Translate("Requires previous upgrade",                                         ""),
 	UpgradeComplete = Translate("{UPGRADE} upgrade complete",                                        ""),
 	Coinage         = Translate("Coinage\nCoins auto-yield 10%",                                     ""),
+	CoinageII       = Translate("Coinage II\nCoins auto-yield 20%",                                  ""),
 	HardyWheat      = Translate("Hardy Wheat\nWheat can grow on stone and ores.",                    ""),
 	HardyTrees      = Translate("Hardy Trees\nTrees can grow on stone and ores.",                    ""),
 	PlentifulWheat  = Translate("Plentiful Wheat\nWheat can yield an extra grain.",                  ""),
@@ -139,11 +153,14 @@ namespace Translate
 	Repeaters       = Translate("Repeaters\nCrossbows are automatic.",                               ""),
 	LightBows       = Translate("Light Bows\nArchers fire faster.",                                  ""),
 	DeepQuiver      = Translate("Deep Quiver\nArchers have infinite arrows.",                        ""),
+	MachineBows     = Translate("Machine Bows\nMounted Bows fire faster.",                           ""),
 	ArrowSupply     = Translate("Arrow Supply\nMounted Bows have infinite arrows.",                  ""),
 	RifledBarrels   = Translate("Rifled Barrels\nMuskets' damage and penetration increased.",        ""),
 	Bandoliers      = Translate("Bandoliers\nMuskets' reload twice as fast.",                        ""),
 	GreekFire       = Translate("Greek Fire\nIncendiary weapons deal twice as much damage.",         ""),
 	Shrapnel        = Translate("Shrapnel\nExplosives deal twice as much damage.",                   ""),
+	HighExplosive   = Translate("High Explosive Powder\nExplosives' radius increased",               ""),
+	HolyWater       = Translate("Holy Water\nWater bomb radius and stun time 2x.",                   ""),
 	BlastShields    = Translate("Blast Shields\nShields are resistant to strong explosions.",        ""),
 	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              ""),
 	RegenerationII  = Translate("Regeneration II\nSurvivors heal an additional heart every day.",    "");

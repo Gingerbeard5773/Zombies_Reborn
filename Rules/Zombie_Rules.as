@@ -3,25 +3,18 @@
 #define SERVER_ONLY
 
 #include "Zombie_GlobalMessagesCommon.as";
+#include "Zombie_Statistics.as";
 
-u16 days_to_survive = 15;     //days players must survive to win, as well as the power creep of zombies
-bool infinite_days = false;  //decide if the game ends at days_to_survive
+u16 days_to_survive = -1; //days players must survive to win, -1 to disable win condition
 
 const u8 GAME_WON = 5;
 const u8 nextmap_seconds = 15;
 f32 lastDayHour;
 u8 seconds_till_nextmap = nextmap_seconds;
+bool hitRecord = false;
 
 void onInit(CRules@ this)
 {
-	ConfigFile cfg;
-	if (cfg.loadFile("Zombie_Vars.cfg"))
-	{
-		//edit these vars in Zombie_Vars.cfg
-		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u16("days_to_survive")  : 15;
-		infinite_days   = cfg.exists("infinite_days")   ? cfg.read_bool("infinite_days")  : false;
-	}
-	
 	Reset(this);
 }
 
@@ -32,11 +25,18 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
+	ConfigFile cfg;
+	if (cfg.loadFile("Zombie_Vars.cfg"))
+	{
+		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u16("days_to_survive") : -1;
+	}
+
 	lastDayHour = 0.0f;
 	this.set_u16("day_number", 0);
 	this.Sync("day_number", true);
 
 	seconds_till_nextmap = nextmap_seconds;
+	hitRecord = false;
 	this.SetCurrentState(GAME);
 }
 
@@ -68,16 +68,28 @@ void checkDayChange(CRules@ this)
 	const u16 dayNumber = this.get_u16("day_number") + 1;
 	this.set_u16("day_number", dayNumber);
 	this.Sync("day_number", true);
+	
+	bool new_record;
+	const u16 recordDay = server_getRecordDay(dayNumber, new_record);
 
 	//end game if we reached the last day
-	if (dayNumber >= days_to_survive && !infinite_days)
+	if (dayNumber >= days_to_survive)
 	{
 		this.SetCurrentState(GAME_WON);
-		server_SendGlobalMessage(this, 2, nextmap_seconds);
+		string[] inputs = {dayNumber+""};
+		getEndGameStatistics(this, @inputs);
+		server_SendGlobalMessage(this, 2, nextmap_seconds, inputs);
 	}
-	else
+	else if (new_record && !hitRecord)
 	{
-		server_SendGlobalMessage(this, 0, 10);
+		hitRecord = true;
+		const string[] inputs = {dayNumber+""};
+		server_SendGlobalMessage(this, 7, 10, inputs);
+	}
+	else 
+	{
+		const string[] inputs = {dayNumber+""};
+		server_SendGlobalMessage(this, 0, 10, inputs);
 	}
 }
 
@@ -109,13 +121,16 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 
 void checkGameEnded(CRules@ this, CPlayer@ player)
 {
-	if (this.get_u16("day_number") < 2) return;
+	const u16 dayNumber = this.get_u16("day_number");
+	if (dayNumber < 2) return;
 	
 	//have all players died?
 	if (!isGameLost(player)) return;
 	
 	this.SetCurrentState(GAME_OVER);
-	server_SendGlobalMessage(this, 1, nextmap_seconds);
+	string[] inputs = {dayNumber+""};
+	getEndGameStatistics(this, @inputs);
+	server_SendGlobalMessage(this, 1, nextmap_seconds, inputs);
 }
 
 // Check if we lost the game

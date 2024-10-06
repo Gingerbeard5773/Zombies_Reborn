@@ -12,15 +12,18 @@ string global_message = "";
 u8 global_message_time = 0;
 SColor global_message_color = color_white;
 
+const string Statistics = Translate::Stat0+"\n\n"+Translate::Stat1+"\n\n"+Translate::Stat2+"\n\n"+Translate::Stat3+"\n\n"+Translate::Stat4;
+
 const string[] server_messages =
 {
 	Translate::Day,
-	Translate::GameOver,
-	Translate::GameWin,
+	Translate::GameOver+"\n\n"+Statistics,
+	Translate::GameWin+"\n\n"+Statistics,
 	Translate::Trader,
 	Translate::Sedgwick,
 	Translate::Migrant1,
-	Translate::Migrant2
+	Translate::Migrant2,
+	Translate::Record
 };
 
 void onInit(CRules@ this)
@@ -64,7 +67,18 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			{
 				error("server message from index does not exist! :: "+getCurrentScriptName()); return; 
 			}
-			global_message = server_messages[index].replace("{DAYS}", ""+this.get_u16("day_number"));
+			
+			global_message = server_messages[index];
+
+			const u8 inputs_length = params.read_u8();
+			for (u8 i = 0; i < inputs_length; i++)
+			{
+				const string input = params.read_string();
+				const int index = global_message.findFirst("{INPUT}");
+				if (index == -1) break;
+
+				global_message = global_message.substr(0, index) + input + global_message.substr(index + 7);
+			}
 		}
 		else
 		{

@@ -126,6 +126,7 @@ void awardCoins(CBitStream@ params)
 		{
 			coins = coinsOnBuildIron;
 		}
+		player.setScore(player.getScore() + 1);
 	}
 	else if (event_id == CGameplayEvent_IDs::BuildBlob)
 	{
