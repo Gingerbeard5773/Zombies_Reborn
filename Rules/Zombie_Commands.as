@@ -133,7 +133,14 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			if (tokens[0] == "!respawn") //respawn player
 			{
 				const string ply_name = tokens.length > 1 ? tokens[1] : player.getUsername();
-				this.set_u32(ply_name+" respawn time", getGameTime());
+				
+				if (getPlayerByUsername(ply_name) !is null)
+				{
+					dictionary@ respawns;
+					this.get("respawns", @respawns);
+
+					respawns.set(ply_name, getGameTime());
+				}
 			}
 			else if (tokens[0] == "!loadgen")
 			{
