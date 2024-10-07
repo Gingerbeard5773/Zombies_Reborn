@@ -246,6 +246,32 @@ void onDie(CBlob@ this)
 		UnequipBlob(this, equippedblob);
 		equippedblob.setPosition(this.getPosition());
 	}
+	
+	EquipToNewPlayerBlob(this, ids);
+}
+
+void EquipToNewPlayerBlob(CBlob@ this, u16[]@ ids)
+{
+	CPlayer@ owner = this.getDamageOwnerPlayer();
+	if (owner is null) return;
+	
+	CBlob@ newPlayerBlob = owner.getBlob();
+	if (newPlayerBlob is null) return;
+	
+	if (newPlayerBlob is this || newPlayerBlob.hasTag("dead")) return;
+	
+	u16[]@ new_ids;
+	if (!newPlayerBlob.get("equipment_ids", @new_ids)) return;
+
+	for (u8 i = 0; i < ids.length; i++)
+	{
+		CBlob@ equipment = getBlobByNetworkID(ids[i]);
+		if (equipment is null) continue;
+		
+		new_ids[i] = ids[i];
+
+		EquipBlob(newPlayerBlob, equipment);
+	}
 }
 
 ///NETWORK
