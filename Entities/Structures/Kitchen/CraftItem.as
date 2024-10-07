@@ -8,6 +8,12 @@ void onInit(CBlob@ this)
 	
 	this.addCommandID("server_set_crafting");
 	this.addCommandID("client_set_crafting");
+	
+	Craft@ craft = getCraft(this);
+	if (craft !is null)
+	{
+		SetPullItems(this, craft);
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -57,7 +63,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		craft.selected = params.read_u8();
 		craft.time = 0;
-		
+		SetPullItems(this, craft);
+
 		CBitStream stream;
 		stream.write_u8(craft.selected);
 		this.SendCommand(this.getCommandID("client_set_crafting"), stream);
@@ -66,7 +73,30 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		craft.selected = params.read_u8();
 		craft.time = 0;
+		SetPullItems(this, craft);
 	}
+}
+
+void SetPullItems(CBlob@ this, Craft@ craft)
+{
+	if (!this.exists("pull_items")) return;
+
+	CraftItem@ item = craft.items[craft.selected];
+	CBitStream bs = item.reqs;
+	bs.ResetBitIndex();
+	string req, name, friendlyName;
+
+	string[] pull_names;
+
+	while (!bs.isBufferEnd())
+	{
+		ReadRequirement(bs, req, name, friendlyName, 0);
+		if (req != "blob") continue;
+
+		pull_names.push_back(name);
+	}
+
+	this.set("pull_items", pull_names);
 }
 
 void onTick(CBlob@ this)

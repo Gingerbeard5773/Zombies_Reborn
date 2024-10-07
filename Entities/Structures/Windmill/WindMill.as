@@ -10,8 +10,12 @@ void onInit(CBlob@ this)
 
 	this.getShape().getConsts().mapCollisions = false;
 	
+	this.set_Vec2f("pull_items_button_offset", Vec2f(0, -6));
+	
+	string[] pull_names = { "grain" };
+	this.set("pull_items", pull_names);
+	
 	this.addCommandID("sv_store");
-	this.addCommandID("pull_items");
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
@@ -27,24 +31,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 void onTick(CBlob@ this)
 {
 	const f32 millpow = this.get_f32("mill power");
-	CInventory@ inventory = this.getInventory();
-	const u8 itemsCount = inventory.getItemsCount();
-	if (itemsCount > 0 && this.hasBlob("grain", 1))
+
+	CBlob@ grain = this.getInventory().getItem("grain");
+	if (grain !is null)
 	{
 		this.set_f32("mill power", Maths::Min(millpow + millpow/100 + 0.002f, 5));
 		
 		//grind grain into flour
 		if (getGameTime() % (conversion_seconds * getTicksASecond()) == (this.getNetworkID() % 30))
 		{
-			for (u8 i = 0; i < itemsCount; i++)
-			{
-				CBlob@ item = inventory.getItem(i);
-				if (item.getName() == "grain")
-				{
-					convertToFlour(this, item);
-					break;
-				}
-			}
+			convertToFlour(this, grain);
 		}
 	}
 	else
@@ -70,13 +66,11 @@ void convertToFlour(CBlob@ this, CBlob@ grain)
 	{
 		CBlob@ flour = server_CreateBlobNoInit("mat_flour");
 		if (flour is null) return;
-		
-		grain.server_Die();
-		
-		//setup res
 		flour.Tag("custom quantity");
 		flour.Init();
 		flour.server_SetQuantity(10+XORRandom(7));
+		
+		grain.server_Die();
 		
 		//if (!this.server_PutInInventory(flour))
 			flour.setPosition(this.getPosition() + Vec2f(8, 24));
@@ -98,28 +92,21 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (isInventoryAccessible(this, caller))
+	if (!isInventoryAccessible(this, caller)) return;
+
+	CInventory@ inv = caller.getInventory();
+	if (inv is null) return;
+	
+	if (inv.getItem("grain") !is null)
 	{
-		CInventory@ inv = caller.getInventory();
-		if (inv is null) return;
-		
-		if (inv.getItem("grain") !is null)
-		{
-			CButton@ buttonOwner = caller.CreateGenericButton(28, Vec2f(0, 0), this, this.getCommandID("sv_store"), "Store");
-		}
-	}
-	if (this.isOverlapping(caller))
-	{
-		CButton@ buttonOwner = caller.CreateGenericButton(28, Vec2f(0, -4), this, this.getCommandID("pull_items"), "Take Grain from other Storages");
+		CButton@ button = caller.CreateGenericButton(28, Vec2f(0, 0), this, this.getCommandID("sv_store"), "Store");
 	}
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("sv_store"))
+	if (cmd == this.getCommandID("sv_store") && isServer())
 	{
-		if (!isServer()) return;
-
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
 
@@ -137,33 +124,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				caller.server_PutOutInventory(item);
 				this.server_PutInInventory(item);
 				i--;
-			}
-		}
-	}
-	else if (cmd == this.getCommandID("pull_items"))
-	{
-		if (!isServer()) return;
-		CBlob@[] storages;
-		getBlobsByName("storage", @storages);
-		getBlobsByName("crate", @storages);
-		getBlobsByName("dinghy", @storages);
-
-		for (int j = 0; j < storages.length; j++)
-		{
-			CBlob@ storage = storages[j];
-			if (storage is null || storage.getDistanceTo(this) > 200) continue;
-			CInventory@ inv = storage.getInventory();
-			if (inv is null) return;
-
-			for (int i = 0; i < inv.getItemsCount(); i++)
-			{
-				CBlob@ item = inv.getItem(i);
-				if (item.getName() == "grain")
-				{
-					storage.server_PutOutInventory(item);
-					this.server_PutInInventory(item);
-					i--;
-				}
 			}
 		}
 	}
