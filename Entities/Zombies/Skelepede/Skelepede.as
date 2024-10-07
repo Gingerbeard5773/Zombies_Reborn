@@ -64,7 +64,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	this.setAngleDegrees(90 * (this.isFacingLeft() ? -1 : 1) - this.getVelocity().AngleDegrees());
+	this.setAngleDegrees(90 - this.getVelocity().AngleDegrees());
 
 	GoSomewhere(this);
 	MoveSegments(this);
