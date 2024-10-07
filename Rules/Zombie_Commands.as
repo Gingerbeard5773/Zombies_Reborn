@@ -144,7 +144,23 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			}
 			else if (tokens[0] == "!loadgen")
 			{
-				const int map_seed = tokens.length > 1 ? parseInt(tokens[1]) : getMap().get_s32("map seed");
+				int map_seed = getMap().get_s32("map seed");
+				if (tokens.length > 1)
+				{
+					map_seed = parseInt(tokens[1]); // direct seed input
+					if (map_seed <= 0)
+					{
+						//otherwise make a seed from letters
+						u32 hash = 5381;
+						for (u32 i = 0; i < tokens[1].length(); i++)
+						{
+							hash = ((hash << 5) + hash) + tokens[1][i];
+							hash &= 0x7FFFFFFF;
+						}
+						map_seed = hash;
+					}
+				}
+
 				this.set_s32("new map seed", map_seed);
 				LoadNextMap();
 			}
