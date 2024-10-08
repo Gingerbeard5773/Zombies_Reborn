@@ -28,6 +28,8 @@ void onInit(CBlob@ this)
 	
 	this.sendonlyvisible = false;
 	
+	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	
 	ShopMadeItem@ onMadeItem = @onShopMadeItem;
 	this.set("onShopMadeItem handle", @onMadeItem);
 	
