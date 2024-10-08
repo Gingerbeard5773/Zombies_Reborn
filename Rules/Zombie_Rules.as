@@ -111,6 +111,8 @@ void onGameEnd(CRules@ this)
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
+	if (getPlayersCount() <= 1) return;
+
 	checkGameEnded(this, player);
 }
 
