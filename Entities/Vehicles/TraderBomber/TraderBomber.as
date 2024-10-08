@@ -241,14 +241,14 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Coal (250)", "$mat_coal_icon$", "mat_coal", "Buy 250 Coal for 1000 $COIN$", true);
+		ShopItem@ s = addShopItem(this, "Buy Coal (250)", "$mat_coal_icon$", "mat_coal", "Buy 250 Coal for 500 $COIN$", true);
 		s.customData = 255;
-		AddRequirement(s.requirements, "coin", "", "Coins", 1000);
+		AddRequirement(s.requirements, "coin", "", "Coins", 500);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Iron Ore (250)", "$mat_iron_icon$", "mat_iron", "Buy 250 Iron Ore for 2000 $COIN$", true);
+		ShopItem@ s = addShopItem(this, "Buy Iron Ore (250)", "$mat_iron_icon$", "mat_iron", "Buy 250 Iron Ore for 1400 $COIN$", true);
 		s.customData = 255;
-		AddRequirement(s.requirements, "coin", "", "Coins", 2000);
+		AddRequirement(s.requirements, "coin", "", "Coins", 1400);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 600 $COIN$", true);
