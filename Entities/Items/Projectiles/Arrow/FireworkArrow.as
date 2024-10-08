@@ -146,7 +146,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 			return true;
 	}
 
-	return blob.isCollidable() && blob.getShape().isStatic();
+	return blob.isCollidable() && blob.getShape().isStatic() && blob.getShape().getConsts().support > 0;
 }
 
 void Pierce(CBlob@ this)
