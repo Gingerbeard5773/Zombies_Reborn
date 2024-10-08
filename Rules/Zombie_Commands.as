@@ -123,9 +123,14 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				}
 				else if (tokens[0] == "!seed")
 				{
-					const string message = "MAP SEED : "+getMap().get_s32("map seed");
+					const int map_seed = getMap().get_s32("map seed");
+					const string message = "MAP SEED : "+map_seed;
 					print(message);
 					server_SendGlobalMessage(this, message, 10);
+					
+					if (isClient()) //localhost only atm
+						CopyToClipboard(map_seed+"");
+
 					return false;
 				}
 			}
