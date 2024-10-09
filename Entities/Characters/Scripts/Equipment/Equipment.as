@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 	
 	for (u8 i = 0; i < equipment.length; i++)
 	{
-		AddIconToken("$"+equipment[i]+"_empty$", "Equipment.png", Vec2f(24, 24), i);
+		AddIconToken("$"+equipment[i]+"_empty$", "Equipment.png", Vec2f(24, 24), i, 0);
 	}
 	
 	u16[] ids(equipment.length);
@@ -138,51 +138,57 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
-void EquipBlob(CBlob@ this, CBlob@ equipment)
+void EquipBlob(CBlob@ this, CBlob@ equippedblob)
 {
-	equipment.server_RemoveFromInventories();
-	equipment.server_DetachFromAll();
-	equipment.setPosition(Vec2f(0,0));
-	equipment.setVelocity(Vec2f(0,0));
-	equipment.setAngularVelocity(0.0f);
-	equipment.SetVisible(false);
+	equippedblob.server_RemoveFromInventories();
+	equippedblob.server_DetachFromAll();
+	equippedblob.setPosition(Vec2f(0,0));
+	equippedblob.setVelocity(Vec2f(0,0));
+	equippedblob.setAngularVelocity(0.0f);
+	equippedblob.SetVisible(false);
 
-	CShape@ shape = equipment.getShape();
-	if (shape !is null)
-	{
-		shape.server_SetActive(false);
-		shape.doTickScripts = false;
-		shape.SetGravityScale(0.0f);
-		ShapeConsts@ consts = shape.getConsts();
-		consts.collidable = false;
-		consts.mapCollisions = false;
-	}
+	CShape@ shape = equippedblob.getShape();
+	shape.server_SetActive(false);
+	shape.doTickScripts = false;
+	shape.SetGravityScale(0.0f);
+	ShapeConsts@ consts = shape.getConsts();
+	consts.collidable = false;
+	consts.mapCollisions = false;
 	
 	onEquipHandle@ onEquip;
-	if (equipment.get("onEquip handle", @onEquip)) 
-		onEquip(equipment, this);
+	if (equippedblob.get("onEquip handle", @onEquip)) 
+		onEquip(equippedblob, this);
 }
 
-void UnequipBlob(CBlob@ this, CBlob@ equipment)
+void UnequipBlob(CBlob@ this, CBlob@ equippedblob, const bool&in put_in_inventory = true)
 {
-	equipment.SetVisible(true);
-	equipment.setPosition(this.getPosition());
-	this.server_PutInInventory(equipment);
+	equippedblob.SetVisible(true);
+	equippedblob.setPosition(this.getPosition());
+	if (put_in_inventory)
+		this.server_PutInInventory(equippedblob);
 
-	CShape@ shape = equipment.getShape();
-	if (shape !is null)
-	{
-		shape.server_SetActive(true);
-		shape.doTickScripts = true;
-		shape.SetGravityScale(1.0f);
-		ShapeConsts@ consts = shape.getConsts();
-		consts.collidable = true;
-		consts.mapCollisions = true;
-	}
+	CShape@ shape = equippedblob.getShape();
+	shape.server_SetActive(true);
+	shape.doTickScripts = true;
+	shape.SetGravityScale(1.0f);
+	ShapeConsts@ consts = shape.getConsts();
+	consts.collidable = true;
+	consts.mapCollisions = true;
 
 	onUnequipHandle@ onUnequip;
-	if (equipment.get("onUnequip handle", @onUnequip)) 
-		onUnequip(equipment, this);
+	if (equippedblob.get("onUnequip handle", @onUnequip)) 
+		onUnequip(equippedblob, this);
+}
+
+void SetBlobActive(CBlob@ equippedblob, const bool&in active)
+{
+	CShape@ shape = equippedblob.getShape();
+	shape.server_SetActive(active);
+	shape.doTickScripts = active;
+	shape.SetGravityScale(active ? 1.0f : 0.0f);
+	ShapeConsts@ consts = shape.getConsts();
+	consts.collidable = active;
+	consts.mapCollisions = active;
 }
 
 void onTick(CBlob@ this)
@@ -243,8 +249,7 @@ void onDie(CBlob@ this)
 		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
 		if (equippedblob is null) continue;
 
-		UnequipBlob(this, equippedblob);
-		equippedblob.setPosition(this.getPosition());
+		UnequipBlob(this, equippedblob, false);
 	}
 	
 	EquipToNewPlayerBlob(this, ids);
@@ -304,6 +309,7 @@ bool UnserializeEquipment(CBlob@ this, CBitStream@ params)
 
 void onSendCreateData(CBlob@ this, CBitStream@ params)
 {
+	params.write_u32(this.getTickSinceCreated());
 	u16[] ids;
 	if (this.get("equipment_ids", ids))
 		SerializeEquipment(ids, params);
@@ -311,18 +317,24 @@ void onSendCreateData(CBlob@ this, CBitStream@ params)
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
 {
+	u32 ticks_alive;
+	if (!params.saferead_u32(ticks_alive)) return false;
+	
 	if (!UnserializeEquipment(this, params)) return false;
 
-	u16[] ids;
-	this.get("equipment_ids", ids);
-	for (u8 i = 0; i < ids.length; i++)
+	if (ticks_alive > 0)
 	{
-		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
-		if (equippedblob is null) continue;
+		u16[] ids;
+		this.get("equipment_ids", ids);
+		for (u8 i = 0; i < ids.length; i++)
+		{
+			CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
+			if (equippedblob is null) continue;
 
-		onClientJoinHandle@ onClientJoin;
-		if (equippedblob.get("onClientJoin handle", @onClientJoin)) 
-			onClientJoin(equippedblob, this);
+			onClientJoinHandle@ onClientJoin;
+			if (equippedblob.get("onClientJoin handle", @onClientJoin)) 
+				onClientJoin(equippedblob, this);
+		}
 	}
 
 	return true;

@@ -28,14 +28,14 @@ void Take(CBlob@ this, CBlob@ blob)
 	if (blob.getShape().vellen > 1.0f) return;
 
 	const string blobName = blob.getName();
-	if (always_pickup_names.find(blobName) != -1 || (must_already_have_names.find(blobName) != -1 && pickupCriteria(this, blob)))
+	if (always_pickup_names.find(blobName) != -1 || (must_already_have_names.find(blobName) != -1 && this.hasBlob(blobName, 1)))
 	{
 		if ((blob.getDamageOwnerPlayer() !is this.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
 		{
 			if (this.server_PutInInventory(blob))
-			{
 				return;
-			}
+			//else if (server_PutInSecondaryBackpack(this, blob))
+				//return;
 		}
 	}
 
@@ -46,9 +46,18 @@ void Take(CBlob@ this, CBlob@ blob)
 	}
 }
 
-bool pickupCriteria(CBlob@ this, CBlob@ blob)
+bool server_PutInSecondaryBackpack(CBlob@ this, CBlob@ blob)
 {
-	return this.hasBlob(blob.getName(), 1);
+	u16[] ids;
+	if (!this.get("equipment_ids", ids) || ids.length < 2) return false;
+
+	CBlob@ torso = getBlobByNetworkID(ids[1]);
+	if (torso.getName() == "backpack")
+	{
+		return torso.server_PutInInventory(blob);
+	}
+
+	return false;
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
@@ -65,8 +74,7 @@ void onTick(CBlob@ this)
 
 	for (u16 i = 0; i < overlapping.length; i++)
 	{
-		CBlob@ blob = overlapping[i];
-		Take(this, blob);
+		Take(this, overlapping[i]);
 	}
 }
 

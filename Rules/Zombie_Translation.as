@@ -2,7 +2,6 @@
 
 // Gingerbeard @ September 21 2024
 //translated strings for zombies reborn
-//this is using shiprekt's translation infrastructure
 
 shared const string Translate(const string&in en, const string&in ru = "")
 {
@@ -87,9 +86,9 @@ namespace Translate
 	Dormitory      = Translate("A dorm for recruiting and healing workers. Functions as a respawn point.",      "Общежитие для набора и лечения рабочих. Функционирует как точка возрождения."),
 
 	//vehicleshop
-	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs."        "Воздушный шар, способный летать. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
+	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs.",       "Воздушный шар, способный летать. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
 	Armoredbomber  = Translate("A balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", "Воздушный шар с защитным покрытием. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
-	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            "Переносная стреляющая стрелами машина смерти. Может быть установлена ​​на некоторые транспортные средства."),
+	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            "Переносная стреляющая стрелами машина смерти. Может быть установлена на некоторые транспортные средства."),
 	Tank           = Translate("A seige tank. Allows attachments.",                                                   "Осадный танк. Позволяет устанавливать навесное оборудование."),
 
 	//archershop
@@ -119,6 +118,7 @@ namespace Translate
 	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             ""),
 	SteelHelmet    = Translate("Steel Helmet\nA durable helmet to protect your head.",                                  ""),
 	SteelArmor     = Translate("Steel Chestplate\nA durable chestplate to protect your body.",                          ""),
+	Backpack       = Translate("Backpack\nA backpack to carry your belongings.",                                        ""),
 
 	//trader
 	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            ""),
@@ -137,6 +137,10 @@ namespace Translate
 	TradeScrollFish     = Translate("Summons a bloodthirsty shark.",                            ""),
 
 	//library
+	Researching     = Translate("Researching - {TIME}s",                                             ""),
+	Paused          = Translate("Paused - {TIME}s",                                                  ""),
+	Resume          = Translate("Click to resume",                                                   ""),
+	Completed       = Translate("Completed",                                                         ""),
 	RequiresTech    = Translate("Requires previous upgrade",                                         ""),
 	UpgradeComplete = Translate("{UPGRADE} upgrade complete",                                        ""),
 	Coinage         = Translate("Coinage\nCoins auto-yield 10%.",                                    ""),
