@@ -210,9 +210,9 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 300);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Burger (1)", "$food$", "food", "Buy 1 Burger for 225 $COIN$", true);
+		ShopItem@ s = addShopItem(this, "Buy Steak (1)", "$steak$", "steak", "Buy 1 Steak for 250 $COIN$", true);
 		s.customData = 255;
-		AddRequirement(s.requirements, "coin", "", "Coins", 225);
+		AddRequirement(s.requirements, "coin", "", "Coins", 250);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Buy Chicken (1)", "$chicken$", "chicken", "Buy 1 Chicken for 200 $COIN$", true);
@@ -226,7 +226,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_flour", "Flour", 50);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sell Burger (1)", "$COIN$", "coin_200", "Sell 1 Burger for 125 $COIN$", true);
+		ShopItem@ s = addShopItem(this, "Sell Burger (1)", "$COIN$", "coin_200", "Sell 1 Burger for 200 $COIN$", true);
 		s.spawnNothing = true;
 		s.customData = 255;
 		AddRequirement(s.requirements, "blob", "food", "Burger", 1);
