@@ -322,11 +322,11 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 
 				if (j > SeaLevel)
 				{
-					if (r.NextRanged(10) == 0)
+					if (r.NextRanged(13) == 0)
 					{
 						World[i][j] = CMap::tile_gold;
 					}
-					else if (biome[i] == BiomeType::Desert && r.NextRanged(3) == 0)
+					else if (biome[i] == BiomeType::Desert && r.NextRanged(9) == 0)
 					{
 						World[i][j] = CMap::tile_gold;
 					}
@@ -735,7 +735,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 			{
 				if (biome[i] == BiomeType::Swamp)
 				{
-					if (r.NextRanged(3) == 0)
+					if (r.NextRanged(10) == 0)
 					{
 						const string tree_name = r.NextRanged(2) == 0 ? "tree_pine" : "tree_bushy";
 						SpawnTree(tree_name, Vec2f(i*8, j*8));
@@ -757,7 +757,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 						World[i][j] = CMap::tile_grass + r.NextRanged(4);
 					}
 					
-					if((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(6) == 0) //Trees
+					if((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(10) == 0) //Trees
 					{
 						const string tree_name = j < height/3 ? "tree_pine" : "tree_bushy";
 						SpawnTree(tree_name, Vec2f(i*8, j*8));
