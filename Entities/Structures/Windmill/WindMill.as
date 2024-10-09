@@ -73,7 +73,7 @@ void convertToFlour(CBlob@ this, CBlob@ grain)
 		grain.server_Die();
 		
 		//if (!this.server_PutInInventory(flour))
-			flour.setPosition(this.getPosition() + Vec2f(8, 24));
+			flour.setPosition(this.getPosition() + Vec2f(4, 24));
 	}
 	
 	this.getSprite().PlaySound("StoreSound.ogg");
