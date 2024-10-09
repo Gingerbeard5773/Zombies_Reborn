@@ -50,8 +50,6 @@ void onInit(CBlob@ this)
 	this.Tag("builder always hit");
 	
 	this.SetLightRadius(64.0f);
-	if (!this.isLight())
-		this.SetLight(false);
 	
 	this.addCommandID("client_activate_portal");
 	
@@ -62,12 +60,6 @@ void onInit(CBlob@ this)
 		{
 			maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
 		}
-		
-		if (this.hasTag("portal_activated"))
-		{
-			this.SetLight(true);
-			this.SendCommand(this.getCommandID("client_activate_portal"));
-		}
 	}
 }
 
@@ -75,51 +67,70 @@ void onTick(CBlob@ this)
 {
 	if (this.hasTag("portal_activated"))
 	{
-		const int spawnRate = 18 + (190 * this.getHealth() / 44.0);
-		if (getGameTime() % spawnRate == 0 && getRules().get_u16("undead count") <= maximum_zombies)
-		{
-			Vec2f pos = this.getPosition();
-			ParticleZombieLightning(pos);
-			
-			if (isServer())
-			{
-				const u32 r = XORRandom(100);
-		
-				string blobname = "skeleton"; //leftover       // 40%
-				
-				if (r >= 90)       blobname = "wraith";        // 10%
-				else if (r >= 75)  blobname = "zombieknight";  // 15%
-				else if (r >= 40)  blobname = "zombie";        // 35%
-				
-				server_CreateBlob(blobname, -1, pos);
-			}
-		}
+		this.SetLight(true);
+		SpawnZombies(this);
 	}
 	else 
 	{
+		server_ActivatePortalIfPlayerNearby(this);
+	}
+}
+
+void SpawnZombies(CBlob@ this)
+{
+	const int spawnRate = 18 + (190 * this.getHealth() / 44.0);
+	if (getGameTime() % spawnRate == 0 && getRules().get_u16("undead count") <= maximum_zombies)
+	{
+		Vec2f pos = this.getPosition();
+		ParticleZombieLightning(pos);
+		
 		if (isServer())
 		{
-			//check if players are within bounds to activate the portal
-			const u8 playerCount = getPlayerCount();
-			for (u8 i = 0; i < playerCount; i++)
-			{
-				CPlayer@ ply = getPlayer(i);
-				if (ply is null) continue;
-				
-				CBlob@ plyBlob = ply.getBlob();
-				if (plyBlob !is null && !plyBlob.hasTag("undead") && plyBlob.getDistanceTo(this) <= activation_radius)
-				{
-					this.SetLight(true);
-					this.Tag("portal_activated");
-					this.SendCommand(this.getCommandID("client_activate_portal"));
-				}
-			}
+			const u32 r = XORRandom(100);
+	
+			string blobname = "skeleton"; //leftover       // 40%
+			
+			if (r >= 90)       blobname = "wraith";        // 10%
+			else if (r >= 75)  blobname = "zombieknight";  // 15%
+			else if (r >= 40)  blobname = "zombie";        // 35%
+			
+			server_CreateBlob(blobname, -1, pos);
 		}
 	}
 }
 
+void server_ActivatePortalIfPlayerNearby(CBlob@ this)
+{
+	if (!isServer()) return;
+	
+	//check if players are within bounds to activate the portal
+	const u8 playerCount = getPlayerCount();
+	for (u8 i = 0; i < playerCount; i++)
+	{
+		CPlayer@ ply = getPlayer(i);
+		if (ply is null) continue;
+		
+		CBlob@ plyBlob = ply.getBlob();
+		if (plyBlob !is null && !plyBlob.hasTag("undead") && plyBlob.getDistanceTo(this) <= activation_radius)
+		{
+			server_ActivatePortal(this);
+		}
+	}
+}
+
+void server_ActivatePortal(CBlob@ this)
+{
+	this.Tag("portal_activated");
+	this.SendCommand(this.getCommandID("client_activate_portal"));
+}
+
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
+	if (isServer() && !this.hasTag("portal_activated") && damage > 0.0f)
+	{
+		server_ActivatePortal(this);
+	}
+
 	if (hitterBlob !is null && hitterBlob.hasTag("undead")) return 0.0f;
 	
 	return damage;
@@ -147,7 +158,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("client_activate_portal") && isClient())
 	{
 		this.getSprite().PlaySound("PortalBreach");
-		this.SetLight(true);
 		this.Tag("portal_activated");
 	}
+}
+
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
+{
+	stream.write_u16(maximum_zombies);
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	if (!stream.saferead_u16(maximum_zombies)) return false;
+	return true;
 }
