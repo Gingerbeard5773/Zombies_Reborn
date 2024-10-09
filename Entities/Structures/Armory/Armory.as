@@ -96,6 +96,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 	}
+	{
+		ShopItem@ s = addShopItem(this, "Parachute Pack", getTeamIcon("parachutepack", "Parachutepack.png", team_num, Vec2f(16, 16), 0), "parachutepack", Translate::Parachutepack, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
+		AddRequirement(s.requirements, "coin", "", "Coins", 200);
+	}
 }
 
 void onInit(CSprite@ this)

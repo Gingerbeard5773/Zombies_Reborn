@@ -119,6 +119,7 @@ namespace Translate
 	SteelHelmet    = Translate("Steel Helmet\nA durable helmet to protect your head.",                                  ""),
 	SteelArmor     = Translate("Steel Chestplate\nA durable chestplate to protect your body.",                          ""),
 	Backpack       = Translate("Backpack\nA backpack to carry your belongings.",                                        ""),
+	Parachutepack  = Translate("Parachute Pack\nAllows you to fall slowly. Press [Shift] to activate.",                 ""),
 
 	//trader
 	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            ""),

@@ -147,14 +147,8 @@ void EquipBlob(CBlob@ this, CBlob@ equippedblob)
 	equippedblob.setAngularVelocity(0.0f);
 	equippedblob.SetVisible(false);
 
-	CShape@ shape = equippedblob.getShape();
-	shape.server_SetActive(false);
-	shape.doTickScripts = false;
-	shape.SetGravityScale(0.0f);
-	ShapeConsts@ consts = shape.getConsts();
-	consts.collidable = false;
-	consts.mapCollisions = false;
-	
+	SetBlobActive(equippedblob, false);
+
 	onEquipHandle@ onEquip;
 	if (equippedblob.get("onEquip handle", @onEquip)) 
 		onEquip(equippedblob, this);
@@ -167,13 +161,7 @@ void UnequipBlob(CBlob@ this, CBlob@ equippedblob, const bool&in put_in_inventor
 	if (put_in_inventory)
 		this.server_PutInInventory(equippedblob);
 
-	CShape@ shape = equippedblob.getShape();
-	shape.server_SetActive(true);
-	shape.doTickScripts = true;
-	shape.SetGravityScale(1.0f);
-	ShapeConsts@ consts = shape.getConsts();
-	consts.collidable = true;
-	consts.mapCollisions = true;
+	SetBlobActive(equippedblob, true);
 
 	onUnequipHandle@ onUnequip;
 	if (equippedblob.get("onUnequip handle", @onUnequip)) 
