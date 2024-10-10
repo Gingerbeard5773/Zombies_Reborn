@@ -140,7 +140,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void EquipBlob(CBlob@ this, CBlob@ equippedblob)
 {
-	equippedblob.server_RemoveFromInventories();
+	//equippedblob.server_RemoveFromInventories();
 	equippedblob.server_DetachFromAll();
 	equippedblob.setPosition(Vec2f(0,0));
 	equippedblob.setVelocity(Vec2f(0,0));
