@@ -4,6 +4,9 @@
 
 void onInit(CBlob@ this)
 {
+	this.Tag("ignore_saw");
+	this.Tag("sawed");//hack
+
 	this.Tag("medium weight");
 	this.getShape().SetOffset(Vec2f(8, 0));
 

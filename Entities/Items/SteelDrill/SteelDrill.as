@@ -57,6 +57,9 @@ void onInit(CSprite@ this)
 
 void onInit(CBlob@ this)
 {
+	this.Tag("ignore_saw");
+	this.Tag("sawed");//hack
+
 	//todo: some tag-based keys to take interference (doesn't work on net atm)
 	/*AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
 	if (ap !is null)
