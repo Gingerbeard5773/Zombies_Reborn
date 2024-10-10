@@ -30,7 +30,7 @@ const Spawn@[] spawns =
 	Spawn("zombieknight",  150,  1.0f, 0.0f,  0),
 	Spawn("greg",          35,   1.5f, 0.0f,  0),
 	Spawn("wraith",        30,   2.0f, 0.0f,  0),
-	Spawn("skelepede",     5,    2.5f, 0.0f,  0)
+	Spawn("skelepede",     5,    3.0f, 0.0f,  0)
 };
 
 f32 game_difficulty = 1.0f;  //zombie spawnrate multiplier
