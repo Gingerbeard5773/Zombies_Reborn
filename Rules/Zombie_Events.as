@@ -141,23 +141,20 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 	if ((this.get_u16("day_number")+1) % 5 != 0) return; //night before every fifth day
 	
 	Vec2f[] spawns;
-	if (!map.getMarkers("zombie_spawn", spawns)) //no markers? spawn on someone
+	const u8 playersLength = getPlayerCount();
+	for (u8 i = 0; i < playersLength; ++i)
 	{
-		const u8 playersLength = getPlayerCount();
-		for (u8 i = 0; i < playersLength; ++i)
-		{
-			CPlayer@ player = getPlayer(i);
-			if (player is null) continue;
-			
-			CBlob@ playerBlob = player.getBlob();
-			if (playerBlob is null) continue;
-			
-			spawns.push_back(playerBlob.getPosition());
-		}
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
 		
-		if (spawns.length <= 0) return;
+		CBlob@ playerBlob = player.getBlob();
+		if (playerBlob is null) continue;
+		
+		spawns.push_back(playerBlob.getPosition());
 	}
 	
+	if (spawns.length <= 0) return;
+		
 	server_SendGlobalMessage(this, 4, 6);
 	server_CreateBlob("sedgwick", -1, spawns[XORRandom(spawns.length)]);
 }
