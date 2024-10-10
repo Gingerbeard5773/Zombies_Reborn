@@ -227,13 +227,15 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 			Vec2f end;
 			map.rayCastSolidNoBlobs(Vec2f(pos.x, ceiling), pos, end);
 			
-			const Vec2f deliveryPos = Vec2f(pos.x, ceiling + (end.y - ceiling) / 2);
-			
+			Vec2f deliveryPos = Vec2f(pos.x, ceiling + (end.y - ceiling) / 2);
+
 			//share zombies to players equally
 			for (u16 q = 0; q < undeadPerPlayer; ++q)
 			{
 				CBlob@ undead = blobs[undeadIndex];
-				if (isClient())
+				if (undead.getName() == "skelepede") continue;
+
+				if (isClient() && q % 2 == 0)
 				{
 					ParticleZombieLightning(undead.getPosition());
 					ParticleZombieLightning(deliveryPos);
@@ -241,7 +243,10 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 				}
 				if (isServer())
 				{
-					undead.setPosition(deliveryPos);
+					
+					Vec2f rand(XORRandom(undeadPerPlayer)*2 - undeadPerPlayer, 0);
+					Vec2f randomPos = deliveryPos + rand;
+					undead.setPosition(randomPos);
 					undead.set_Vec2f("brain_destination", pos); //tell the zombie where to look
 				}
 				
