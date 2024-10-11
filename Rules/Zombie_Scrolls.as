@@ -19,65 +19,100 @@ void SetupScrolls(CRules@ this)
 	{
 		ScrollDef def;
 		def.name = "Scroll of Fowl";
-		def.scrollFrame = 2;
+		def.scrollFrame = 1;
 		def.scripts.push_back("ScrollFowl.as");
 		all.scrolls.set("fowl", def);
 	}
 	{
 		ScrollDef def;
-		def.name = "Scroll of Drought";
-		def.scrollFrame = 4;
-		def.scripts.push_back("ScrollDrought.as");
-		all.scrolls.set("drought", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Scroll of Harvest";
-		def.scrollFrame = 5;
-		def.scripts.push_back("ScrollFlora.as");
-		all.scrolls.set("flora", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Scroll of Fish";
-		def.scrollFrame = 6;
-		def.scripts.push_back("ScrollFish.as");
-		all.scrolls.set("fish", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Scroll of Resurrection";
-		def.scrollFrame = 7;
-		def.scripts.push_back("ScrollRevive.as");
-		all.scrolls.set("revive", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Scroll of Duplication";
-		def.scrollFrame = 10;
-		def.scripts.push_back("ScrollClone.as");
-		all.scrolls.set("clone", def);
-	}
-	{
-		ScrollDef def;
 		def.name = "Scroll of Royalty";
-		def.scrollFrame = 11;
+		def.scrollFrame = 3;
 		def.scripts.push_back("ScrollRoyalty.as");
 		all.scrolls.set("royalty", def);
 	}
 	{
 		ScrollDef def;
+		def.name = "Scroll of Wisent";
+		def.scrollFrame = 4;
+		def.scripts.push_back("ScrollWisent.as");
+		all.scrolls.set("wisent", def);
+	}
+	{
+		ScrollDef def;
+		def.name = "Scroll of Fish";
+		def.scrollFrame = 5;
+		def.scripts.push_back("ScrollFish.as");
+		all.scrolls.set("fish", def);
+	}
+	{
+		ScrollDef def;
+		def.name = "Scroll of Drought";
+		def.scrollFrame = 8;
+		def.scripts.push_back("ScrollDrought.as");
+		all.scrolls.set("drought", def);
+	}
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Chaos";
+		def.scrollFrame = 9;
+		def.scripts.push_back("ScrollChaos.as");
+		all.scrolls.set("chaos", def);
+	}*/
+	{
+		ScrollDef def;
+		def.name = "Scroll of Harvest";
+		def.scrollFrame = 10;
+		def.scripts.push_back("ScrollFlora.as");
+		all.scrolls.set("flora", def);
+	}
+	{
+		ScrollDef def;
+		def.name = "Scroll of Resurrection";
+		def.scrollFrame = 11;
+		def.scripts.push_back("ScrollRevive.as");
+		all.scrolls.set("revive", def);
+	}
+	{
+		ScrollDef def;
 		def.name = "Scroll of Compaction";
-		def.scrollFrame = 13;
+		def.scrollFrame = 12;
 		def.scripts.push_back("ScrollCrate.as");
 		all.scrolls.set("crate", def);
 	}
 	{
 		ScrollDef def;
-		def.name = "Scroll of Wisent";
+		def.name = "Scroll of Duplication";
+		def.scrollFrame = 14;
+		def.scripts.push_back("ScrollClone.as");
+		all.scrolls.set("clone", def);
+	}
+	{
+		ScrollDef def;
+		def.name = "Scroll of Repair";
+		def.scrollFrame = 15;
+		def.scripts.push_back("ScrollRepair.as");
+		all.scrolls.set("repair", def);
+	}
+	{
+		ScrollDef def;
+		def.name = "Scroll of Health";
 		def.scrollFrame = 17;
-		def.scripts.push_back("ScrollWisent.as");
-		all.scrolls.set("wisent", def);
+		def.scripts.push_back("ScrollHealth.as");
+		all.scrolls.set("health", def);
+	}
+	{
+		ScrollDef def;
+		def.name = "Scroll of Carnage";
+		def.scrollFrame = 19;
+		def.scripts.push_back("ScrollSuddenGib.as");
+		all.scrolls.set("carnage", def);
+	}
+	{
+		ScrollDef def;
+		def.name = "Scroll of Midas";
+		def.scrollFrame = 20;
+		def.scripts.push_back("ScrollMidas.as");
+		all.scrolls.set("midas", def);
 	}
 	{
 		ScrollDef def;
@@ -95,22 +130,8 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = "Scroll of Carnage";
-		def.scrollFrame = 24;
-		def.scripts.push_back("ScrollSuddenGib.as");
-		all.scrolls.set("carnage", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Scroll of Midas";
-		def.scrollFrame = 25;
-		def.scripts.push_back("ScrollMidas.as");
-		all.scrolls.set("midas", def);
-	}
-	{
-		ScrollDef def;
 		def.name = "Scroll of Quarry";
-		def.scrollFrame = 26;
+		def.scrollFrame = 23;
 		def.scripts.push_back("ScrollStone.as");
 		all.scrolls.set("stone", def);
 	}

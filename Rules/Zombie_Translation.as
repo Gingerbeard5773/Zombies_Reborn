@@ -68,6 +68,11 @@ namespace Translate
 	ScrollTeleport = Translate("Use this to teleport to the area you are pointing to.",                        "Изпользуйте для телепортации в то место, куда вы целитесь."),
 	ScrollStone    = Translate("Use this to convert nearby stone into thick stone.",                           "Используйте это для превращения камня рядом с вами в более насыщенный камень."),
 	ScrollWisent   = Translate("Use this to summon a bison.",                                                  "Изпользуйте это для того чтобы призвать бизона."),
+	ScrollHealth   = Translate("Use this to heal yourself and others around you.",                             ""),
+	ScrollRepair   = Translate("Use this to repair everything around you.",                                    ""),
+	ScrollCreation = Translate("Use this to magically construct a structure from thin air.",                   ""),
+	ScrollEarth    = Translate("Use this to fill in dirt background with dirt.",                               ""),
+	ScrollChaos    = Translate("Use this to ???.",                                                             ""),
 
 	//builder
 	IronBlock      = Translate("Iron Block\nResistant to explosions.",                  "Железный Блок\nВзрывоустойчивый Блок."),
