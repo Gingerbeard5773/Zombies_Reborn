@@ -15,12 +15,12 @@ void addOnUnequip(CBlob@ this, onUnequipHandle@ handle)               { this.set
 void addOnTickEquipped(CBlob@ this, onTickHandle@ handle)             { this.set("onTickEquipped handle", @handle); }
 void addOnTickSpriteEquipped(CBlob@ this, onTickSpriteHandle@ handle) { this.set("onTickSpriteEquipped handle", @handle); }
 void addOnHitOwner(CBlob@ this, onHitHandle@ handle)                  { this.set("onHitOwner handle", @handle); }
-void addOnClientJoin(CBlob@ this, onClientJoinHandle@ handle)                { this.set("onClientJoin handle", @handle); }
+void addOnClientJoin(CBlob@ this, onClientJoinHandle@ handle)         { this.set("onClientJoin handle", @handle); }
 
 void LoadNewHead(CBlob@ this, const u8&in new_head)
 {
 	const u8 old_head = this.exists("override head") ? this.get_u8("override head") : 0;
-	if (old_head > 0)
+	if (old_head > 0 && old_head != new_head)
 	{
 		this.set_u8("old override head", old_head);
 	}

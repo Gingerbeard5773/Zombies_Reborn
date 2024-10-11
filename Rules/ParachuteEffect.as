@@ -23,7 +23,7 @@ void onTick(CBlob@ this)
 {
 	//slow down the player's fall speed
 	Vec2f vel = this.getVelocity();
-	this.setVelocity(Vec2f(vel.x, vel.y * 0.8f));
+	this.setVelocity(Vec2f(vel.x, Maths::Max(vel.y, 0.01f) * 0.8f));
 	
 	const bool canremove = (this.isOnGround() || this.isInWater() || this.isAttached() || this.isOnLadder());
 	if (canremove)
@@ -43,14 +43,14 @@ void HideParachute(CBlob@ this)
 	{
 		CSprite@ sprite = this.getSprite();
 		CSpriteLayer@ chute = sprite.getSpriteLayer("parachute");
-		if (chute !is null && chute.isVisible())
+		if (chute !is null)
 		{
 			ParticlesFromSprite(chute);
 			sprite.PlaySound("join");
 			sprite.RemoveSpriteLayer("parachute");
 		}
 	}
-	
+
 	this.Tag("parachute landed");
-	this.RemoveScript(getCurrentScriptName());
+	this.getCurrentScript().runFlags |= Script::remove_after_this;
 }

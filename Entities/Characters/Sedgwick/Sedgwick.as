@@ -34,6 +34,19 @@ void onInit(CBlob@ this)
 	this.SetLight(false);
 	this.SetLightRadius(75.0f);
 	this.SetLightColor(SColor(255, 150, 240, 171));
+	
+	if (isServer())
+	{
+		CMap@ map = getMap();
+		Vec2f dim = map.getMapDimensions();
+		
+		const int x = dim.x/4 + XORRandom((dim.x/4)*2);
+		const int ceiling = getMapCeiling(map, x);
+		
+		Vec2f end;
+		map.rayCastSolidNoBlobs(Vec2f(x, ceiling), Vec2f(x, dim.y), end);
+		this.set_Vec2f("teleport pos", Vec2f(x, ceiling + (end.y - ceiling) / 2));
+	}
 
 	server_SetSpell(this, XORRandom(spell_end));
 }
@@ -49,20 +62,7 @@ void onTick(CBlob@ this)
 		if (!this.getShape().isStatic()) //teleport to new area
 		{
 			ParticleTeleport(this.getPosition());
-			
-			if (isServer())
-			{
-				CMap@ map = getMap();
-				Vec2f dim = map.getMapDimensions();
-				
-				const int x = dim.x/4 + XORRandom((dim.x/4)*2);
-				const int ceiling = getMapCeiling(map, x);
-				
-				Vec2f end;
-				map.rayCastSolidNoBlobs(Vec2f(x, ceiling), Vec2f(x, dim.y), end);
-				this.set_Vec2f("teleport pos", Vec2f(x, ceiling + (end.y - ceiling) / 2));
-				this.Sync("teleport pos", true);
-			}
+
 			this.setPosition(this.get_Vec2f("teleport pos"));
 			
 			this.SetLight(true);
@@ -227,13 +227,15 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 			Vec2f end;
 			map.rayCastSolidNoBlobs(Vec2f(pos.x, ceiling), pos, end);
 			
-			const Vec2f deliveryPos = Vec2f(pos.x, ceiling + (end.y - ceiling) / 2);
-			
+			Vec2f deliveryPos = Vec2f(pos.x, ceiling + (end.y - ceiling) / 2);
+
 			//share zombies to players equally
 			for (u16 q = 0; q < undeadPerPlayer; ++q)
 			{
 				CBlob@ undead = blobs[undeadIndex];
-				if (isClient())
+				if (undead.getName() == "skelepede") continue;
+
+				if (isClient() && q % 2 == 0)
 				{
 					ParticleZombieLightning(undead.getPosition());
 					ParticleZombieLightning(deliveryPos);
@@ -241,7 +243,10 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 				}
 				if (isServer())
 				{
-					undead.setPosition(deliveryPos);
+					
+					Vec2f rand(XORRandom(undeadPerPlayer)*2 - undeadPerPlayer, 0);
+					Vec2f randomPos = deliveryPos + rand;
+					undead.setPosition(randomPos);
 					undead.set_Vec2f("brain_destination", pos); //tell the zombie where to look
 				}
 				

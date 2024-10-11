@@ -1,7 +1,6 @@
 // Zombie Fortress scrolls
 
 #include "MakeScroll.as";
-#include "MiniIconsInc.as";
 
 //   -- ADDING NEW SCROLLS --
 // 1) set the scroll information here, such as the name, frame, and scripts the scroll uses.
@@ -11,9 +10,8 @@
 
 void SetupScrolls(CRules@ this)
 {
-	ScrollSet _all, _tech;
+	ScrollSet _all;
 	this.set("all scrolls", _all);
-	this.set("factory options", _tech);
 	
 	//SCROLLS
 	ScrollSet@ all = getScrollSet("all scrolls");
@@ -117,89 +115,7 @@ void SetupScrolls(CRules@ this)
 		all.scrolls.set("stone", def);
 	}
 
-	//FACTORIES
-	ScrollSet@ tech = getScrollSet("factory options");
-
-	{
-		ScrollDef def;
-		def.name = "Bombs";
-		def.level = 50;
-		def.scrollFrame = FactoryFrame::military_basics;
-		addScrollItemsToArray("Bombs", "mat_bombs", 30, false, 3, @def.items);
-		tech.scrolls.set("military basics", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Catapult";
-		def.level = 50;
-		def.scrollFrame = FactoryFrame::catapult;
-		addScrollItemsToArray("Catapult", "catapult", 60, true, 1, @def.items);
-		tech.scrolls.set("catapult", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Ballista";
-		def.level = 100;
-		def.scrollFrame = FactoryFrame::ballista;
-		addScrollItemsToArray("Ballista", "ballista", 60, true, 1, @def.items);
-		addScrollItemsToArray("Ballista Bolts", "mat_bolts", 60, false, 1, @def.items);
-		addScrollItemsToArray("Ballista Shells", "mat_bomb_bolts", 60, false, 1, @def.items);
-		tech.scrolls.set("ballista", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Bomber";
-		def.level = 150;
-		def.scrollFrame = FactoryFrame::mounted_bow + 1;
-		addScrollItemsToArray("Bomber", "bomber", 80, true, 1, @def.items);
-		tech.scrolls.set("bomber", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Mounted Bow";
-		def.level = 50;
-		def.scrollFrame = FactoryFrame::mounted_bow;
-		addScrollItemsToArray("Mounted Bow", "mounted_bow", 40, true, 2, @def.items);
-		tech.scrolls.set("mounted_bow", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Demolition";
-		def.scrollFrame = FactoryFrame::explosives;
-		def.level = 100;
-		addScrollItemsToArray("Keg", "keg", 60, false, 1, @def.items);
-		addScrollItemsToArray("Mine", "mine", 60, false, 2, @def.items);
-		tech.scrolls.set("explosives", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Pyrotechnics";
-		def.scrollFrame = FactoryFrame::pyro;
-		def.level = 50;
-		addScrollItemsToArray("Molotov", "molotov", 25, false, 3, @def.items);
-		addScrollItemsToArray("Molotov Arrows", "mat_molotovarrows", 25, false, 3, @def.items);
-		tech.scrolls.set("pyro", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Water Ammo";
-		def.scrollFrame = FactoryFrame::water_ammo;
-		def.level = 25;
-		addScrollItemsToArray("Water Arrows", "mat_waterarrows", 25, false, 1, @def.items);
-		addScrollItemsToArray("Water Bombs", "mat_waterbombs", 20, false, 1, @def.items);
-		tech.scrolls.set("water ammo", def);
-	}
-	{
-		ScrollDef def;
-		def.name = "Bomb Arrows";
-		def.scrollFrame = FactoryFrame::expl_ammo;
-		def.level = 50;
-		addScrollItemsToArray("Bomb Arrows", "mat_bombarrows", 35, false, 2, @def.items);
-		tech.scrolls.set("bomb ammo", def);
-	}
-
 	all.names = all.scrolls.getKeys();
-	tech.names = tech.scrolls.getKeys();
 	SetupScrollIcons(all);
 }
 

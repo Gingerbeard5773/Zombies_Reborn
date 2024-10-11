@@ -4,20 +4,28 @@
 
 void onInit(CRules@ this)
 {
-	this.set_string("version", "1.3.2");
+	this.set_string("version", "1.4.0");
 	sv_contact_info = "github.com/Gingerbeard5773/Zombies_Reborn";
 	
-	print("\n ---- INITIALIZING ZOMBIE FORTRESS ---- \n"+
-		  "\n  Version: " + this.get_string("version") +
-		  "\n  Mod page: "+sv_contact_info+
-		  "\n  Test mode: "+sv_test+
-		  "\n  Localhost: "+(isClient() && isServer())+"\n"+
-		  "\n -------------------------------------- \n", 0xff66C6FF);
+	sv_visiblity_scale = 1.25f;
+	
+	SColor printColor = 0xff66C6FF;
+	
+	print("");
+	print("---- INITIALIZING ZOMBIE FORTRESS ---- ",  printColor);
+	print("  Version: " + this.get_string("version"), printColor);
+	print("  Mod page: "+sv_contact_info,             printColor);
+	print("  Test mode: "+sv_test,                    printColor);
+	print("  Localhost: "+(isClient() && isServer()), printColor);
+	print("-------------------------------------- ", printColor);
+	print("");
 	
 	AddIcons();
 	AddFonts();
 
 	SetupScrolls(this);
+	
+	this.addCommandID("client_send_global_message"); //Zombie_GlobalMessages.as
 }
 
 void AddIcons()
@@ -32,6 +40,7 @@ void AddIcons()
 	AddIconToken("$FireworkArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 5, 0);
 	AddIconToken("$mat_coal_icon$", "MaterialCoal.png", Vec2f(16, 16), 3, 0);
 	AddIconToken("$mat_iron_icon$", "MaterialIron.png", Vec2f(16, 16), 3, 0);
+	AddIconToken("$flowers_icon$", "Flowers.png", Vec2f(16, 16), 6, 0);
 }
 
 void AddFonts()

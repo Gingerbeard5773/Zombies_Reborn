@@ -53,12 +53,14 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("server_set_explosion_time");
 
+	this.server_SetTimeToDie(1.0f);
 	SetExplosionTime(this);
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	if (this.getDamageOwnerPlayer().isMyPlayer())
+	CPlayer@ player = this.getDamageOwnerPlayer();
+	if (player !is null && player.isMyPlayer())
 	{
 		CBitStream stream;
 		stream.write_Vec2f(getControls().getMouseWorldPos());
@@ -138,10 +140,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("projectile") || blob.hasTag("ignore_arrow") || blob.hasTag("material")) return false;
+	if (this.getTeamNum() != blob.getTeamNum())
+	{
+		if (blob.hasTag("flesh") || blob.hasTag("vehicle") || blob.hasTag("player"))
+			return true;
+	}
 
-	const bool willExplode = this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic();
-	return blob.isCollidable() && willExplode;
+	return blob.isCollidable() && blob.getShape().isStatic() && blob.getShape().getConsts().support > 0;
 }
 
 void Pierce(CBlob@ this)

@@ -57,6 +57,7 @@ f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f
 			case Hitters::explosion:
 			case Hitters::keg:
 			case Hitters::mine:
+			case Hitters::mine_special:
 				damage *= 0.7f;
 				break;
 		}

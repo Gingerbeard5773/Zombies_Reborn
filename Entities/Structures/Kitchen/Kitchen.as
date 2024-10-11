@@ -14,6 +14,11 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 
 	this.getCurrentScript().tickFrequency = 30; //once a second
+	
+	this.set_Vec2f("pull_items_button_offset", Vec2f(0, -6));
+	
+	string[] pull_names = { "mat_flour" };
+	this.set("pull_items", pull_names);
 
 	this.SetLight(false);
 	this.SetLightRadius(75.0f);

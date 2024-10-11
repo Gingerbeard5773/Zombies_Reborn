@@ -1,4 +1,4 @@
-//Zombie fortress scoreboard information
+//Zombie fortress scoreboard and statistics information
 
 #define SERVER_ONLY
 
@@ -10,15 +10,28 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	CMap@ map = getMap();
-	if (map !is null)
-	{
-		string[] name = map.getMapName().split('/'); //Official server maps seem to show up as
-		string mapName = name[name.length - 1]; //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
-		mapName = getFilenameWithoutExtension(mapName); // Remove extension from the filename if it exists
 
-		this.set_string("map_name", mapName);
-		this.Sync("map_name", true); //734528625 HASH
+	string[] name = map.getMapName().split('/'); //Official server maps seem to show up as
+	string mapName = name[name.length - 1]; //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
+	mapName = getFilenameWithoutExtension(mapName); // Remove extension from the filename if it exists
+
+	this.set_string("map_name", mapName);
+	this.Sync("map_name", true);
+	
+	//reset player scores
+	for (u8 i = 0; i < getPlayersCount(); i++)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
+		
+		player.setScore(0);
+		player.setDeaths(0);
+		player.setKills(0);
+		player.setAssists(0);
 	}
+	
+	//reset server scores
+	this.set_u32("score_undead_killed_total", 0);
 }
 
 void onBlobDie(CRules@ this, CBlob@ blob)
@@ -39,5 +52,6 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 		{
 			hitterPly.setKills(hitterPly.getKills() + 1);
 		}
+		this.add_u32("score_undead_killed_total", 1);
 	}
 }

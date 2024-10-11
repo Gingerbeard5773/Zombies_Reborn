@@ -1,8 +1,6 @@
 ﻿// Nursery
 
-#include "ProductionCommon.as";
-#include "Requirements.as";
-#include "MakeSeed.as";
+#include "FactoryProductionCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -13,16 +11,14 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 	this.set_string("produce sound", "/branches1");
 	
-	{
-		addSeedItem(this, "grain_plant", "Grain plant seed", 60, 1);
-	}
-	{
-		addSeedItem(this, "flowers", "Flowers seed", 20, 1);
-	}
+	this.set_bool("can produce", true);
 	
-	this.Tag("inventory access");
-	string[] autograb_blobs = {"seed"};
-	this.set("autograb blobs", autograb_blobs);
+	Production nursery("Nursery", 0);
+	nursery.addProductionItem("grain_plant", "Grain plant seed", "", 60, 1, Product::seed);
+	nursery.addProductionItem("flowers", "Flowers seed", "$flowers_icon$", 20, 1, Product::seed);
+	nursery.ResetProduction();
+	
+	this.set("production", @nursery);
 }
 
 // SPRITE

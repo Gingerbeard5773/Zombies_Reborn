@@ -74,10 +74,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("projectile") || blob.hasTag("ignore_arrow") || blob.hasTag("material")) return false;
+	if (this.getTeamNum() != blob.getTeamNum())
+	{
+		if (blob.hasTag("flesh") || blob.hasTag("vehicle") || blob.hasTag("player"))
+			return true;
+	}
 
-	const bool willExplode = this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic(); 
-	return blob.isCollidable() && willExplode;
+	return blob.isCollidable() && blob.getShape().isStatic() && blob.getShape().getConsts().support > 0;
 }
 
 void Pierce(CBlob@ this, CBlob@ blob = null)
@@ -125,10 +128,10 @@ void onDie(CBlob@ this)
 			CBlob@ blob = server_CreateBlob("flame", -1, pos + Vec2f(0, -8));
 			if (blob is null) continue;
 
-			Vec2f nv = Vec2f((XORRandom(100) * 0.01f * vel.x * 1.30f), -(XORRandom(100) * 0.01f * 3.00f));
+			Vec2f nv = Vec2f((XORRandom(100) * 0.01f * vel.x), -(XORRandom(100) * 0.01f * 3.00f));
 			if (Maths::Abs(nv.x) < 1.0f)
 			{
-				nv.x = XORRandom(nv.Length() * 2 * 100)/100;
+				nv.x = XORRandom(nv.Length() * 50)/50;
 				if (XORRandom(100) < 50) nv.x *= -1;
 			}
 

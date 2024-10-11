@@ -1,5 +1,6 @@
 #include "VehicleCommon.as"
 #include "GenericButtonCommon.as"
+#include "AssignWorkerCommon.as"
 
 // Mounted Bow logic
 
@@ -91,11 +92,9 @@ void onInit(CBlob@ this)
 			ammo.server_Die();
 		}
 	}
-
-	CMap@ map = getMap();
-	if (map is null) return;
-
-	this.SetFacingLeft(this.getPosition().x > (map.tilemapwidth * map.tilesize) / 2);
+	
+	addOnAssignWorker(this, @onAssignWorker);
+	addOnUnassignWorker(this, @onUnassignWorker);
 }
 
 f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
@@ -157,9 +156,43 @@ void onTick(CBlob@ this)
 			arm.animation.frame = v.getCurrentAmmo().loaded_ammo > 0 ? 1 : 0;
 		}
 
-		Vehicle_StandardControls(this, v);
+		Vehicle_MountedBowControls(this, v);
+		
 	}
 	this.set_bool("facing", this.isFacingLeft());
+}
+
+void Vehicle_MountedBowControls(CBlob@ this, VehicleInfo@ v)
+{
+	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("GUNNER");
+	CBlob@ blob = ap.getOccupied();
+	if (blob is null) return;
+	
+	// get out of seat
+	if (isServer() && ap.isKeyJustPressed(key_up))
+	{
+		this.server_DetachFrom(blob);
+		return;
+	}
+	
+	//allow non-players to shoot vehicle weapons
+    const bool isBot = blob.getPlayer() is null;
+    if (isServer() && isBot && blob.isKeyPressed(key_action1) && v.canFire())
+    {
+        CBitStream bt;
+        bt.write_u16(blob.getNetworkID());
+        bt.write_u16(v.charge);
+        this.SendCommand(this.getCommandID("fire client"), bt);
+
+        Fire(this, v, blob, v.charge);
+    }
+
+	const bool canFireLocally = blob.isMyPlayer() && v.canFire() && getGameTime() > v.network_fire_time;
+	if (v.canFire(this, ap) && canFireLocally)
+	{
+		v.network_fire_time = getGameTime() + v.getCurrentAmmo().fire_delay;
+		client_Fire(this, blob);
+	}
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
@@ -180,8 +213,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (!Vehicle_AddFlipButton(this, caller))
+	if (!AssignWorkerButton(this, caller))
 	{
+		UnassignWorkerButton(this, caller, Vec2f(0, -8));
 		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
@@ -223,13 +257,16 @@ void onInventoryQuantityChange(CBlob@ this, CBlob@ blob, int oldQuantity)
 	}
 }
 
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+void onAssignWorker(CBlob@ this, CBlob@ worker)
 {
-	if (this.hasTag("invincible") && !attached.hasTag("vehicle"))
-		attached.Tag("invincible");
+	AttachmentPoint@ gun = this.getAttachments().getAttachmentPointByName("GUNNER");
+	if (gun !is null && gun.getOccupied() is null)
+	{
+		this.server_AttachTo(worker, @gun);
+	}
 }
 
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+void onUnassignWorker(CBlob@ this, CBlob@ worker)
 {
-	detached.Untag("invincible");
+	this.server_DetachFrom(worker);
 }

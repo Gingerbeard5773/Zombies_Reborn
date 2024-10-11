@@ -51,6 +51,9 @@ void onInit(CSprite@ this)
 
 void onInit(CBlob@ this)
 {
+	this.Tag("ignore_saw");
+	this.Tag("sawed");//hack
+
 	this.set_u32("hittime", 0);
 	this.Tag("place norotate"); // required to prevent drill from locking in place (blame builder code :kag_angry:)
 

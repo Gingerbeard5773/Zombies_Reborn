@@ -2,7 +2,6 @@
 
 // Gingerbeard @ September 21 2024
 //translated strings for zombies reborn
-//this is using shiprekt's translation infrastructure
 
 shared const string Translate(const string&in en, const string&in ru = "")
 {
@@ -30,15 +29,32 @@ namespace Translate
 	Tip5 = Translate("A trader will visit at mid-day if it can land safely.",               "Если зомби немного, торговец прилетит к полудню"),
 	Tip6 = Translate("Respawns are instant if there is no zombies during day light.",       "Возрождения происходят мгновенно, если днём нет зомби"),
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.", "Мигранты будут приходить к вам через каждый день,\nесли популяция нежити будет низкая"),
-
+	
+	//scoreboard
+	Manual   = Translate("Press {KEY} to toggle the help manual on/off.", ""),
+	DayNum   = Translate("Day: {DAYS}",                                   "День: {DAYS}"),
+	Zombies  = Translate("Zombies: {AMOUNT}",                             ""),
+	
+	//respawning
+	Respawn0 = Translate("Waiting for dawn...",             ""),
+	Respawn1 = Translate("Waiting to spawn as a wraith...", ""),
+	
 	//global messages
-	Day      = Translate("Day {DAYS}",                                                 "День {DAYS}"),
-	GameOver = Translate("Game over! All players perished! You survived {DAYS} days.", "Игра закончена! Все игроки погибли! Вы выживали на протяжении {DAYS} дней."),
-	GameWin  = Translate("Day {DAYS} Reached! You win!",                               "День {DAYS} Наступил! Вы выиграли!"),
-	Trader   = Translate("A flying merchant has arrived!",                             "Прибыл летающий-торговец!"),
-	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                     "Некромант Седжвик появился!"),
-	Migrant1 = Translate("A refugee has arrived!",                                     "Прибыл Беженец!"),
-	Migrant2 = Translate("Refugees have arrived!",                                     "Прибыли Беженцы!"),
+	Day      = Translate("Day {INPUT}",                                                 "День {INPUT}"),
+	Record   = Translate("Day {INPUT}\n\nNew record!",                                  ""),
+	GameOver = Translate("Game over! All players perished! You survived {INPUT} days.", "Игра закончена! Все игроки погибли! Вы выживали на протяжении {INPUT} дней."),
+	GameWin  = Translate("Day {INPUT} Reached! You win!",                               "День {INPUT} Наступил! Вы выиграли!"),
+	Trader   = Translate("A flying merchant has arrived!",                              "Прибыл летающий-торговец!"),
+	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                      "Некромант Седжвик появился!"),
+	Migrant1 = Translate("A refugee has arrived!",                                      "Прибыл Беженец!"),
+	Migrant2 = Translate("Refugees have arrived!",                                      "Прибыли Беженцы!"),
+
+	//stats
+	Stat0 = Translate("Total zombies killed: {INPUT}",   ""),
+	Stat1 = Translate("Most blocks placed: {INPUT}",     ""),
+	Stat2 = Translate("Most kills: {INPUT}",             ""),
+	Stat3 = Translate("Most deaths: {INPUT}",            ""),
+	Stat4 = Translate("All-time record: {INPUT} Days",   ""),
 
 	//scrolls
 	ScrollClone    = Translate("Use this to duplicate an object you are pointing to.",                         "Изпользуйте это для клонирования объекта, куда вы смотрете."),
@@ -70,9 +86,9 @@ namespace Translate
 	Dormitory      = Translate("A dorm for recruiting and healing workers. Functions as a respawn point.",      "Общежитие для набора и лечения рабочих. Функционирует как точка возрождения."),
 
 	//vehicleshop
-	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs."        "Воздушный шар, способный летать. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
+	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs.",       "Воздушный шар, способный летать. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
 	Armoredbomber  = Translate("A balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", "Воздушный шар с защитным покрытием. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
-	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            "Переносная стреляющая стрелами машина смерти. Может быть установлена ​​на некоторые транспортные средства."),
+	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            "Переносная стреляющая стрелами машина смерти. Может быть установлена на некоторые транспортные средства."),
 	Tank           = Translate("A seige tank. Allows attachments.",                                                   "Осадный танк. Позволяет устанавливать навесное оборудование."),
 
 	//archershop
@@ -102,6 +118,8 @@ namespace Translate
 	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             ""),
 	SteelHelmet    = Translate("Steel Helmet\nA durable helmet to protect your head.",                                  ""),
 	SteelArmor     = Translate("Steel Chestplate\nA durable chestplate to protect your body.",                          ""),
+	Backpack       = Translate("Backpack\nA backpack to carry your belongings.",                                        ""),
+	Parachutepack  = Translate("Parachute Pack\nAllows you to fall slowly. Press [Shift] to activate.",                 ""),
 
 	//trader
 	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            ""),
@@ -120,22 +138,59 @@ namespace Translate
 	TradeScrollFish     = Translate("Summons a bloodthirsty shark.",                            ""),
 
 	//library
+	Researching     = Translate("Researching - {TIME}s",                                             ""),
+	Paused          = Translate("Paused - {TIME}s",                                                  ""),
+	Resume          = Translate("Click to resume",                                                   ""),
+	Completed       = Translate("Completed",                                                         ""),
 	RequiresTech    = Translate("Requires previous upgrade",                                         ""),
 	UpgradeComplete = Translate("{UPGRADE} upgrade complete",                                        ""),
-	HardyWheat      = Translate("Hardy Wheat\nWheat can grow on stone and gold.",                    ""),
+	Coinage         = Translate("Coinage\nCoins auto-yield 10%.",                                    ""),
+	CoinageII       = Translate("Coinage II\nCoins auto-yield 20%.",                                 ""),
+	HardyWheat      = Translate("Hardy Wheat\nWheat can grow on stone and ores.",                    ""),
+	HardyTrees      = Translate("Hardy Trees\nTrees can grow on stone and ores.",                    ""),
 	PlentifulWheat  = Translate("Plentiful Wheat\nWheat can yield an extra grain.",                  ""),
-	Metallurgy      = Translate("Metallurgy\nForging time is halved.",                               ""),
-	MetallurgyII    = Translate("Metallurgy II\nForging has a chance to yield an extra ingot.",      ""),
-	MetallurgyIII   = Translate("Metallurgy III\nQuarrys have a chance to yield iron ore.",          ""),
-	MetallurgyIV    = Translate("Metallurgy IV\nQuarrys have a chance to yield gold ore.",           ""),
-	Shrapnel        = Translate("Shrapnel\nBombs and kegs deal more damage.",                        ""),
+	Metallurgy      = Translate("Metallurgy\n Forging time reduced by 15%.",                         ""),
+	MetallurgyII    = Translate("Metallurgy II\nForging time reduced by 25%.",                       ""),
+	MetallurgyIII   = Translate("Metallurgy III\nForging time reduced by 35%.",                      ""),
+	MetallurgyIV    = Translate("Metallurgy IV\nForging time reduced by 50%.",                       ""),
+	Refinement      = Translate("Refinement \nForging has a 10% chance to yield an extra ingot.",    ""),
+	RefinementII    = Translate("Refinement II\nForging has a 20% chance to yield an extra ingot.",  ""),
+	RefinementIII   = Translate("Refinement III\nForging has a 30% chance to yield an extra ingot.", ""),
+	RefinementIV    = Translate("Refinement IV\nForging has a 40% chance to yield an extra ingot.",  ""),
+	Extraction      = Translate("Extraction \nQuarrys have a chance to yield iron ore.",             ""),
+	ExtractionII    = Translate("Extraction II\nQuarrys have a chance to yield gold ore.",           ""),
+	Milling         = Translate("Milling\nWind mills produce 10% more flour."                        ""),
+	MillingII       = Translate("Milling II\nWind mills produce 20% more flour."                     ""),
+	MillingIII      = Translate("Milling III\nWind mills produce 35% more flour."                    ""),
 	Swords          = Translate("Sharpening Stone\nSwords deal an extra +1/2 heart of damage.",      ""),
 	SwordsII        = Translate("Damascus Steel\nSwords deal an extra +1/2 heart of damage.",        ""),
+	LightArmor      = Translate("Lightweight Armor\nArmor encumbrance -50%.",                        ""),
 	CombatPickaxes  = Translate("Combat Pickaxes\nPickaxes deal an extra +1/2 heart of damage.",     ""),
+	LightPickaxes   = Translate("Light Pickaxes\nPickaxe mining speed increased.",                   ""),
+	PrecisionDrills = Translate("Precision Drilling\nDrills yield 100%.",                            ""),
+	Architecture    = Translate("Architecture\nBlock placement is faster.",                          ""),
+	Supplies        = Translate("Supplies\n+5 stone, +10 wood per resupply.",                        ""),
+	SuppliesII      = Translate("Supplies II\n+10 stone, +15 wood per resupply.",                    ""),
+	SuppliesIII     = Translate("Supplies III\n+20 stone, +25 wood per resupply.",                   ""),
 	Repeaters       = Translate("Repeaters\nCrossbows are automatic.",                               ""),
-	RifledBarrels   = Translate("Rifled Barrels\nMuskets' damage and penetration increased.",        ""),
-	GreekFire       = Translate("Greek Fire\nIncendiary weapons deal twice as much damage",          ""),
+	LightBows       = Translate("Light Bows\nArchers fire faster.",                                  ""),
+	DeepQuiver      = Translate("Deep Quiver\nArchers have infinite arrows.",                        ""),
+	MachineBows     = Translate("Machine Bows\nMounted Bows fire faster.",                           ""),
+	ArrowSupply     = Translate("Arrow Supply\nMounted Bows have infinite arrows.",                  ""),
+	FastBurnPowder  = Translate("Fast-Burning Powder\nMuskets' +25% damage.",                        ""),
+	HeavyLead       = Translate("Heavy Lead\nMuskets' +25% damage.",                                 ""),
+	RifledBarrels   = Translate("Rifled Barrels\nMuskets' penetration increased.",                   ""),
+	Bandoliers      = Translate("Bandoliers\nMuskets' reload twice as fast.",                        ""),
+	GreekFire       = Translate("Greek Fire\nIncendiary weapons deal twice as much damage.",         ""),
+	Shrapnel        = Translate("Shrapnel\nExplosives +25% damage.",                                 ""),
+	ShrapnelII      = Translate("Shrapnel II\nExplosives +25% damage.",                              ""),
+	HighExplosives  = Translate("High Explosives\nExplosives' radius increased.",                    ""),
+	HolyWater       = Translate("Holy Water\nWater bomb radius and stun time 2x.",                   ""),
 	BlastShields    = Translate("Blast Shields\nShields are resistant to strong explosions.",        ""),
+	FlightTuning    = Translate("Flight Tuning\nAerial vehicles fly 25% faster.",                    ""),
+	IronChassis     = Translate("Iron Chassis\nLand vehicles are 25% more durable.",                 ""),
+	SteelChassis    = Translate("Steel Chassis\nLand vehicles are 25% more durable.",                ""),
 	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              ""),
-	RegenerationII  = Translate("Regeneration II\nSurvivors heal an additional heart every day",     "");
+	RegenerationII  = Translate("Regeneration II\nSurvivors heal one heart every day.",              ""),
+	RegenerationIII = Translate("Regeneration III\nSurvivors heal two hearts every day.",            "");
 }
