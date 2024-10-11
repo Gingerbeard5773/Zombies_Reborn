@@ -26,8 +26,12 @@ void onInit(CBlob@ this)
 	AddIconToken("$mat_coal$", "MaterialCoal.png", Vec2f(16, 16), 3);
 	
 	this.Tag("builder always hit");
-	this.addCommandID("add fuel");
-	this.addCommandID("pull_items");
+	this.addCommandID("server_add_fuel");
+	
+	this.set_Vec2f("pull_items_button_offset", Vec2f(-5, -5));
+	
+	string[] pull_names = { "mat_iron", "mat_coal" };
+	this.set("pull_items", pull_names);
 
 	Craft craft();
 	craft.menu_size = Vec2f(3, 1);
@@ -79,33 +83,27 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!this.isInventoryAccessible(caller)) return;
 
-	if (this.isOverlapping(caller))
-	{
-		CButton@ buttonOwner = caller.CreateGenericButton(28, Vec2f(-5, -5), this, this.getCommandID("pull_items"), "Take Ores from other Storages");
-	}
-
 	if (this.get_s16(fuel_prop) >= max_fuel) return;
 
-	for (uint i = 0; i < fuel_names.length; i++)
+	for (u8 i = 0; i < fuel_names.length; i++)
 	{
 		const string name = fuel_names[i];
-		if (caller.hasBlob(name, 1))
+		if (!caller.hasBlob(name, 1)) continue;
+
+		CBitStream params;
+		params.write_u8(i);
+		CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("server_add_fuel"), "Add fuel (Wood or Coal)", params);
+		if (button !is null)
 		{
-			CBitStream params;
-			params.write_u8(i);
-			CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
-			if (button !is null)
-			{
-				button.deleteAfterClick = false;
-			}
-			return;
+			button.deleteAfterClick = false;
 		}
+		return;
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("add fuel") && isServer())
+	if (cmd == this.getCommandID("server_add_fuel") && isServer())
 	{
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
@@ -128,33 +126,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			caller.TakeBlob(fuel_name, amountToStore);
 			this.set_s16(fuel_prop, this.get_s16(fuel_prop) + amountToStore*fuel_amount);
 			this.Sync(fuel_prop, true);
-		}
-	}
-	else if (cmd == this.getCommandID("pull_items"))
-	{
-		if (!isServer()) return;
-		CBlob@[] storages;
-		getBlobsByName("storage", @storages);
-		getBlobsByName("crate", @storages);
-		getBlobsByName("dinghy", @storages);
-
-		for (int j = 0; j < storages.length; j++)
-		{
-			CBlob@ storage = storages[j];
-			if (storage is null || storage.getDistanceTo(this) > 200) continue;
-			CInventory@ inv = storage.getInventory();
-			if (inv is null) return;
-
-			for (int i = 0; i < inv.getItemsCount(); i++)
-			{
-				CBlob@ item = inv.getItem(i);
-				if (item.getName() == "mat_iron" || item.getName() == "mat_coal")
-				{
-					storage.server_PutOutInventory(item);
-					this.server_PutInInventory(item);
-					i--;
-				}
-			}
 		}
 	}
 }

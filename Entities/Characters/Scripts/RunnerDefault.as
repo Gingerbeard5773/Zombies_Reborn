@@ -75,10 +75,18 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (this.hasTag("invincible"))
 	{
-		if (customData == 11)
+		if (customData == Hitters::suicide)
 			this.Untag("invincible");
 		else
 			return 0.0f; //added so we can have immunity while in special vehicles - gingerbeard @ August 18 2024
+	}
+
+	switch(customData)
+	{
+		case Hitters::mine:
+		case Hitters::mine_special:
+			damage *= 0.2f;
+			break;
 	}
 	return damage;
 }

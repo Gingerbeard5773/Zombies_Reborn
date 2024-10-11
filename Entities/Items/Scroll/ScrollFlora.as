@@ -3,7 +3,7 @@
 #include "GenericButtonCommon.as";
 #include "Zombie_Translation.as";
 
-const int radius = 14;
+const int radius = 35;
 
 void onInit(CBlob@ this)
 {

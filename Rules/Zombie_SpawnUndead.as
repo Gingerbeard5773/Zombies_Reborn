@@ -15,7 +15,7 @@ shared class Spawn
 	Spawn(const string&in name, const int&in weight, const f32&in difficulty, const f32&in time_modifier, const int&in weight_minimum)
 	{
 		this.name = name;
-		this.weight = weight;
+		this.weight = weight + 1;
 		this.difficulty = difficulty;
 		this.time_modifier = time_modifier;
 		this.weight_minimum = weight_minimum;
@@ -30,8 +30,7 @@ const Spawn@[] spawns =
 	Spawn("zombieknight",  150,  1.0f, 0.0f,  0),
 	Spawn("greg",          35,   1.5f, 0.0f,  0),
 	Spawn("wraith",        30,   2.0f, 0.0f,  0),
-	Spawn("skelepede",     7,    2.5f, 0.0f,  0),
-	Spawn("sedgwick",      1,    1.5f, 0.0f,  0)
+	Spawn("skelepede",     5,    3.0f, 0.0f,  0)
 };
 
 f32 game_difficulty = 1.0f;  //zombie spawnrate multiplier
@@ -55,7 +54,6 @@ void Reset(CRules@ this)
 	ConfigFile cfg;
 	if (cfg.loadFile("Zombie_Vars.cfg"))
 	{
-		//edit these vars in Zombie_Vars.cfg
 		game_difficulty = cfg.exists("game_difficulty") ? cfg.read_f32("game_difficulty") : 1.0f;
 		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
 		maximum_skelepedes = cfg.exists("maximum_skelepedes") ? cfg.read_u16("maximum_skelepedes") : 4;
@@ -92,10 +90,12 @@ void onTick(CRules@ this)
 //Calculate our spawn rates and gamemode-difficulty based on the day number and amount of players on the server
 void getSpawnRates(const u16&in dayNumber, u32&out spawnRate, f32&out difficulty, const u8&in playerCount = getPlayersCount())
 {
-	const f32 player_modifier = Maths::Pow(playerCount - 1, 1.01f) * 0.25f;
+	f32 player_modifier = (playerCount - 1) * 0.2f;
+	player_modifier *= Maths::Min(1.0f, dayNumber / 5.0f); //lessen the impact of player count during early days (full effect is reached on day 5)
+
 	const f32 difficulty_ramp = Maths::Pow(dayNumber * 0.25f, 1.0001f);
 
-	difficulty = (difficulty_ramp + player_modifier) * game_difficulty;
+	difficulty = (difficulty_ramp + player_modifier) * game_difficulty * 0.85f;
 	spawnRate = Maths::Max(getTicksASecond() / difficulty, 1);
 }
 
@@ -122,6 +122,7 @@ void SpawnZombie(CMap@ map, const u16&in dayNumber, const f32&in difficulty)
 
 	if (spawn.name == "skelepede")
 	{
+		//skelepedes spawn far underground
 		CBlob@[] skelepedes;
 		getBlobsByName("skelepede", @skelepedes);
 		if (skelepedes.length < maximum_skelepedes)
@@ -131,8 +132,16 @@ void SpawnZombie(CMap@ map, const u16&in dayNumber, const f32&in difficulty)
 			server_CreateBlob(spawn.name, -1, spawnpos);
 		}
 	}
+	else if (spawn.name == "greg" || spawn.name == "wraith")
+	{
+		//flying enemies spawn at a random height at world edge
+		Vec2f spawn_pos = getZombieSpawnPos(map);
+		spawn_pos.y = XORRandom(spawn_pos.y);
+		server_CreateBlob(spawn.name, -1, spawn_pos);
+	}
 	else
 	{
+		//everything else spawns on the ground at world edge
 		server_CreateBlob(spawn.name, -1, getZombieSpawnPos(map));
 	}
 }

@@ -64,7 +64,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	this.setAngleDegrees(90 * (this.isFacingLeft() ? -1 : 1) - this.getVelocity().AngleDegrees());
+	this.setAngleDegrees(90 - this.getVelocity().AngleDegrees());
 
 	GoSomewhere(this);
 	MoveSegments(this);
@@ -260,6 +260,10 @@ void AttackStuff(CBlob@ this)
 	const u32 gameTime = getGameTime();
 	if (gameTime >= attackVars.next_attack)
 	{
+		if (this.getPosition().y >= getMap().getMapDimensions().y)
+		{
+			carried.server_DetachFromAll(); // drop ppl into hell
+		}
 		this.server_Hit(carried, carried.getPosition(), Vec2f_zero, attackVars.damage, attackVars.hitter, true);
 		attackVars.next_attack = gameTime + attackVars.frequency;
 	}
@@ -332,6 +336,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::bomb_arrow:   damage *= 4.2f; break;
 		case Hitters::arrow:        damage *= 1.2f; break;
 		case Hitters::suddengib:    damage *= 4.0f; break;
+		case Hitters::drill:        damage *= 3.0f; break;
+		case Hitters::builder:      damage *= 2.0f; break;
 	}
 
 	if (damage > this.getHealth() && !this.hasTag("dead"))

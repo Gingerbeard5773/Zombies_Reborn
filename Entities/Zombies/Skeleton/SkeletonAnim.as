@@ -1,12 +1,13 @@
+//Skeleton Animations
+
+void onInit(CSprite@ this)
+{
+	this.getCurrentScript().runFlags |= Script::tick_onscreen;
+}
+
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-	
-	if (blob.hasTag("dead"))
-	{
-		this.getCurrentScript().runFlags |= Script::remove_after_this;
-		return;
-	}
 	
 	if (!this.isAnimationEnded() && this.isAnimation("attack")) return;
 

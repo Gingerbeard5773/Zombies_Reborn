@@ -13,7 +13,7 @@ void onInit(CBlob@ this)
 	if (isServer())
 	{
 		dictionary harvest;
-		harvest.set('mat_iron', 5);
+		harvest.set('mat_iron', 2);
 		this.set('harvest', harvest);
 	}
 
@@ -27,7 +27,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	switch (customData)
 	{
 		case Hitters::builder:
-			damage *= 0.5f;
+			damage *= 1.0f;
 			break;
 		case Hitters::bite:
 			damage *= 0.55f;

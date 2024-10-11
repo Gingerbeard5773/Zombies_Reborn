@@ -1,5 +1,7 @@
 //Render time till player respawn
 
+#include "Zombie_Translation.as";
+
 void onRender(CRules@ this)
 {
 	if (g_videorecording || this.isGameOver()) return;
@@ -11,15 +13,15 @@ void onRender(CRules@ this)
 	if (localBlob !is null) return;
 
 	const u32 gameTime = getGameTime();
-	const u32 time = this.get_u32(player.getUsername()+" respawn time") + 30;
+	const u32 time = this.get_u32("client respawn time") + 30;
 	const s32 time_left = (time - gameTime) / getTicksASecond();
 	
-	string text = time_left > 100 ? "Waiting for dawn..." : getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + time_left);
+	string text = time_left > 100 ? Translate::Respawn0 : getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + time_left);
 	SColor col = SColor(0xFFE0BA16);
 	
 	if (player.getTeamNum() == 200) //undead player
 	{
-		text = "Waiting to spawn as a wraith...";
+		text = Translate::Respawn1;
 		col = SColor(0xFFDB5743);
 	}
 	

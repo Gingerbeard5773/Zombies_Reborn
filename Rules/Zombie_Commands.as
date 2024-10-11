@@ -1,6 +1,7 @@
 // Zombie Fortress chat commands
 
 #include "Zombie_SoftBansCommon.as";
+#include "Zombie_GlobalMessagesCommon.as";
 
 void printcommandslist()
 {
@@ -17,6 +18,8 @@ void printcommandslist()
 	print(" !carnage : kill all zombies on the map",                                             color_white);
 	print(" !spawnrates [days to print] [player number] : prints out a prediction of the rates", color_white);
 	print(" !difficulty [difficulty] : sets the game difficulty",                                color_white);
+	print(" !loadgen [seed] : load a procedurally generated map using a seed",                   color_white);
+	print(" !seed : get the map seed",                                                           color_white);
 	print("");
 }
 
@@ -118,12 +121,53 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					this.set_u16("day_number", dayNumber);
 					this.Sync("day_number", true);
 				}
+				else if (tokens[0] == "!seed")
+				{
+					const int map_seed = getMap().get_s32("map seed");
+					const string message = "MAP SEED : "+map_seed;
+					print(message);
+					server_SendGlobalMessage(this, message, 10);
+					
+					if (isClient()) //localhost only atm
+						CopyToClipboard(map_seed+"");
+
+					return false;
+				}
 			}
 			
 			if (tokens[0] == "!respawn") //respawn player
 			{
 				const string ply_name = tokens.length > 1 ? tokens[1] : player.getUsername();
-				this.set_u32(ply_name+" respawn time", getGameTime());
+				
+				if (getPlayerByUsername(ply_name) !is null)
+				{
+					dictionary@ respawns;
+					this.get("respawns", @respawns);
+
+					respawns.set(ply_name, getGameTime());
+				}
+			}
+			else if (tokens[0] == "!loadgen")
+			{
+				int map_seed = getMap().get_s32("map seed");
+				if (tokens.length > 1)
+				{
+					map_seed = parseInt(tokens[1]); // direct seed input
+					if (map_seed <= 0)
+					{
+						//otherwise make a seed from letters
+						u32 hash = 5381;
+						for (u32 i = 0; i < tokens[1].length(); i++)
+						{
+							hash = ((hash << 5) + hash) + tokens[1][i];
+							hash &= 0x7FFFFFFF;
+						}
+						map_seed = hash;
+					}
+				}
+
+				this.set_s32("new map seed", map_seed);
+				LoadNextMap();
 			}
 		}
 	}

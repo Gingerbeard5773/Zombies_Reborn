@@ -35,7 +35,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
 
-		CBlob@ crate = server_MakeCrate(aimBlob.getName(), "Crate with "+aimBlob.getInventoryName(), 0, aimBlob.getTeamNum(), aimBlob.getPosition());
+		string name = aimBlob.getName();
+		if (name == "skelepedebody") name = "skelepede";
+
+		CBlob@ crate = server_MakeCrate(name, "Crate with "+aimBlob.getInventoryName(), 0, aimBlob.getTeamNum(), aimBlob.getPosition());
 		CShape@ shape = aimBlob.getShape();
 		crate.set_Vec2f("required space", Vec2f(Maths::Ceil(shape.getWidth()/8), Maths::Ceil(shape.getHeight()/8)));
 		aimBlob.server_Die();

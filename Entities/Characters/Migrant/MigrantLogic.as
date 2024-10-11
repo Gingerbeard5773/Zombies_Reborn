@@ -1,8 +1,6 @@
-#include "DecayCommon.as";
-#include "HallCommon.as"
+#include "MigrantCommon.as";
 #include "KnockedCommon.as";
-
-const string pickable_tag = "pickable";
+#include "AssignWorkerCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -10,8 +8,9 @@ void onInit(CBlob@ this)
 	this.Tag("player");
 	this.Tag("flesh");
 	this.Tag("ignore_arrow");
+	this.Tag("migrant");
 	
-	SetMigrant(this, true);
+	this.getBrain().server_SetActive(true);
 
 	this.getCurrentScript().tickFrequency = 150; // opt
 }
@@ -19,12 +18,17 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	DoKnockedUpdate(this);
-
-	if (this.hasTag("dead")) return;
+	
+	if (this.hasTag("dead"))
+	{
+		UpdateAssigned(this);
+	}
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
+	if (this.exists("assigned netid") && this.get_netid("assigned netid") > 0) return false;
+
 	return ((this.getTeamNum() == byBlob.getTeamNum() && this.getDistanceTo(byBlob) < 16.0f) || this.hasTag("dead"));
 }
 
@@ -33,23 +37,43 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	if (attached.hasTag("player"))
 	{
 		this.set_u8("strategy", Strategy::idle);
-		ResetWorker(this);
 	}
-		
+
 	if (!this.hasTag("dead"))
 	{
-		attachedPoint.offsetZ = -10.0f;
 		this.getSprite().SetRelativeZ(-10.0f);
+	}
+	else
+	{
+		attachedPoint.offset = Vec2f(-4, 0);
 	}
 }
 
-void onHealthChange(CBlob@ this, f32 oldHealth)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (this.hasTag("dead"))
+	if (!isClient()) return;
+
+	if (blob is null || this.hasTag("dead")) return;
+
+	if (!blob.hasTag("player") || blob.hasTag("migrant") || blob.hasTag("dead")) return;
+
+	if (blob.getTeamNum() == this.getTeamNum() && XORRandom(10) == 0)
 	{
-		AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
-		ap.offset = Vec2f(-4, 0);
-		ap.offsetZ = 10.0f;
-		//this.getSprite().SetRelativeZ(15.0f);
+		this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayFriend"));
 	}
+}
+
+void UpdateAssigned(CBlob@ this)
+{
+	if (!this.exists("assigned netid")) return;
+
+	CBlob@ assigned = getBlobByNetworkID(this.get_netid("assigned netid"));
+	if (assigned is null) return;
+
+	UnassignWorker(assigned, this);
+}
+
+void onDie(CBlob@ this)
+{
+	UpdateAssigned(this);
 }

@@ -22,9 +22,7 @@ void onInit(CBlob@ this)
 
 	this.set_f32("map dmg modifier", 35.0f);
 
-	//this.getShape().SetOffset(Vec2f(0,0));
-	//  this.getShape().getConsts().bullet = true;
-//	this.getShape().getConsts().transports = true;
+	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	CSprite@ sprite = this.getSprite();
 
@@ -85,14 +83,6 @@ void onTick(CBlob@ this)
 			if (!this.get("VehicleInfo", @v)) return;
 
 			Vehicle_StandardControls(this, v);
-
-			//TODO: move to atmosphere damage script
-			/*f32 y = this.getPosition().y;
-			if (y < 100)
-			{
-				if (getGameTime() % 15 == 0)
-					this.server_Hit(this, this.getPosition(), Vec2f(0, 0), y < 50 ? (y < 0 ? 2.0f : 1.0f) : 0.25f, 0, true);
-			}*/
 		}
 		else
 		{
