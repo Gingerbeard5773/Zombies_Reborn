@@ -58,12 +58,12 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 	sameTile = false;
 
 	//check height + edge proximity
-	if (p.y < 2 * map.tilesize ||
-			p.x < 2 * map.tilesize ||
-			p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
-	{
-		return false;
-	}
+	// if (p.y < 2 * map.tilesize ||
+	// 		p.x < 2 * map.tilesize ||
+	// 		p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
+	// {
+	// 	return false;
+	// }
 
 	// tilemap check
 	const bool buildSolid = (isTileSolid(map, buildTile) || (blob !is null && blob.isCollidable()));
