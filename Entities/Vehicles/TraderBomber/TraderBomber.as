@@ -1,11 +1,10 @@
-#include "Requirements_Trader.as";
 #include "VehicleCommon.as";
-#include "MakeScroll.as";
 #include "Hitters.as";
 #include "EmotesCommon.as";
 #include "ParticleTeleport.as";
 #include "Zombie_Translation.as";
-#include "MakeSeed.as";
+#include "TraderShopCommon.as";
+#include "Requirements.as";
 
 const u8 stay_minutes = 2;
 const f32 up_speed = 1.0f;
@@ -30,236 +29,81 @@ void onInit(CBlob@ this)
 	
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	
-	ShopMadeItem@ onMadeItem = @onShopMadeItem;
-	this.set("onShopMadeItem handle", @onMadeItem);
-	
-	if (isServer())
-	{
-		//hack
-		this.set_string("shop seed", XORRandom(4)+"-"+XORRandom(5)+"-"+XORRandom(4));
-		this.Sync("shop seed", true);
-	}
-	
-	// SHOP
-	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(3, 7));
-	this.set_string("shop description", "Buy");
-	this.set_u8("shop icon", 25);
+	addOnShopMadeItem(this, @onShopMadeItem);
 
 	AddIconToken("$tree_pine$",  "Trees.png", Vec2f(16, 16), 20);
 	AddIconToken("$tree_bushy$", "Trees.png", Vec2f(16, 16), 4);
 
-	string[]@ seeds = this.get_string("shop seed").split("-");
-	switch(parseInt(seeds[0]))
+	Random seed(this.getNetworkID());
+
+	Shop shop(this, "Flying Merchant");
+	shop.menu_size = Vec2f(3, 6);
+
+	AddRandomItemsToShop(shop, seed, 3);
+	
 	{
-		case 0:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Carnage", "$scroll_carnage$", "scroll_carnage", Translate::TradeScrollCarnage, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
-			AddStock(s, 1);
-			break;
-		}
-		case 1:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Midas", "$scroll_midas$", "scroll_midas", Translate::TradeScrollMidas, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
-			AddStock(s, 1);
-			break;
-		}
-		/*case 2:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Sea", "$scroll_sea$", "scroll_sea", Translate::TradeScrollSea, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
-			AddStock(s, 1);
-			break;
-		}*/
-		case 2:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Conveyance", "$scroll_teleport$", "scroll_teleport", Translate::TradeScrollTeleport, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
-			AddStock(s, 2);
-			break;
-		}
-		case 3:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Quarry", "$scroll_stone$", "scroll_stone", Translate::TradeScrollStone, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
-			AddStock(s, 1);
-			break;
-		}
-	}
-	switch(parseInt(seeds[1]))
-	{
-		case 0:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Ressurection", "$scroll_revive$", "scroll_revive", Translate::TradeScrollRevive, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
-			AddStock(s, 1);
-			break;
-		}
-		case 1:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Compaction", "$scroll_crate$", "scroll_crate", Translate::TradeScrollCrate, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
-			AddStock(s, 2);
-			break;
-		}
-		case 2:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Duplication", "$scroll_clone$", "scroll_clone", Translate::TradeScrollDupe, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
-			AddStock(s, 1);
-			break;
-		}
-		case 3:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Drought", "$scroll_drought$", "scroll_drought", Translate::TradeScrollDrought, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 30);
-			AddStock(s, 2);
-			break;
-		}
-		case 4:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Harvest", "$scroll_flora$", "scroll_flora", Translate::TradeScrollFlora, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
-			AddStock(s, 2);
-			break;
-		}
-	}
-	switch(parseInt(seeds[2]))
-	{
-		case 0:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Royalty", "$scroll_royalty$", "scroll_royalty", Translate::TradeScrollRoyalty, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 40);
-			AddStock(s, 3);
-			break;
-		}
-		case 1:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Wisent", "$scroll_wisent$", "scroll_wisent", Translate::TradeScrollWisent, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
-			AddStock(s, 1);
-			break;
-		}
-		case 2:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Fowl", "$scroll_fowl$", "scroll_fowl", Translate::TradeScrollFowl, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
-			AddStock(s, 1);
-			break;
-		}
-		case 3:
-		{
-			ShopItem@ s = addShopItem(this, "Scroll of Fish", "$scroll_fish$", "scroll_fish", Translate::TradeScrollFish, true);
-			s.spawnNothing = true;
-			AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
-			AddStock(s, 1);
-			break;
-		}
-	}
-	{
-		ShopItem@ s = addShopItem(this, "Buy Gold (50)", "$mat_gold$", "mat_gold", "Buy 50 gold for 700 $COIN$", true);
-		s.customData = 255;
+		SaleItem s(shop.items, "Buy Gold (50)", "$mat_gold$", "mat_gold", "Buy 50 gold for 700 $COIN$");
 		AddRequirement(s.requirements, "coin", "", "Coins", 700);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Stone (250)", "$mat_stone$", "mat_stone", "Buy 250 Stone for 300 $COIN$", true);
-		s.customData = 255;
+		SaleItem s(shop.items, "Buy Stone (250)", "$mat_stone$", "mat_stone", "Buy 250 Stone for 300 $COIN$");
 		AddRequirement(s.requirements, "coin", "", "Coins", 300);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Wood (250)", "$mat_wood$", "mat_wood", "Buy 250 Wood for 100 $COIN$", true);
-		s.customData = 255;
+		SaleItem s(shop.items, "Buy Wood (250)", "$mat_wood$", "mat_wood", "Buy 250 Wood for 100 $COIN$");
 		AddRequirement(s.requirements, "coin", "", "Coins", 100);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sell Gold (50)", "$COIN$", "coin_600", "Sell 50 gold for 600 $COIN$", true);
-		s.spawnNothing = true;
-		s.customData = 255;
+		SaleItem s(shop.items, "Sell Gold (50)", "$COIN$", "coin", "Sell 50 gold for 600 $COIN$", ItemType::coin, 600);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sell Stone (250)", "$COIN$", "coin_200", "Sell 250 stone for 200 $COIN$", true);
-		s.spawnNothing = true;
-		s.customData = 255;
+		SaleItem s(shop.items, "Sell Stone (250)", "$COIN$", "coin", "Sell 250 stone for 200 $COIN$", ItemType::coin, 200);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", 250);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sell Wood (250)", "$COIN$", "coin_50", "Sell 250 wood for 50 $COIN$", true);
-		s.spawnNothing = true;
-		s.customData = 255;
+		SaleItem s(shop.items, "Sell Wood (250)", "$COIN$", "coin", "Sell 250 wood for 50 $COIN$", ItemType::coin, 50);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 250);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Flour (50)", "$mat_flour$", "mat_flour", "Buy 50 Flour for 300 $COIN$", true);
-		s.customData = 255;
+		SaleItem s(shop.items, "Buy Flour (50)", "$mat_flour$", "mat_flour", "Buy 50 Flour for 300 $COIN$");
 		AddRequirement(s.requirements, "coin", "", "Coins", 300);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Steak (1)", "$steak$", "steak", "Buy 1 Steak for 250 $COIN$", true);
-		s.customData = 255;
-		AddRequirement(s.requirements, "coin", "", "Coins", 250);
+		SaleItem s(shop.items, "Buy Steak (1)", "$steak$", "steak", "Buy 1 Steak for 230 $COIN$");
+		AddRequirement(s.requirements, "coin", "", "Coins", 230);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Chicken (1)", "$chicken$", "chicken", "Buy 1 Chicken for 200 $COIN$", true);
-		s.customData = 255;
-		AddRequirement(s.requirements, "coin", "", "Coins", 200);
-	}
-	{
-		ShopItem@ s = addShopItem(this, "Sell Flour (50)", "$COIN$", "coin_200", "Sell 50 flour for 200 $COIN$", true);
-		s.spawnNothing = true;
-		s.customData = 255;
-		AddRequirement(s.requirements, "blob", "mat_flour", "Flour", 50);
-	}
-	{
-		ShopItem@ s = addShopItem(this, "Sell Burger (1)", "$COIN$", "coin_200", "Sell 1 Burger for 200 $COIN$", true);
-		s.spawnNothing = true;
-		s.customData = 255;
-		AddRequirement(s.requirements, "blob", "food", "Burger", 1);
-	}
-	{
-		ShopItem@ s = addShopItem(this, "Sell Chicken (1)", "$COIN$", "coin_100", "Sell 1 Chicken for 100 $COIN$", true);
-		s.spawnNothing = true;
-		s.customData = 255;
-		AddRequirement(s.requirements, "blob", "chicken", "Chicken", 1);
-	}
-	{
-		ShopItem@ s = addShopItem(this, "Buy Egg (1)", "$egg$", "egg", "Buy 1 Egg for 150 $COIN$", true);
-		s.customData = 255;
+		SaleItem s(shop.items, "Buy Egg (1)", "$egg$", "egg", "Buy 1 Egg for 150 $COIN$");
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Coal (250)", "$mat_coal_icon$", "mat_coal", "Buy 250 Coal for 500 $COIN$", true);
-		s.customData = 255;
-		AddRequirement(s.requirements, "coin", "", "Coins", 500);
+		SaleItem s(shop.items, "Sell Flour (50)", "$COIN$", "coin", "Sell 50 flour for 200 $COIN$", ItemType::coin, 200);
+		AddRequirement(s.requirements, "blob", "mat_flour", "Flour", 50);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Iron Ore (250)", "$mat_iron_icon$", "mat_iron", "Buy 250 Iron Ore for 1400 $COIN$", true);
-		s.customData = 255;
+		SaleItem s(shop.items, "Sell Burger (1)", "$COIN$", "coin", "Sell 1 Burger for 250 $COIN$", ItemType::coin, 250);
+		AddRequirement(s.requirements, "blob", "food", "Burger", 1);
+	}
+	{
+		SaleItem s(shop.items, "Sell Chicken (1)", "$COIN$", "coin", "Sell 1 Chicken for 100 $COIN$", ItemType::coin, 100);
+		AddRequirement(s.requirements, "blob", "chicken", "Chicken", 1);
+	}
+	{
+		SaleItem s(shop.items, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 400 $COIN$");
+		AddRequirement(s.requirements, "coin", "", "Coins", 400);
+	}
+	{
+		SaleItem s(shop.items, "Buy Iron Ore (250)", "$mat_iron_icon$", "mat_iron", "Buy 250 Iron Ore for 1400 $COIN$");
 		AddRequirement(s.requirements, "coin", "", "Coins", 1400);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 600 $COIN$", true);
-		s.spawnNothing = true;
-		AddRequirement(s.requirements, "coin", "", "Coins", 600);
+		SaleItem s(shop.items, "Buy Coal (250)", "$mat_coal_icon$", "mat_coal", "Buy 250 Coal for 500 $COIN$");
+		AddRequirement(s.requirements, "coin", "", "Coins", 500);
 	}
 	
 	//VEHICLE
-	Vehicle_Setup(this, 47.0f, 0.19f, Vec2f(0.0f, 0.0f), false);
+	Vehicle_Setup(this, 47.0f, 0.19f, Vec2f_zero, false);
 	
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
@@ -272,90 +116,137 @@ void onInit(CBlob@ this)
 	this.SetLight(true);
 	this.SetLightRadius(48.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
-
-	//this.getShape().SetOffset(Vec2f(0,0));
-	//this.getShape().getConsts().bullet = true;
-	//this.getShape().getConsts().transports = true;
 }
 
-// SHOP
-
-void GetButtonsFor(CBlob@ this, CBlob@ caller)
+void AddRandomItemsToShop(Shop@ shop, Random@ seed, const u8&in amount)
 {
-	//this.set_bool("shop available", this.isOverlapping(caller));
-}
-
-void onShopMadeItem(CBitStream@ params)
-{
-	if (!isServer()) return;
-
-	u8 s_index;
-	u16 this_id, caller_id, item_id;
-	string name;
-
-	if (!params.saferead_u8(s_index) || !params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	SaleItem@[] items;
 	{
-		return;
+		SaleItem s(items, "Scroll of Fowl", "$scroll_fowl$", "fowl", Translate::TradeScrollFowl, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
+	}
+	{
+		SaleItem s(items, "Scroll of Royalty", "$scroll_royalty$", "royalty", Translate::TradeScrollRoyalty, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 40);
+	}
+	{
+		SaleItem s(items, "Scroll of Wisent", "$scroll_wisent$", "wisent", Translate::TradeScrollWisent, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
+	}
+	{
+		SaleItem s(items, "Scroll of Fish", "$scroll_fish$", "fish", Translate::TradeScrollFish, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
+	}
+	{
+		SaleItem s(items, "Scroll of Drought", "$scroll_drought$", "drought", Translate::TradeScrollDrought, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 30);
+	}
+	{
+		SaleItem s(items, "Scroll of Harvest", "$scroll_flora$", "flora", Translate::TradeScrollFlora, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
+	}
+	{
+		SaleItem s(items, "Scroll of Ressurection", "$scroll_revive$", "revive", Translate::TradeScrollRevive, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
+	}
+	{
+		SaleItem s(items, "Scroll of Compaction", "$scroll_crate$", "crate", Translate::TradeScrollCrate, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
+	}
+	{
+		SaleItem s(items, "Scroll of Duplication", "$scroll_clone$", "clone", Translate::TradeScrollDupe, ItemType::scroll, 1, 1);
+		s.custom_data = 5;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 200);
+	}
+	{
+		SaleItem s(items, "Scroll of Repair", "$scroll_repair$", "repair", Translate::TradeScrollRepair, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
+	}
+	{
+		SaleItem s(items, "Scroll of Health", "$scroll_health$", "health", Translate::TradeScrollHealth, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
+	}
+	{
+		SaleItem s(items, "Scroll of Carnage", "$scroll_carnage$", "carnage", Translate::TradeScrollCarnage, ItemType::scroll, 1, 1);
+		s.custom_data = 15;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
+	}
+	{
+		SaleItem s(items, "Scroll of Midas", "$scroll_midas$", "midas", Translate::TradeScrollMidas, ItemType::scroll, 1, 1);
+		s.custom_data = 15;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
+	}
+	{
+		SaleItem s(items, "Scroll of Conveyance", "$scroll_teleport$", "teleport", Translate::TradeScrollTeleport, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
+	}
+	{
+		SaleItem s(items, "Scroll of Sea", "$scroll_sea$", "sea", Translate::TradeScrollSea, ItemType::scroll, 1, 1);
+		s.custom_data = 2;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 200);
+	}
+	{
+		SaleItem s(items, "Scroll of Quarry", "$scroll_stone$", "stone", Translate::TradeScrollStone, ItemType::scroll, 1, 1);
+		s.custom_data = 20;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
 	}
 	
-	CBlob@ this = getBlobByNetworkID(this_id);
-	if (this is null) return;
-
-	CBlob@ caller = getBlobByNetworkID(caller_id);
-	if (caller is null) return;
-
-	string[] spl = name.split("_");
-	if (name.findFirst("scroll") != -1)
+	u32 weights_sum = 0;
+	for (u8 i = 0; i < items.length; i++)
 	{
-		CBlob@ scroll = server_MakePredefinedScroll(this.getPosition(), spl[1]);
-		if (scroll !is null)
+		weights_sum += items[i].custom_data;
+	}
+	
+	for (u8 a = 0; a < amount; a++)
+	{
+		SaleItem@ add_item = GetRandomSaleItem(items, weights_sum, seed);
+		bool exists = false;
+		for (u8 i = 0; i < shop.items.length; i++)
 		{
-			if (caller !is null && !caller.server_PutInInventory(scroll))
+			SaleItem@ item = shop.items[i];
+			if (item.blob_name == add_item.blob_name)
 			{
-				scroll.setPosition(caller.getPosition());
+				exists = true;
+				a--;
 			}
 		}
-	}
-	else if (spl[0] == "coin")
-	{
-		CPlayer@ callerPlayer = caller.getPlayer();
-		if (callerPlayer is null) return;
-
-		callerPlayer.server_setCoins(callerPlayer.getCoins() +  parseInt(spl[1]));
-	}
-	// required because otherwise tree spawns as planted
-	else if (name == "tree_pine" || name == "tree_bushy")
-	{
-		CBlob@ seed = server_MakeSeed(caller.getPosition(), name);
-		CInventory@ callerinv = caller.getInventory();
-		if (callerinv !is null)
-		{
-			// .isFull() isn't working correctly here, not sure why
-			// Try to put blob in inventory, then pick it up if it cant
-			caller.server_PutInInventory(seed);
-			if (!seed.isInInventory() && caller.getCarriedBlob() is null)
-			{
-				caller.server_Pickup(seed);
-			}
-		}
+		if (!exists) shop.items.push_back(add_item);
 	}
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+SaleItem@ GetRandomSaleItem(SaleItem@[]@ items, const u32&in weights_sum, Random@ seed)
 {
-	if (cmd == this.getCommandID("shop made item client") && isClient())
-	{
-		this.getSprite().PlaySound("/ChaChing.ogg");
-		
-		const u8 s_index = params.read_u8();
+	const u32 random_weight = seed.NextRanged(weights_sum);
+	u32 current_number = 0;
 
-		ShopItem[]@ shop_items;
-		if (!this.get(SHOP_ARRAY, @shop_items)) return;
-		
-		if (s_index >= shop_items.length) return;
-		ShopItem@ s = shop_items[s_index];
-		s.customData = s.customData == 255 ? 255 : Maths::Max(s.customData - 1, 0);
+	for (u8 i = 0; i < items.length; i++)
+	{
+		SaleItem@ item = items[i];
+		if (random_weight <= current_number + item.custom_data)
+		{
+			return item;
+		}
+
+		current_number += item.custom_data;
 	}
+
+	return null;
+}
+
+void onShopMadeItem(CBlob@ this, CBlob@ caller, CBlob@ blob, SaleItem@ item)
+{
+	this.getSprite().PlaySound("/ChaChing.ogg");
 }
 
 // GENERIC & VEHICLE
@@ -377,17 +268,9 @@ void onTick(CBlob@ this)
 	this.AddForce(Vec2f(0, v.fly_speed * v.fly_amount));
 }
 
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 charge) {}
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return Vehicle_doesCollideWithBlob_ground(this, blob);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
