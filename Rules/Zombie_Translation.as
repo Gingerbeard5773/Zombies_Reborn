@@ -141,6 +141,8 @@ namespace Translate
 	TradeScrollWisent   = Translate("Summons a bison. Good for meat!",                          ""),
 	TradeScrollFowl     = Translate("If you need some eggs.",                                   ""),
 	TradeScrollFish     = Translate("Summons a bloodthirsty shark.",                            ""),
+	TradeScrollHealth   = Translate("This one can heal even the worst injuries.",               ""),
+	TradeScrollRepair   = Translate("This one will fix up whatever is nearby!",                 ""),
 
 	//library
 	Researching     = Translate("Researching - {TIME}s",                                             ""),
