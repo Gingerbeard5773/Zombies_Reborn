@@ -90,7 +90,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "chicken", "Chicken", 1);
 	}
 	{
-		SaleItem s(shop.items, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 400 $COIN$");
+		SaleItem s(shop.items, "Buy Bushy Tree (1)", "$tree_bushy$", "tree_bushy", "Buy 1 Bushy tree for 400 $COIN$", ItemType::seed);
 		AddRequirement(s.requirements, "coin", "", "Coins", 400);
 	}
 	{
@@ -173,8 +173,8 @@ void AddRandomItemsToShop(Shop@ shop, Random@ seed, const u8&in amount)
 	}
 	{
 		SaleItem s(items, "Scroll of Health", "$scroll_health$", "health", Translate::TradeScrollHealth, ItemType::scroll, 1, 1);
-		s.custom_data = 20;
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
+		s.custom_data = 18;
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
 	}
 	{
 		SaleItem s(items, "Scroll of Carnage", "$scroll_carnage$", "carnage", Translate::TradeScrollCarnage, ItemType::scroll, 1, 1);
