@@ -260,7 +260,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 void onAssignWorker(CBlob@ this, CBlob@ worker)
 {
 	SetStandardWorkerPosition(this, worker);
-	SetWorkerStatic(worker, true);
+	
+	this.server_AttachTo(worker, "WORKER");
 
 	this.getSprite().PlaySound("/PowerUp.ogg");
 	this.set_bool("can produce", true);
@@ -287,7 +288,7 @@ void onAssignWorker(CBlob@ this, CBlob@ worker)
 
 void onUnassignWorker(CBlob@ this, CBlob@ worker)
 {
-	SetWorkerStatic(worker, false);
+	worker.server_DetachFrom(this);
 
 	this.getSprite().PlaySound("/PowerDown.ogg");
 	this.set_bool("can produce", false);
@@ -295,8 +296,11 @@ void onUnassignWorker(CBlob@ this, CBlob@ worker)
 
 void SetStandardWorkerPosition(CBlob@ this, CBlob@ worker)
 {
+	AttachmentPoint@ ap = this.getAttachments().getAttachmentPoint("WORKER");
 	Random rand(this.getNetworkID() + worker.getNetworkID());
 	const f32 width = int(rand.NextRanged(this.getWidth()*0.5f)) - (this.getWidth() * 0.25f);
 	Vec2f offset = Vec2f(width, (this.getHeight() - worker.getHeight()) * 0.5f);
-	worker.setPosition(this.getPosition() + offset);
+
+	ap.offsetZ = 25.0f;
+	ap.offset = offset;
 }

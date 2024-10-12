@@ -38,8 +38,7 @@ void onTick(CSprite@ this)
 		return;
 	}
 	
-	CShape@ shape = blob.getShape();
-	if (shape.isStatic() || !blob.isActive()) //check frozen
+	if (blob.isAttachedToPoint("WORKER"))
 	{
 		this.SetAnimation("default");
 		return;

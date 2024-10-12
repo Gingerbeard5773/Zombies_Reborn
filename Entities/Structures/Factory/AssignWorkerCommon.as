@@ -53,9 +53,7 @@ void AssignWorker(CBlob@ this, CBlob@ worker)
 	worker.set_netid("assigned netid", this.getNetworkID());
 	worker.set_Vec2f("brain_destination", this.getPosition());
 
-	CSprite@ sprite = worker.getSprite();
-	sprite.SetZ(-40);
-	sprite.PlaySound("MigrantSayHello");
+	worker.getSprite().PlaySound("MigrantSayHello");
 	
 	onAssignWorkerHandle@ onAssign;
 	if (this.get("onAssignWorker handle", @onAssign))
@@ -68,22 +66,10 @@ void UnassignWorker(CBlob@ this, CBlob@ worker)
 {
 	this.set_netid("assigned netid", 0);
 	worker.set_netid("assigned netid", 0);
-
-	CSprite@ sprite = worker.getSprite();
-	sprite.SetZ(0);
 	
 	onUnassignWorkerHandle@ onUnassign;
 	if (this.get("onUnassignWorker handle", @onUnassign))
 	{
 		onUnassign(this, worker);
 	}
-}
-
-void SetWorkerStatic(CBlob@ worker, const bool&in isStatic = true)
-{
-	CShape@ shape = worker.getShape();
-	shape.getVars().onground = true;
-	shape.getConsts().collidable = !isStatic;
-	shape.server_SetActive(!isStatic);
-	worker.getMovement().doTickScripts = !isStatic;
 }
