@@ -40,7 +40,7 @@ void onInit(CSprite@ this)
 			anim.AddFrames(frames);
 		}
 		heat.SetAnimation(anim);
-		heat.SetRelativeZ(0.1f);
+		heat.SetRelativeZ(0.3f);
 		heat.SetVisible(false);
 		heat.setRenderStyle(RenderStyle::light);
 	}
