@@ -24,10 +24,10 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	//see if joining player has a sleeper to use
-	
-	if (player is null) return;
-	
+	string[]@ tokens = player.getUsername().split("~");
+	if (tokens.length <= 0) return;
+	const string username = tokens[0];
+
 	CBlob@[] sleepers;
 	if (!getBlobsByTag("sleeper", @sleepers)) return;
 	
@@ -35,7 +35,7 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	for (u8 i = 0; i < sleepersLength; i++)
 	{
 		CBlob@ sleeper = sleepers[i];
-		if (!sleeper.hasTag("dead") && sleeper.get_string("sleeper_name") == player.getUsername())
+		if (!sleeper.hasTag("dead") && sleeper.get_string("sleeper_name") == username)
 		{
 			CBlob@ oldBlob = player.getBlob();
 			if (oldBlob !is null) oldBlob.server_Die();
