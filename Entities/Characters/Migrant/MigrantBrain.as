@@ -75,7 +75,7 @@ void onTick(CBrain@ this)
 
 void DitchAssigned(CBlob@ blob)
 {
-	if (!blob.exists("assigned netid") || blob.isAttachedToPoint("PICKUP")) return;
+	if (!blob.exists("assigned netid") || (blob.isAttached() && !blob.isAttachedToPoint("WORKER"))) return;
 
 	CBlob@ assigned = getBlobByNetworkID(blob.get_netid("assigned netid"));
 	if (assigned !is null)
