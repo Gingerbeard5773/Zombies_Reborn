@@ -43,6 +43,11 @@ void onTick(CBlob@ this)
 {
 	if (isServer())
 	{
+		if (this.hasTag("exploding") && this.isInWater())
+		{
+			server_SetEnraged(this, false, false);
+		}
+
 		//player functionality
 		CPlayer@ player = this.getPlayer();
 		if (player !is null)
@@ -89,7 +94,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 	else if (isWaterHitter(customData) && this.hasTag("exploding"))
 	{
-		server_SetEnraged(this, false);
+		server_SetEnraged(this, false, true);
 	}
 	else if (this.getPlayer() !is null && customData == Hitters::suicide)
 	{
@@ -105,6 +110,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("enrage_client") && isClient())
 	{
 		const bool enrage = params.read_bool();
+		const bool stun = params.read_bool();
 		if (enrage)
 		{
 			this.getSprite().PlaySound("/WraithDie");
@@ -118,7 +124,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			this.SetLight(false);
 			this.getSprite().PlaySound("Steam.ogg");
 
-			this.set_u32("stun_time", getGameTime() + 250);
+			if (stun)
+				this.set_u32("stun_time", getGameTime() + 250);
 
 			//steam particles
 			for (u8 i = 0; i < 5; i++)

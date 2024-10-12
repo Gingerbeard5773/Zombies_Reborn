@@ -32,38 +32,28 @@ void renderFrontStone(Vec2f farside, f32 width, f32 scale)
 void renderHPBar(CBlob@ blob, Vec2f origin)
 {
 	const string heartFile = "GUI/HeartNBubble.png";
-	int segmentWidth = 32;
+	const u8 segmentWidth = 32;
 	GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 0, Vec2f(16, 32), origin + Vec2f(-segmentWidth, 0));
 	int HPs = 0;
 	const f32 initialHealth = blob.getInitialHealth();
-	const f32 extraHealth = blob.getHealth() - initialHealth;
+	const f32 currentHealth = blob.getHealth();
+	const f32 extraHealth = currentHealth - initialHealth;
 
 	for (f32 step = 0.0f; step < initialHealth; step += 0.5f)
 	{
 		GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 1, Vec2f(16, 32), origin + Vec2f(segmentWidth * HPs, 0));
-		f32 thisHP = blob.getHealth() - step;
-
-		if (thisHP > 0)
+		const f32 health = currentHealth - step;
+		if (health > 0)
 		{
 			Vec2f heartoffset = (Vec2f(2, 10) * 2);
 			Vec2f heartpos = origin + Vec2f(segmentWidth * HPs, 0) + heartoffset;
 
-			if (thisHP <= 0.125f)
-			{
-				GUI::DrawIcon(heartFile, 4, Vec2f(12, 12), heartpos);
-			}
-			else if (thisHP <= 0.25f)
-			{
-				GUI::DrawIcon(heartFile, 3, Vec2f(12, 12), heartpos);
-			}
-			else if (thisHP <= 0.375f)
-			{
-				GUI::DrawIcon(heartFile, 2, Vec2f(12, 12), heartpos);
-			}
-			else
-			{
-				GUI::DrawIcon(heartFile, 1, Vec2f(12, 12), heartpos);
-			}
+			u8 frame = 1;
+			if (health <= 0.125f)      frame = 4;
+			else if (health <= 0.25f)  frame = 3;
+			else if (health <= 0.375f) frame = 2;
+
+			GUI::DrawIcon(heartFile, 1, Vec2f(12, 12), heartpos);
 		}
 
 		HPs++;
@@ -76,30 +66,20 @@ void renderHPBar(CBlob@ blob, Vec2f origin)
 		HPs = 0;
 		for (f32 step = 0.0f; step < extraHealth; step += 0.5f)
 		{
-			f32 thisHP = extraHealth - step;
-			if (thisHP > 0)
+			const f32 health = extraHealth - step;
+			if (health > 0)
 			{
 				int frameoffset = 5;
 				const int layeredHearts = Maths::Floor(HPs / (initialHealth * 2.0f));
 				Vec2f heartoffset = (Vec2f(2, 10) * 2) + Vec2f(0, layeredHearts > 0 ? layeredHearts * -10 : 0);
 				Vec2f heartpos = origin + Vec2f(segmentWidth * (HPs % (initialHealth * 2.0f)), 0) + heartoffset;
 
-				if (thisHP <= 0.125f)
-				{
-					GUI::DrawIcon(heartFile, 4 + frameoffset, Vec2f(12, 12), heartpos);
-				}
-				else if (thisHP <= 0.25f)
-				{
-					GUI::DrawIcon(heartFile, 3 + frameoffset, Vec2f(12, 12), heartpos);
-				}
-				else if (thisHP <= 0.375f)
-				{
-					GUI::DrawIcon(heartFile, 2 + frameoffset, Vec2f(12, 12), heartpos);
-				}
-				else
-				{
-					GUI::DrawIcon(heartFile, 1 + frameoffset, Vec2f(12, 12), heartpos);
-				}
+				u8 frame = 1;
+				if (health <= 0.125f)      frame = 4;
+				else if (health <= 0.25f)  frame = 3;
+				else if (health <= 0.375f) frame = 2;
+
+				GUI::DrawIcon(heartFile, frame + frameoffset, Vec2f(12, 12), heartpos);
 			}
 
 			HPs++;
