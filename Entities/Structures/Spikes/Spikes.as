@@ -1,17 +1,6 @@
 #include "Hitters.as"
 #include "CustomTiles.as"
 
-enum facing_direction
-{
-	none = 0,
-	up,
-	down,
-	left,
-	right
-};
-
-const string facing_prop = "facing";
-
 enum spike_state
 {
 	normal = 0,
@@ -29,14 +18,11 @@ void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
-	consts.mapCollisions = false;	 // we have our own map collision
+	consts.mapCollisions = false; // we have our own map collision
 
 	this.Tag("place norotate");
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
-	//dont set radius flags here so we orient to the ground first
-
-	this.set_u8(facing_prop, up);
 
 	this.set_u8(state_prop, normal);
 	this.set_u8(timer_prop, 0);
@@ -46,39 +32,27 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic) return;
 
+	tileCheck(this, this.getPosition(), getMap(), false, false);
+
 	this.getSprite().PlaySound("/build_wall2.ogg");
 }
 
-//temporary struct used to pass some variables by reference
-//since &inout isn't supported for native types
-class spikeCheckParameters
+const Vec2f[] directions = { Vec2f(0, -8),  Vec2f(8, 0), Vec2f(0, 8) , Vec2f(-8, 0) };
+
+void tileCheck(CBlob@ this, Vec2f pos, CMap@ map, bool&out onSurface, bool&out onStone)
 {
-	facing_direction facing;
-	bool onSurface, placedOnStone;
-};
-
-//specific tile checking logic for the spikes
-void tileCheck(CBlob@ this, CMap@ map, Vec2f pos, f32 angle, facing_direction set_facing, spikeCheckParameters@ params)
-{
-	if (params.placedOnStone) return; //do nothing if we've already found stone
-
-	Tile tile = map.getTile(pos);
-
-	if (params.onSurface)
+	onSurface = onStone = false;
+	for (f32 i = 0; i < 4; i++)
 	{
-		if (canRetractSpike(tile.type, map))
-		{
-			params.facing = set_facing;
-			this.setAngleDegrees(angle);
-			params.placedOnStone = true;
-		}
-	}
-	else if (map.isTileSolid(tile))
-	{
-		params.onSurface = true;
-		params.facing = set_facing;
+		Tile tile = map.getTile(pos + directions[i]);
+		if (!map.isTileSolid(tile)) continue;
+
+		const f32 angle = i * 90.0f - 180.0f;
 		this.setAngleDegrees(angle);
-		params.placedOnStone = canRetractSpike(tile.type, map);
+		onSurface = true;
+		onStone = canRetractSpike(tile.type, map);
+
+		if (onStone) return;
 	}
 }
 
@@ -91,122 +65,80 @@ void onTick(CBlob@ this)
 {
 	CMap@ map = getMap();
 	Vec2f pos = this.getPosition();
-	const f32 tilesize = map.tilesize;
 
-	if (getNet().isServer() &&
-	        (map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
+	u8 state = this.get_u8(state_prop);
+	if (state == falling)
 	{
-		this.server_Hit(this, pos, Vec2f(0, -1), 3.0f, Hitters::fall, true);
-		return;
-	}
-
-	//get prop
-	spike_state state = spike_state(this.get_u8(state_prop));
-	if (state == falling) //opt
-	{
-		this.getCurrentScript().runFlags &= ~Script::tick_blob_in_proximity;
-		this.getCurrentScript().tickFrequency = 1;
 		this.getShape().SetStatic(false);
-		this.setAngleDegrees(180);
+		this.setAngleDegrees(180.0f);
+		if (isServer() && (map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
+		{
+			this.server_Hit(this, pos, Vec2f(0, -1), 3.0f, Hitters::fall, true);
+		}
+		if (isClient())
+		{
+			this.getSprite().SetAnimation("default");
+			onHealthChange(this, 1.0f);
+		}
 		return;
 	}
 
 	//check support/placement status
-	facing_direction facing;
-	bool placedOnStone;
-	bool onSurface;
-
-	//wrapped functionality
+	bool onSurface, onStone;
+	tileCheck(this, pos, map, onSurface, onStone);
+	
+	if (!onSurface)
 	{
-		spikeCheckParameters temp;
-		//box
-		temp.facing = none;
-		temp.onSurface = temp.placedOnStone = false;
-
-		tileCheck(this, map, pos + Vec2f(0.0f, tilesize), 0.0f, up, temp);
-		tileCheck(this, map, pos + Vec2f(-tilesize, 0.0f), 90.0f, right, temp);
-		tileCheck(this, map, pos + Vec2f(tilesize, 0.0f), -90.0f, left, temp);
-		tileCheck(this, map, pos + Vec2f(0.0f, -tilesize), 180.0f, down, temp);
-
-		//unbox
-		facing = temp.facing;
-		placedOnStone = temp.placedOnStone;
-		onSurface = temp.onSurface;
-	}
-
-	if (!onSurface && getNet().isServer())
-	{
-		this.getCurrentScript().runFlags &= ~Script::tick_blob_in_proximity;
 		this.getCurrentScript().tickFrequency = 1;
-		this.getShape().SetStatic(false);
-
-		facing = down;
-		state = falling;
-	}
-
-	if (state == falling)
-	{
-		this.set_u8(state_prop, state);
-		this.Sync(state_prop, true);
+		
+		if (isServer())
+		{
+			this.set_u8(state_prop, falling);
+			this.Sync(state_prop, true);
+		}
 		return;
 	}
 
-	if (getNet().isClient() && !this.hasTag("_frontlayer"))
+	if (isClient() && !this.hasTag("_frontlayer"))
 	{
 		CSprite@ sprite = this.getSprite();
 		sprite.SetZ(500.0f);
 
-		if (sprite !is null)
+		CSpriteLayer@ panel = sprite.addSpriteLayer("panel", sprite.getFilename() , 8, 16, this.getTeamNum(), this.getSkinNum());
+		if (panel !is null)
 		{
-			CSpriteLayer@ panel = sprite.addSpriteLayer("panel", sprite.getFilename() , 8, 16, this.getTeamNum(), this.getSkinNum());
+			panel.SetOffset(Vec2f(0, 3));
+			panel.SetRelativeZ(500.0f);
 
-			if (panel !is null)
-			{
-				panel.SetOffset(Vec2f(0, 3));
-				panel.SetRelativeZ(500.0f);
+			Animation@ animcharge = panel.addAnimation("default", 0, false);
+			animcharge.AddFrame(6);
+			animcharge.AddFrame(7);
 
-				Animation@ animcharge = panel.addAnimation("default", 0, false);
-				animcharge.AddFrame(6);
-				animcharge.AddFrame(7);
-
-				this.Tag("_frontlayer");
-			}
+			this.Tag("_frontlayer");
 		}
 	}
 
-	this.set_u8(facing_prop, facing);
-
-	u8 timer = this.get_u8(timer_prop);
-
-	// set optimisation flags - not done in oninit so we actually orient to the stone first
-
-	this.getCurrentScript().runProximityRadius = 124.0f;
-	this.getCurrentScript().runFlags |= Script::tick_blob_in_proximity;
-
-	// spike'em
-
-	if (placedOnStone)
+	if (onStone)
 	{
+		u8 timer = this.get_u8(timer_prop);
 		const u32 tickFrequency = 3;
 		this.getCurrentScript().tickFrequency = tickFrequency;
 
 		if (state == hidden)
 		{
 			this.getSprite().SetAnimation("hidden");
-			CBlob@[] blobsInRadius;
 			const int team = this.getTeamNum();
-			if (map.getBlobsInRadius(pos, this.getRadius() * 1.0f, @blobsInRadius))
+			CBlob@[] overlapping;
+			if (this.getOverlapping(@overlapping))
 			{
-				for (uint i = 0; i < blobsInRadius.length; i++)
+				for (u8 i = 0; i < overlapping.length; i++)
 				{
-					CBlob @b = blobsInRadius[i];
-					if (team != b.getTeamNum() && canStab(b))
-					{
-						state = stabbing;
-						timer = delay_stab;
+					CBlob@ b = overlapping[i];
+					if (team == b.getTeamNum() || !canStab(b)) continue;
 
-						break;
-					}
+					state = stabbing;
+					timer = delay_stab;
+					break;
 				}
 			}
 		}
@@ -224,21 +156,15 @@ void onTick(CBlob@ this)
 				this.getSprite().SetAnimation("default");
 				this.getSprite().PlaySound("/SpikesOut.ogg");
 
-				CBlob@[] blobsInRadius;
-				const int team = this.getTeamNum();
-				if (map.getBlobsInRadius(pos, this.getRadius() * 2.0f, @blobsInRadius))
+				CBlob@[] overlapping;
+				if (this.getOverlapping(@overlapping))
 				{
-					for (uint i = 0; i < blobsInRadius.length; i++)
+					for (u8 i = 0; i < overlapping.length; i++)
 					{
-						CBlob @b = blobsInRadius[i];
-						if (canStab(b)) //even hurts team when stabbing
-						{
-							// hurt?
-							if (this.isOverlapping(b))
-							{
-								this.server_Hit(b, pos, b.getVelocity() * -1, 0.5f, Hitters::spikes, true);
-							}
-						}
+						CBlob@ b = overlapping[i];
+						if (!canStab(b)) continue;
+
+						this.server_Hit(b, pos, b.getVelocity() * -1, 0.5f, Hitters::spikes, true);
 					}
 				}
 			}
@@ -264,8 +190,7 @@ void onTick(CBlob@ this)
 		this.getSprite().SetAnimation("default");
 		this.set_u8(timer_prop, 0);
 	}
-
-	onHealthChange(this, this.getHealth());
+	onHealthChange(this, 1.0f);
 }
 
 bool canStab(CBlob@ b)
@@ -276,32 +201,19 @@ bool canStab(CBlob@ b)
 //physics logic
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
-	if (!getNet().isServer() || this.isAttached())
-	{
-		return;
-	}
+	if (!isServer() || this.isAttached()) return;
 
-	//shouldn't be in here! collided with map??
-	if (blob is null)
-	{
-		return;
-	}
+	if (blob is null) return;
 
-	u8 state = this.get_u8(state_prop);
-	if (state == hidden || state == stabbing)
-	{
-		return;
-	}
+	const u8 state = this.get_u8(state_prop);
+	if (state == hidden || state == stabbing) return;
 
 	// only hit living things
-	if (!blob.hasTag("flesh"))
-	{
-		return;
-	}
+	if (!blob.hasTag("flesh")) return;
 
 	if (state == falling)
 	{
-		float vellen = this.getVelocity().Length();
+		const f32 vellen = this.getVelocity().Length();
 		if (vellen < 4.0f) //slow, minimal dmg
 			this.server_Hit(blob, point, Vec2f(0, 1), 1.0f, Hitters::spikes, true);
 		else if (vellen < 5.5f) //faster, kill archer
@@ -314,59 +226,34 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 
 	f32 damage = 0.0f;
+	const f32 angle = this.getAngleDegrees();
+	Vec2f vel = blob.getOldVelocity();
+	const bool b_falling = Maths::Abs(vel.y) > 0.5f;
+	const f32 verDist = Maths::Abs(this.getPosition().y - blob.getPosition().y);
+	const f32 horizDist = Maths::Abs(this.getPosition().x - blob.getPosition().x);
 
-	f32 angle = this.getAngleDegrees();
-	Vec2f vel = blob.getOldVelocity(); //if we use current vel it might have been cancelled vs terrain
-
-	bool b_falling = Maths::Abs(vel.y) > 0.5f;
-
-	if (angle > -135.0f && angle < -45.0f)
+	if (angle > -135.0f && angle < -45.0f && vel.x > 0)
 	{
-		f32 verDist = Maths::Abs(this.getPosition().y - blob.getPosition().y);
-
 		if (normal.x > 0.5f && verDist < 6.1f && vel.x > 1.0f)
-		{
 			damage = 1.0f;
-		}
-		else if (b_falling && vel.x >= 0)
-		{
+		else if (b_falling)
 			damage = 0.5f;
-		}
 	}
-	else if (angle > 45.0f && angle < 135.0f)
+	else if (angle > 45.0f && angle < 135.0f && vel.x < 0)
 	{
-		f32 verDist = Maths::Abs(this.getPosition().y - blob.getPosition().y);
-
 		if (normal.x < -0.5f && verDist < 6.1f && vel.x < -1.0f)
-		{
 			damage = 1.0f;
-		}
-		else if (b_falling && vel.x <= 0)
-		{
+		else if (b_falling)
 			damage = 0.5f;
-		}
 	}
-	else if (angle <= -135.0f || angle >= 135.0f)
+	else if ((angle <= -135.0f || angle >= 135.0f) && vel.y < 0)
 	{
-		f32 horizDist = Maths::Abs(this.getPosition().x - blob.getPosition().x);
-
-		if (normal.y < -0.5f && horizDist < 6.1f && vel.y < -0.5f)
-		{
+		if (normal.y < -0.5f && horizDist < 6.1f)
 			damage = 1.0f;
-		}
 	}
-	else
+	else if (normal.y > 0.5f && horizDist < 6.1f)
 	{
-		f32 horizDist = Maths::Abs(this.getPosition().x - blob.getPosition().x);
-
-		if (normal.y > 0.5f && horizDist < 6.1f && vel.y > 0.5f)
-		{
-			damage = 1.0f;
-		}
-		else if (this.getVelocity().y > 0.5f && horizDist < 6.1f)  // falling down
-		{
-			damage = this.getVelocity().y * 2.0f;
-		}
+		damage = 1.0f;
 	}
 
 	if (damage > 0)
@@ -392,8 +279,8 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-	f32 hp = this.getHealth();
-	f32 full_hp = this.getInitialHealth();
+	const f32 hp = this.getHealth();
+	const f32 full_hp = this.getInitialHealth();
 	int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
 
 	if (this.hasTag("bloody"))
