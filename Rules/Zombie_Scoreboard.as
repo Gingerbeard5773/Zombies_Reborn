@@ -11,7 +11,13 @@ const f32 screenMidX = getScreenWidth()/2;
 
 f32 scrollOffset = 0.0f;
 bool mouseWasPressed2 = false;
-CPlayer@ hoveredPlayer;
+
+u32 copy_time = 0;
+string copy_name = "";
+Vec2f copy_pos = Vec2f_zero;
+
+f32 yFallDown = 0;
+const f32 fallSpeed = 100.0f;
 
 //returns the bottom
 const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
@@ -76,9 +82,9 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 				if (getFromClipboard() != p.getUsername())
 				{
 					CopyToClipboard(p.getUsername());
-					rules.set_u16("client_copy_time", getGameTime());
-					rules.set_string("client_copy_name", p.getUsername());
-					rules.set_Vec2f("client_copy_pos", mousePos + Vec2f(0, -10));
+					copy_time = getGameTime();
+					copy_name = p.getUsername();
+					copy_pos = mousePos + Vec2f(0, -10);
 				}
 			}
 		}
@@ -91,7 +97,6 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 		if (playerHover)
 		{
 			playercolour = 0xffcccccc;
-			@hoveredPlayer = p;
 		}
 
 		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y + 1) + lineoffset, Vec2f(bottomright.x, bottomright.y + 1) + lineoffset, SColor(underlinecolor));
@@ -140,32 +145,26 @@ const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
 	}
 
 	// username copied text, goes at bottom to overlay above everything else
-	u32 durationLeft = rules.get_u16("client_copy_time");
-
-	if ((durationLeft + 64) > getGameTime())
+	if ((copy_time + 64) > getGameTime())
 	{
-		durationLeft = getGameTime() - durationLeft;
-		drawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
+		drawFancyCopiedText();
 	}
 
 	return topleft.y;
 }
 
-int lastOpenedGameTime = 0;
-float yFallDown = 0;
-float fallSpeed = 100.0f;
+void onTick(CRules@ this)
+{
+	if (!isPlayerListShowing())
+	{
+		yFallDown = f32(getScreenHeight()) * 0.35f;
+	}
+}
 
 void onRenderScoreboard(CRules@ this)
 {
 	if (this.get_bool("show_gamehelp")) return;
-
-	uint gameTime = getGameTime();
-	if(lastOpenedGameTime + 2 < gameTime) // was just opened
-	{
-		yFallDown = float(getScreenHeight()) * 0.35f;
-	}
-	lastOpenedGameTime = gameTime;
-
+	
 	yFallDown = Maths::Max(0, yFallDown - getRenderApproximateCorrectionFactor()*fallSpeed);
 	
 	const u8 playingTeamsCount = 1; //change this depending on how many teams in the gamemode, this.getTeamsNum() causes errors
@@ -175,11 +174,11 @@ void onRenderScoreboard(CRules@ this)
 	for (u8 i = 0; i < plyCount; i++)
 	{
 		CPlayer@ p = getPlayer(i);
-		if (p.getTeamNum() == this.getSpectatorTeamNum())
+		/*if (p.getTeamNum() == this.getSpectatorTeamNum())
 		{
 			spectators.push_back(p);
 			continue;
-		}
+		}*/
 
 		const u8 teamNum = p.getTeamNum();
 		if (teamNum < playingTeamsCount)
@@ -189,8 +188,6 @@ void onRenderScoreboard(CRules@ this)
 	}
 
 	//draw board
-
-	@hoveredPlayer = null;
 
 	Vec2f topleft(Maths::Max(100, screenMidX-maxMenuWidth), 150 - yFallDown);
 	drawServerInfo(this, 40 - yFallDown);
@@ -210,7 +207,7 @@ void onRenderScoreboard(CRules@ this)
 		}
 	}
 
-	const u8 spectatorsLength = spectators.length;
+	/*const u8 spectatorsLength = spectators.length;
 	if (spectatorsLength > 0)
 	{
 		//draw spectators
@@ -246,7 +243,7 @@ void onRenderScoreboard(CRules@ this)
 		}
 
 		topleft.y += 52;
-	}
+	}*/
 	
 	drawManualPointer(topleft.y);
 
@@ -275,13 +272,14 @@ void onRenderScoreboard(CRules@ this)
 	mouseWasPressed2 = controls.mousePressed2; 
 }
 
-void drawFancyCopiedText(string username, Vec2f mousePos, uint duration)
+void drawFancyCopiedText()
 {
-	const string text = "Username copied: " + username;
-	const Vec2f pos = mousePos - Vec2f(0, duration);
-	const int col = (255 - duration * 3);
+	const u32 time_left = getGameTime() - copy_time;
+	const string text = "Username copied: " + copy_name;
+	const Vec2f pos = copy_pos - Vec2f(0, time_left);
+	const int col = (255 - time_left * 3);
 
-	GUI::DrawTextCentered(text, pos, SColor((255 - duration * 4), col, col, col));
+	GUI::DrawTextCentered(text, pos, SColor((255 - time_left * 4), col, col, col));
 }
 
 void drawServerInfo(CRules@ this, const f32 y)

@@ -14,6 +14,11 @@ void onRestart(CRules@ this)
 	string[] name = map.getMapName().split('/'); //Official server maps seem to show up as
 	string mapName = name[name.length - 1]; //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
 	mapName = getFilenameWithoutExtension(mapName); // Remove extension from the filename if it exists
+	
+	if (map.exists("map seed"))
+	{
+		mapName = map.get_s32("map seed") + "";
+	}
 
 	this.set_string("map_name", mapName);
 	this.Sync("map_name", true);
