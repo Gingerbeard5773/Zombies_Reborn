@@ -1,5 +1,4 @@
 // SonantDread @ October 11th 2024
-#define SERVER_ONLY
 #include "Zombie_GlobalMessagesCommon.as";
 
 u8 maxWarns = 3; // max warns before ban
@@ -7,17 +6,6 @@ u16 warnDuration = 30; // days
 u16 banTime = 30; // days
 
 const string fileName = "Zombie_Warns.cfg";
-
-void onInit(CRules@ this)
-{
-    ConfigFile cfg = ConfigFile();
-    if (cfg.loadFile(fileName))
-    {
-        maxWarns = cfg.exists("max_warns") ? cfg.read_u8("max_warns") : 3;
-        warnDuration = cfg.exists("warn_duration") ? cfg.read_u16("warn_duration") : 30;
-        banTime = cfg.exists("ban_time") ? cfg.read_u16("ban_time") : 30;
-    }
-}
 
 void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
 {
@@ -29,8 +17,8 @@ void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
     CPlayer@ playerObject = getPlayerByUsername(player);
     if (adminUsername == player || (playerObject !is null && !playerObject.isMod())) return;
 
-    array<string> reasons;
-    array<string> expiries;
+    string[] reasons;
+    string[] expiries;
     if (cfg.exists(player + "_warns_reasons"))
     {
         cfg.readIntoArray_string(reasons, player + "_warns_reasons");
@@ -103,8 +91,8 @@ u8 removeExpiredWarns(string player)
     ConfigFile@ cfg = getWarnsConfig();
     u32 currentTime = Time();
 
-    array<string> reasons = getWarnReasons(player);
-    array<u32> expiries = getWarnExpiries(player);
+    string[] reasons = getWarnReasons(player);
+    u32[] expiries = getWarnExpiries(player);
 
     if (reasons.length == 0 || expiries.length == 0)
     {
@@ -112,8 +100,8 @@ u8 removeExpiredWarns(string player)
         return 0;
     }
 
-    array<string> updatedReasons;
-    array<string> updatedExpiries;
+    string[] updatedReasons;
+    string[] updatedExpiries;
     u8 activeWarnings = 0;
 
     // check if expired
@@ -167,10 +155,10 @@ u16 getWarnCount(string playerName)
     return 0;
 }
 
-array<string> getWarnReasons(string playerName)
+string[] getWarnReasons(string playerName)
 {
     ConfigFile@ cfg = getWarnsConfig();
-    array<string> reasons;
+    string[] reasons;
 
     if (cfg.exists(playerName + "_warns_reasons"))
     {
@@ -180,11 +168,11 @@ array<string> getWarnReasons(string playerName)
     return reasons;
 }
 
-array<u32> getWarnExpiries(string playerName)
+u32[] getWarnExpiries(string playerName)
 {
     ConfigFile@ cfg = getWarnsConfig();
-    array<string> expiriesStrings;
-    array<u32> expiries;
+    string[] expiriesStrings;
+    u32[] expiries;
 
     if (cfg.exists(playerName + "_warns_expiries"))
     {

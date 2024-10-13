@@ -2,7 +2,7 @@
 
 #include "Zombie_SoftBansCommon.as";
 #include "Zombie_GlobalMessagesCommon.as";
-#include "Zombie_Warns.as";
+#include "Zombie_WarnsCommon.as";
 
 void printcommandslist()
 {
