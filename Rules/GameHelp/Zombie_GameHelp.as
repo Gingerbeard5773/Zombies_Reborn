@@ -53,7 +53,8 @@ void onRender(CRules@ this)
 	//background
 	Vec2f imageSize;
 	GUI::GetIconDimensions("$HELP$", imageSize);
-	GUI::DrawIconByName("$HELP$", Vec2f(center.x - imageSize.x, center.y - imageSize.y));
+	Vec2f topLeft(center.x - imageSize.x, center.y - imageSize.y);
+	GUI::DrawIconByName("$HELP$", topLeft);
 	
 	//pages
 	managePages(imageSize, center);
@@ -64,6 +65,7 @@ void onRender(CRules@ this)
 	makeExitButton(this, Vec2f(center.x + imageSize.x - 20, center.y - imageSize.y + 20), controls, mousePos);
 	makePageChangeButton(Vec2f(center.x+22, center.y + imageSize.y + 30), controls, mousePos, true);
 	makePageChangeButton(Vec2f(center.x-22, center.y + imageSize.y + 30), controls, mousePos, false);
+	makeStagingPopup(topLeft);
 	makeWebsiteLink(Vec2f(center.x+250, center.y + imageSize.y + 10), "Discord", "https://discord.gg/V29BBeba3C", controls, mousePos);
 	makeWebsiteLink(Vec2f(center.x+160, center.y + imageSize.y + 10), "Github", "https://github.com/Gingerbeard5773/Zombies_Reborn", controls, mousePos);
 	
@@ -160,6 +162,7 @@ void makePageChangeButton(Vec2f&in pos, CControls@ controls, Vec2f&in mousePos, 
 
 void makeWebsiteLink(Vec2f pos, const string&in text, const string&in website, CControls@ controls, Vec2f&in mousePos)
 {
+	GUI::SetFont("medium font");
 	Vec2f dim;
 	GUI::GetTextDimensions(text, dim);
 
@@ -185,4 +188,34 @@ void makeWebsiteLink(Vec2f pos, const string&in text, const string&in website, C
 	}
 
 	GUI::DrawTextCentered(text, Vec2f(tl.x + (width * 0.50f), tl.y + (height * 0.50f)), 0xffffffff);
+}
+
+void makeStagingPopup(Vec2f&in pos)
+{
+	#ifdef STAGING
+	return; //staging players don't see this popup
+	#endif
+
+	GUI::SetFont("menu");
+	const string info = "Staging\n\n"+
+	                    "Zombie Fortress is best\nsuited to be played\n"+
+	                    "with a staging client.\n\n"+
+	                    "What is Staging?\n"+
+	                    "Staging is a version of KAG\nwith incredible optimization.\n"+
+	                    "Switch to staging for\nmajor performance improvement!\n\n"+
+	                    "How to get staging on steam:\n"+
+	                    "\nKAG properties -> Betas ->\nEnter transhumandesign ->\nChoose staging-test\n\n"+
+	                    "Visit the discord\nfor additional information\nor if you are a non-steam player.";
+	Vec2f dim;
+	GUI::GetTextDimensions(info, dim);
+	
+	pos.y += dim.y;
+	pos.x -= 25.0f;
+
+	Vec2f tl = pos - dim + Vec2f(-5.0f, 0.0f);
+	Vec2f br = pos + Vec2f(10.0f, -40.0f);
+	GUI::DrawPane(tl, br, SColor(0xffcccccc));
+
+	pos.y += 10.0f;
+	GUI::DrawText(info, pos - dim, SColor(0xffffffff));
 }
