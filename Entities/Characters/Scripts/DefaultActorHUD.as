@@ -53,7 +53,7 @@ void renderHPBar(CBlob@ blob, Vec2f origin)
 			else if (health <= 0.25f)  frame = 3;
 			else if (health <= 0.375f) frame = 2;
 
-			GUI::DrawIcon(heartFile, 1, Vec2f(12, 12), heartpos);
+			GUI::DrawIcon(heartFile, frame, Vec2f(12, 12), heartpos);
 		}
 
 		HPs++;
