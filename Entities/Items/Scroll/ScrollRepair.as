@@ -67,7 +67,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		
 		CBlob@[] blobs;
-		map.getBlobsInRadius(pos, radius, @blobs);
+		map.getBlobsInRadius(pos, radius*8.0f, @blobs);
 		for (u16 i = 0; i < blobs.length; i++)
 		{
 			CBlob@ blob = blobs[i];
