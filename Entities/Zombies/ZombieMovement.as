@@ -17,9 +17,11 @@ void onTick(CMovement@ this)
 	UndeadMoveVars@ moveVars;
 	if (!blob.get("moveVars", @moveVars)) return;
 	
+	UndeadMoveConsts@ consts = moveVars.consts;
+
 	CMap@ map = getMap();
 	CShape@ shape = blob.getShape();
-	
+
 	const bool left    = blob.isKeyPressed(key_left);
 	const bool right   = blob.isKeyPressed(key_right);
 	const bool up      = blob.isKeyPressed(key_up);
@@ -33,27 +35,30 @@ void onTick(CMovement@ this)
 	bool onladder = blob.isOnLadder();
 	
 	// check if we need to scale a wall
-	if (XORRandom(moveVars.climbingFactor) == 0 && !blob.isOnLadder() && (up || left || right)) //key pressed
+	if (XORRandom(consts.climbingFactor) == 0 && !blob.isOnLadder() && (up || left || right)) //key pressed
 	{
 		//check solid tiles
-		const f32 ts = map.tilesize;
-		const f32 y_ts = ts * 0.2f;
-		const f32 x_ts = ts * 1.4f;
+		const f32 y_ts = map.tilesize * 0.2f;
+		const f32 x_ts = map.tilesize * 1.4f;
 		
 		bool surface_left = map.isTileSolid(pos + Vec2f(-x_ts, y_ts-map.tilesize)) || map.isTileSolid(pos + Vec2f(-x_ts, y_ts));
-		//TODO: fix flags sync and hitting so we dont have to do this
-		if (!surface_left)
-		{
-			surface_left = checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts-map.tilesize)) ||
-						   checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts));
-		}
-		
 		bool surface_right = map.isTileSolid(pos + Vec2f(x_ts, y_ts-map.tilesize)) || map.isTileSolid(pos + Vec2f(x_ts, y_ts));
-		//TODO: fix flags sync and hitting so we dont have to do this
-		if (!surface_right)
+		if (!surface_right || !surface_left)
 		{
-			surface_right = checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts-map.tilesize)) ||
-							checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts));
+			CBlob@[] overlapping;
+			if (blob.getOverlapping(@overlapping))
+			{
+				for (u8 i = 0; i < overlapping.length; i++)
+				{
+					CBlob@ overlapped = overlapping[i];
+					if (!overlapped.isCollidable() || !overlapped.getShape().isStatic()) continue;
+
+					if (overlapped.getPosition().x > pos.x)
+						surface_right = true;
+					else
+						surface_left = true;
+				}
+			}
 		}
 		
 		// set onladder to true for scaling
@@ -79,8 +84,6 @@ void onTick(CMovement@ this)
 		blob.setVelocity(vel);
 		
 		moveVars.jumpCount = -1;
-		
-		CleanUp(this, blob, moveVars);
 		return;
 	}
 	
@@ -88,32 +91,23 @@ void onTick(CMovement@ this)
 	shape.getVars().onladder = false;
 	
 	// jumping
-	if (moveVars.jumpFactor > 0.01f)
+	if (consts.jumpFactor > 0.01f)
 	{
 		if (onground)
 			moveVars.jumpCount = 0;
 		else
 			moveVars.jumpCount++;
 		
-		if (up && vel.y > -moveVars.jumpMaxVel)
+		if (up && vel.y > -consts.jumpMaxVel)
 		{
-			moveVars.jumpStart = 0.7f;
-			moveVars.jumpMid = 0.2f;
-			moveVars.jumpEnd = 0.1f;
-			
 			Vec2f force = Vec2f(0, 0);
+
+			if (moveVars.jumpCount <= 0)     force.y -= 1.5f;
+			else if (moveVars.jumpCount < 3) force.y -= 0.7f;
+			else if (moveVars.jumpCount < 6) force.y -= 0.2f;
+			else if (moveVars.jumpCount < 8) force.y -= 0.1f;
 			
-			// jump
-			if (moveVars.jumpCount <= 0)
-				force.y -= 1.5f;
-			else if (moveVars.jumpCount < 3)
-				force.y -= moveVars.jumpStart;
-			else if (moveVars.jumpCount < 6)
-				force.y -= moveVars.jumpMid;
-			else if (moveVars.jumpCount < 8)
-				force.y -= moveVars.jumpEnd;
-			
-			force *= moveVars.jumpFactor * 60.0f;
+			force *= consts.jumpFactor * 60.0f;
 			
 			blob.AddForce(force);
 		}
@@ -136,30 +130,24 @@ void onTick(CMovement@ this)
 	
 	if (right)
 	{
-		if (vel.x < -0.1f)
-			walkDirection.x += turnaroundspeed;
-		else if (facingleft)
-			walkDirection.x += backwardsspeed;
-		else
-			walkDirection.x += normalspeed;
+		if (vel.x < -0.1f)    walkDirection.x += turnaroundspeed;
+		else if (facingleft)  walkDirection.x += backwardsspeed;
+		else                  walkDirection.x += normalspeed;
 	}
 	
 	if (left)
 	{
-		if (vel.x > 0.1f)
-			walkDirection.x -= turnaroundspeed;
-		else if (!facingleft)
-			walkDirection.x -= backwardsspeed;
-		else
-			walkDirection.x -= normalspeed;
+		if (vel.x > 0.1f)     walkDirection.x -= turnaroundspeed;
+		else if (!facingleft) walkDirection.x -= backwardsspeed;
+		else                  walkDirection.x -= normalspeed;
 	}
 	
 	f32 force = 1.0f;
 	f32 lim = 0.0f;
 	if (left || right)
 	{
-		lim = moveVars.walkSpeed;
-		lim *= moveVars.walkFactor * Maths::Abs(walkDirection.x);
+		lim = consts.walkSpeed;
+		lim *= consts.walkFactor * Maths::Abs(walkDirection.x);
 	}
 	
 	Vec2f stop_force;
@@ -167,53 +155,27 @@ void onTick(CMovement@ this)
 	const bool greater = vel.x > 0;
 	const f32 absx = greater ? vel.x : -vel.x;
 	
-	if (absx > lim)
+	if (absx > lim && stop) //stopping
 	{
-		if (stop) //stopping
+		stop_force.x -= (absx - lim) * (greater ? 1 : -1);
+
+		stop_force.x *= 30.0f * consts.stoppingFactor *
+		               (onground ? consts.stoppingForce : consts.stoppingForceAir);
+		
+		if (absx > 3.0f)
 		{
-			stop_force.x -= (absx - lim) * (greater ? 1 : -1);
-			
-			stop_force.x *= 30.0f * moveVars.stoppingFactor *
-						(onground ? moveVars.stoppingForce : moveVars.stoppingForceAir);
-			
-			if (absx > 3.0f)
-			{
-				f32 extra = (absx-3.0f);
-				f32 scale = (1.0f/((1+extra) * 2));
-				stop_force.x *= scale;
-			}
-			
-			blob.AddForce(stop_force);
+			const f32 extra = (absx-3.0f);
+			const f32 scale = (1.0f/((1+extra) * 2));
+			stop_force.x *= scale;
 		}
+		
+		blob.AddForce(stop_force);
 	}
 	
 	if (absx < lim || left && greater || right && !greater)
 	{
-		force *= moveVars.walkFactor * 30.0f;
+		force *= consts.walkFactor * 30.0f;
 		if (Maths::Abs(force) > 0.01f)
 			blob.AddForce(walkDirection*force);
 	}
-
-	// clean up
-	CleanUp(this, blob, moveVars);
-}
-
-//cleanup all vars here - reset clean slate for next frame
-void CleanUp(CMovement@ this, CBlob@ blob, UndeadMoveVars@ moveVars)
-{
-	//reset all the vars here
-	moveVars.jumpFactor = 1.0f;
-	moveVars.walkFactor = 1.0f;
-}
-
-//TODO: fix flags sync and hitting so we dont need this
-const bool checkForSolidMapBlob(CMap@ map, Vec2f&in pos)
-{
-	CBlob@ blob = map.getBlobAtPosition(pos);
-	if (blob !is null && blob.isCollidable())
-	{
-		return blob.getShape().isStatic();
-	}
-	
-	return false;
 }

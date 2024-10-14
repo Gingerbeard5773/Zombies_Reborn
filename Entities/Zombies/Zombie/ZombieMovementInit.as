@@ -1,32 +1,31 @@
 #include "UndeadMoveCommon.as"
 
+UndeadMoveConsts@ consts = SetupConsts();
+
+UndeadMoveConsts@ SetupConsts()
+{
+	UndeadMoveConsts consts;
+	consts.walkSpeed = 0.9f;
+	consts.walkFactor = 1.0f;
+
+	consts.climbingFactor = 25;
+
+	consts.jumpMaxVel = 2.9f;
+	consts.jumpFactor = 1.0f;
+
+	consts.stoppingForce = 0.80f;
+	consts.stoppingForceAir = 0.60f;
+	consts.stoppingFactor = 1.0f;
+	return consts;
+}
+
 void onInit(CMovement@ this)
 {
-    UndeadMoveVars moveVars;
+	UndeadMoveVars moveVars(consts);
+	moveVars.jumpCount = 0;
 
-    //walking vars
-    moveVars.walkSpeed = 0.9f;
-    moveVars.walkFactor = 1.0f;
-    moveVars.walkLadderSpeed.Set(0.15f, 0.6f);
-
-    //climbing vars
-    moveVars.climbingFactor = 25;
-
-    //jumping vars
-    moveVars.jumpMaxVel = 2.9f;
-    moveVars.jumpStart = 1.0f;
-    moveVars.jumpMid = 0.55f;
-    moveVars.jumpEnd = 0.4f;
-    moveVars.jumpFactor = 1.0f;
-    moveVars.jumpCount = 0;
-    
-    //stopping forces
-    moveVars.stoppingForce = 0.80f; //function of mass
-    moveVars.stoppingForceAir = 0.60f; //function of mass
-    moveVars.stoppingFactor = 1.0f;
-
-	//
-    this.getBlob().set("moveVars", moveVars);
-    this.getBlob().getShape().getVars().waterDragScale = 30.0f;
-	this.getBlob().getShape().getConsts().collideWhenAttached = true;
+	CBlob@ blob = this.getBlob();
+	blob.set("moveVars", moveVars);
+	blob.getShape().getVars().waterDragScale = 30.0f;
+	blob.getShape().getConsts().collideWhenAttached = true;
 }
