@@ -21,6 +21,8 @@ class MountedBowInfo : VehicleInfo
 			bullet.server_SetTimeToDie(-1);   // override lock
 			bullet.server_SetTimeToDie(2.69f);
 			bullet.Tag("bow arrow");
+			
+			bullet.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 		}
 	}
 }
@@ -177,7 +179,8 @@ void Vehicle_MountedBowControls(CBlob@ this, VehicleInfo@ v)
 	
 	//allow non-players to shoot vehicle weapons
     const bool isBot = blob.getPlayer() is null;
-    if (isServer() && isBot && blob.isKeyPressed(key_action1) && v.canFire())
+	const bool press_action1 = isBot ? blob.isKeyPressed(key_action1) : ap.isKeyPressed(key_action1);
+    if (isServer() && press_action1 && v.canFire())
     {
         CBitStream bt;
         bt.write_u16(blob.getNetworkID());
@@ -186,13 +189,6 @@ void Vehicle_MountedBowControls(CBlob@ this, VehicleInfo@ v)
 
         Fire(this, v, blob, v.charge);
     }
-
-	const bool canFireLocally = blob.isMyPlayer() && v.canFire() && getGameTime() > v.network_fire_time;
-	if (v.canFire(this, ap) && canFireLocally)
-	{
-		v.network_fire_time = getGameTime() + v.getCurrentAmmo().fire_delay;
-		client_Fire(this, blob);
-	}
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
@@ -217,6 +213,14 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		UnassignWorkerButton(this, caller, Vec2f(0, -8));
 		Vehicle_AddLoadAmmoButton(this, caller);
+	}
+}
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	if (attachedPoint.socket)
+	{
+		this.SetDamageOwnerPlayer(attached.getDamageOwnerPlayer());
 	}
 }
 
