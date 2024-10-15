@@ -292,7 +292,8 @@ void SpellPortal(CBlob@ this, const u8&in countdown)
 			for (u8 i = 0; i < 8; ++i)
 			{
 				CParticle@ p = ParticleAnimated("FireFlash.png", spawn+offset, offset/16, -offset.Angle(), 1.0f, 2, 0.0f, true);
-				p.Z = 1000.0f;
+				if (p !is null)
+					p.Z = 1000.0f;
 				offset.RotateBy(45);
 			}
 			
@@ -315,7 +316,8 @@ void SpellPortal(CBlob@ this, const u8&in countdown)
 		for (u8 i = 0; i < 8; ++i)
 		{
 			CParticle@ p = ParticleAnimated("FireFlash.png", spawn+offset, -offset/16, -offset.Angle(), 1.0f, 2, 0.0f, true);
-			p.Z = 1000.0f;
+			if (p !is null)
+				p.Z = 1000.0f;
 			offset.RotateBy(45);
 		}
 	}
