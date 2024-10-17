@@ -2,8 +2,7 @@
 
 funcdef void onRecieveGlobalMessageHandle(CRules@, string, u8, SColor);
 
-void addOnRecieveGlobalMessage(CRules@ this, onRecieveGlobalMessageHandle@ handle) { this.set("onRecieveGlobalMessage Handle", @handle); }
-
+//Sends a global message by server. uses index of a client-side message. index is used to access a client-side translated message.
 void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&in message_seconds, const u32&in message_color = color_white.color, CPlayer@ player = null)
 {
 	CBitStream stream;
@@ -15,6 +14,7 @@ void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&
 	server_SendGlobalMessageCommand(this, stream, player);
 }
 
+//Same as above but with inputs. each input replaces one instance of {INPUT} of the message string in order.
 void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&in message_seconds, const string[]@ inputs, const u32&in message_color = color_white.color, CPlayer@ player = null)
 {
 	CBitStream stream;
@@ -32,6 +32,7 @@ void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&
 	server_SendGlobalMessageCommand(this, stream, player);
 }
 
+//Sends a global message by server. has no translation capability.
 void server_SendGlobalMessage(CRules@ this, const string&in message, const u8&in message_seconds, const u32&in message_color = color_white.color, CPlayer@ player = null)
 {
 	CBitStream stream;
@@ -50,6 +51,7 @@ void server_SendGlobalMessageCommand(CRules@ this, CBitStream@ stream, CPlayer@ 
 		this.SendCommand(this.getCommandID("client_send_global_message"), stream, player);
 }
 
+//Sends a global message by client.
 void client_SendGlobalMessage(CRules@ this, const string&in message, const u8&in message_seconds, SColor message_color = color_white)
 {
 	onRecieveGlobalMessageHandle@ onRecieveGlobalMessage;

@@ -8,9 +8,21 @@
 #include "Zombie_GlobalMessagesCommon.as";
 #include "Zombie_Translation.as";
 
-string global_message = "";
-u8 global_message_time = 0;
-SColor global_message_color = color_white;
+GlobalMessage@[] global_messages;
+
+shared class GlobalMessage
+{
+	string message;
+	u8 time;
+	SColor color;
+	
+	GlobalMessage(const string&in message, const u8&in time, const SColor&in color = color_white)
+	{
+		this.message = message;
+		this.time = time;
+		this.color = color;
+	}
+}
 
 const string Statistics = Translate::Stat0+"\n\n"+Translate::Stat1+"\n\n"+Translate::Stat2+"\n\n"+Translate::Stat3+"\n\n"+Translate::Stat4;
 
@@ -28,27 +40,33 @@ const string[] server_messages =
 
 void onInit(CRules@ this)
 {
-	addOnRecieveGlobalMessage(this, @onRecieveGlobalMessage);
+	onRecieveGlobalMessageHandle@ handle = @onRecieveGlobalMessage;
+	this.set("onRecieveGlobalMessage Handle", @handle);
 }
 
 void onRestart(CRules@ this)
 {
-	global_message = "";
-	global_message_time = 0;
-	global_message_color = color_white;
+	global_messages.clear();
 }
 
 void onTick(CRules@ this)
 {
+	if (global_messages.length <= 0) return;
+
 	if (getGameTime() % 30 != 0) return;
 
-	if (global_message_time > 0)
+	for (u8 i = 0; i < global_messages.length; i++)
 	{
-		global_message_time--;
-	}
-	else
-	{
-		global_message = "";
+		GlobalMessage@ global_message = global_messages[i];
+		if (global_message.time > 0)
+		{
+			global_message.time--;
+		}
+		else
+		{
+			global_messages.erase(i);
+			i--;
+		}
 	}
 }
 
@@ -56,8 +74,9 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client_send_global_message"))
 	{
-		global_message_time = params.read_u8();
-		global_message_color = params.read_u32();
+		u8 time = params.read_u8();
+		SColor color = params.read_u32();
+		string message;
 		
 		const bool isIndex = params.read_bool();
 		if (isIndex)
@@ -68,37 +87,51 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 				error("server message from index does not exist! :: "+getCurrentScriptName()); return; 
 			}
 			
-			global_message = server_messages[index];
+			message = server_messages[index];
 
 			const u8 inputs_length = params.read_u8();
 			for (u8 i = 0; i < inputs_length; i++)
 			{
 				const string input = params.read_string();
-				const int index = global_message.findFirst("{INPUT}");
+				const int index = message.findFirst("{INPUT}");
 				if (index == -1) break;
 
-				global_message = global_message.substr(0, index) + input + global_message.substr(index + 7);
+				message = message.substr(0, index) + input + message.substr(index + 7);
 			}
 		}
 		else
 		{
-			global_message = params.read_string();
+			message = params.read_string();
 		}
+
+		GlobalMessage new_message(message, time, color);
+		global_messages.push_back(@new_message);
 	}
 }
 
-void onRecieveGlobalMessage(CRules@ this, string message, u8 message_seconds, SColor message_color)
+void onRecieveGlobalMessage(CRules@ this, string message, u8 time, SColor color)
 {
-	global_message = message;
-	global_message_time = message_seconds;
-	global_message_color = message_color;
+	GlobalMessage new_message(message, time, color);
+	global_messages.push_back(@new_message);
 }
 
 void onRender(CRules@ this)
 {
-	if (global_message.isEmpty()) return;
+	if (global_messages.length <= 0) return;
 	
-	Vec2f drawpos(getScreenWidth()*0.5f, getScreenHeight()*0.22);
+	Vec2f drawpos(getScreenWidth()*0.5f, getScreenHeight()*0.22f);
 	GUI::SetFont("menu");
-	GUI::DrawShadowedTextCentered(global_message, drawpos, global_message_color);
+	
+	for (u8 i = 0; i < global_messages.length; i++)
+	{
+		GlobalMessage@ global_message = global_messages[i];
+		GUI::DrawShadowedTextCentered(global_message.message, drawpos, global_message.color);
+		
+		if (global_messages.length > 1)
+		{
+			Vec2f message_dim;
+			GUI::GetTextDimensions(global_message.message, message_dim);
+			drawpos.y += message_dim.y + 10.0f;
+		}
+	}
 }
