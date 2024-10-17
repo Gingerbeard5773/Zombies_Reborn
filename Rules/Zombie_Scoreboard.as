@@ -7,7 +7,6 @@
 const f32 scoreboardMargin = 52.0f;
 const f32 scrollSpeed = 4.0f;
 const f32 maxMenuWidth = 380;
-const f32 screenMidX = getScreenWidth()/2;
 
 f32 scrollOffset = 0.0f;
 bool mouseWasPressed2 = false;
@@ -20,7 +19,7 @@ f32 yFallDown = 0;
 const f32 fallSpeed = 100.0f;
 
 //returns the bottom
-const f32 drawScoreboard(CPlayer@[] players, Vec2f topleft, const u8 teamNum)
+const f32 drawScoreboard(CPlayer@[] players, Vec2f&in topleft, const u8&in teamNum, const f32&in screenMidX)
 {
 	CRules@ rules = getRules();
 	CTeam@ team = rules.getTeam(teamNum);
@@ -189,8 +188,9 @@ void onRenderScoreboard(CRules@ this)
 
 	//draw board
 
+	const f32 screenMidX = getScreenWidth()/2;
 	Vec2f topleft(Maths::Max(100, screenMidX-maxMenuWidth), 150 - yFallDown);
-	drawServerInfo(this, 40 - yFallDown);
+	drawServerInfo(this, screenMidX, 40 - yFallDown);
 
 	// start the scoreboard lower or higher.
 	topleft.y -= scrollOffset;
@@ -202,7 +202,7 @@ void onRenderScoreboard(CRules@ this)
 	{
 		if (teamsPlayers[i].length > 0)
 		{
-			topleft.y = drawScoreboard(teamsPlayers[i], topleft, i);
+			topleft.y = drawScoreboard(teamsPlayers[i], topleft, i, screenMidX);
 			topleft.y += 45;
 		}
 	}
@@ -245,7 +245,7 @@ void onRenderScoreboard(CRules@ this)
 		topleft.y += 52;
 	}*/
 	
-	drawManualPointer(topleft.y);
+	drawManualPointer(screenMidX, topleft.y);
 
 	const float scoreboardHeight = topleft.y + scrollOffset;
 	const float screenHeight = getScreenHeight();
@@ -282,11 +282,11 @@ void drawFancyCopiedText()
 	GUI::DrawTextCentered(text, pos, SColor((255 - time_left * 4), col, col, col));
 }
 
-void drawServerInfo(CRules@ this, const f32 y)
+void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 {
 	GUI::SetFont("menu");
 
-	Vec2f pos(screenMidX, y);
+	Vec2f pos(x, y);
 	f32 width = 200;
 
 	const string info = getTranslatedString(this.gamemode_name) + ": " + getTranslatedString(this.gamemode_info);
@@ -305,7 +305,7 @@ void drawServerInfo(CRules@ this, const f32 y)
 	bot.x += width;
 	bot.y += 80;
 
-	Vec2f mid(screenMidX, y);
+	Vec2f mid(x, y);
 
 	GUI::DrawPane(pos, bot, SColor(0xffcccccc));
 	
@@ -317,14 +317,14 @@ void drawServerInfo(CRules@ this, const f32 y)
 	GUI::DrawTextCentered(dayCount, mid, color_white);
 }
 
-void drawManualPointer(const f32 y)
+void drawManualPointer(const f32&in x, const f32&in y)
 {
 	const string openHelp = Translate::Manual.replace("{KEY}", "["+getControls().getActionKeyKeyName(AK_MENU)+"]");
 	
 	Vec2f dim;
 	GUI::GetTextDimensions(openHelp, dim);
 	
-	Vec2f pos(screenMidX, y);
+	Vec2f pos(x, y);
 	const f32 width = dim.x + 15;
 	pos.x -= width / 2;
 	
@@ -333,5 +333,5 @@ void drawManualPointer(const f32 y)
 	bot.y += 25;
 	
 	GUI::DrawPane(pos, bot, SColor(0xffcccccc));
-	GUI::DrawTextCentered(openHelp, Vec2f(screenMidX, y+12), color_white);
+	GUI::DrawTextCentered(openHelp, Vec2f(x, y+12), color_white);
 }
