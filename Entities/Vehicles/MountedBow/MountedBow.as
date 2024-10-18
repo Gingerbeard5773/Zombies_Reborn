@@ -40,7 +40,7 @@ void onInit(CBlob@ this)
 	if (!this.get("VehicleInfo", @v)) return;
 
 	Vehicle_AddAmmo(this, v,
-	                    25, // fire delay (ticks)
+	                    15, // fire delay (ticks)
 	                    1, // fire bullets amount
 	                    1, // fire cost
 	                    "mat_arrows", // bullet ammo config name
@@ -84,6 +84,7 @@ void onInit(CBlob@ this)
 	this.set_bool("facing", true);
 	
 	this.Tag("medium weight");
+	this.Tag("ignore_arrow");
 
 	// auto-load on creation
 	if (isServer())
@@ -230,6 +231,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		TryToAttachVehicle(this, blob, "PASSENGER");
 	}
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+    return blob.isCollidable() && blob.getShape().isStatic();
 }
 
 //auto grab ammunition from carrier vehicle
