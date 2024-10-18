@@ -213,7 +213,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!AssignWorkerButton(this, caller))
 	{
 		UnassignWorkerButton(this, caller, Vec2f(0, -8));
-		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
 
