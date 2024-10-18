@@ -59,8 +59,8 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 
 	//check height + edge proximity
 	if (p.y < 2 * map.tilesize ||
-			p.x < 2 * map.tilesize ||
-			p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
+	    p.x < 2 * map.tilesize ||
+	    p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
 	{
 		return false;
 	}
@@ -123,76 +123,56 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 			isSeed = bname == "seed";
 		}
 
-		Vec2f middle = p;
-
-		s32 x = Maths::Floor(p.x);
-		x /= map.tilesize;
-		s32 y = Maths::Floor(p.y);
-		y /= map.tilesize;
-
+		//repairing blobs
 		CBlob@[] blobsAtPos;
-
-		// repairing blobs
-		if (map.getBlobsAtPosition(Vec2f(p.x, p.y), @blobsAtPos) && blob !is null && (isDoor || isPlatform))
+		if (map.getBlobsAtPosition(p, @blobsAtPos) && blob !is null && (isDoor || isPlatform))
 		{
-			for (uint i = 0; i < blobsAtPos.length; i++)
+			for (u8 i = 0; i < blobsAtPos.length; i++)
 			{
 				CBlob@ blobAtPos = blobsAtPos[i];
 				if (blobAtPos.getName() == blob.getName() && 
 					blobAtPos.getTeamNum() == blob.getTeamNum() && 
-					blobAtPos.getHealth() != blobAtPos.getInitialHealth()) 
+					blobAtPos.getHealth() < blobAtPos.getInitialHealth()) 
 				{	
 					return true;
 				}
 			}
 		}
 
-		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null)
+		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(p, "no build") !is null)
 		{
 			return false;
 		}
 
-		//if (blob is null)
-		//middle += Vec2f(map.tilesize*0.5f, map.tilesize*0.5f);
-
-		const string name = blob !is null ? blob.getName() : "";
 		CBlob@[] blobsInRadius;
-		if (map.getBlobsInRadius(middle, buildSolid ? map.tilesize : 0.0f, @blobsInRadius))
+		map.getBlobsInRadius(p, buildSolid ? map.tilesize : 0.0f, @blobsInRadius);
+		for (u8 i = 0; i < blobsInRadius.length; i++)
 		{
-			for (uint i = 0; i < blobsInRadius.length; i++)
+			CBlob@ b = blobsInRadius[i];
+			if (b.isAttached() || b is blob) continue;
+
+			if (blob is null && !buildSolid) continue;
+
+			if (b is this && b.getName() == "spikes") continue;
+
+			Vec2f bpos = b.getPosition();
+
+			const bool cantBuild = isBlocking(b);
+			const bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
+			const bool ladderBuild = isLadder && !b.getShape().isStatic();
+
+			// cant place on any other blob
+			if (!ladderBuild && !buildingOnTeam && cantBuild &&
+				!b.hasTag("dead") && !b.hasTag("material") && !b.hasTag("projectile"))
 			{
-				CBlob @b = blobsInRadius[i];
-				if (!b.isAttached() && b !is blob)
+				const f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
+				const bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;
+				const f32 width = rotated ? b.getHeight() : b.getWidth();
+				const f32 height = rotated ? b.getWidth() : b.getHeight();
+				if ((p.x > bpos.x - width * 0.5f) && (p.x < bpos.x + width * 0.5f)
+					&& (p.y > bpos.y - height * 0.5f) && (p.y < bpos.y + height * 0.5f))
 				{
-					if (blob !is null || buildSolid)
-					{
-						if (b is this && b.getName() == "spikes") continue;
-
-						Vec2f bpos = b.getPosition();
-
-						bool cantBuild = isBlocking(b);
-						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
-						bool ladderBuild = isLadder && !b.getShape().isStatic();
-
-						// cant place on any other blob
-						if (!ladderBuild &&
-							!buildingOnTeam &&
-							cantBuild &&
-							!b.hasTag("dead") &&
-							!b.hasTag("material") &&
-							!b.hasTag("projectile"))
-						{
-							f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
-							bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;
-							f32 width = rotated ? b.getHeight() : b.getWidth();
-							f32 height = rotated ? b.getWidth() : b.getHeight();
-							if ((middle.x > bpos.x - width * 0.5f) && (middle.x < bpos.x + width * 0.5f)
-								&& (middle.y > bpos.y - height * 0.5f) && (middle.y < bpos.y + height * 0.5f))
-							{
-								return false;
-							}
-						}
-					}
+					return false;
 				}
 			}
 		}
@@ -218,20 +198,16 @@ bool isBlocking(CBlob@ blob)
 
 void DestroyScenary(Vec2f tl, Vec2f br)
 {
-	if (isServer())
+	if (!isServer()) return;
+
+	CBlob@[] overlapping;
+	getMap().getBlobsInBox(tl, br, @overlapping);
+	for (u8 i = 0; i < overlapping.length; i++)
 	{
-		CMap@ map = getMap();
-
-		CBlob@[] overlapping;
-		map.getBlobsInBox(tl, br, @overlapping);
-		for (uint i = 0; i < overlapping.length; i++)
+		CBlob@ blob = overlapping[i];
+		if (blob.getName() == "bush")
 		{
-			CBlob@ blob = overlapping[i];
-			if (blob !is null && blob.hasTag("scenary"))
-			{
-				blob.server_Die();
-			}
-
+			blob.server_Die();
 		}
 	}
 }
@@ -302,7 +278,7 @@ bool isBuildRayBlocked(Vec2f pos, Vec2f target, Vec2f &out point)
 	vector.Normalize();
 	target -= vector * map.tilesize;
 
-	f32 halfsize = map.tilesize * 0.5f;
+	const f32 halfsize = map.tilesize * 0.5f;
 
 	return map.rayCastSolid(pos + Vec2f(0, halfsize), target, point) &&
 		   map.rayCastSolid(pos + Vec2f(halfsize, 0), target, point) &&
@@ -337,15 +313,13 @@ bool inNoBuildZone(CBlob@ blob, CMap@ map, Vec2f here, TileType buildTile)
 bool fakeHasTileSolidBlobs(Vec2f cursorPos)
 {
 	CMap@ map = getMap();
-	CBlob@[] blobsAtPos;
+	CBlob@[] blobs;
 	
-	map.getBlobsAtPosition(cursorPos + Vec2f(1, 1), blobsAtPos);
+	map.getBlobsAtPosition(cursorPos + Vec2f(1, 1), blobs);
 
-	for (int i = 0; i < blobsAtPos.size(); i++)
+	for (int i = 0; i < blobs.length; i++)
 	{
-		CBlob@ blobAtPos = blobsAtPos[i];
-		
-		if (isRepairable(blobAtPos)) return true;
+		if (isRepairable(blobs[i])) return true;
 	}
 
 	return false;
@@ -354,14 +328,12 @@ bool fakeHasTileSolidBlobs(Vec2f cursorPos)
 bool isRepairable(CBlob@ blob)
 {
 	// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
-	if (blob !is null && 
-		blob.getHealth() > 0 && (
-		blob.hasTag("door") || 
-		blob.getName() == "wooden_platform" || 
-		blob.getName() == "bridge"))
-		{
-			return true;
-		}
+	if (blob is null || blob.getHealth() <= 0) return false;
+
+	if (blob.hasTag("door") || blob.getName() == "wooden_platform" || blob.getName() == "bridge")
+	{
+		return true;
+	}
 
 	return false;
 }
