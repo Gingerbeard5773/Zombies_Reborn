@@ -8,6 +8,9 @@ void onInit(CBlob@ this)
 {
 	this.getCurrentScript().removeIfTag = "dead";
 	this.Tag("medium weight");
+	
+	this.Tag("ignore saw");
+	this.Tag("sawed");//hack
 
 	//default player minimap dot - not for migrants
 	if (this.getName() != "migrant")
