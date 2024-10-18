@@ -47,7 +47,7 @@ void onInit(CBlob@ this)
 
 		Vec2f end;
 		map.rayCastSolidNoBlobs(Vec2f(x, 0.0f), Vec2f(x, dim.y), end);
-		this.set_Vec2f("teleport pos", Vec2f(x, end.y*0.5f);
+		this.set_Vec2f("teleport pos", Vec2f(x, end.y*0.5f));
 	}
 
 	server_SetSpell(this, XORRandom(spell_end));
