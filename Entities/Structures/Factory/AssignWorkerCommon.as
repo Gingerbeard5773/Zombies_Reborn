@@ -9,7 +9,7 @@ void addOnUnassignWorker(CBlob@ this, onUnassignWorkerHandle@ handle) { this.set
 bool AssignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 {
 	CBlob@ carried = caller.getCarriedBlob();
-	if (carried !is null && carried.hasTag("migrant") && !carried.hasTag("dead") && this.get_netid("assigned netid") <= 0)
+	if (carried !is null && carried.hasTag("migrant") && !carried.hasTag("dead") && hasAvailableWorkerSlots(this))
 	{
 		CBitStream stream;
 		stream.write_netid(carried.getNetworkID());
@@ -21,7 +21,7 @@ bool AssignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 
 bool UnassignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 {
-	if (this.get_netid("assigned netid") > 0)
+	if (getWorkers(this).length > 0)
 	{
 		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_detach_worker"), "Unassign Worker");
 		return true;
@@ -29,47 +29,73 @@ bool UnassignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 	return false;
 }
 
-void Client_AttachWorker(CBlob@ this, CBlob@ worker)
+void Client_AttachWorker(CBlob@ this, const u16&in worker_netid)
 {
 	if (isClient()) return;
 	CBitStream stream;
-	stream.write_netid(worker.getNetworkID());
+	stream.write_netid(worker_netid);
 	this.SendCommand(this.getCommandID("client_attach_worker"), stream);
 }
 
-void Client_DetachWorker(CBlob@ this, CBlob@ worker)
+void Client_DetachWorker(CBlob@ this, const u16&in worker_netid)
 {
 	if (isClient()) return;
 	CBitStream stream;
-	stream.write_netid(worker.getNetworkID());
+	stream.write_netid(worker_netid);
 	this.SendCommand(this.getCommandID("client_detach_worker"), stream);
 }
 
-void AssignWorker(CBlob@ this, CBlob@ worker)
+void AssignWorker(CBlob@ this, const u16&in worker_netid)
 {
-	worker.server_DetachFromAll();
-
-	this.set_netid("assigned netid", worker.getNetworkID());
-	worker.set_netid("assigned netid", this.getNetworkID());
-	worker.set_Vec2f("brain_destination", this.getPosition());
-
-	worker.getSprite().PlaySound("MigrantSayHello");
+	getWorkers(this).push_back(worker_netid);
 	
-	onAssignWorkerHandle@ onAssign;
-	if (this.get("onAssignWorker handle", @onAssign))
+	CBlob@ worker = getBlobByNetworkID(worker_netid);
+	if (worker !is null)
 	{
-		onAssign(this, worker);
+		worker.server_DetachFromAll();
+		worker.set_netid("assigned netid", this.getNetworkID());
+		worker.set_Vec2f("brain_destination", this.getPosition());
+
+		worker.getSprite().PlaySound("MigrantSayHello");
+		
+		onAssignWorkerHandle@ onAssign;
+		if (this.get("onAssignWorker handle", @onAssign))
+		{
+			onAssign(this, worker);
+		}
 	}
 }
 
-void UnassignWorker(CBlob@ this, CBlob@ worker)
+void UnassignWorker(CBlob@ this, const u16&in worker_netid)
 {
-	this.set_netid("assigned netid", 0);
-	worker.set_netid("assigned netid", 0);
-	
-	onUnassignWorkerHandle@ onUnassign;
-	if (this.get("onUnassignWorker handle", @onUnassign))
+	u16[]@ workers = getWorkers(this);
+	const int index = workers.find(worker_netid);
+	if (index != -1)
 	{
-		onUnassign(this, worker);
+		workers.erase(index);
 	}
+	
+	CBlob@ worker = getBlobByNetworkID(worker_netid);
+	if (worker !is null)
+	{
+		worker.set_netid("assigned netid", 0);
+
+		onUnassignWorkerHandle@ onUnassign;
+		if (this.get("onUnassignWorker handle", @onUnassign))
+		{
+			onUnassign(this, worker);
+		}
+	}
+}
+
+u16[]@ getWorkers(CBlob@ this)
+{
+	u16[]@ netids;
+	this.get("assigned netids", @netids);
+	return netids;
+}
+
+bool hasAvailableWorkerSlots(CBlob@ this)
+{
+	return getWorkers(this).length < this.get_u8("maximum_worker_count");
 }

@@ -70,7 +70,7 @@ void UpdateAssigned(CBlob@ this)
 	CBlob@ assigned = getBlobByNetworkID(this.get_netid("assigned netid"));
 	if (assigned is null) return;
 
-	UnassignWorker(assigned, this);
+	UnassignWorker(assigned, this.getNetworkID());
 }
 
 void onDie(CBlob@ this)

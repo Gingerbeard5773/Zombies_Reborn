@@ -80,8 +80,8 @@ void DitchAssigned(CBlob@ blob)
 	CBlob@ assigned = getBlobByNetworkID(blob.get_netid("assigned netid"));
 	if (assigned !is null)
 	{
-		UnassignWorker(assigned, blob);
-		Client_DetachWorker(assigned, blob);
+		UnassignWorker(assigned, blob.getNetworkID());
+		Client_DetachWorker(assigned, blob.getNetworkID());
 	}
 }
 
