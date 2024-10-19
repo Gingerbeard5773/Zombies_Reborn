@@ -1,5 +1,7 @@
 ﻿// Gingerbeard @ October 2, 2024
 
+#include "Zombie_Translation.as"
+
 funcdef void onAssignWorkerHandle(CBlob@, CBlob@);
 funcdef void onUnassignWorkerHandle(CBlob@, CBlob@);
 
@@ -13,7 +15,7 @@ bool AssignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 	{
 		CBitStream stream;
 		stream.write_netid(carried.getNetworkID());
-		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_attach_worker"), "Assign Worker", stream);
+		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_attach_worker"), Translate::AssignWorker, stream);
 		return true;
 	}
 	return false;
@@ -23,10 +25,19 @@ bool UnassignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 {
 	if (getWorkers(this).length > 0)
 	{
-		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_detach_worker"), "Unassign Worker");
+		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_detach_worker"), Translate::UnassignWorker);
 		return true;
 	}
 	return false;
+}
+
+void RequiresWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
+{
+	CButton@ button = caller.CreateGenericButton("$worker_migrant$", offset, this, 0, Translate::WorkerRequired);
+	if (button !is null)
+	{
+		button.SetEnabled(false);
+	}
 }
 
 void Client_AttachWorker(CBlob@ this, const u16&in worker_netid)

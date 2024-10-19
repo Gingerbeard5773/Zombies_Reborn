@@ -118,11 +118,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 	else if (!AssignWorkerButton(this, caller) && !UnassignWorkerButton(this, caller, Vec2f(0, -14)))
 	{
-		CButton@ button = caller.CreateGenericButton("$worker_migrant$", Vec2f(0, 0), this, 0, "Requires a worker");
-		if (button !is null)
-		{
-			button.SetEnabled(false);
-		}
+		RequiresWorkerButton(this, caller);
 	}
 }
 

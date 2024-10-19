@@ -2,6 +2,7 @@
 //converts wood into ores
 
 #include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
 
 const string[] fuel_names = {"mat_coal", "mat_wood"};
 const string[] fuel_icons = {"mat_coal_icon", "mat_wood"};
@@ -141,14 +142,14 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (this.get_s16(fuel_prop) >= max_fuel) return;
 
-	for (uint i = 0; i < fuel_names.length; i++)
+	for (u8 i = 0; i < fuel_names.length; i++)
 	{
 		const string name = fuel_names[i];
 		if (caller.hasBlob(name, 1))
 		{
 			CBitStream params;
 			params.write_u8(i);
-			CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel (Wood or Coal)"), params);
+			CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(), this, this.getCommandID("add fuel"), Translate::AddFuel, params);
 			if (button !is null)
 			{
 				button.deleteAfterClick = false;

@@ -21,7 +21,7 @@ const f32 fallSpeed = 100.0f;
 bool mousePress = false;
 
 //returns the bottom
-const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in teamNum, const f32&in screenMidX)
+const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in teamNum, const f32&in screenMidX, const string&in teamName)
 {
 	CRules@ rules = getRules();
 	CTeam@ team = rules.getTeam(teamNum);
@@ -46,7 +46,7 @@ const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in team
 	GUI::SetFont("menu");
 
 	//draw team info
-	GUI::DrawText(rules.getTeam(teamNum).getName(), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(teamName, Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + playersLength), Vec2f(bottomright.x - 470, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(Translate::Zombies.replace("{AMOUNT}", zombies+""), Vec2f(bottomright.x - 270, topleft.y), SColor(0xffffffff));
 
@@ -210,7 +210,7 @@ void onRenderScoreboard(CRules@ this)
 
 	//draw the scoreboard
 	
-	topleft.y = drawScoreboard(survivors, topleft, 0, screenMidX);
+	topleft.y = drawScoreboard(survivors, topleft, 0, screenMidX, Translate::Survivors);
 	topleft.y += 45;
 	
 	drawManualPointer(screenMidX, topleft.y);

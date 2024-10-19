@@ -3,6 +3,10 @@
 // Gingerbeard @ September 21 2024
 //translated strings for zombies reborn
 
+//todo:
+//trader buy/sell strings
+//item names
+
 shared const string Translate(const string&in en, const string&in ru = "")
 {
 	string text_out = "";
@@ -31,9 +35,10 @@ namespace Translate
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.", "Мигранты будут приходить к вам через каждый день,\nесли популяция нежити будет низкая"),
 	
 	//scoreboard
-	Manual   = Translate("Press {KEY} to toggle the help manual on/off.", ""),
-	DayNum   = Translate("Day: {DAYS}",                                   "День: {DAYS}"),
-	Zombies  = Translate("Zombies: {AMOUNT}",                             ""),
+	Manual    = Translate("Press {KEY} to toggle the help manual on/off.", ""),
+	DayNum    = Translate("Day: {DAYS}",                                   "День: {DAYS}"),
+	Zombies   = Translate("Zombies: {AMOUNT}",                             ""),
+	Survivors = Translate("Survivors",                                     ""),
 	
 	//respawning
 	Respawn0 = Translate("Waiting for dawn...",              ""),
@@ -85,6 +90,17 @@ namespace Translate
 	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes.",   "Сад\nСад растение для сельскохозяйственных культур."),
 	Armory         = Translate("Armory\nBuild weapons and change your class.",          "Оружейная\nСтройте оружие, и меняйте свой класс."),
 	Library        = Translate("Library\nA place of study to obtain new technologies.", "Библиотека\nМесто для учебы, чтобы освоить новые технологии"),
+	
+	//workers
+	AssignWorker   = Translate("Assign Worker",                    ""),
+	UnassignWorker = Translate("Unassign Worker",                  ""),
+	WorkerRequired = Translate("Requires a worker",                ""),
+	RestWorker     = Translate("Rest Worker",                      ""),
+	RecruitWorker  = Translate("Recruit a worker for your needs.", ""),
+	
+	//generic
+	PullItems      = Translate("Take items from other storages", ""),
+	AddFuel        = Translate("Add fuel (Wood or Coal)",        ""),
 
 	//building
 	Factory        = Translate("A generic factory for various items. Requires a free worker to produce items.", "Общая фабрика для различных предметов. Для производства предметов требуется свободный рабочий."),
@@ -145,8 +161,8 @@ namespace Translate
 	TradeScrollRepair   = Translate("This one will fix up whatever is nearby!",                 ""),
 
 	//library
-	Researching     = Translate("Researching - {TIME}s",                                             ""),
-	Paused          = Translate("Paused - {TIME}s",                                                  ""),
+	Researching     = Translate("Researching - {PERCENT}",                                           ""),
+	Paused          = Translate("Paused - {PERCENT}",                                                ""),
 	Resume          = Translate("Click to resume",                                                   ""),
 	Completed       = Translate("Completed",                                                         ""),
 	RequiresTech    = Translate("Requires previous upgrade",                                         ""),
