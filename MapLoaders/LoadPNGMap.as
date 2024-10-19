@@ -13,9 +13,7 @@ namespace custom_colors
 		coal = 0xff2E2E2E,
 		steel = 0xff879092,
 		iron = 0xff6B7273,
-		biron = 0xff3F4141,
-		
-		underground_marker = 0xff8A2BFF
+		biron = 0xff3F4141
 	};
 }
 
@@ -36,13 +34,6 @@ class ZombiePNGLoader : PNGLoader
 			case custom_colors::steel:    map.SetTile(offset, CMap::tile_steel);                  break;
 			case custom_colors::iron:     map.SetTile(offset, CMap::tile_iron);                   break;
 			case custom_colors::biron:    map.SetTile(offset, CMap::tile_biron);                  break;
-			
-			case custom_colors::underground_marker:
-			{
-				map.AddMarker(map.getTileWorldPosition(offset), "underground");
-				map.SetTile(offset, CMap::tile_ground);
-				break;
-			}
 		};
 	}
 };
