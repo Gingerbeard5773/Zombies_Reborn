@@ -85,6 +85,7 @@ void onInit(CBlob@ this)
 	
 	this.Tag("medium weight");
 	this.Tag("ignore_arrow");
+	this.Tag("place norotate");  //dont rotate when we press spacebar
 
 	// auto-load on creation
 	if (isServer())
@@ -218,10 +219,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (attachedPoint.socket)
-	{
-		this.SetDamageOwnerPlayer(attached.getDamageOwnerPlayer());
-	}
+	if (!attachedPoint.socket) return;
+
+	this.SetDamageOwnerPlayer(attached.getDamageOwnerPlayer());
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
