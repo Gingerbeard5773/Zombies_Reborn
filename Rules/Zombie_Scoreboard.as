@@ -19,7 +19,7 @@ f32 yFallDown = 0;
 const f32 fallSpeed = 100.0f;
 
 //returns the bottom
-const f32 drawScoreboard(CPlayer@[] players, Vec2f&in topleft, const u8&in teamNum, const f32&in screenMidX)
+const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in teamNum, const f32&in screenMidX)
 {
 	CRules@ rules = getRules();
 	CTeam@ team = rules.getTeam(teamNum);
@@ -166,23 +166,17 @@ void onRenderScoreboard(CRules@ this)
 	
 	yFallDown = Maths::Max(0, yFallDown - getRenderApproximateCorrectionFactor()*fallSpeed);
 	
-	const u8 playingTeamsCount = 1; //change this depending on how many teams in the gamemode, this.getTeamsNum() causes errors
-	CPlayer@[][] teamsPlayers(playingTeamsCount); //holds all teams and their players
-	CPlayer@[] spectators;
+	CPlayer@[] survivors;
 	const u8 plyCount = getPlayersCount();
 	for (u8 i = 0; i < plyCount; i++)
 	{
-		CPlayer@ p = getPlayer(i);
-		/*if (p.getTeamNum() == this.getSpectatorTeamNum())
-		{
-			spectators.push_back(p);
-			continue;
-		}*/
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
 
-		const u8 teamNum = p.getTeamNum();
-		if (teamNum < playingTeamsCount)
+		const u8 teamNum = player.getTeamNum();
+		if (teamNum == 0)
 		{
-			teamsPlayers[teamNum].push_back(p);
+			survivors.push_back(player);
 		}
 	}
 
@@ -195,55 +189,10 @@ void onRenderScoreboard(CRules@ this)
 	// start the scoreboard lower or higher.
 	topleft.y -= scrollOffset;
 
-	//draw the scoreboards
+	//draw the scoreboard
 	
-	const u8 teamsPlyLength = teamsPlayers.length;
-	for (u8 i = 0; i < teamsPlyLength; i++)
-	{
-		if (teamsPlayers[i].length > 0)
-		{
-			topleft.y = drawScoreboard(teamsPlayers[i], topleft, i, screenMidX);
-			topleft.y += 45;
-		}
-	}
-
-	/*const u8 spectatorsLength = spectators.length;
-	if (spectatorsLength > 0)
-	{
-		//draw spectators
-		const f32 stepheight = 16;
-		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + stepheight * 2);
-		const f32 specy = topleft.y + stepheight * 0.5;
-		GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
-
-		Vec2f textdim;
-		const string s = getTranslatedString("Spectators:");
-		GUI::GetTextDimensions(s, textdim);
-
-		GUI::DrawText(s, Vec2f(topleft.x + 5, specy), SColor(0xffaaaaaa));
-
-		f32 specx = topleft.x + textdim.x + 15;
-		for (u8 i = 0; i < spectatorsLength; i++)
-		{
-			CPlayer@ p = spectators[i];
-			if (specx < bottomright.x - 100)
-			{
-				string name = p.getCharacterName();
-				if (i != spectatorsLength - 1)
-					name += ",";
-				GUI::GetTextDimensions(name, textdim);
-				GUI::DrawText(name, Vec2f(specx, specy), color_white);
-				specx += textdim.x + 10;
-			}
-			else
-			{
-				GUI::DrawText(getTranslatedString("and more ..."), Vec2f(specx, specy), SColor(0xffaaaaaa));
-				break;
-			}
-		}
-
-		topleft.y += 52;
-	}*/
+	topleft.y = drawScoreboard(survivors, topleft, 0, screenMidX);
+	topleft.y += 45;
 	
 	drawManualPointer(screenMidX, topleft.y);
 

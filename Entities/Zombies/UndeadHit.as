@@ -32,6 +32,22 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		}
 	}
 	
+	CPlayer@ player = this.getPlayer();
+	if (player !is null && customData == Hitters::suicide)
+	{
+		if (isServer())
+		{
+			this.server_SetPlayer(null);
+			this.getBrain().server_SetActive(true);
+		}
+		if (player.isMyPlayer())
+		{
+			getHUD().ClearMenus();
+			player.client_RequestSpawn();
+		}
+		return 0.0f;
+	}
+	
 	//player controlled wraiths don't damage as much
 	if (hitterBlob.getPlayer() !is null && hitterBlob.hasTag("exploding"))
 	{

@@ -36,8 +36,8 @@ namespace Translate
 	Zombies  = Translate("Zombies: {AMOUNT}",                             ""),
 	
 	//respawning
-	Respawn0 = Translate("Waiting for dawn...",             ""),
-	Respawn1 = Translate("Waiting to spawn as a wraith...", ""),
+	Respawn0 = Translate("Waiting for dawn...",              ""),
+	Respawn1 = Translate("Waiting to spawn as an undead...", ""),
 	
 	//global messages
 	Day      = Translate("Day {INPUT}",                                                 "День {INPUT}"),
