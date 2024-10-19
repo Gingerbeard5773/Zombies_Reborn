@@ -18,6 +18,8 @@ Vec2f copy_pos = Vec2f_zero;
 f32 yFallDown = 0;
 const f32 fallSpeed = 100.0f;
 
+bool mousePress = false;
+
 //returns the bottom
 const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in teamNum, const f32&in screenMidX)
 {
@@ -74,7 +76,7 @@ const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in team
 		const bool playerHover = mousePos.y > topleft.y && mousePos.y < topleft.y + 15;
 		if (playerHover)
 		{
-			if (controls.mousePressed2 && !mouseWasPressed2)
+			if (controls.mousePressed1 && !mousePress)
 			{
 				// reason for this is because this is called multiple per click (since its onRender, and clicking is updated per tick)
 				// we don't want to spam anybody using a clipboard history program
@@ -154,6 +156,15 @@ const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in team
 
 void onTick(CRules@ this)
 {
+	CPlayer@ player = getLocalPlayer();
+	if (player is null) return;
+	
+	CControls@ controls = getControls();
+	if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_MENU)))
+	{
+		show_gamehelp = !show_gamehelp;
+	}
+
 	if (!isPlayerListShowing())
 	{
 		yFallDown = f32(getScreenHeight()) * 0.35f;
@@ -162,7 +173,7 @@ void onTick(CRules@ this)
 
 void onRenderScoreboard(CRules@ this)
 {
-	if (this.get_bool("show_gamehelp")) return;
+	if (show_gamehelp) return;
 	
 	yFallDown = Maths::Max(0, yFallDown - getRenderApproximateCorrectionFactor()*fallSpeed);
 	
@@ -185,6 +196,14 @@ void onRenderScoreboard(CRules@ this)
 	const f32 screenMidX = getScreenWidth()/2;
 	Vec2f topleft(Maths::Max(100, screenMidX-maxMenuWidth), 150 - yFallDown);
 	drawServerInfo(this, screenMidX, 40 - yFallDown);
+	
+	CControls@ controls = getControls();
+	Vec2f mousePos = controls.getMouseScreenPos();
+	
+	makeWebsiteLink(topleft + Vec2f(0, -70), "Discord", "https://discord.gg/V29BBeba3C", controls, mousePos);
+	makeWebsiteLink(topleft + Vec2f(100, -70), "Github", "https://github.com/Gingerbeard5773/Zombies_Reborn", controls, mousePos);
+	
+	drawStagingPopup(topleft);
 
 	// start the scoreboard lower or higher.
 	topleft.y -= scrollOffset;
@@ -198,12 +217,9 @@ void onRenderScoreboard(CRules@ this)
 
 	const float scoreboardHeight = topleft.y + scrollOffset;
 	const float screenHeight = getScreenHeight();
-	CControls@ controls = getControls();
 
 	if (scoreboardHeight > screenHeight)
 	{
-		Vec2f mousePos = controls.getMouseScreenPos();
-
 		const f32 fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
 
 		if (scrollOffset < fullOffset && mousePos.y > screenHeight*0.83f)
@@ -218,7 +234,7 @@ void onRenderScoreboard(CRules@ this)
 		scrollOffset = Maths::Clamp(scrollOffset, 0.0f, fullOffset);
 	}
 
-	mouseWasPressed2 = controls.mousePressed2; 
+	mousePress = controls.mousePressed1; 
 }
 
 void drawFancyCopiedText()
@@ -283,4 +299,209 @@ void drawManualPointer(const f32&in x, const f32&in y)
 	
 	GUI::DrawPane(pos, bot, SColor(0xffcccccc));
 	GUI::DrawTextCentered(openHelp, Vec2f(x, y+12), color_white);
+}
+
+
+///GAMEHELP
+
+bool show_gamehelp = true;
+u8 page = 0;
+const u8 pages = 7;
+
+const string[] page_tips =
+{
+	Translate::Tip0,
+	Translate::Tip1,
+	Translate::Tip2,
+	Translate::Tip3,
+	Translate::Tip4,
+	Translate::Tip5,
+	Translate::Tip6,
+	Translate::Tip7
+};
+
+void onInit(CRules@ this)
+{
+	CFileImage@ image = CFileImage("HelpBackground.png");
+	const Vec2f imageSize = Vec2f(image.getWidth(), image.getHeight());
+	AddIconToken("$HELP$", "HelpBackground.png", imageSize, 0);
+}
+
+void onRender(CRules@ this)
+{
+	if (!show_gamehelp) return;
+	
+	CPlayer@ player = getLocalPlayer();
+	if (player is null) return;
+	
+	Vec2f center = getDriver().getScreenCenterPos();
+	
+	//background
+	Vec2f imageSize;
+	GUI::GetIconDimensions("$HELP$", imageSize);
+	Vec2f topLeft(center.x - imageSize.x, center.y - imageSize.y);
+	GUI::DrawIconByName("$HELP$", topLeft);
+	
+	//pages
+	managePages(imageSize, center);
+	
+	//clickable buttons
+	CControls@ controls = getControls();
+	const Vec2f mousePos = controls.getMouseScreenPos();
+	makeExitButton(this, Vec2f(center.x + imageSize.x - 20, center.y - imageSize.y + 20), controls, mousePos);
+	makePageChangeButton(Vec2f(center.x+22, center.y + imageSize.y + 30), controls, mousePos, true);
+	makePageChangeButton(Vec2f(center.x-22, center.y + imageSize.y + 30), controls, mousePos, false);
+	drawStagingPopup(topLeft);
+	makeWebsiteLink(Vec2f(topLeft.x, center.y + imageSize.y + 10), "Discord", "https://discord.gg/V29BBeba3C", controls, mousePos);
+	makeWebsiteLink(Vec2f(topLeft.x + 100, center.y + imageSize.y + 10), "Github", "https://github.com/Gingerbeard5773/Zombies_Reborn", controls, mousePos);
+	
+	//page num
+	drawTextWithFont((page+1)+"/"+pages, center + imageSize - Vec2f(30, 25), "medium font");
+	
+	mousePress = controls.mousePressed1; 
+}
+
+void managePages(Vec2f&in imageSize, Vec2f&in center)
+{
+	switch(page)
+	{
+		case 0: drawPage(imageSize, center, Translate::ZF, Vec2f(center.x - imageSize.x, center.y - imageSize.y/2));
+			break;
+		//case 1: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x/2, center.y - imageSize.y/3), 1);
+			//break;
+		case 1: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 2);
+			break;
+		case 2: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 3);
+			break;
+		case 3: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 100, center.y - imageSize.y/3), 4);
+			break;
+		case 4: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 5);
+			break;
+		case 5: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 150, center.y - imageSize.y/3), 6);
+			break;
+		case 6: drawPage(imageSize, center, Translate::Tips, Vec2f(center.x - imageSize.x + 200, center.y - imageSize.y/3), 7);
+			break;
+	};
+}
+
+void drawPage(Vec2f&in imageSize, Vec2f&in center, const string&in header, Vec2f&in imagePos, const u8&in pageNum = 0)
+{
+	GUI::DrawIcon("Page"+(pageNum+1)+".png", imagePos);
+	drawTextWithFont(header, center - Vec2f(0, imageSize.y - 50), "big font");
+	drawTextWithFont(page_tips[pageNum], center - Vec2f(0, imageSize.y - 140), "medium font");
+}
+
+void drawTextWithFont(const string&in text, const Vec2f&in pos, const string&in font)
+{
+	GUI::SetFont(font);
+	GUI::DrawTextCentered(text, pos, color_black);
+}
+
+void makeExitButton(CRules@ this, Vec2f&in pos, CControls@ controls, Vec2f&in mousePos)
+{
+	Vec2f tl = pos + Vec2f(-20, -20);
+	Vec2f br = pos + Vec2f(20, 20);
+	
+	const bool hover = (mousePos.x > tl.x && mousePos.x < br.x && mousePos.y > tl.y && mousePos.y < br.y);
+	if (hover)
+	{
+		GUI::DrawButton(tl, br);
+		
+		if (controls.mousePressed1 && !mousePress)
+		{
+			Sound::Play("option");
+			show_gamehelp = false;
+		}
+	}
+	else
+	{
+		GUI::DrawPane(tl, br, 0xffcfcfcf);
+	}
+	GUI::DrawIcon("MenuItems", 29, Vec2f(32,32), Vec2f(pos.x-32, pos.y-32), 1.0f);
+}
+
+void makePageChangeButton(Vec2f&in pos, CControls@ controls, Vec2f&in mousePos, const bool&in right)
+{
+	Vec2f tl = pos + Vec2f(-20, -20);
+	Vec2f br = pos + Vec2f(20, 20);
+	
+	const bool hover = (mousePos.x > tl.x && mousePos.x < br.x && mousePos.y > tl.y && mousePos.y < br.y);
+	if (hover)
+	{
+		GUI::DrawButton(tl, br);
+		
+		if (controls.mousePressed1 && !mousePress)
+		{
+			Sound::Play("option");
+			if (right)
+				page = page == pages - 1 ? 0 : page + 1;
+			else
+				page = page == 0 ? pages - 1 : page - 1;
+		}
+	}
+	else
+	{
+		GUI::DrawPane(tl, br, 0xffcfcfcf);
+	}
+	GUI::DrawIcon("MenuItems", right ? 22 : 23, Vec2f(32,32), Vec2f(pos.x-32, pos.y-32), 1.0f);
+}
+
+void makeWebsiteLink(Vec2f pos, const string&in text, const string&in website, CControls@ controls, Vec2f&in mousePos)
+{
+	GUI::SetFont("medium font");
+	Vec2f dim;
+	GUI::GetTextDimensions(text, dim);
+
+	const f32 width = dim.x + 20;
+	const f32 height = 40;
+	Vec2f tl = pos;
+	Vec2f br = Vec2f(width + pos.x, pos.y + height);
+
+	const bool hover = (mousePos.x > tl.x && mousePos.x < br.x && mousePos.y > tl.y && mousePos.y < br.y);
+	if (hover)
+	{
+		GUI::DrawButton(tl, br);
+
+		if (controls.mousePressed1 && !mousePress)
+		{
+			Sound::Play("option");
+			OpenWebsite(website);
+		}
+	}
+	else
+	{
+		GUI::DrawPane(tl, br, 0xffcfcfcf);
+	}
+
+	GUI::DrawTextCentered(text, Vec2f(tl.x + (width * 0.50f), tl.y + (height * 0.50f)), 0xffffffff);
+}
+
+void drawStagingPopup(Vec2f&in pos)
+{
+	#ifdef STAGING
+	return; //staging players don't see this popup
+	#endif
+
+	GUI::SetFont("menu");
+	const string info = "Staging\n\n"+
+	                    "Zombie Fortress is best\nsuited to be played\n"+
+	                    "with a staging client.\n\n"+
+	                    "What is Staging?\n"+
+	                    "Staging is a version of KAG\nwith incredible optimization.\n"+
+	                    "Switch to staging for\nmajor performance improvement!\n\n"+
+	                    "How to get staging on steam:\n"+
+	                    "\nKAG properties -> Betas ->\nEnter transhumandesign ->\nChoose staging-test\n\n"+
+	                    "Visit the discord\nfor additional information\nor if you are a non-steam player.";
+	Vec2f dim;
+	GUI::GetTextDimensions(info, dim);
+	
+	pos.y += dim.y;
+	pos.x -= 25.0f;
+
+	Vec2f tl = pos - dim + Vec2f(-5.0f, 0.0f);
+	Vec2f br = pos + Vec2f(10.0f, -40.0f);
+	GUI::DrawPane(tl, br, SColor(0xffcccccc));
+
+	pos.y += 10.0f;
+	GUI::DrawText(info, pos - dim, SColor(0xffffffff));
 }
