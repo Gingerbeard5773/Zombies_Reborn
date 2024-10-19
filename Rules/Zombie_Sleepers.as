@@ -108,7 +108,7 @@ void UseSleepersAsRespawn(CRules@ this)
 			for (u8 p = 0; p < plyCount; p++)
 			{
 				CPlayer@ player = getPlayer(p);
-				if (player is null || player.getBlob() !is null || player.getTeamNum() == 200) continue;
+				if (player is null || player.getBlob() !is null || player.getTeamNum() == 3) continue;
 			
 				WakeupSleeper(sleeper, player);
 				break;

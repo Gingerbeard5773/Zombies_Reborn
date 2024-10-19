@@ -110,7 +110,7 @@ void SetUndead(CRules@ this, CPlayer@ player)
 {
 	const string username = player.getUsername();
 
-	player.server_setTeamNum(200);
+	player.server_setTeamNum(3);
 	CBlob@ blob = player.getBlob();
 	if (blob !is null)
 	{
@@ -125,26 +125,34 @@ void SetUndead(CRules@ this, CPlayer@ player)
 		}
 	}
 	
-	//see if we can spawn as a wraith right now
-	bool foundWraith = false;
-	CBlob@[] wraiths;
-	if (getBlobsByName("wraith", @wraiths))
+	//see if we can spawn as an undead right now
+	bool foundUndead = false;
+	CBlob@[] undeads;
+	CBlob@[] available_undeads;
+	if (getBlobsByTag("undead", @undeads))
 	{
-		for (u8 i = 0; i < wraiths.length; i++)
+		for (u8 i = 0; i < undeads.length; i++)
 		{
-			CBlob@ wraith = wraiths[i];
-			if (wraith.getPlayer() is null)
-			{
-				wraith.server_SetPlayer(player);
-				wraith.getBrain().server_SetActive(false);
-				foundWraith = true;
-				break;
-			}
+			CBlob@ undead = undeads[i];
+			if (undead.getPlayer() !is null) continue;
+			
+			const string name = undead.getName();
+			if (name == "greg" || name == "skelepede" || name == "wraith") continue;
+
+			available_undeads.push_back(undead);
 		}
 	}
 	
-	//can't find a wraith? add player to queue
-	if (!foundWraith)
+	if (available_undeads.length > 0)
+	{
+		CBlob@ undead = available_undeads[XORRandom(available_undeads.length)];
+		undead.server_SetPlayer(player);
+		undead.getBrain().server_SetActive(false);
+		foundUndead = true;
+	}
+	
+	//can't find an undead? add player to queue
+	if (!foundUndead)
 	{
 		string[]@ usernames;
 		if (this.get("softban_spawn_queue", @usernames))

@@ -19,7 +19,7 @@ void onRender(CRules@ this)
 	string text = time_left > 100 ? Translate::Respawn0 : getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + time_left);
 	SColor col = SColor(0xFFE0BA16);
 	
-	if (player.getTeamNum() == 200) //undead player
+	if (player.getTeamNum() == 3) //undead player
 	{
 		text = Translate::Respawn1;
 		col = SColor(0xFFDB5743);

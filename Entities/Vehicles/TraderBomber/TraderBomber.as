@@ -42,15 +42,15 @@ void onInit(CBlob@ this)
 	AddRandomItemsToShop(shop, seed, 3);
 	
 	{
-		SaleItem s(shop.items, "Buy Gold (50)", "$mat_gold$", "mat_gold", "Buy 50 gold for 700 $COIN$");
+		SaleItem s(shop.items, "Buy Gold (50)", "$mat_gold$", "mat_gold", "Buy 50 gold for 700 $COIN$", ItemType::material, 50);
 		AddRequirement(s.requirements, "coin", "", "Coins", 700);
 	}
 	{
-		SaleItem s(shop.items, "Buy Stone (250)", "$mat_stone$", "mat_stone", "Buy 250 Stone for 300 $COIN$");
+		SaleItem s(shop.items, "Buy Stone (250)", "$mat_stone$", "mat_stone", "Buy 250 Stone for 300 $COIN$", ItemType::material, 250);
 		AddRequirement(s.requirements, "coin", "", "Coins", 300);
 	}
 	{
-		SaleItem s(shop.items, "Buy Wood (250)", "$mat_wood$", "mat_wood", "Buy 250 Wood for 100 $COIN$");
+		SaleItem s(shop.items, "Buy Wood (250)", "$mat_wood$", "mat_wood", "Buy 250 Wood for 100 $COIN$", ItemType::material, 250);
 		AddRequirement(s.requirements, "coin", "", "Coins", 100);
 	}
 	{
@@ -66,7 +66,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 250);
 	}
 	{
-		SaleItem s(shop.items, "Buy Flour (50)", "$mat_flour$", "mat_flour", "Buy 50 Flour for 300 $COIN$");
+		SaleItem s(shop.items, "Buy Flour (50)", "$mat_flour$", "mat_flour", "Buy 50 Flour for 300 $COIN$", ItemType::material, 50);
 		AddRequirement(s.requirements, "coin", "", "Coins", 300);
 	}
 	{
@@ -94,11 +94,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 400);
 	}
 	{
-		SaleItem s(shop.items, "Buy Iron Ore (250)", "$mat_iron_icon$", "mat_iron", "Buy 250 Iron Ore for 1400 $COIN$");
+		SaleItem s(shop.items, "Buy Iron Ore (250)", "$mat_iron_icon$", "mat_iron", "Buy 250 Iron Ore for 1400 $COIN$", ItemType::material, 250);
 		AddRequirement(s.requirements, "coin", "", "Coins", 1400);
 	}
 	{
-		SaleItem s(shop.items, "Buy Coal (250)", "$mat_coal_icon$", "mat_coal", "Buy 250 Coal for 500 $COIN$");
+		SaleItem s(shop.items, "Buy Coal (250)", "$mat_coal_icon$", "mat_coal", "Buy 250 Coal for 500 $COIN$", ItemType::material, 250);
 		AddRequirement(s.requirements, "coin", "", "Coins", 500);
 	}
 	

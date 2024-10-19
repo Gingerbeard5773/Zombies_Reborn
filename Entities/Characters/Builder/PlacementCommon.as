@@ -125,7 +125,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 
 		//repairing blobs
 		CBlob@[] blobsAtPos;
-		if (map.getBlobsAtPosition(p, @blobsAtPos) && blob !is null && (isDoor || isPlatform))
+		if (blob !is null && map.getBlobsAtPosition(p, @blobsAtPos) && (isDoor || isPlatform))
 		{
 			for (u8 i = 0; i < blobsAtPos.length; i++)
 			{

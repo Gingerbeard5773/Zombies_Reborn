@@ -1,8 +1,7 @@
 #include "VehicleCommon.as"
 #include "Hitters.as"
-#include "ActivationThrowCommon.as"
 
-// Boat logic
+// Bomber logic
 
 void onInit(CBlob@ this)
 {
@@ -69,85 +68,6 @@ void onInit(CBlob@ this)
 		burner.SetRelativeZ(1.5f);
 		burner.SetOffset(Vec2f(0.0f, -26.0f));
 	}
-}
-
-void onTick(CBlob@ this)
-{
-	if (this.hasAttached())
-	{
-		if (this.getHealth() > 1.0f)
-		{
-			HandleBombing(this);
-
-			VehicleInfo@ v;
-			if (!this.get("VehicleInfo", @v)) return;
-
-			Vehicle_StandardControls(this, v);
-		}
-		else
-		{
-			this.server_DetachAll();
-			this.setAngleDegrees(this.getAngleDegrees() + (this.isFacingLeft() ? 1 : -1));
-			if (this.isOnGround() || this.isInWater())
-			{
-				this.server_SetHealth(-1.0f);
-				this.server_Die();
-			}
-			else
-			{
-				//TODO: effects
-				if (getGameTime() % 30 == 0)
-					this.server_Hit(this, this.getPosition(), Vec2f(0, 0), 0.05f, 0, true);
-			}
-		}
-	}
-}
-
-void HandleBombing(CBlob@ this)
-{
-	AttachmentPoint@ driverSeat = this.getAttachments().getAttachmentPointByName("FLYER");
-	if (driverSeat is null) return;
-	
-	CBlob@ flyer = driverSeat.getOccupied();
-	if (flyer is null) return;
-
-	if (driverSeat.isKeyPressed(key_action3) && this.get_u32("lastDropTime") < getGameTime())
-	{
-		CInventory@ inv = this.getInventory();
-		if (inv !is null && inv.getItemsCount() > 0)
-		{
-			this.getSprite().PlaySound("bridge_open", 1.0f, 1.0f);
-
-			if (isServer())
-			{
-				CBlob@ item = inv.getItem(0);
-				if (item.getName() == "mat_bombs")
-				{
-					CBlob@ blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
-					if (blob !is null)
-					{
-						item.server_Die();
-					}
-				}
-				else
-				{
-					this.server_PutOutInventory(item);
-					item.setPosition(this.getPosition() + Vec2f(0, 12));
-					if (item.hasTag("activatable"))
-					{
-						server_Activate(item);
-					}
-				}
-			}
-
-			this.set_u32("lastDropTime", getGameTime() + 30);
-		}
-	}
-}
-
-bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
-{
-	return Vehicle_doesCollideWithBlob_ground(this, blob);
 }
 
 // SPRITE

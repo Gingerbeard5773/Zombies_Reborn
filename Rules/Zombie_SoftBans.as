@@ -9,22 +9,23 @@
 
 void onBlobCreated(CRules@ this, CBlob@ blob)
 {
-	//queued players become wraiths
-	if (blob.getName() != "wraith") return;
-	
+	//queued players become undeads
+	if (!blob.hasTag("undead")) return;
+
+	if (blob.getName() == "greg") return;
+
 	string[]@ usernames;
 	if (!this.get("softban_spawn_queue", @usernames) || usernames.length <= 0) return;
 	
 	for (u8 i = 0; i < usernames.length; i++)
 	{
 		CPlayer@ player = getPlayerByUsername(usernames[i]);
-		if (player !is null)
-		{
-			usernames.erase(i);
-			blob.server_SetPlayer(player);
-			blob.getBrain().server_SetActive(false);
-			break;
-		}
+		if (player is null) continue;
+
+		usernames.erase(i);
+		blob.server_SetPlayer(player);
+		blob.getBrain().server_SetActive(false);
+		break;
 	}
 }
 

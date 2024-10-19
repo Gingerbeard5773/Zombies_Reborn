@@ -60,7 +60,8 @@ void onTick(CBlob@ this)
 	
 	//attack target
 	CBlob@ target = this.getBrain().getTarget();
-	if (target !is null && this.getDistanceTo(target) < 70.0f)
+	const bool press_action1 = this.isKeyPressed(key_action1);
+	if ((target !is null && this.getDistanceTo(target) < 70.0f) || press_action1)
 	{
 		if (gameTime >= attackVars.next_attack)
 		{
@@ -76,7 +77,7 @@ void onTick(CBlob@ this)
 				for (u16 i = 0; i < hitLength; i++)
 				{
 					CBlob@ b = hitInfos[i].blob;
-					if (b is target)
+					if (b !is null && (b is target || press_action1))
 					{
 						server_UndeadAttack(this, b, attackVars.damage, true, attackVars);
 						break;
@@ -91,8 +92,10 @@ void onTick(CBlob@ this)
 
 void server_UndeadAttack(CBlob@ this, CBlob@ target, const f32&in damage, const bool&in set_next, UndeadAttackVars@ attackVars)
 {
+	if (target.hasTag("undead")) return;
+
 	const Vec2f hitvel = target.getPosition() - this.getPosition();
-	this.server_Hit(target, target.getPosition(), hitvel, damage, attackVars.hitter, true);
+	this.server_Hit(target, target.getPosition(), hitvel, damage, attackVars.hitter);
 	
 	if (set_next)
 		attackVars.next_attack = getGameTime() + attackVars.frequency;

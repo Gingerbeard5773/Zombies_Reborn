@@ -23,7 +23,7 @@ void onInit(CBlob@ this)
 
 	this.set_Vec2f("production offset", Vec2f(-8.0f, 0.0f));
 	this.set_s32("gold building amount", 0);
-	
+
 	addOnAssignWorker(this, @onAssignWorker);
 	addOnUnassignWorker(this, @onUnassignWorker);
 	
@@ -118,11 +118,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 	else if (!AssignWorkerButton(this, caller) && !UnassignWorkerButton(this, caller, Vec2f(0, -14)))
 	{
-		CButton@ button = caller.CreateGenericButton("$worker_migrant$", Vec2f(0, 0), this, 0, "Requires a worker");
-		if (button !is null)
-		{
-			button.SetEnabled(false);
-		}
+		RequiresWorkerButton(this, caller);
 	}
 }
 
@@ -289,9 +285,12 @@ void onAssignWorker(CBlob@ this, CBlob@ worker)
 void onUnassignWorker(CBlob@ this, CBlob@ worker)
 {
 	worker.server_DetachFrom(this);
-
-	this.getSprite().PlaySound("/PowerDown.ogg");
-	this.set_bool("can produce", false);
+	
+	if (getWorkers(this).length <= 0)
+	{
+		this.getSprite().PlaySound("/PowerDown.ogg");
+		this.set_bool("can produce", false);
+	}
 }
 
 void SetStandardWorkerPosition(CBlob@ this, CBlob@ worker)
