@@ -13,9 +13,9 @@ void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
     string adminUsername = admin.getUsername();
     ConfigFile@ cfg = getWarnsConfig();
 
-    // ignore if player is admin or the person who is warning
+    // ignore if player is admin or player is the person who executed the command
     CPlayer@ playerObject = getPlayerByUsername(player);
-    if (adminUsername == player || (playerObject !is null && !playerObject.isMod())) return;
+    if (adminUsername == player || (playerObject !is null && !playerBanImmune(playerObject))) return;
 
     string[] reasons;
     string[] expiries;
@@ -49,13 +49,12 @@ void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
     {
         server_SendGlobalMessage(r, getWarnMessage(adminUsername, player, reason), 5, SColor(255, 255, 0, 0).color, warnedPlayer);
     }
-    
+
     // display to the admin the warn was successful
     if (admin !is null)
     {
         server_SendGlobalMessage(r, "Sucessfully warned: " + player, 2, SColor(255, 0, 255, 0).color, admin);
     }
-    // TODO: check if command works with less than 3 params
 }
 
 void banIfTooManyWarns(string player)
@@ -129,7 +128,14 @@ u8 removeExpiredWarns(string player)
 
 string getWarnMessage(string admin, string player, string reason)
 {
-    return "You have been warned by admin: " + admin + "\nReason: " + reason + "\nYou are on warn number: " + getWarnCount(player);
+    string message = "You have been warned by admin: " + admin;
+    if (reason != "")
+    {
+        message += "\nReason: " + reason;
+    }
+    message += "\nYou are on warn number: " + getWarnCount(player);
+
+    return message;
 }
 
 ConfigFile@ getWarnsConfig()
@@ -191,4 +197,14 @@ string getPlayerUsername(string player)
 	string[]@ tokens = player.split("~");
 	if (tokens.length <= 0) return "";
 	return tokens[0];
+}
+
+bool canPlayerBan(CPlayer@ player)
+{
+    return getSecurity().checkAccess_Command(player, "ban");
+}
+
+bool playerBanImmune(CPlayer@ player)
+{
+    return getSecurity().checkAccess_Feature(player, "ban_immunity");
 }

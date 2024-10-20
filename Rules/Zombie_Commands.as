@@ -35,7 +35,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (text_in.substr(0,1) == "!")
 		{
 			string[]@ tokens = text_in.split(" ");
-			
+
 			if (tokens.length > 1)
 			{
 				CBlob@ pBlob = player.getBlob();
@@ -52,7 +52,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 						return false;
 					}
 				}
-				
+
 				if (tokens[0] == "!cursor") //spawn a blob at cursor position
 				{
 					CBlob@ pBlob = player.getBlob();
@@ -88,7 +88,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 						warn("!softban:: missing perameters");
 						return false;
 					}
-					
+
 					SoftBan(tokens[1], tokens.length > 3 ? tokens[3] : "", parseInt(tokens[2])*60);
 					CPlayer@ bannedPlayer = getPlayerByUsername(tokens[1]);
 					if (bannedPlayer !is null)
@@ -119,7 +119,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				{
 					const u32 day_cycle = this.daycycle_speed * 60;
 					const u16 dayNumber = (getGameTime() / getTicksASecond() / day_cycle) + 1;
-					
+
 					this.set_u16("day_number", dayNumber);
 					this.Sync("day_number", true);
 				}
@@ -129,18 +129,18 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					const string message = "MAP SEED : "+map_seed;
 					print(message);
 					server_SendGlobalMessage(this, message, 10);
-					
+
 					if (isClient()) //localhost only atm
 						CopyToClipboard(map_seed+"");
 
 					return false;
 				}
 			}
-			
+
 			if (tokens[0] == "!respawn") //respawn player
 			{
 				const string ply_name = tokens.length > 1 ? tokens[1] : player.getUsername();
-				
+
 				if (getPlayerByUsername(ply_name) !is null)
 				{
 					dictionary@ respawns;
@@ -171,23 +171,31 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				this.set_s32("new map seed", map_seed);
 				LoadNextMap();
 			}
-			else if (tokens[0] == "!warn")
-			{
-				if (tokens.length > 1)
-				{
-					string targetPlayer = tokens[1];
-					string reason = tokens.length > 3 ? tokens[3] : "";
-					// add the reason into a string
-					for(int i = 4; i < tokens.length; i++)
-					{
-						reason += " " + tokens[i];
-					}
+		}
+	}
 
-					u32 duration = tokens.length > 2 ? parseInt(tokens[2]) : warnDuration;
-					WarnPlayer(player, targetPlayer, duration, reason);
+	// check if the player can ban another player
+	if (canPlayerBan(player))
+	{
+		string[]@ tokens = text_in.split(" ");
+
+		if (tokens[0] == "!warn")
+		{
+			if (tokens.length > 1)
+			{
+				string targetPlayer = tokens[1];
+				string reason = tokens.length > 3 ? tokens[3] : "";
+				// add the reason into a string
+				for(int i = 4; i < tokens.length; i++)
+				{
+					reason += " " + tokens[i];
 				}
+
+				u32 duration = tokens.length > 2 ? parseInt(tokens[2]) : warnDuration;
+				WarnPlayer(player, targetPlayer, duration, reason);
 			}
 		}
 	}
+
 	return true;
 }
