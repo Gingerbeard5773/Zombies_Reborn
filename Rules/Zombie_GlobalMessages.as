@@ -35,7 +35,8 @@ const string[] server_messages =
 	Translate::Sedgwick,
 	Translate::Migrant1,
 	Translate::Migrant2,
-	Translate::Record
+	Translate::Record,
+	Translate::Respawn2,
 };
 
 void onInit(CRules@ this)

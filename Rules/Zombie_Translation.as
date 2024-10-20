@@ -43,6 +43,7 @@ namespace Translate
 	//respawning
 	Respawn0 = Translate("Waiting for dawn...",              ""),
 	Respawn1 = Translate("Waiting to spawn as an undead...", ""),
+	Respawn2 = Translate("Respawned as {INPUT}",             ""),
 	
 	//global messages
 	Day      = Translate("Day {INPUT}",                                                 "День {INPUT}"),

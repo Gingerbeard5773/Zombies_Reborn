@@ -3,6 +3,8 @@
 #define SERVER_ONLY;
 
 #include "KnockedCommon.as";
+#include "GetSurvivors.as";
+#include "Zombie_GlobalMessagesCommon.as";
 
 const u32 unused_time_required = 30*60*2; //time it takes for a sleeper to be available for respawning players to use
 
@@ -12,8 +14,23 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 	
 	CBlob@ blob = player.getBlob();
 	if (blob is null || blob.hasTag("undead")) return;
-	
+
 	blob.server_SetPlayer(null);
+
+	//immediately slot in a different player if we are leaving as the last alive player
+	CPlayer@[] players;
+	CBlob@[] survivors = getSurvivors(@players, player);
+	if (survivors.length <= 0 && players.length > 0)
+	{
+		CPlayer@ random_player = players[XORRandom(players.length)];
+		blob.server_SetPlayer(random_player);
+		
+		const string[] inputs = { player.getCharacterName() };
+		server_SendGlobalMessage(this, 8, 8, inputs, color_white.color, random_player);
+
+		return;
+	}
+
 	blob.set_string("sleeper_name", player.getUsername());
 	blob.set_u32("sleeper_time", getGameTime());
 	blob.Tag("sleeper");
@@ -109,7 +126,10 @@ void UseSleepersAsRespawn(CRules@ this)
 			{
 				CPlayer@ player = getPlayer(p);
 				if (player is null || player.getBlob() !is null || player.getTeamNum() == 3) continue;
-			
+				
+				const string[] inputs = { sleeper.get_string("sleeper_name") };
+				server_SendGlobalMessage(this, 8, 8, inputs, color_white.color, player);
+
 				WakeupSleeper(sleeper, player);
 				break;
 			}
