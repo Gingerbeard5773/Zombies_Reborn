@@ -2,6 +2,7 @@
 
 #include "UndeadTargeting.as";
 #include "PressOldKeys.as";
+#include "GetSurvivors.as";
 
 void onInit(CBrain@ this)
 {
@@ -280,22 +281,9 @@ void DetachTarget(CBrain@ this, CBlob@ blob)
 
 void SetPlayerTarget(CBlob@ blob)
 {
-	u16[] survivors;
-	
-	const u8 playersLength = getPlayerCount();
-	for (u8 i = 0; i < playersLength; ++i)
-	{
-		CPlayer@ player = getPlayer(i);
-		if (player is null) continue;
-		
-		CBlob@ playerBlob = player.getBlob();
-		if (playerBlob is null) continue;
-		
-		if (!playerBlob.hasTag("undead"))
-			survivors.push_back(playerBlob.getNetworkID());
-	}
-	
+	CBlob@[] survivors = getSurvivors();
 	if (survivors.length <= 0) return;
-	
-	blob.set_netid("brain_player_target", survivors[XORRandom(survivors.length)]);
+
+	const u16 netid = survivors[XORRandom(survivors.length)].getNetworkID();
+	blob.set_netid("brain_player_target", netid);
 }

@@ -41,6 +41,8 @@ void onRestart(CRules@ this)
 	for (u8 i = 0; i < plyCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
+
 		string playerKey;
 		int time;
 		if (isSoftBanned(player, playerKey, time))

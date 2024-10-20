@@ -1,6 +1,7 @@
 // antagonist asshole
 
 #include "ParticleTeleport.as";
+#include "GetSurvivors.as";
 
 enum SpellNum
 {
@@ -194,21 +195,7 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 	
 	if (countdown == 0) //activate spell
 	{
-		//find applicable players
-		CBlob@[] survivors;
-		const u8 playersLength = getPlayerCount();
-		for (u8 i = 0; i < playersLength; ++i)
-		{
-			CPlayer@ player = getPlayer(i);
-			if (player is null) continue;
-			
-			CBlob@ playerBlob = player.getBlob();
-			if (playerBlob !is null && !playerBlob.hasTag("undead"))
-			{
-				survivors.push_back(playerBlob);
-			}
-		}
-		
+		CBlob@[] survivors = getSurvivors();
 		const u8 survivorsLength = survivors.length;
 		if (survivorsLength <= 0)
 		{
