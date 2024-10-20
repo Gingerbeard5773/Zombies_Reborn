@@ -201,7 +201,7 @@ string getPlayerUsername(string player)
 
 bool canPlayerBan(CPlayer@ player)
 {
-    return getSecurity().checkAccess_Feature(player, "ban");
+    return getSecurity().checkAccess_Command(player, "ban");
 }
 
 bool playerBanImmune(CPlayer@ player)
