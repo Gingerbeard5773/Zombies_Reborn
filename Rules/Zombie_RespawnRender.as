@@ -26,5 +26,7 @@ void onRender(CRules@ this)
 	}
 	
 	GUI::SetFont("menu");
-	GUI::DrawTextCentered(text, Vec2f(getScreenWidth()/2, 200 + Maths::Cos(gameTime/10.0f)*8), col);
+	Vec2f drawpos(getScreenWidth()*0.5f, getScreenHeight()*0.22f + 50.0f);
+	drawpos.y += Maths::Cos(gameTime/10.0f)*8.0f;
+	GUI::DrawTextCentered(text, drawpos, col);
 }

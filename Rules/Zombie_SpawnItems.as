@@ -63,10 +63,6 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 const string getRecieverName(CBlob@ blob)
 {
 	const string name = blob.getName();
-	
-	if (name == "crossbowman") //use archer spawnmats for crossbow
-		return "archer";
-	
 	return name;
 }
 
@@ -159,29 +155,30 @@ void onRender(CRules@ this)
 	CPlayer@ player = getLocalPlayer();
 	if (player is null || !player.isMyPlayer()) return;
 
-	CBlob@ b = player.getBlob();
-	if (b !is null)
-	{
-		const u32 gameTime = getGameTime();
-		const string name = getRecieverName(b);
-		const s32 next_items = getMatsTime(this, name);
-		if (next_items > gameTime)
-		{
-			string action = (name == "builder" ? "Go Build" : "Go Fight");
-			if (this.get_u16("day_number") < 2)
-			{
-				action = "Prepare for Battle";
-			}
+	CBlob@ blob = player.getBlob();
+	if (blob is null) return;
 
-			const u32 secs = ((next_items - 1 - gameTime) / getTicksASecond()) + 1;
-			const string units = ((secs != 1) ? " seconds" : " second");
-			GUI::SetFont("menu");
-			GUI::DrawTextCentered(getTranslatedString("Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!")
-							.replace("{SEC}", "" + secs)
-							.replace("{TIMESUFFIX}", getTranslatedString(units))
-							.replace("{ACTION}", getTranslatedString(action)),
-			              Vec2f(getScreenWidth() / 2, getScreenHeight() / 3 - 70.0f + Maths::Sin(gameTime / 3.0f) * 5.0f),
-			              SColor(255, 255, 55, 55));
+	const u32 gameTime = getGameTime();
+	const string name = getRecieverName(blob);
+	const s32 next_items = getMatsTime(this, name);
+	if (next_items > gameTime)
+	{
+		string action = (name == "builder" ? "Go Build" : "Go Fight");
+		if (this.get_u16("day_number") < 2)
+		{
+			action = "Prepare for Battle";
 		}
+
+		Vec2f drawpos(getScreenWidth()*0.5f, getScreenHeight()*0.22f + 50.0f);
+		drawpos.y += Maths::Sin(gameTime / 3.0f) * 5.0f;
+		const u32 secs = ((next_items - 1 - gameTime) / getTicksASecond()) + 1;
+		const string units = ((secs != 1) ? " seconds" : " second");
+		GUI::SetFont("menu");
+		GUI::DrawTextCentered(getTranslatedString("Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!")
+						.replace("{SEC}", "" + secs)
+						.replace("{TIMESUFFIX}", getTranslatedString(units))
+						.replace("{ACTION}", getTranslatedString(action)),
+					  drawpos,
+					  SColor(255, 255, 55, 55));
 	}
 }
