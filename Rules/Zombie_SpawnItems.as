@@ -40,7 +40,7 @@ void onTick(CRules@ this)
 			const string overlapped = overlapping[i].getName();
 			if ((overlapped == "buildershop" && name == "builder") ||
 				(overlapped == "archershop" && name == "archer") ||
-				(overlapped == "barracks"))
+				(overlapped == "armory"))
 			{
 				client_GiveMats(this, player, blob);
 			}
