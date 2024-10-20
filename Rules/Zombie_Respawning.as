@@ -33,7 +33,7 @@ void Reset(CRules@ this)
 	for (u8 i = 0; i < plyCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
-		if (player is null || player.getTeamNum() == 200) continue;
+		if (player is null || player.getTeamNum() == 3) continue;
 
 		respawns.set(player.getUsername(), 0);
 	}
@@ -60,7 +60,7 @@ void onTick(CRules@ this)
 	for (u8 i = 0; i < plyCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
-		if (player is null || player.getBlob() !is null || player.getTeamNum() == 200) continue;
+		if (player is null || player.getBlob() !is null || player.getTeamNum() == 3) continue;
 
 		const string username = player.getUsername();
 		if (!respawns.exists(username))
@@ -90,7 +90,7 @@ void onTick(CRules@ this)
 
 void SetPlayerRespawn(CRules@ this, CPlayer@ player, dictionary@ respawns)
 {
-	if (player.getTeamNum() == 200) return;
+	if (player.getTeamNum() == 3) return;
 
 	const u32 gameTime = getGameTime();
 	const u32 day_cycle = this.daycycle_speed * 60;

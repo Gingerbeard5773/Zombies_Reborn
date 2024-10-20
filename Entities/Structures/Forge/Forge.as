@@ -92,7 +92,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 		CBitStream params;
 		params.write_u8(i);
-		CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("server_add_fuel"), "Add fuel (Wood or Coal)", params);
+		CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("server_add_fuel"), Translate::AddFuel, params);
 		if (button !is null)
 		{
 			button.deleteAfterClick = false;

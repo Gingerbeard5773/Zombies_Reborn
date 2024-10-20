@@ -68,19 +68,6 @@ void onTick(CBlob@ this)
 	}
 }
 
-void onSetPlayer(CBlob@ this, CPlayer@ player)
-{
-	if (player !is null && player.isMyPlayer())
-	{
-		CCamera@ cam = getCamera();
-		if (cam !is null)
-		{
-			cam.targetDistance = Maths::Min(1.0f, cam.targetDistance);
-		}
-		Sound::Play("switch.ogg");
-	}
-}
-
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (isClient() && damage > 0.0f)
@@ -95,11 +82,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	else if (isWaterHitter(customData) && this.hasTag("exploding"))
 	{
 		server_SetEnraged(this, false, true);
-	}
-	else if (this.getPlayer() !is null && customData == Hitters::suicide)
-	{
-		server_SetEnraged(this);
-		return 0.0f; //don't allow insta explode
 	}
 
 	return damage;

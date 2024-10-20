@@ -4,6 +4,7 @@
 #include "ShopCommon.as"
 #include "MigrantCommon.as"
 #include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
 
 const f32 heal_amount = 0.25f;
 const u8 heal_rate = 30;
@@ -19,7 +20,7 @@ void onInit(CBlob@ this)
 	this.Tag("builder always hit");
 	this.Tag("respawn"); //allow players to use as respawn point
 	
-	this.addCommandID("rest");
+	this.addCommandID("server_rest");
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
@@ -29,7 +30,7 @@ void onInit(CBlob@ this)
 	this.Tag(SHOP_AUTOCLOSE);
 
 	{
-		ShopItem@ s = addShopItem(this, "Worker", "$worker_migrant$", "migrant", "Recruit a worker for your needs.");
+		ShopItem@ s = addShopItem(this, "Worker", "$worker_migrant$", "migrant", Translate::RecruitWorker);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 35);
 	}
 
@@ -42,19 +43,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.getSprite().PlaySound("MigrantSayHello.ogg");
 	}
-	else if (cmd == this.getCommandID("rest") && isServer())
+	else if (cmd == this.getCommandID("server_rest") && isServer())
 	{
 		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		if (caller !is null)
-		{
-			if (this.getDistanceTo(caller) > 40) return;
+		if (caller is null) return;
 
-			AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
-			if (bed !is null && bedAvailable(this))
-			{
-				caller.server_DetachFromAll();
-				this.server_AttachTo(caller, "BED");
-			}
+		if (this.getDistanceTo(caller) > 40) return;
+
+		AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
+		if (bed !is null && bedAvailable(this))
+		{
+			caller.server_DetachFromAll();
+			this.server_AttachTo(caller, "BED");
 		}
 	}
 }
@@ -71,7 +71,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		this.set_Vec2f("shop offset", Vec2f(6, 0));
 		CBitStream params;
 		params.write_netid(carried.getNetworkID());
-		caller.CreateGenericButton("$worker_migrant$", Vec2f(-6, 0), this, this.getCommandID("rest"), "Rest Worker", params);
+		caller.CreateGenericButton("$worker_migrant$", Vec2f(-6, 0), this, this.getCommandID("rest"), Translate::RestWorker, params);
 	}
 	else
 	{

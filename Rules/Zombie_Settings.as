@@ -56,12 +56,3 @@ void AddFonts()
         GUI::LoadFont("medium font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Regular.ttf", isRussian ? 10 : 20, true);
     }
 }
-
-void onBlobCreated(CRules@ this, CBlob@ blob)
-{
-	//keep gold from decaying
-	if (isServer() && blob.getName() == "mat_gold")
-	{
-		blob.RemoveScript("DecayQuantity.as");
-	}
-}

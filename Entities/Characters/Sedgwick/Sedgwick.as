@@ -25,6 +25,9 @@ void onInit(CBlob@ this)
 	this.server_setTeamNum(-1);
 	this.set_f32("gib health", 0.0f);
 	
+	//dont collide with top of the map
+	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
+	
 	CSprite@ sprite = this.getSprite();
 	sprite.ReloadSprites(3, 0); //purple
 	
@@ -41,11 +44,10 @@ void onInit(CBlob@ this)
 		Vec2f dim = map.getMapDimensions();
 		
 		const int x = dim.x/4 + XORRandom((dim.x/4)*2);
-		const int ceiling = getMapCeiling(map, x);
-		
+
 		Vec2f end;
-		map.rayCastSolidNoBlobs(Vec2f(x, ceiling), Vec2f(x, dim.y), end);
-		this.set_Vec2f("teleport pos", Vec2f(x, ceiling + (end.y - ceiling) / 2));
+		map.rayCastSolidNoBlobs(Vec2f(x, 0.0f), Vec2f(x, dim.y), end);
+		this.set_Vec2f("teleport pos", Vec2f(x, end.y*0.5f));
 	}
 
 	server_SetSpell(this, XORRandom(spell_end));
@@ -99,9 +101,8 @@ void SpellSkeletonRain(CBlob@ this, const u8&in countdown)
 			CMap@ map = getMap();
 			for (u16 i = 0; i < skeleton_count; ++i)
 			{
-				//spawn at ceiling
 				const int x = XORRandom(map.tilemapwidth*8);
-				server_CreateBlob("skeleton", -1, Vec2f(x, getMapCeiling(map, x) + 8));
+				server_CreateBlob("skeleton", -1, Vec2f(x, -150.0f));
 			}
 		}
 		if (isClient())
@@ -223,11 +224,10 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 			
 			Vec2f pos = survivor.getPosition();
 			CMap@ map = getMap();
-			const int ceiling = getMapCeiling(map, pos.x);
 			Vec2f end;
-			map.rayCastSolidNoBlobs(Vec2f(pos.x, ceiling), pos, end);
+			map.rayCastSolidNoBlobs(Vec2f(pos.x, 0.0f), pos, end);
 			
-			Vec2f deliveryPos = Vec2f(pos.x, ceiling + (end.y - ceiling) / 2);
+			Vec2f deliveryPos = Vec2f(pos.x, end.y - 250.0f);
 
 			//share zombies to players equally
 			for (u16 q = 0; q < undeadPerPlayer; ++q)
@@ -417,15 +417,6 @@ void RemoveOrb(CBlob@ this, const u8&in num, const bool&in dofire = true)
 	orb.SetVisible(false);
 	if (dofire)
 		ParticleAnimated("FireFlash.png", this.getPosition() + orb.getOffset(), Vec2f(0, 0.5f), 0.0f, 1.0f, 2, 0.0f, true);
-}
-
-const f32 getMapCeiling(CMap@ map, const f32&in x)
-{
-	for (int i = 0; i < map.tilemapheight; i++)
-	{
-		if (!map.isTileSolid(map.getTile(Vec2f(x, i*8)))) return i*8;
-	}
-	return 0.0f;
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)

@@ -24,7 +24,7 @@ void onTick(CRules@ this)
 		if (player is null) continue;
 
 		CBlob@ blob = player.getBlob();
-		if (blob is null || blob is localblob) continue;
+		if (blob is null || blob is localblob || blob.hasTag("undead")) continue;
 		
 		if (team == this.getSpectatorTeamNum() || // always add if we are spectator
 			team == blob.getTeamNum() && u_shownames || // if teammate and always show teammate names enabled
@@ -40,7 +40,7 @@ void onRender(CRules@ this)
 	for (int i = 0; i < blob_ids.length; i++)
 	{
 		CBlob@ blob = getBlobByNetworkID(blob_ids[i]);
-		if (blob is null || blob.hasTag("undead")) continue;
+		if (blob is null) continue;
 
 		CPlayer@ player = blob.getPlayer();
 		if (player is null) continue;

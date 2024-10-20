@@ -125,9 +125,12 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 {
 	const u16 dayNumber = this.get_u16("day_number");
 	if (dayNumber < 2) return;
-	
+
 	//have all players died?
 	if (!isGameLost(player)) return;
+
+	//make certain we only set game end once
+	if (this.getCurrentState() == GAME_OVER) return;
 	
 	this.SetCurrentState(GAME_OVER);
 	string[] inputs = {dayNumber+""};
