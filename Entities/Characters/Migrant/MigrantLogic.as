@@ -77,3 +77,12 @@ void onDie(CBlob@ this)
 {
 	UpdateAssigned(this);
 }
+
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (damage > 0.0f)
+	{
+		UpdateAssigned(this);
+	}
+	return damage;
+}
