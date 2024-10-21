@@ -285,12 +285,9 @@ void onAssignWorker(CBlob@ this, CBlob@ worker)
 void onUnassignWorker(CBlob@ this, CBlob@ worker)
 {
 	worker.server_DetachFrom(this);
-	
-	if (getWorkers(this).length <= 0)
-	{
-		this.getSprite().PlaySound("/PowerDown.ogg");
-		this.set_bool("can produce", false);
-	}
+
+	this.getSprite().PlaySound("/PowerDown.ogg");
+	this.set_bool("can produce", false);
 }
 
 void SetStandardWorkerPosition(CBlob@ this, CBlob@ worker)
