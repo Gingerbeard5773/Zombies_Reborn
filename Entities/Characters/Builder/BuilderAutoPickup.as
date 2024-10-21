@@ -52,7 +52,7 @@ bool server_PutInSecondaryBackpack(CBlob@ this, CBlob@ blob)
 	if (!this.get("equipment_ids", ids) || ids.length < 2) return false;
 
 	CBlob@ torso = getBlobByNetworkID(ids[1]);
-	if (torso.getName() == "backpack")
+	if (torso !is null && torso.getName() == "backpack")
 	{
 		return torso.server_PutInInventory(blob);
 	}
