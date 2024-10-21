@@ -33,14 +33,10 @@ shared void SetBestTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
 
 shared const bool isTargetVisible(CBlob@ this, CBlob@ target)
 {
-	Vec2f col;
-	
-	if (getMap().rayCastSolid(this.getPosition(), target.getPosition(), col))
+	Vec2f end;
+	if (getMap().rayCastSolid(this.getPosition(), target.getPosition(), end))
 	{
-		// fix for doors not being considered visible
-		CBlob@ obstruction = getMap().getBlobAtPosition(col);
-		if (obstruction is null || obstruction !is target)
-			return false;
+		return false;
 	}
 	return true;
 }

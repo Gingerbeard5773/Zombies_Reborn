@@ -95,8 +95,6 @@ void onTick(CBrain@ this)
 					return;
 				}
 				
-				CMap@ map = getMap();
-				
 				// chase target
 				FlyTo(blob, target.getPosition());
 

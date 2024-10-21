@@ -1,5 +1,9 @@
 #include "UndeadMoveCommon.as";
 
+const f32 turnaroundspeed = 1.3f;
+const f32 normalspeed = 1.0f;
+const f32 backwardsspeed = 0.8f;
+
 void onInit(CMovement@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
@@ -57,9 +61,6 @@ void onTick(CMovement@ this)
 
 	const bool facingleft = blob.isFacingLeft();
 	Vec2f flyDirection;
-	const f32 turnaroundspeed = 1.3f;
-	const f32 normalspeed = 1.0f;
-	const f32 backwardsspeed = 0.8f;
 
 	if (right)
 	{
@@ -98,8 +99,8 @@ void onTick(CMovement@ this)
 		
 		if (absx > 3.0f)
 		{
-			f32 extra = (absx-3.0f);
-			f32 scale = (1.0f/((1+extra) * 2));
+			const f32 extra = (absx-3.0f);
+			const f32 scale = (1.0f/((1+extra) * 2));
 			stop_force.x *= scale;
 		}
 		

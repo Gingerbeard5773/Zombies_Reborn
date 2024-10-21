@@ -38,12 +38,12 @@ void onTick(CRules@ this)
 	CBlob@[] skeletons;       getBlobsByName("skeleton", @skeletons);
 	CBlob@[] zombies;         getBlobsByName("zombie", @zombies);
 	CBlob@[] zombieknights;   getBlobsByName("zombieknight", @zombieknights);
-	CBlob@[] skelepedes;      getBlobsByName("skelepede", @skelepedes);
+	//CBlob@[] skelepedes;      getBlobsByName("skelepede", @skelepedes);
 	
 	int skeletons_length = skeletons.length;
 	int zombies_length = zombies.length;
 	int zombieknights_length = zombieknights.length;
-	int skelepedes_length = skelepedes.length;
+	//int skelepedes_length = skelepedes.length;
 	
 	for (u8 m = 0; m < merge_attempts; m++)
 	{

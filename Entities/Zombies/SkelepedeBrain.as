@@ -11,7 +11,6 @@ void onInit(CBrain@ this)
 		blob.set_f32("brain_target_rad", 220.0f);
 
 	this.getCurrentScript().removeIfTag	= "dead";
-	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
 
 void onTick(CBrain@ this)
