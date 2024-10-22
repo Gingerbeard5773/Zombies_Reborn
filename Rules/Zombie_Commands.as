@@ -21,7 +21,7 @@ void printcommandslist()
 	print(" !difficulty [difficulty] : sets the game difficulty",                                color_white);
 	print(" !loadgen [seed] : load a procedurally generated map using a seed",                   color_white);
 	print(" !seed : get the map seed",                                                           color_white);
-	print(" !warn : [player] [duration / in days, -1 for permanent] [reason] : warn a player",   color_white);
+	print(" !warn : [player] [duration / in days, 0 for permanent] [reason] : warn a player",   color_white);
 	print("");
 }
 

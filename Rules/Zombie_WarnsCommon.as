@@ -15,7 +15,10 @@ void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
 
     // ignore if player is admin or player is the person who executed the command
     CPlayer@ playerObject = getPlayerByUsername(player);
-    if (adminUsername == player || (playerObject !is null && !playerBanImmune(playerObject))) return;
+    if (adminUsername == player || (playerObject !is null && playerBanImmune(playerObject))) return;
+
+    // First remove any expired warns to get accurate count
+    removeExpiredWarns(player);
 
     string[] reasons;
     string[] expiries;
@@ -34,9 +37,8 @@ void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
     expiries.push_back(duration == 0 ? "0" : "" + (Time() + duration * 86400));
 
     // save updated warnings
-    cfg.add_u8(player + "_warns_count", reasons.length);
+    cfg.add_u8(player + "_warns_count", expiries.length);
     cfg.addArray_string(player + "_warns_reasons", reasons);
-    // hack, u32 was crashing my game
     cfg.addArray_string(player + "_warns_expiries", expiries);
     cfg.saveFile(fileName);
 
@@ -53,7 +55,7 @@ void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
     // display to the admin the warn was successful
     if (admin !is null)
     {
-        server_SendGlobalMessage(r, "Sucessfully warned: " + player, 2, SColor(255, 0, 255, 0).color, admin);
+        server_SendGlobalMessage(r, "Successfully warned: " + player + "\n(" + expiries.length + "/" + maxWarns + " warns)", 2, SColor(255, 0, 255, 0).color, admin);
     }
 }
 
@@ -65,7 +67,7 @@ void banIfTooManyWarns(string player)
     if (warns >= maxWarns)
     {
         u32 banDuration = (banTime == -1) ? -1 : banTime * 1440; // convert from days to minutes
-        getSecurity().ban(player, banDuration, "Banned for too many warns.");
+        getSecurity().ban(player, banDuration, "Banned for too many warns");
         kickExtraClients(player);
     }
 }
@@ -106,7 +108,7 @@ u8 removeExpiredWarns(string player)
     // check if expired
     for (u8 i = 0; i < expiries.length; i++)
     {
-        if (expiries[i] > currentTime)
+        if (expiries[i] == 0 || expiries[i] > currentTime)
         {
             updatedReasons.push_back(reasons[i]);
             updatedExpiries.push_back("" + expiries[i]);
@@ -115,13 +117,10 @@ u8 removeExpiredWarns(string player)
     }
 
     // update the config file if any warnings were removed
-    if (activeWarnings < expiries.length)
-    {
-        cfg.add_u8(player + "_warns_count", activeWarnings);
-        cfg.addArray_string(player + "_warns_reasons", updatedReasons);
-        cfg.addArray_string(player + "_warns_expiries", updatedExpiries);
-        cfg.saveFile(fileName);
-    }
+    cfg.add_u8(player + "_warns_count", activeWarnings);
+    cfg.addArray_string(player + "_warns_reasons", updatedReasons);
+    cfg.addArray_string(player + "_warns_expiries", updatedExpiries);
+    cfg.saveFile(fileName);
 
     return activeWarnings;
 }
@@ -133,14 +132,14 @@ string getWarnMessage(string admin, string player, string reason)
     {
         message += "\nReason: " + reason;
     }
-    message += "\nYou are on warn number: " + getWarnCount(player);
+    message += "\nYou are on warn number: " + getWarnCount(player) + "/" + maxWarns;
 
     return message;
 }
 
 ConfigFile@ getWarnsConfig()
 {
-    ConfigFile cfg = ConfigFile();
+    ConfigFile@ cfg = ConfigFile();
     if (!cfg.loadFile("../Cache/" + fileName))
     {
         warn("Creating warns config: ../Cache/" + fileName);
@@ -155,7 +154,9 @@ u16 getWarnCount(string playerName)
     ConfigFile@ cfg = getWarnsConfig();
     if (cfg.exists(playerName + "_warns_count"))
     {
-        return cfg.read_u8(playerName + "_warns_count");
+        u8 warns = cfg.read_u8(playerName + "_warns_count");
+        print("Warn count: " + warns);
+        return warns;
     }
 
     return 0;
