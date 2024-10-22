@@ -117,10 +117,13 @@ u8 removeExpiredWarns(string player)
     }
 
     // update the config file if any warnings were removed
-    cfg.add_u8(player + "_warns_count", activeWarnings);
-    cfg.addArray_string(player + "_warns_reasons", updatedReasons);
-    cfg.addArray_string(player + "_warns_expiries", updatedExpiries);
-    cfg.saveFile(fileName);
+    if (activeWarnings < expiries.length)
+    {
+        cfg.add_u8(player + "_warns_count", activeWarnings);
+        cfg.addArray_string(player + "_warns_reasons", updatedReasons);
+        cfg.addArray_string(player + "_warns_expiries", updatedExpiries);
+        cfg.saveFile(fileName);
+    }
 
     return activeWarnings;
 }
@@ -154,9 +157,7 @@ u16 getWarnCount(string playerName)
     ConfigFile@ cfg = getWarnsConfig();
     if (cfg.exists(playerName + "_warns_count"))
     {
-        u8 warns = cfg.read_u8(playerName + "_warns_count");
-        print("Warn count: " + warns);
-        return warns;
+        return cfg.read_u8(playerName + "_warns_count");
     }
 
     return 0;
