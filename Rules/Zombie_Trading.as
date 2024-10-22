@@ -1,5 +1,7 @@
 //Zombie Fortress coins mananagement
 
+#define SERVER_ONLY
+
 #include "GameplayEventsCommon.as";
 #include "CustomTiles.as";
 
@@ -50,8 +52,6 @@ void onReload(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	if (!isServer()) return;
-
 	names.clear();
 	for (u8 i = 0; i < getPlayerCount(); i++)
 	{
@@ -66,7 +66,7 @@ void onRestart(CRules@ this)
 //set coins to player when they first spawn
 void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
-	if (!isServer() || player is null) return;
+	if (player is null) return;
 
 	const string username = player.getUsername();
 	if (names.find(username) > -1) return;
@@ -78,7 +78,7 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 //lose coins when dying
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 {
-	if (!isServer() || victim is null) return;
+	if (victim is null) return;
 
 	const int lost = victim.getCoins() * (coinsOnDeathLosePercent * 0.01f);
 
@@ -94,8 +94,6 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 
 void awardCoins(CBitStream@ params)
 {
-	if (!isServer()) return;
-
 	params.ResetBitIndex();
 
 	u8 event_id;
