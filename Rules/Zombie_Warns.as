@@ -2,7 +2,7 @@
 #define SERVER_ONLY
 #include "Zombie_WarnsCommon.as";
 
-const string VARS = "Zombie_Warns.cfg";
+const string VARS = "Zombie_Vars.cfg";
 
 // load vars from config file
 void onInit(CRules@ this)
