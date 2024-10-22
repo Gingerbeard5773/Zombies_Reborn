@@ -191,7 +191,8 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					reason += " " + tokens[i];
 				}
 
-				u32 duration = tokens.length > 2 ? parseInt(tokens[2]) : warnDuration;
+				s32 duration = tokens.length > 2 ? parseInt(tokens[2]) : warnDuration;
+				if (duration < 0) duration = 0;
 				WarnPlayer(player, targetPlayer, duration, reason);
 			}
 		}
