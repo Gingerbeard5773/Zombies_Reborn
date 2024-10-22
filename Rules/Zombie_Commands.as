@@ -21,7 +21,7 @@ void printcommandslist()
 	print(" !difficulty [difficulty] : sets the game difficulty",                                color_white);
 	print(" !loadgen [seed] : load a procedurally generated map using a seed",                   color_white);
 	print(" !seed : get the map seed",                                                           color_white);
-	print(" !warn : [player] [duration / in days, -1 for permanent] [reason] : warn a player",   color_white);
+	print(" !warn : [player] [duration / in days, 0 for permanent] [reason] : warn a player",   color_white);
 	print("");
 }
 
@@ -191,7 +191,8 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					reason += " " + tokens[i];
 				}
 
-				u32 duration = tokens.length > 2 ? parseInt(tokens[2]) : warnDuration;
+				s32 duration = tokens.length > 2 ? parseInt(tokens[2]) : warnDuration;
+				if (duration < 0) duration = 0;
 				WarnPlayer(player, targetPlayer, duration, reason);
 			}
 		}

@@ -2,11 +2,13 @@
 #define SERVER_ONLY
 #include "Zombie_WarnsCommon.as";
 
+const string VARS = "Zombie_Vars.cfg";
+
 // load vars from config file
 void onInit(CRules@ this)
 {
     ConfigFile cfg = ConfigFile();
-    if (cfg.loadFile(fileName))
+    if (cfg.loadFile(VARS))
     {
         maxWarns = cfg.exists("max_warns") ? cfg.read_u8("max_warns") : 3;
         warnDuration = cfg.exists("warn_duration") ? cfg.read_u16("warn_duration") : 30;
