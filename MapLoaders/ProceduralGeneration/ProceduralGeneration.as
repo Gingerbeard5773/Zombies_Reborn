@@ -839,7 +839,6 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		{
 			for (int j = SeaLevel+1; j < height-1; j += 1)
 			{
-				getNet().server_KeepConnectionsAlive();
 				if (World[i][j] == CMap::tile_ground_back && r.NextRanged(4) == 0)
 				{
 					if (World[i-1][j] == 0 && r.NextRanged(2) == 0) World[i-1][j] = CMap::tile_ground_back;
@@ -873,7 +872,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 	{
 		for (int j = 0; j < height; j += 1)
 		{
-			getNet().server_KeepConnectionsAlive();
+			//getNet().server_KeepConnectionsAlive();
 			map.server_SetTile(Vec2f(i*8, j*8), World[i][j]);
 			if (World[i][j] == 0 && j >= SeaLevel)
 			{
