@@ -19,25 +19,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		this.getSprite().PlaySound(this.get_string("eat sound"));
 	}
-	if (cmd == this.getCommandID("heal command server") && isServer())
+	else if (cmd == this.getCommandID("heal command server") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		if (caller !is null)
-		{
-			Heal(caller, this);
-			this.SendCommand(this.getCommandID("heal command client"));
-		}
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
+		CBlob@ caller = player.getBlob();
+		if (caller is null) return;
+
+		Heal(caller, this);
+		this.SendCommand(this.getCommandID("heal command client"));
 	}
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (blob is null)
-	{
-		return;
-	}
+	if (blob is null) return;
 
-	if ((this.getName() == "heart" || this.getName() == "flowers") && isServer() && !blob.hasTag("dead"))
+	if (canHealOnCollide(this))
 	{
 		Heal(blob, this);
 	}
@@ -45,33 +44,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (this is null || attached is null) return;
-
-	CPlayer@ p = attached.getPlayer();
-	if (p is null) return;
-
-	this.set_u16("healer", p.getNetworkID());
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
-{
-	if (this is null || detached is null) return;
-
-	CPlayer@ p = detached.getPlayer();
-	if (p is null) return;
-
-	this.set_u16("healer", p.getNetworkID());
+	if (canHealOnCollide(this))
+	{
+		Heal(attached, this);
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!caller.isAttachedTo(this) || caller.getHealth() >= caller.getInitialHealth() || caller.hasTag("dead"))
 		return;
-		
-	u8 heal_amount = getHealingAmount(this);
-	if (heal_amount <= 0) return;
+
+	if (getHealingAmount(this) <= 0) return;
 	
-	CBitStream params;
-	params.write_netid(caller.getNetworkID());
-	caller.CreateGenericButton("$" + this.getName() + "$", Vec2f_zero, this, this.getCommandID("heal command server"), "Eat "+this.getInventoryName(), params);
+	caller.CreateGenericButton("$" + this.getName() + "$", Vec2f_zero, this, this.getCommandID("heal command server"), "Eat "+this.getInventoryName());
 }
