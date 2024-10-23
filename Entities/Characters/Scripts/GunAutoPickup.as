@@ -4,6 +4,11 @@
 
 //todo: add in compatibility for any future guns
 
+void onInit(CBlob@ this)
+{
+	this.getCurrentScript().removeIfTag = "dead";
+}
+
 bool isPickupBlob(const string&in name)
 {
 	return name == "mat_musketballs" || arrowTypeNames.find(name) > -1;
