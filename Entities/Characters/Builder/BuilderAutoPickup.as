@@ -23,18 +23,6 @@ const string[] must_already_have_names =
 	"mat_steelingot"
 };
 
-const string[] gunName =
-{
-	"musket",
-	"crossbow"
-};
-
-const string[] ammoName =
-{
-	"mat_musketballs",
-	"mat_arrows"
-};
-
 void Take(CBlob@ this, CBlob@ blob)
 {
 	if (blob.getShape().vellen > 1.0f) return;
@@ -52,20 +40,10 @@ void Take(CBlob@ this, CBlob@ blob)
 	}
 
 	CBlob@ carryblob = this.getCarriedBlob();
-	if (ammoName.find(blobName) != -1)
+	if (carryblob !is null && carryblob.getName() == "crate")
 	{
-		u8 i = 0;
-		for (; i < gunName.length; i++) if (blobName == ammoName[i]) break;
-		if ((carryblob !is null && carryblob.getName() == gunName[i]) || this.hasBlob(gunName[i], 1))
-		{
-			if ((blob.getDamageOwnerPlayer() !is this.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
-			{
-				if (this.server_PutInInventory(blob))
-					return;
-			}
-		}
+		crateTake(carryblob, blob);
 	}
-	if (carryblob !is null && carryblob.getName() == "crate") crateTake(carryblob, blob);
 }
 
 bool server_PutInSecondaryBackpack(CBlob@ this, CBlob@ blob)
