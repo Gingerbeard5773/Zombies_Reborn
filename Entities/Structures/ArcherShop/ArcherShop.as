@@ -35,11 +35,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 5);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Water Arrows", "$mat_waterarrows$", "mat_waterarrows", Descriptions::waterarrows, true);
-		AddRequirement(s.requirements, "coin", "", "Coins", 15);
+		ShopItem@ s = addShopItem(this, "Fire Arrows", "$mat_firearrows$", "mat_firearrows", Descriptions::firearrows, true);
+		AddRequirement(s.requirements, "coin", "", "Coins", 10);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Fire Arrows", "$mat_firearrows$", "mat_firearrows", Descriptions::firearrows, true);
+		ShopItem@ s = addShopItem(this, "Water Arrows", "$mat_waterarrows$", "mat_waterarrows", Descriptions::waterarrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", 15);
 	}
 	{
