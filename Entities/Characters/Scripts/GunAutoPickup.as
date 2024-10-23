@@ -1,27 +1,16 @@
-const string[] ammoName =
-{
-	"mat_musketballs",
-	"mat_arrows",
-	"mat_bombarrows",
-	"mat_firearrows",
-	"mat_waterarrows",
-	"mat_molotovarrows",
-	"mat_fireworkarrows"
-};
+#include "ArcherCommon.as";
 
 void Take(CBlob@ this, CBlob@ blob)
 {
-	const string blobName = blob.getName();
-	CBlob@ carryblob = this.getCarriedBlob();
-	if (ammoName.find(blobName) != -1)
+	const string name = blob.getName();
+	if (name != "mat_musketballs" && arrowTypeNames.find(name) == -1) return;
+
+	const string gunName = (name == "mat_musketballs") ? "musket" : "crossbow";
+	if (this.hasBlob(gunName, 1))
 	{
-		string gunName = (blobName == "mat_musketballs") ? "musket" : "crossbow";
-		if ((carryblob !is null && carryblob.getName() == gunName) || this.hasBlob(gunName, 1))
+		if ((blob.getDamageOwnerPlayer() !is this.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
 		{
-			if ((blob.getDamageOwnerPlayer() !is this.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
-			{
-				if (this.server_PutInInventory(blob)) return;
-			}
+			if (this.server_PutInInventory(blob)) return;
 		}
 	}
 }

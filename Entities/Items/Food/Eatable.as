@@ -11,7 +11,6 @@ void onInit(CBlob@ this)
 	this.addCommandID("heal command server");
 
 	this.Tag("pushedByDoor");
-	this.Tag("food");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
