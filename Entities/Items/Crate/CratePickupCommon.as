@@ -30,6 +30,7 @@ bool crateTake(CBlob@ this, CBlob@ blob)
         || blobName == "egg"
 
         || blob.hasTag("material")
+        || blob.hasTag("food")
         )
     {
         return this.server_PutInInventory(blob);
