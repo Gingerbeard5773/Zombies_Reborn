@@ -15,9 +15,7 @@ void onInit(CRules@ this)
 	print("---- INITIALIZING ZOMBIE FORTRESS ---- ",  printColor);
 	print("  Version: " + this.get_string("version"), printColor);
 	print("  Mod page: "+sv_contact_info,             printColor);
-	print("  Test mode: "+sv_test,                    printColor);
-	print("  Localhost: "+(isClient() && isServer()), printColor);
-	print("-------------------------------------- ", printColor);
+	print("-------------------------------------- ",  printColor);
 	print("");
 	
 	AddIcons();
