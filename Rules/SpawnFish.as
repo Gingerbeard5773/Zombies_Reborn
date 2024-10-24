@@ -12,6 +12,8 @@ void onTick(CRules@ this)
 
 	CBlob@[] fish;
 	getBlobsByName(fish_name, @fish);
+
+	if (fish.length > 6) return; //cap fish
 	
 	if (fish.length > 2 && XORRandom(4) < 1) //breed fish (25% chance)
 	{
