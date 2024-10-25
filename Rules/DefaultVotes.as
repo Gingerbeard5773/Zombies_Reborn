@@ -1,9 +1,9 @@
-//implements 2 default vote types (kick and next map) and menus for them
+//Zombie Fortress Voting
+
+//Only kicking is allowed. Kicked players are sent into zombie team.
 
 #include "VoteCommon.as"
 #include "Zombie_SoftBansCommon.as"
-
-bool g_haveStartedVote = false;
 
 const float required_minutes = 10; //time you have to wait after joining w/o skip_votewait.
 const float required_minutes_nextmap = 10; //global nextmap vote cooldown
@@ -20,6 +20,7 @@ enum kick_reason
 	kick_reason_non_participation,
 	kick_reason_count,
 };
+
 string[] kick_reason_string = { "Griefer", "Hacker", "Teamkiller", "Chat Spam", "Non-Participation" };
 
 u8 g_kick_reason_id = kick_reason_griefer; // default
@@ -49,19 +50,18 @@ void onTick(CRules@ this)
 	if (!isServer()) return;
 
 	// update every 10 seconds only? probably not necessary but whatever
-	if (getGameTime() % (10 * getTicksASecond()) == 0)
-	{
-		for (int i = 0; i < getPlayerCount(); ++i)
-		{
-			CPlayer@ p = getPlayer(i);
-			if (p is null) continue;
+	if (getGameTime() % (10 * getTicksASecond()) != 0) return;
 
-			const string username = p.getUsername();
-			if (this.get_s32("last vote counter player " + username) < 60 * getTicksASecond()*required_minutes)
-			{
-				this.add_s32("last vote counter player " + username, (10 * getTicksASecond()));
-				this.SyncToPlayer("last vote counter player " + username, p);
-			}
+	for (int i = 0; i < getPlayerCount(); ++i)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
+
+		const string username = player.getUsername();
+		if (this.get_s32("last vote counter player " + username) < 60 * getTicksASecond()*required_minutes)
+		{
+			this.add_s32("last vote counter player " + username, (10 * getTicksASecond()));
+			this.SyncToPlayer("last vote counter player " + username, player);
 		}
 	}
 }
@@ -83,11 +83,7 @@ class VoteKickFunctor : VoteFunctor
 	{
 		if (kickplayer !is null && outcome)
 		{
-			client_AddToChat(
-				getTranslatedString("Votekick passed! {USER} will be kicked out.")
-					.replace("{USER}", kickplayer.getUsername()),
-				vote_message_colour()
-			);
+			client_AddToChat(getTranslatedString("Votekick passed! {USER} will be kicked out.").replace("{USER}", kickplayer.getUsername()), vote_message_colour());
 
 			if (isServer())
 			{
@@ -118,16 +114,10 @@ class VoteKickCheckFunctor : VoteCheckFunctor
 		if (!VoteCheckFunctor::PlayerCanVote(player)) return false;
 
 		if (!getSecurity().checkAccess_Feature(player, "mark_player")) return false;
+		
+		if (player.getTeamNum() == 3) return false; //softbanned players can't vote.
 
-		if (reasonid == kick_reason_griefer || // "Griefer"
-				reasonid == kick_reason_teamkiller || // TKer
-				reasonid == kick_reason_non_participation) //AFK
-		{
-			return (player.getTeamNum() == kickplayer.getTeamNum() || //must be same team
-					kickplayer.getTeamNum() == getRules().getSpectatorTeamNum() || //or they're spectator
-					getSecurity().checkAccess_Feature(player, "mark_any_team"));   //or has mark_any_team
-		}
-		return true; //spammer, hacker (custom?)
+		return true;
 	}
 };
 
@@ -146,11 +136,7 @@ class VoteKickLeaveFunctor : VotePlayerLeaveFunctor
 	{
 		if (player is kickplayer)
 		{
-			client_AddToChat(
-				getTranslatedString("{USER} left early, acting as if they were kicked.")
-					.replace("{USER}", player.getUsername()),
-				vote_message_colour()
-			);
+			client_AddToChat(getTranslatedString("{USER} left early, acting as if they were kicked.").replace("{USER}", player.getUsername()), vote_message_colour());
 			if (isServer())
 			{
 				getSecurity().ban(player, VoteKickTime, "Ran from vote");
@@ -190,9 +176,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	CPlayer@ me = getLocalPlayer();
 	if (me is null) return;
 
-	CRules@ rules = getRules();
-
-	if (Rules_AlreadyHasVote(rules))
+	if (Rules_AlreadyHasVote(this))
 	{
 		Menu::addContextItem(menu, getTranslatedString("(Vote already in progress)"), "DefaultVotes.as", "void CloseMenu()");
 		Menu::addSeparator(menu);
@@ -216,28 +200,14 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	{
 		if (duplicatePlayer)
 		{
-			Menu::addInfoBox(
-				kickmenu,
-				getTranslatedString("Can't Start Vote"),
-				getTranslatedString(
-					"Voting to kick a player\n" +
-					"is not allowed when playing\n" +
-					"with a duplicate instance of KAG.\n\n" +
-					"Try rejoining the server\n" +
-					"if this was unintentional."
-				)
-			);
+			Menu::addInfoBox(kickmenu, getTranslatedString("Can't Start Vote"),
+				getTranslatedString("Voting to kick a player\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional."));
 		}
 		else if (this.get_s32("last vote counter player " + me.getUsername()) < 60 * getTicksASecond()*required_minutes // synced from server
-				&& (!can_skip_wait || g_haveStartedVote))
+				&& !can_skip_wait)
 		{
-			string cantstart_info = getTranslatedString(
-				"Voting requires a {REQUIRED_MIN} min wait\n" +
-				"after each started vote to\n" +
-				"prevent spamming/abuse.\n"
-			).replace("{REQUIRED_MIN}", "" + required_minutes);
-
-			Menu::addInfoBox(kickmenu, getTranslatedString("Can't Start Vote"), cantstart_info);
+			Menu::addInfoBox(kickmenu, getTranslatedString("Can't Start Vote"),
+				getTranslatedString("Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n").replace("{REQUIRED_MIN}", "" + required_minutes));
 		}
 		else
 		{
@@ -269,79 +239,55 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			for (int i = 0; i < getPlayersCount(); ++i)
 			{
 				CPlayer@ player = getPlayer(i);
+				if (player is null) continue;
 
-				//if (player is me) continue; //don't display ourself for kicking
-				//commented out for max lols
+				const int player_team = player.getTeamNum();
+				if (player_team != me.getTeamNum() && !getSecurity().checkAccess_Feature(me, "mark_any_team")) continue;
 
-				int player_team = player.getTeamNum();
-				if ((player_team == me.getTeamNum() || player_team == this.getSpectatorTeamNum()
-						|| getSecurity().checkAccess_Feature(me, "mark_any_team"))
-						&& (!getSecurity().checkAccess_Feature(player, "kick_immunity")))
+				if (getSecurity().checkAccess_Feature(player, "kick_immunity")) continue;
+
+				string descriptor = player.getCharacterName();
+
+				if (player.getUsername() != player.getCharacterName())
+					descriptor += " (" + player.getUsername() + ")";
+
+				if (this.get_string("last username voted " + me.getUsername()) == player.getUsername()) // synced from server
 				{
-					string descriptor = player.getCharacterName();
+					string title = getTranslatedString("Cannot kick {USER}").replace("{USER}", descriptor);
+					string info = getTranslatedString("You started a vote for\nthis person last time.\n\nSomeone else must start the vote.");
+					//no-abuse box
+					Menu::addInfoBox(kickmenu, title, info);
+				}
+				else
+				{
+					string kick = getTranslatedString("Kick {USER}").replace("{USER}", descriptor);
+					string kicking = getTranslatedString("Kicking {USER}").replace("{USER}", descriptor);
+					string info = getTranslatedString("Make sure you're voting to kick\nthe person you meant.\n");
 
-					if (player.getUsername() != player.getCharacterName())
-						descriptor += " (" + player.getUsername() + ")";
+					CContextMenu@ usermenu = Menu::addContextMenu(kickmenu, kick);
+					Menu::addInfoBox(usermenu, kicking, info);
+					Menu::addSeparator(usermenu);
 
-					if (this.get_string("last username voted " + me.getUsername()) == player.getUsername()) // synced from server
-					{
-						string title = getTranslatedString(
-							"Cannot kick {USER}"
-						).replace("{USER}", descriptor);
-						string info = getTranslatedString(
-							"You started a vote for\nthis person last time.\n\nSomeone else must start the vote."
-						);
-						//no-abuse box
-						Menu::addInfoBox(
-							kickmenu,
-							title,
-							info
-						);
-					}
-					else
-					{
-						string kick = getTranslatedString("Kick {USER}").replace("{USER}", descriptor);
-						string kicking = getTranslatedString("Kicking {USER}").replace("{USER}", descriptor);
-						string info = getTranslatedString( "Make sure you're voting to kick\nthe person you meant.\n" );
+					CBitStream params;
+					params.write_u16(player.getNetworkID());
 
-						CContextMenu@ usermenu = Menu::addContextMenu(kickmenu, kick);
-						Menu::addInfoBox(usermenu, kicking, info);
-						Menu::addSeparator(usermenu);
+					Menu::addContextItemWithParams(usermenu, getTranslatedString("Yes, I'm sure"), "DefaultVotes.as", "Callback_Kick", params);
+					added = true;
 
-						CBitStream params;
-						params.write_u16(player.getNetworkID());
-
-						Menu::addContextItemWithParams(
-							usermenu, getTranslatedString("Yes, I'm sure"),
-							"DefaultVotes.as", "Callback_Kick",
-							params
-						);
-						added = true;
-
-						Menu::addSeparator(usermenu);
-					}
+					Menu::addSeparator(usermenu);
 				}
 			}
 
 			if (!added)
 			{
-				Menu::addContextItem(
-					kickmenu, getTranslatedString("(No-one available)"),
-					"DefaultVotes.as", "void CloseMenu()"
-				);
+				Menu::addContextItem(kickmenu, getTranslatedString("(No-one available)"), "DefaultVotes.as", "void CloseMenu()");
 			}
 		}
 	}
 	else
 	{
-		Menu::addInfoBox(
-			kickmenu,
-			getTranslatedString("Can't vote"),
-			getTranslatedString(
-				"You are not allowed to votekick\n" +
-				"players on this server\n"
-			)
-		);
+		Menu::addInfoBox(kickmenu, getTranslatedString("Can't vote"),
+			getTranslatedString("You are not allowed to votekick\nplayers on this server\n"));
 	}
 	Menu::addSeparator(kickmenu);
 }
@@ -351,14 +297,10 @@ void CloseMenu()
 	Menu::CloseAllMenus();
 }
 
-void onPlayerStartedVote()
-{
-	g_haveStartedVote = true;
-}
-
 void Callback_KickReason(CBitStream@ params)
 {
-	u8 id; if (!params.saferead_u8(id)) return;
+	u8 id;
+	if (!params.saferead_u8(id)) return;
 
 	if (id < kick_reason_count)
 	{
@@ -370,9 +312,6 @@ void Callback_Kick(CBitStream@ params)
 {
 	CloseMenu(); //definitely close the menu
 
-	CPlayer@ me = getLocalPlayer();
-	if (me is null) return;
-
 	u16 id;
 	if (!params.saferead_u16(id)) return;
 
@@ -383,42 +322,32 @@ void Callback_Kick(CBitStream@ params)
 		return;
 
 	CBitStream params2;
-
 	params2.write_u16(other_player.getNetworkID());
 	params2.write_u8(g_kick_reason_id);
 
 	getRules().SendCommand(getRules().getCommandID(votekick_id), params2);
 }
 
-bool server_canPlayerStartVote(CRules@ this, CPlayer@ player, CPlayer@ other_player, u8 cmdid)
+bool server_canPlayerStartVote(CRules@ this, CPlayer@ player, CPlayer@ other_player)
 {
-	if (player is null) return false;
-
-	bool can_skip_wait = getSecurity().checkAccess_Feature(player, "skip_votewait");
-
-	if (cmdid == this.getCommandID(votekick_id))
+	// other player has kick immunity?
+	if (getSecurity().checkAccess_Feature(other_player, "kick_immunity"))
 	{
-		if (other_player is null) return false;
+		return false;
+	}
 
-		// other player has kick immunity?
-		if (getSecurity().checkAccess_Feature(other_player, "kick_immunity"))
+	// already tried to votekick other player before this?
+	if (this.get_string("last username voted " + player.getUsername()) == other_player.getUsername())
+	{
+		return false;
+	}
+
+	if (!getSecurity().checkAccess_Feature(player, "skip_votewait"))
+	{
+		// didnt wait required_minutes yet?
+		if (this.get_s32("last vote counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes)
 		{
 			return false;
-		}
-
-		// already tried to votekick other player before this?
-		if (this.get_string("last username voted " + player.getUsername()) == other_player.getUsername())
-		{
-			return false;
-		}
-
-		if (!can_skip_wait)
-		{
-			// didnt wait required_minutes yet?
-			if (this.get_s32("last vote counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes)
-			{
-				return false;
-			}
 		}
 	}
 
@@ -446,7 +375,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		CPlayer@ player = getPlayerByNetworkId(playerid);
 		if (player is null) return;
 
-		if (!server_canPlayerStartVote(this, byplayer, player, cmd)) return;
+		if (!server_canPlayerStartVote(this, byplayer, player)) return;
 
 		this.set_s32("last vote counter player " + byplayer.getUsername(), 0);
 		this.SyncToPlayer("last vote counter player " + byplayer.getUsername(), byplayer);
