@@ -3,7 +3,10 @@
 
 const string[] pickup_names =
 {
-	"mat_arrows"
+	"mat_arrows",
+	"mat_bombs",
+	"mat_waterbombs",
+	"molotov"
 };
 
 //disabled tick overlapping pickup since it doesnt seem to do much
