@@ -63,10 +63,6 @@ void onInit(CBlob@ this)
 		s.buttonheight = 1;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Molotov", "$molotov$", "molotov", Translate::Molotov, false);
-		AddRequirement(s.requirements, "coin", "", "Coins", 45);
-	}
-	{
 		ShopItem@ s = addShopItem(this, "Scuba Mask", "$scubagear$", "scubagear", Translate::ScubaGear, false);
 		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 75);

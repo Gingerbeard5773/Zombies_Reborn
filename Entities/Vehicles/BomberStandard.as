@@ -2,6 +2,7 @@
 
 #include "VehicleCommon.as"
 #include "ActivationThrowCommon.as"
+#include "Hitters.as";
 
 void onTick(CBlob@ this)
 {
@@ -84,6 +85,21 @@ void HandleBombing(CBlob@ this)
 			CBlob@ blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
 			if (blob !is null)
 			{
+				item.server_Die();
+			}
+		}
+		else if (item.getName() == "mat_waterbombs")
+		{
+			CBlob@ blob = server_CreateBlob("waterbomb", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
+			if (blob !is null)
+			{
+				blob.set_f32("map_damage_ratio", 0.0f);
+				blob.set_f32("explosive_damage", 0.0f);
+				blob.set_f32("explosive_radius", 92.0f);
+				blob.set_bool("map_damage_raycast", false);
+				blob.set_string("custom_explosion_sound", "/GlassBreak");
+				blob.set_u8("custom_hitter", Hitters::water);
+				blob.Tag("splash ray cast");
 				item.server_Die();
 			}
 		}
