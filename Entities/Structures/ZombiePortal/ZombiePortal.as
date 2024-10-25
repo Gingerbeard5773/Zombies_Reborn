@@ -94,7 +94,7 @@ void SpawnZombies(CBlob@ this)
 			else if (r >= 75)  blobname = "zombieknight";  // 15%
 			else if (r >= 40)  blobname = "zombie";        // 35%
 			
-			server_CreateBlob(blobname, -1, pos);
+			//server_CreateBlob(blobname, -1, pos);
 		}
 	}
 }
@@ -104,8 +104,8 @@ void server_ActivatePortalIfPlayerNearby(CBlob@ this)
 	if (!isServer()) return;
 	
 	//check if players are within bounds to activate the portal
-	const u8 playerCount = getPlayerCount();
-	for (u8 i = 0; i < playerCount; i++)
+	const u8 player_count = getPlayerCount();
+	for (u8 i = 0; i < player_count; i++)
 	{
 		CPlayer@ ply = getPlayer(i);
 		if (ply is null) continue;
@@ -132,6 +132,15 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	if (hitterBlob !is null && hitterBlob.hasTag("undead")) return 0.0f;
+	
+	const u8 player_count = getPlayerCount() - 1;
+	const f32 player_factor = Maths::Max(1.0f - (player_count * 0.05f), 0.4f);
+	damage *= player_factor;
+	
+	if (hitterBlob !is null && hitterBlob.getName() == "arrow") //hacky
+	{
+		damage *= 0.5f; //firework arrows weaker
+	}
 	
 	return damage;
 }
