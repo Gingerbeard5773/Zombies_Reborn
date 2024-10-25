@@ -72,14 +72,19 @@ void Vehicle_BomberControls(CBlob@ this, VehicleInfo@ v)
 void HandleBombing(CBlob@ this)
 {
 	CInventory@ inv = this.getInventory();
-	if (inv.getItemsCount() <= 0) return;
-
-	this.getSprite().PlaySound("bridge_open", 1.0f, 1.0f);
-	this.set_u32("last_drop", getGameTime() + 30);
-
-	if (isServer())
+	const int items_count = inv.getItemsCount();
+	if (items_count <= 0) return;
+	
+	for (u16 i = 0; i < items_count; i++)
 	{
-		CBlob@ item = inv.getItem(0);
+		CBlob@ item = inv.getItem(i);
+		if (item.getName() == "mat_arrows") continue;
+		
+		this.getSprite().PlaySound("bridge_open", 1.0f, 1.0f);
+		this.set_u32("last_drop", getGameTime() + 30);
+
+		if (!isServer()) return;
+
 		if (item.getName() == "mat_bombs")
 		{
 			CBlob@ blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
@@ -112,6 +117,7 @@ void HandleBombing(CBlob@ this)
 				server_Activate(item);
 			}
 		}
+		break;
 	}
 }
 
