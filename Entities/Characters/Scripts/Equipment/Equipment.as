@@ -49,7 +49,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu@ gridmenu)
 		CBlob@ equipped = getBlobByNetworkID(ids[i]);
 		if (equipped !is null)
 		{
-			icon = "$"+equipped.getName()+"$";
+			icon = equipped.exists("equipment_icon") ? equipped.get_string("equipment_icon") : "$"+equipped.getName()+"$";
 			hover = "Unequip "+equipped.getInventoryName();
 		}
 
