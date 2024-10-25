@@ -135,28 +135,32 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 	if (cmd == this.getCommandID("client_produce_item") && isClient())
 	{
-		const u8 index = params.read_u8();
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
 		if (index >= production.production_items.length)
 		{
 			error("Production items length does not match index! :: FactoryProduction.as, client_produce_item");
 			return;
 		}
 		ProductionItem@ item = production.production_items[index];
-		item.next_time_to_produce = params.read_u32();
-		
+		if (!params.saferead_u32(item.next_time_to_produce)) return;
+
 		const string sound = this.exists("produce sound") ? this.get_string("produce sound") : "BombMake.ogg";
 		this.getSprite().PlaySound(sound);
 	}
 	else if (cmd == this.getCommandID("client_set_produce_time") && isClient())
 	{
-		const u8 index = params.read_u8();
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
 		if (index >= production.production_items.length)
 		{
 			error("Production items length does not match index! :: FactoryProduction.as, client_set_produce_time");
 			return;
 		}
 		ProductionItem@ item = production.production_items[index];
-		item.next_time_to_produce = params.read_u32();
+		if (!params.saferead_u32(item.next_time_to_produce)) return;
 	}
 }
 

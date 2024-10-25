@@ -75,14 +75,22 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client_send_global_message"))
 	{
-		u8 time = params.read_u8();
-		SColor color = params.read_u32();
-		string message;
+		u8 time;
+		if (!params.saferead_u8(time)) return;
+
+		u32 color;
+		if (!params.saferead_u32(color)) return;
 		
-		const bool isIndex = params.read_bool();
+		bool isIndex;
+		if (!params.saferead_bool(isIndex)) return;
+		
+		string message;
+
 		if (isIndex)
 		{
-			const u8 index = params.read_u8();
+			u8 index;
+			if (!params.saferead_u8(index)) return;
+
 			if (index > server_messages.length)
 			{
 				error("server message from index does not exist! :: "+getCurrentScriptName()); return; 
@@ -90,10 +98,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			
 			message = server_messages[index];
 
-			const u8 inputs_length = params.read_u8();
+			u8 inputs_length;
+			if (!params.saferead_u8(inputs_length)) return;
+			
 			for (u8 i = 0; i < inputs_length; i++)
 			{
-				const string input = params.read_string();
+				string input;
+				if (!params.saferead_string(input)) return;
+
 				const int index = message.findFirst("{INPUT}");
 				if (index == -1) break;
 
@@ -102,10 +114,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		}
 		else
 		{
-			message = params.read_string();
+			if (!params.saferead_string(message)) return;
 		}
 
-		GlobalMessage new_message(message, time, color);
+		GlobalMessage new_message(message, time, SColor(color));
 		global_messages.push_back(@new_message);
 	}
 }

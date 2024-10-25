@@ -34,7 +34,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = player.getBlob();
 		if (caller is null) return;
 		
-		Vec2f aim = params.read_Vec2f();
+		Vec2f aim;
+		if (!params.saferead_Vec2f(aim)) return;
 		
 		Vec2f pos = this.getPosition();
 		if ((aim - pos).Length() < 100.0f) return;
@@ -59,10 +60,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+
+		CBlob@ caller = getBlobByNetworkID(netid);
 		if (caller is null) return;
 
-		Vec2f aim = params.read_Vec2f();
+		Vec2f aim;
+		if (!params.saferead_Vec2f(aim)) return;
+
 		caller.setPosition(aim);
 
 		ParticleTeleport(this.getPosition());

@@ -32,7 +32,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		
 		Vec2f[] revived_positions;
 		
-		if (params.read_bool()) //reviving self
+		bool self_revive;
+		if (!params.saferead_bool(self_revive)) return;
+		
+		if (self_revive) //reviving self
 		{
 			RevivePlayer(player, caller);
 			revived_positions.push_back(caller.getPosition());
@@ -74,17 +77,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("client_revive") && isClient())
 	{
-		const u8 revived_count = params.read_u8();
+		u8 revived_count;
+		if (!params.saferead_u8(revived_count)) return;
+
 		for (u8 i = 0; i < revived_count; i++)
 		{
-			Vec2f bpos = params.read_Vec2f();
-			ParticleZombieLightning(bpos);
-			Sound::Play("MagicWand.ogg", bpos);
+			Vec2f pos;
+			if (!params.saferead_Vec2f(pos)) return;
+
+			ParticleZombieLightning(pos);
+			Sound::Play("MagicWand.ogg", pos);
 			
 			for (u8 i = 0; i < 20; i++)
 			{
 				Vec2f vel = getRandomVelocity(-90.0f, 4, 360.0f);
-				ParticleAnimated("HealParticle", bpos, vel, float(XORRandom(360)), 1.2f, 4, 0, false);
+				ParticleAnimated("HealParticle", pos, vel, float(XORRandom(360)), 1.2f, 4, 0, false);
 			}
 		}
 	}

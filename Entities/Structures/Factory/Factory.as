@@ -197,7 +197,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		CInventory@ inv = caller.getInventory();
 		if (inv is null) return;
 
-		const u8 index = params.read_u8();
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
 		if (index >= production_set.length)
 		{
 			error("Production Set length does not match index! :: Factory.as, server_upgrade_factory");
@@ -235,7 +237,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("client_upgrade_factory") && isClient())
 	{
-		const u8 index = params.read_u8();
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
 		if (index >= production_set.length)
 		{
 			error("Production Set length does not match index! :: Factory.as, client_upgrade_factory");

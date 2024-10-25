@@ -19,20 +19,18 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.isAttached())
-	{
-		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-		CBlob@ holder = point.getOccupied();
-		if (holder !is null)
-		{	
-			GunInfo@ gun;
-			if (!this.get("gunInfo", @gun)) return;
-			
-			this.setAngleDegrees(getAimAngle(this, holder));
+	if (!this.isAttached()) return;
 
-			ManageGun(this, holder, point, gun);
-		}
-	}
+	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
+	CBlob@ holder = point.getOccupied();
+	if (holder is null) return;
+
+	GunInfo@ gun;
+	if (!this.get("gunInfo", @gun)) return;
+	
+	this.setAngleDegrees(getAimAngle(this, holder));
+
+	ManageGun(this, holder, point, gun);
 }
 
 void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
@@ -151,7 +149,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 	if (cmd == this.getCommandID("shoot client") && isClient())
 	{
-		gun.ammo_count = params.read_u16();
+		if (!params.saferead_u16(gun.ammo_count)) return;
 
 		if (!gun.shoot_sound.isEmpty())
 			this.getSprite().PlaySound(gun.shoot_sound);
@@ -195,8 +193,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		CBlob@ holder = player.getBlob();
 		if (holder is null) return;
 
-		Vec2f pos = params.read_Vec2f();
-		Vec2f vel = params.read_Vec2f();
+		Vec2f pos, vel;
+		if (!params.saferead_Vec2f(pos)) return;
+		if (!params.saferead_Vec2f(vel)) return;
 
 		CreateBullet(this, holder, gun, pos, vel);
 

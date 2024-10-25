@@ -71,12 +71,16 @@ bool canEquip(CBlob@ blob, const u8&in slot)
 
 void Callback_Equip(CBitStream@ params)
 {
-	CBlob@ this = getBlobByNetworkID(params.read_netid());
+	u16 netid;
+	if (!params.saferead_netid(netid)) return;
+
+	CBlob@ this = getBlobByNetworkID(netid);
 	if (this is null) return;
 	
 	getHUD().ClearMenus();
 	
-	const u8 index = params.read_u8();
+	u8 index;
+	if (!params.saferead_u8(index)) return;
 	
 	CBitStream stream;
 	stream.write_u8(index);
@@ -91,26 +95,28 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		this.get("equipment_ids", ids);
 		u16 equipped = 0;
 		u16 unequipped = 0;
-		const u8 slot = params.read_u8();
+
+		u8 index;
+		if (!params.saferead_u8(index)) return;
 		
 		//unequip
-		CBlob@ equippedblob = getBlobByNetworkID(ids[slot]);
+		CBlob@ equippedblob = getBlobByNetworkID(ids[index]);
 		if (equippedblob !is null)
 		{
-			unequipped = ids[slot];
-			ids[slot] = 0;
+			unequipped = ids[index];
+			ids[index] = 0;
 			UnequipBlob(this, equippedblob);
 		}
 
 		//equip
 		CBlob@ carried = this.getCarriedBlob();
-		if (carried !is null && canEquip(carried, slot))
+		if (carried !is null && canEquip(carried, index))
 		{
 			const bool isSameEquipment = equippedblob !is null && equippedblob.getName() == carried.getName();
 			if (!isSameEquipment)
 			{
 				equipped = carried.getNetworkID();
-				ids[slot] = equipped;
+				ids[index] = equipped;
 				EquipBlob(this, carried);
 			}
 		}
@@ -127,10 +133,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("client_equip") && isClient())
 	{
-		CBlob@ unequippedblob = getBlobByNetworkID(params.read_netid());
+		u16 unequipped_netid, equipped_netid;
+		if (!params.saferead_netid(unequipped_netid)) return;
+		if (!params.saferead_netid(equipped_netid)) return;
+
+		CBlob@ unequippedblob = getBlobByNetworkID(unequipped_netid);
 		if (unequippedblob !is null)
 			UnequipBlob(this, unequippedblob);
-		CBlob@ equippedblob = getBlobByNetworkID(params.read_netid());
+		CBlob@ equippedblob = getBlobByNetworkID(equipped_netid);
 		if (equippedblob !is null)
 			EquipBlob(this, equippedblob);
 

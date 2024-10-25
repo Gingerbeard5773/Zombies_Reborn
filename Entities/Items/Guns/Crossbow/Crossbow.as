@@ -23,23 +23,21 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.isAttached())
-	{
-		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-		CBlob@ holder = point.getOccupied();
-		if (holder !is null)
-		{
-			CrossbowInfo@ crossbow;
-			if (!this.get("crossbowInfo", @crossbow)) return;
-			
-			this.setAngleDegrees(getAimAngle(this, holder));
+	if (!this.isAttached()) return;
 
-			RunnerMoveVars@ moveVars;
-			if (!holder.get("moveVars", @moveVars)) return;
+	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
+	CBlob@ holder = point.getOccupied();
+	if (holder is null) return;
 
-			ManageBow(this, holder, point, crossbow, moveVars);
-		}
-	}
+	CrossbowInfo@ crossbow;
+	if (!this.get("crossbowInfo", @crossbow)) return;
+	
+	this.setAngleDegrees(getAimAngle(this, holder));
+
+	RunnerMoveVars@ moveVars;
+	if (!holder.get("moveVars", @moveVars)) return;
+
+	ManageBow(this, holder, point, crossbow, moveVars);
 }
 
 void ClientFire(CBlob@ this, CBlob@ holder, const u8&in arrow_type)

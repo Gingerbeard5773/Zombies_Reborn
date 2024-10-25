@@ -89,7 +89,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	button.enableRadius = 20.0f;
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("toggle") && isServer())
 	{
@@ -121,7 +121,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("toggle client") && isClient())
 	{
-		const u8 state = params.read_u8();
+		u8 state;
+		if (!params.saferead_u8(state)) return;
+
 		this.set_u8("state", state);
 		CSprite@ sprite = this.getSprite();
 		sprite.SetFrameIndex(this.get_u8("state"));

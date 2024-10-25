@@ -54,13 +54,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		if (!hasAvailableWorkerSlots(this)) return;
 
-		const u16 worker_netid = params.read_netid();
+		u16 worker_netid;
+		if (!params.saferead_netid(worker_netid)) return;
+
 		AssignWorker(this, worker_netid);
 		Client_AttachWorker(this, worker_netid);
 	}
 	else if (cmd == this.getCommandID("client_attach_worker") && isClient())
 	{
-		const u16 worker_netid = params.read_netid();
+		u16 worker_netid;
+		if (!params.saferead_netid(worker_netid)) return;
+
 		AssignWorker(this, worker_netid);
 	}
 	else if (cmd == this.getCommandID("server_detach_worker") && isServer())
@@ -79,7 +83,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("client_detach_worker") && isClient())
 	{
-		const u16 worker_netid = params.read_netid();
+		u16 worker_netid;
+		if (!params.saferead_netid(worker_netid)) return;
+
 		UnassignWorker(this, worker_netid);
 	}
 }

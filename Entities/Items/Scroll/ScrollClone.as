@@ -31,7 +31,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
-		CBlob@ aimBlob = getBlobByNetworkID(params.read_netid());
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+
+		CBlob@ aimBlob = getBlobByNetworkID(netid);
 		if (aimBlob is null) return;
 		
 		if (this.hasTag("dead")) return;

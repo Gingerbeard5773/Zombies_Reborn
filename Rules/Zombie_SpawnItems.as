@@ -140,8 +140,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		CBlob@ blob = player.getBlob();
 		if (blob is null) return;
 		
-		const bool checkTimeAlive = params.read_bool();
-		if (checkTimeAlive && blob.getTickSinceCreated() > 10) return;
+		bool check_time_alive;
+		if (!params.saferead_bool(check_time_alive)) return;
+
+		if (check_time_alive && blob.getTickSinceCreated() > 10) return;
 		
 		server_GiveMats(this, player, blob);
 	}

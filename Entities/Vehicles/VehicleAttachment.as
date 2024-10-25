@@ -30,14 +30,16 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (isServer() && cmd == this.getCommandID("detach vehicle"))
 	{
-		CBlob@ vehicle = getBlobByNetworkID(params.read_netid());
-		if (vehicle !is null)
-		{
-			vehicle.server_DetachFrom(this);
-		}
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+
+		CBlob@ vehicle = getBlobByNetworkID(netid);
+		if (vehicle is null) return;
+
+		vehicle.server_DetachFrom(this);
 	}
 }

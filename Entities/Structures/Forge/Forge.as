@@ -114,7 +114,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		const int requestedAmount = Maths::Min(250, max_fuel - this.get_s16(fuel_prop));
 		if (requestedAmount <= 0) return;
 		
-		const u8 index = params.read_u8();
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
 		const string fuel_name = fuel_names[index];
 		const int fuel_amount = fuel_strength[index];
 

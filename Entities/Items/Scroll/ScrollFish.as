@@ -36,7 +36,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
 	{
-		Vec2f spawnPos = params.read_Vec2f();
+		Vec2f spawnPos;
+		if (!params.saferead_Vec2f(spawnPos)) return;
+
 		Sound::Play("MagicWand.ogg", spawnPos, 1.5f, 1.2f);
 		
 		CMap@ map = getMap();

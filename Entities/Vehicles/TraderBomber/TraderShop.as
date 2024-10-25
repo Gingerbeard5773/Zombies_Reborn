@@ -58,7 +58,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		Shop@ shop;
 		if (!this.get("shop", @shop)) return;
 
-		const u8 index = params.read_u8();
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
 		SaleItem@ item = shop.items[index];
 
 		CBitStream missing;
@@ -96,15 +98,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("client_shop_buy") && isClient())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		u16 caller_netid, blob_netid;
+		if (!params.saferead_netid(caller_netid)) return;
+		if (!params.saferead_netid(blob_netid)) return;
+
+		CBlob@ caller = getBlobByNetworkID(caller_netid);
 		if (caller is null) return;
 		
-		CBlob@ blob = getBlobByNetworkID(params.read_netid());
+		CBlob@ blob = getBlobByNetworkID(blob_netid);
 		
 		Shop@ shop;
 		if (!this.get("shop", @shop)) return;
 		
-		const u8 index = params.read_u8();
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
 		SaleItem@ item = shop.items[index];
 		
 		UnserializeShopItems(this, params);

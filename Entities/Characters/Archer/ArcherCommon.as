@@ -87,15 +87,13 @@ shared class ArcherInfo
 
 void ClientSendArrowState(CBlob@ this)
 {
-	if (!isClient()) { return; }
-	if (isServer()) { return; } // no need to sync on localhost
+	if (isServer()) return;
 
 	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer)) { return; }
+	if (!this.get("archerInfo", @archer)) return;
 
 	CBitStream params;
 	params.write_u8(archer.arrow_type);
-
 	this.SendCommand(this.getCommandID("arrow sync"), params);
 }
 
@@ -103,13 +101,13 @@ bool ReceiveArrowState(CBlob@ this, CBitStream@ params)
 {
 	// valid both on client and server
 
-	if (isServer() && isClient()) { return false; }
+	if (isServer() && isClient()) return false;
 
 	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer)) { return false; }
+	if (!this.get("archerInfo", @archer)) return false;
 
 	archer.arrow_type = 0;
-	if (!params.saferead_u8(archer.arrow_type)) { return false; }
+	if (!params.saferead_u8(archer.arrow_type)) return false;
 
 	if (isServer())
 	{
@@ -127,7 +125,7 @@ const string grapple_sync_cmd = "grapple sync";
 void SyncGrapple(CBlob@ this)
 {
 	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer)) { return; }
+	if (!this.get("archerInfo", @archer)) return;
 
 	if (isClient()) return;
 
@@ -145,11 +143,10 @@ void SyncGrapple(CBlob@ this)
 	this.SendCommand(this.getCommandID(grapple_sync_cmd), bt);
 }
 
-//TODO: saferead
-void HandleGrapple(CBlob@ this, CBitStream@ bt, bool apply)
+void HandleGrapple(CBlob@ this, CBitStream@ params, bool apply)
 {
 	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer)) { return; }
+	if (!this.get("archerInfo", @archer)) return;
 
 	bool grappling;
 	u16 grapple_id;
@@ -157,15 +154,18 @@ void HandleGrapple(CBlob@ this, CBitStream@ bt, bool apply)
 	Vec2f grapple_pos;
 	Vec2f grapple_vel;
 
-	grappling = bt.read_bool();
+	if (!params.saferead_bool(grappling)) return;
 
 	if (grappling)
 	{
-		grapple_id = bt.read_u16();
-		u8 temp = bt.read_u8();
+		if (!params.saferead_u16(grapple_id)) return;
+		
+		u8 temp;
+		if (!params.saferead_u8(temp)) return;
+		if (!params.saferead_Vec2f(grapple_pos)) return;
+		if (!params.saferead_Vec2f(grapple_vel)) return;
+
 		grapple_ratio = temp / 250.0f;
-		grapple_pos = bt.read_Vec2f();
-		grapple_vel = bt.read_Vec2f();
 	}
 
 	if (apply)
@@ -209,11 +209,9 @@ const string[] arrowIcons = { "$Arrow$",
 bool hasArrows(CBlob@ this)
 {
 	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer))
-	{
-		return false;
-	}
-	if (archer.arrow_type >= 0 && archer.arrow_type < arrowTypeNames.length)
+	if (!this.get("archerInfo", @archer)) return false;
+
+	if (archer.arrow_type < arrowTypeNames.length)
 	{
 		return this.getBlobCount(arrowTypeNames[archer.arrow_type]) > 0;
 	}

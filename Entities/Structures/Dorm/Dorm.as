@@ -45,7 +45,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("server_rest") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+
+		CBlob@ caller = getBlobByNetworkID(netid);
 		if (caller is null) return;
 
 		if (this.getDistanceTo(caller) > 40) return;

@@ -49,7 +49,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (healed_count > 0)
 		{
 			CBitStream stream;
-			stream.write_u16(healed_count);
+			stream.write_u8(healed_count);
 			for (u16 i = 0; i < healed_count; i++)
 			{
 				stream.write_netid(healed[i]);
@@ -62,10 +62,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
 	{
-		const u8 healed_count = params.read_u16();
+		u8 healed_count;
+		if (!params.saferead_u8(healed_count)) return;
+
 		for (u8 i = 0; i < healed_count; i++)
 		{
-			CBlob@ healed = getBlobByNetworkID(params.read_netid());
+			u16 netid;
+			if (!params.saferead_netid(netid)) return;
+
+			CBlob@ healed = getBlobByNetworkID(netid);
 			if (healed is null) continue;
 
 			Vec2f pos = healed.getPosition();

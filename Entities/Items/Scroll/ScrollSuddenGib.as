@@ -23,27 +23,28 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		if (this.hasTag("dead")) return;
 
-		Vec2f pos = this.getPosition();
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
 
+		CBlob@ caller = getBlobByNetworkID(netid);
+		if (caller is null) return;
+		
+		Vec2f pos = this.getPosition();
 		bool hit = false;
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		if (caller !is null)
+		const u8 team = caller.getTeamNum();
+		CBlob@[] blobsInRadius;
+		if (getMap().getBlobsInRadius(pos, 500.0f, @blobsInRadius))
 		{
-			const u8 team = caller.getTeamNum();
-			CBlob@[] blobsInRadius;
-			if (getMap().getBlobsInRadius(pos, 500.0f, @blobsInRadius))
+			const u16 blobsLength = blobsInRadius.length;
+			for (u16 i = 0; i < blobsLength; i++)
 			{
-				const u16 blobsLength = blobsInRadius.length;
-				for (u16 i = 0; i < blobsLength; i++)
+				CBlob@ b = blobsInRadius[i];
+				if (b.getTeamNum() != team && b.hasTag("undead"))
 				{
-					CBlob@ b = blobsInRadius[i];
-					if (b.getTeamNum() != team && b.hasTag("undead"))
-					{
-						ParticleZombieLightning(b.getPosition());
-						if (isServer())
-							caller.server_Hit(b, pos, Vec2f(0, 0), 10.0f, Hitters::suddengib, true);
-						hit = true;
-					}
+					ParticleZombieLightning(b.getPosition());
+					if (isServer())
+						caller.server_Hit(b, pos, Vec2f(0, 0), 10.0f, Hitters::suddengib, true);
+					hit = true;
 				}
 			}
 		}

@@ -46,7 +46,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		for (u8 i = 0; i < chicken_num; ++i)
 		{
-			Vec2f spawnPos = params.read_Vec2f();
+			Vec2f spawnPos;
+			if (!params.saferead_Vec2f(spawnPos)) return;
+
 			for (u8 q = 0; q < 5; q++)
 			{
 				Vec2f vel = getRandomVelocity(-90.0f, 2, 360.0f);

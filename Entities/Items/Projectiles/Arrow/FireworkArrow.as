@@ -74,7 +74,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("server_set_explosion_time") && isServer())
 	{
-		Vec2f aimpos = params.read_Vec2f();
+		Vec2f aimpos;
+		if (!params.saferead_Vec2f(aimpos)) return;
+
 		SetExplosionTime(this, aimpos);
 	}
 }

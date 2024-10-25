@@ -61,7 +61,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 	if (cmd == this.getCommandID("server_set_crafting") && isServer())
 	{
-		craft.selected = params.read_u8();
+		if (!params.saferead_u8(craft.selected)) return;
 		craft.time = 0;
 		SetPullItems(this, craft);
 
@@ -71,7 +71,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == this.getCommandID("client_set_crafting") && isClient())
 	{
-		craft.selected = params.read_u8();
+		if (!params.saferead_u8(craft.selected)) return;
 		craft.time = 0;
 		SetPullItems(this, craft);
 	}

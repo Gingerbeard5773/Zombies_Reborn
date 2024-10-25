@@ -9,10 +9,12 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client_give_parachute") && isClient())
 	{
-		CBlob@ blob = getBlobByNetworkID(params.read_netid());
-		if (blob !is null)
-		{
-			blob.AddScript("ParachuteEffect.as");
-		}
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+
+		CBlob@ blob = getBlobByNetworkID(netid);
+		if (blob is null) return;
+
+		blob.AddScript("ParachuteEffect.as");
 	}
 }

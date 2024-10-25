@@ -91,8 +91,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("enrage_client") && isClient())
 	{
-		const bool enrage = params.read_bool();
-		const bool stun = params.read_bool();
+		bool enrage, stun;
+		if (!params.saferead_bool(enrage)) return;
+		if (!params.saferead_bool(stun)) return;
+
 		if (enrage)
 		{
 			this.getSprite().PlaySound("/WraithDie");
