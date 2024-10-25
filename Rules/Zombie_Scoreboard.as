@@ -256,6 +256,7 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 
 	const string info = getTranslatedString(this.gamemode_name) + ": " + getTranslatedString(this.gamemode_info);
 	const string mapName = getTranslatedString("Map name : ") + this.get_string("map_name");
+	const string dayRecord = Translate::Stat4.replace("{INPUT}", this.get_u16("day_record")+"");
 	const string dayCount = Translate::DayNum.replace("{DAYS}", this.get_u16("day_number")+"");
 	
 	Vec2f dim;
@@ -268,7 +269,7 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 	pos.x -= width / 2;
 	Vec2f bot = pos;
 	bot.x += width;
-	bot.y += 80;
+	bot.y += 100;
 
 	Vec2f mid(x, y);
 
@@ -278,6 +279,8 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 	GUI::DrawTextCentered(info, mid, color_white);
 	mid.y += 15;
 	GUI::DrawTextCentered(mapName, mid, color_white);
+	mid.y += 25;
+	GUI::DrawTextCentered(dayRecord, mid, color_white);
 	mid.y += 25;
 	GUI::DrawTextCentered(dayCount, mid, color_white);
 }

@@ -31,6 +31,9 @@ void Reset(CRules@ this)
 	{
 		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u16("days_to_survive") : -1;
 	}
+	
+	this.set_u16("day_record", server_getRecordDay());
+	this.Sync("day_record", true);
 
 	lastDayHour = 0.0f;
 	this.set_u16("day_number", 0);
