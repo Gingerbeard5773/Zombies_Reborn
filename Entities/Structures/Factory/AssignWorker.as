@@ -92,7 +92,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void onDie(CBlob@ this)
 {
-	u16[]@ netids = getWorkers(this);
+	u16[] netids = getWorkers(this);
 	for (u8 i = 0; i < netids.length; i++)
 	{
 		UnassignWorker(this, netids[i]);
