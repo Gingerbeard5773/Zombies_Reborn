@@ -110,3 +110,27 @@ bool hasAvailableWorkerSlots(CBlob@ this)
 {
 	return getWorkers(this).length < this.get_u8("maximum_worker_count");
 }
+
+void SetStandardWorkerPosition(CBlob@ this, CBlob@ worker)
+{
+	AttachmentPoint@[] aps;
+	if (!this.getAttachmentPoints(@aps)) return;
+
+	for (u8 i = 0; i < aps.length; i++)
+	{
+		AttachmentPoint@ ap = aps[i];
+		if (ap.name != "WORKER" || ap.getOccupied() !is null) continue;
+
+		Random rand(this.getNetworkID() + worker.getNetworkID());
+		const f32 width = int(rand.NextRanged(this.getWidth()*0.5f)) - (this.getWidth() * 0.25f);
+		Vec2f offset = Vec2f(width, (this.getHeight() - worker.getHeight()) * 0.5f);
+
+		ap.offsetZ = 25.0f;
+		ap.offset = offset;
+
+		worker.SetFacingLeft(rand.NextRanged(2) == 0);
+		this.server_AttachTo(worker, ap);
+
+		break;
+	}
+}
