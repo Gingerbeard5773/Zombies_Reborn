@@ -130,6 +130,7 @@ u8 getTileTierSolid(TileType tile)
 	if (isTileBetween(tile, CMap::tile_castle_d1, CMap::tile_castle_d0))  return 1; //damaged castle
 	if (tile == CMap::tile_wood)                                          return 1; //wood
 	if (tile == CMap::tile_castle)                                        return 2; //castle
+	if (tile == CMap::tile_castle_moss)                                   return 2; //mossy castle
 	if (isTileBetween(tile, CMap::tile_iron_d0, CMap::tile_iron_f))       return 2; //damaged iron
 	if (isTileIron(tile))                                                 return 3; //iron
 	return 255;
@@ -139,6 +140,7 @@ u8 getTileTierBackground(TileType tile)
 {
 	if (tile == CMap::tile_wood_back)                                     return 1; //wood
 	if (tile == CMap::tile_castle_back)                                   return 2; //castle
+	if (tile == CMap::tile_castle_back_moss)                              return 2; //mossy castle
 	if (isTileBetween(tile, CMap::tile_biron_d0, CMap::tile_biron_f))     return 2; //damaged iron
 	if (isTileBIron(tile))                                                return 3; //iron
 	return 0;
