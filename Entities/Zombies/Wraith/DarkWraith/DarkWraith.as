@@ -97,15 +97,18 @@ void onDie(CBlob@ this)
 	{
 		this.getSprite().PlaySound("DarkWraithExplode", 1.0f, 0.9f);
 
-		Vec2f pos = this.getPosition();
-		for (int i = 0; i < 6; i++)
+		if (isServer())
 		{
-			CBlob@ blob = server_CreateBlob("flame", -1, pos);
-			if (blob is null) continue;
-			
-			Vec2f vel = getRandomVelocity(XORRandom(360), 10.0f, 0.0f);
-			blob.setVelocity(vel);
-			blob.server_SetTimeToDie(5 + XORRandom(3));
+			Vec2f pos = this.getPosition();
+			for (int i = 0; i < 6; i++)
+			{
+				CBlob@ blob = server_CreateBlob("flame", -1, pos);
+				if (blob is null) continue;
+				
+				Vec2f vel = getRandomVelocity(XORRandom(360), 10.0f, 0.0f);
+				blob.setVelocity(vel);
+				blob.server_SetTimeToDie(5 + XORRandom(3));
+			}
 		}
 	}
 }
