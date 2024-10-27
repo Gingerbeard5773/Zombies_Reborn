@@ -1,4 +1,6 @@
 #include "CustomTiles.as"
+#include "canGrow.as"
+#include "Upgrades.as"
 
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
@@ -180,8 +182,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 
 		if (isSeed)
 		{
-			// from canGrow.as
-			return (map.isTileGround(map.getTile(p + Vec2f(0, 8)).type));
+			return canGrowOnTile(blob, p, map);
 		}
 	}
 
@@ -240,7 +241,9 @@ void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
 
 u32 getCurrentBuildDelay(CBlob@ this)
 {
-	return (getRules().get_u16("day_number") < 2 ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+	if (getRules().get_u16("day_number") < 2 || hasUpgrade(Upgrade::Architecture))
+		return this.get_u32("warmup build delay");
+	return this.get_u32("build delay");
 }
 
 f32 getMaxBuildDistance(CBlob@ this)

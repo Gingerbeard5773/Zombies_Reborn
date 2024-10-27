@@ -1,5 +1,7 @@
 // Give spawn items to players
 
+#include "Upgrades.as";
+
 const string give_items_cmd = "give_spawn_mats";
 const string timer_prop = "mats_time";
 
@@ -90,20 +92,38 @@ void server_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob)
 	const string name = getRecieverName(blob);
 	if (name == "builder")
 	{
-		if (this.get_u16("day_number") < 2)
-		{
-			server_SpawnMats(blob, "mat_wood", 200);
-			server_SpawnMats(blob, "mat_stone", 50);
-		}
-		else
-		{
-			server_SpawnMats(blob, "mat_wood", 100);
-			server_SpawnMats(blob, "mat_stone", 30);
-		}
+		u16 amount_wood, amount_stone;
+		getBuilderMats(this, amount_wood, amount_stone);
+		server_SpawnMats(blob, "mat_wood", amount_wood);
+		server_SpawnMats(blob, "mat_stone", amount_stone);
 	}
 	else if (name == "archer")
 	{
 		server_SpawnMats(blob, "mat_arrows", 30);
+	}
+}
+
+void getBuilderMats(CRules@ this, u16&out amount_wood, u16&out amount_stone)
+{
+	const bool warmup = this.get_u16("day_number") < 2;
+	amount_wood = warmup ? 200 : 100;
+	amount_stone = warmup ? 50 : 30;
+	
+	u32[]@ upgrades = getUpgrades();
+	if (hasUpgrade(upgrades, Upgrade::Supplies))
+	{
+		amount_wood += 10;
+		amount_stone += 5;
+	}
+	if (hasUpgrade(upgrades, Upgrade::SuppliesII))
+	{
+		amount_wood += 10;
+		amount_stone += 5;
+	}
+	if (hasUpgrade(upgrades, Upgrade::SuppliesIII))
+	{
+		amount_wood += 10;
+		amount_stone += 10;
 	}
 }
 

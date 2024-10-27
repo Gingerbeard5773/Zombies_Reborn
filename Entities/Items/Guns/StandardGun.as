@@ -1,5 +1,6 @@
 //Gingerbeard @ July 28, 2024
-#include "GunCommon.as"
+#include "GunCommon.as";
+#include "Upgrades.as";
 
 void onInit(CBlob@ this)
 {
@@ -52,6 +53,11 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 		if (gun.ammo_count <= 0 && inv !is null && inv.getItem(gun.ammo_name) !is null)
 		{
 			gun.reload_time++;
+			
+			if (hasUpgrade(Upgrade::Bandoliers))
+			{
+				gun.reload_time++;
+			}
 
 			this.setAngleDegrees(30 * (this.isFacingLeft() ? -1 : 1));
 

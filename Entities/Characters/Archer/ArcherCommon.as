@@ -1,5 +1,7 @@
 //Archer Include
 
+#include "Upgrades.as";
+
 namespace ArcherParams
 {
 	enum Aim
@@ -213,6 +215,9 @@ bool hasArrows(CBlob@ this)
 
 	if (archer.arrow_type < arrowTypeNames.length)
 	{
+		if (archer.arrow_type == ArrowType::normal && hasUpgrade(Upgrade::DeepQuiver))
+			return true;
+
 		return this.getBlobCount(arrowTypeNames[archer.arrow_type]) > 0;
 	}
 	return false;
@@ -221,6 +226,9 @@ bool hasArrows(CBlob@ this)
 bool hasArrows(CBlob@ this, u8 arrowType)
 {
 	if (this is null) return false;
+	
+	if (arrowType == ArrowType::normal && hasUpgrade(Upgrade::DeepQuiver))
+		return true;
 	
 	return arrowType < arrowTypeNames.length && this.hasBlob(arrowTypeNames[arrowType], 1);
 }
@@ -234,7 +242,7 @@ bool hasAnyArrows(CBlob@ this)
 			return true;
 		}
 	}
-	return false;
+	return hasUpgrade(Upgrade::DeepQuiver);
 }
 
 void SetArrowType(CBlob@ this, const u8 type)

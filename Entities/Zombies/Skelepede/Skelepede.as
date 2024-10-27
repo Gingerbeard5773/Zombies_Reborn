@@ -2,7 +2,7 @@
 #include "MakeDustParticle.as";
 #include "Hitters.as";
 
-const int COINS_ON_DEATH = 100;
+const int COINS_ON_DEATH = 125;
 
 void onInit(CBlob@ this)
 {
@@ -15,6 +15,9 @@ void onInit(CBlob@ this)
 	
 	if (!this.exists("skelepede_segment_amount"))
 		this.set_u8("skelepede_segment_amount", 34);
+		
+	this.set_f32("gib health", 0.0f);
+	this.set_u16("coins on death", COINS_ON_DEATH);
 
 	this.getAttachments().getAttachmentPointByName("PICKUP").offsetZ = -5;
 	
@@ -43,8 +46,6 @@ void onInit(CBlob@ this)
 	this.Tag("ignore_saw");
 	this.Tag("sawed"); //dont get sawed
 	
-	this.getCurrentScript().removeIfTag = "dead";
-	
 	u16[] segment_netids;
 	if (isServer())
 	{
@@ -67,6 +68,7 @@ void onTick(CBlob@ this)
 	this.setAngleDegrees(90 - this.getVelocity().AngleDegrees());
 
 	GoSomewhere(this);
+	//FollowCursor(this);
 	MoveSegments(this);
 	AttackStuff(this);
 }
@@ -331,20 +333,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	
 	switch(customData)
 	{
-		case Hitters::ballista:     damage *= 3.5f; break;
-		case Hitters::cata_boulder: damage *= 2.0f; break;
+		case Hitters::ballista:     damage *= 2.5f; break;
 		case Hitters::bomb_arrow:   damage *= 4.2f; break;
-		case Hitters::arrow:        damage *= 1.2f; break;
+		case Hitters::arrow:        damage *= 1.5f; break;
 		case Hitters::suddengib:    damage *= 4.0f; break;
 		case Hitters::drill:        damage *= 3.0f; break;
 		case Hitters::builder:      damage *= 2.0f; break;
-	}
-
-	if (damage > this.getHealth() && !this.hasTag("dead"))
-	{
-		this.getSprite().Gib();
-		server_DropCoins(worldPoint, COINS_ON_DEATH);
-		onDie(this);
 	}
 
 	return damage;
@@ -369,7 +363,6 @@ void onDie(CBlob@ this)
 			segment.server_Die();
 		}
 	}
-	this.Tag("dead");
 }
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
@@ -445,7 +438,7 @@ bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 //TESTING PURPOSES
 void FollowCursor(CBlob@ this)
 {
-	CBlob@ localBlob = getBlobByName("builder");
+	CBlob@ localBlob = getLocalPlayerBlob();
 	if (localBlob is null) return;
 	
 	Vec2f pos = this.getPosition();

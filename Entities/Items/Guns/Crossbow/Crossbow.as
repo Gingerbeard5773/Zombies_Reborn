@@ -1,6 +1,7 @@
 //Gingerbeard @ July 27, 2024
-#include "RunnerCommon.as"
+#include "RunnerCommon.as";
 #include "CrossbowCommon.as";
+#include "Upgrades.as";
 
 void onInit(CBlob@ this)
 {
@@ -118,10 +119,25 @@ void ManageBow(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, CrossbowInfo@
 
 	CSprite@ sprite = holder.getSprite();
 	
+	const bool repeater = hasUpgrade(Upgrade::Repeaters);
+	
+	if (repeater && crossbow.charge_state < Crossbow::charged)
+	{
+		if (crossbow.charge_time >= Crossbow::READY_TIME)
+		{
+			crossbow.charge_state = Crossbow::charged;
+			LoadCrossbow(holder, crossbow);
+		}
+		else
+		{
+			crossbow.charge_time += 2;
+		}
+	}
+	
 	const bool pressed_action1 = point.isKeyPressed(key_action1);
 	const bool pressed_action2 = point.isKeyPressed(key_action2);
 
-	if (pressed_action2) //charge bow
+	if (pressed_action2 && !repeater) //charge bow
 	{
 		if (crossbow.charge_state < Crossbow::charged)
 		{
@@ -144,23 +160,7 @@ void ManageBow(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, CrossbowInfo@
 				//charging finished
 				sprite.PlaySound("LoadingTick"+(XORRandom(2)+1));
 				crossbow.charge_state = Crossbow::charged;
-				
-				CInventory@ inv = holder.getInventory();
-				if (inv !is null)
-				{
-					for (u8 i = 0; i < inv.getItemsCount(); i++)
-					{
-						CBlob@ item = inv.getItem(i);
-						int arrow = arrowTypeNames.find(item.getName());
-						if (arrow > -1)
-						{
-							crossbow.loaded = true;
-							crossbow.arrow_type = arrow;
-							holder.TakeBlob(arrowTypeNames[arrow], 1);
-							break;
-						}
-					}
-				}
+				LoadCrossbow(holder, crossbow);
 			}
 		}
 	}
@@ -185,7 +185,7 @@ void ManageBow(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, CrossbowInfo@
 			crossbow.charge_time = 0;
 		}
 	}
-	else
+	else if (!repeater)
 	{
 		//reset to normal if no actions in progress
 		if (crossbow.charge_state < Crossbow::charged)
@@ -210,6 +210,25 @@ void ManageBow(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, CrossbowInfo@
 			frame = int((float(crossbow.charge_time) / float(Crossbow::READY_TIME)) * 9) * 2;
 		}
 		this.set_u8("frame", frame);
+	}
+}
+
+void LoadCrossbow(CBlob@ holder, CrossbowInfo@ crossbow)
+{
+	CInventory@ inv = holder.getInventory();
+	if (inv is null) return;
+
+	for (u8 i = 0; i < inv.getItemsCount(); i++)
+	{
+		CBlob@ item = inv.getItem(i);
+		const int arrow = arrowTypeNames.find(item.getName());
+		if (arrow > -1)
+		{
+			crossbow.loaded = true;
+			crossbow.arrow_type = arrow;
+			holder.TakeBlob(arrowTypeNames[arrow], 1);
+			break;
+		}
 	}
 }
 

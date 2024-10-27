@@ -1,6 +1,7 @@
 #include "VehicleCommon.as"
 #include "GenericButtonCommon.as"
 #include "AssignWorkerCommon.as"
+#include "Upgrades.as"
 
 // Mounted Bow logic
 
@@ -184,6 +185,8 @@ void Vehicle_MountedBowControls(CBlob@ this, VehicleInfo@ v)
 	const bool press_action1 = isBot ? blob.isKeyPressed(key_action1) : ap.isKeyPressed(key_action1);
     if (isServer() && press_action1 && v.canFire())
     {
+		v.getCurrentAmmo().fire_delay = hasUpgrade(Upgrade::MachineBows) ? 9 : 15;
+		
         CBitStream bt;
         bt.write_u16(blob.getNetworkID());
         bt.write_u16(v.charge);

@@ -1,12 +1,13 @@
 
 #include "Hitters.as";
 #include "ShieldCommon.as";
-#include "FireParticle.as"
+#include "FireParticle.as";
 #include "ArcherCommon.as";
 #include "BombCommon.as";
 #include "SplashWater.as";
 #include "TeamStructureNear.as";
-#include "KnockedCommon.as"
+#include "KnockedCommon.as";
+#include "Upgrades.as";
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -897,7 +898,8 @@ void SplashArrow(CBlob@ this)
 	if (!this.hasTag("splashed"))
 	{
 		this.Tag("splashed");
-		Splash(this, 3, 3, 0.0f, true);
+		const int diameter = 3 * (hasUpgrade(Upgrade::HolyWater) ? 1.75f : 1.0f);
+		Splash(this, diameter, diameter, 0.0f, true);
 		this.getSprite().PlaySound("GlassBreak");
 	}
 }

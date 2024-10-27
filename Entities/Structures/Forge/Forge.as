@@ -3,6 +3,7 @@
 #include "CraftItemCommon.as"
 #include "FireParticle.as"
 #include "Zombie_Translation.as"
+#include "Upgrades.as"
 
 const string fuel_prop = "fuel_level";
 const int max_fuel = 500;
@@ -33,6 +34,8 @@ void onInit(CBlob@ this)
 	string[] pull_names = { "mat_iron", "mat_coal" };
 	this.set("pull_items", pull_names);
 
+	addOnProduceItem(this, @onProduceItem);
+
 	Craft craft();
 	craft.menu_size = Vec2f(3, 1);
 	craft.button_offset = Vec2f(5.8, -5);
@@ -46,7 +49,7 @@ void onInit(CBlob@ this)
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("mat_coal", Translate::CharCoal, 2, 10, 10);
+		CraftItem i("mat_coal", Translate::CharCoal, 2, 10, 10, ItemType::material);
 		AddRequirement(i.reqs, "blob", "mat_wood", "Wood", 25);
 		craft.addItem(this, i);
 	}
@@ -66,6 +69,7 @@ void onTick(CBlob@ this)
 	this.SetLight(craft.time > 0);
 	
 	craft.can_craft = false;
+	craft.time_modifier = getTimeModifier();
 
 	const s16 fuel = this.get_s16(fuel_prop);
 	if (fuel > 0)
@@ -77,6 +81,30 @@ void onTick(CBlob@ this)
 			this.Sync(fuel_prop, true);
 		}
 	}
+}
+
+f32 getTimeModifier()
+{
+	f32 time_modifier = 1.0f;
+	u32[]@ upgrades = getUpgrades();
+	if (hasUpgrade(upgrades, Upgrade::Metallurgy))    time_modifier -= 0.15f;
+	if (hasUpgrade(upgrades, Upgrade::MetallurgyII))  time_modifier -= 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::MetallurgyIII)) time_modifier -= 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::MetallurgyIV))  time_modifier -= 0.15f;
+	
+	return time_modifier;
+}
+
+f32 getRefinementPercent()
+{
+	f32 percent = 0.0f;
+	u32[]@ upgrades = getUpgrades();
+	if (hasUpgrade(upgrades, Upgrade::Refinement))    percent += 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::RefinementII))  percent += 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::RefinementIII)) percent += 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::RefinementIV))  percent += 0.10f;
+	
+	return percent;
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -98,6 +126,17 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			button.deleteAfterClick = false;
 		}
 		return;
+	}
+}
+
+void onProduceItem(CBlob@ this, CBlob@ blob, Craft@ craft)
+{
+	if (isServer() && blob !is null)
+	{
+		if (XORRandom(100) < 100 * getRefinementPercent())
+		{
+			blob.server_SetQuantity(blob.getQuantity() + 1);
+		}
 	}
 }
 

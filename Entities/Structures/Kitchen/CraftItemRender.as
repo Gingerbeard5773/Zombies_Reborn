@@ -31,7 +31,7 @@ void onRender(CSprite@ this)
 		Vec2f upperleft(pos2d.x - hwidth, pos2d.y + hheight - 23.0f);
 		Vec2f lowerright(pos2d.x + hwidth, pos2d.y + hheight);
 
-		GUI::DrawProgressBar(upperleft, lowerright, f32(craft.time) / f32(item.seconds_to_produce));
+		GUI::DrawProgressBar(upperleft, lowerright, f32(craft.time) / f32(item.seconds_to_produce * craft.time_modifier));
 
 		const string iconName = "$"+blob.getName()+"_craft_icon_"+craft.selected+"$";
 		Vec2f iconDim;

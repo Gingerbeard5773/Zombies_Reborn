@@ -1,5 +1,7 @@
 // Wind Mill
 
+#include "Upgrades.as";
+
 const u32 conversion_seconds = 30;
 
 void onInit(CBlob@ this)
@@ -68,7 +70,8 @@ void convertToFlour(CBlob@ this, CBlob@ grain)
 		if (flour is null) return;
 		flour.Tag("custom quantity");
 		flour.Init();
-		flour.server_SetQuantity(10+XORRandom(7));
+		const u16 quantity = (10 + XORRandom(7)) * getMillingPercent();
+		flour.server_SetQuantity(quantity);
 		
 		grain.server_Die();
 		
@@ -77,6 +80,17 @@ void convertToFlour(CBlob@ this, CBlob@ grain)
 	}
 	
 	this.getSprite().PlaySound("StoreSound.ogg");
+}
+
+f32 getMillingPercent()
+{
+	f32 percent = 1.0f;
+	u32[]@ upgrades = getUpgrades();
+	if (hasUpgrade(upgrades, Upgrade::Milling))    percent += 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::MillingII))  percent += 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::MillingIII)) percent += 0.15f;
+	
+	return percent;
 }
 
 void onAddToInventory(CBlob@ this, CBlob@ blob)

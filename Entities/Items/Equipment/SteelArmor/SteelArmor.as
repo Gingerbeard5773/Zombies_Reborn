@@ -3,6 +3,7 @@
 #include "RunnerCommon.as";
 #include "Hitters.as";
 #include "ParticleSparks.as";
+#include "Upgrades.as";
 
 void onInit(CBlob@ this)
 {
@@ -50,9 +51,16 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 	if (!equipper.get("moveVars", @moveVars)) return;
 
 	//slow down player
+
+	if (hasUpgrade(Upgrade::LightArmor))
+	{
+		moveVars.walkFactor *= 0.90f;
+		moveVars.jumpFactor *= 0.95f;
+		return;
+	}
+
 	moveVars.walkFactor *= 0.8f;
 	moveVars.jumpFactor *= 0.9f;
-	//moveVars.canVault = false;
 }
 
 f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)

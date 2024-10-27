@@ -2,6 +2,7 @@
 #include "Hitters.as";
 #include "MakeDustParticle.as";
 #include "ParticleSparks.as";
+#include "Upgrades.as";
 
 const f32 PUSH_FORCE = 22.0f;
 
@@ -28,15 +29,29 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if ((blob.isCollidable() && blob.getShape().isStatic()) || (blob.hasTag("flesh") && this.getTeamNum() != blob.getTeamNum())) 
 		{
+			u32[]@ upgrades = getUpgrades();
 			const u8 pierced = this.get_u8("pierced");
 
-			this.server_Hit(blob, point1, normal, this.get_f32("bullet damage") * (pierced > 1 ? 0.5f : 1.0f), Hitters::arrow);
-			if (pierced > 1)
+			this.server_Hit(blob, point1, normal, getBulletDamage(this, pierced, upgrades), Hitters::arrow);
+			
+			const u8 pierce_threshold = hasUpgrade(upgrades, Upgrade::RifledBarrels) ? 3 : 1;
+			if (pierced > pierce_threshold)
 				this.server_Die();
 
 			this.set_u8("pierced", pierced + 1);
 		}
 	}
+}
+
+f32 getBulletDamage(CBlob@ this, const u8&in pierced, u32[]@ upgrades)
+{
+	f32 percent = 1.0f;
+	if (hasUpgrade(upgrades, Upgrade::FastBurnPowder)) percent += 0.25f;
+	if (hasUpgrade(upgrades, Upgrade::HeavyLead))      percent += 0.45f;
+	
+	const f32 pierce_factor = 1.0f - (0.07f * pierced);
+	const f32 damage = this.get_f32("bullet damage") * pierce_factor * percent;
+	return damage;
 }
 
 bool CollidesWithPlatform(CBlob@ this, CBlob@ blob, Vec2f velocity)

@@ -1,16 +1,19 @@
 //Gingerbeard @ September 30, 2024
 
 #include "Hitters.as";
+#include "Upgrades.as";
 
 const u8 STUN_TICKS = 6 * 30;
+const u8 STUN_TICKS_UPGRADED = 12 * 30;
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (customData == Hitters::water_stun || customData == Hitters::water_stun_force)
 	{
+		const u8 ticks_to_stun = hasUpgrade(Upgrade::HolyWater) ? STUN_TICKS_UPGRADED : STUN_TICKS;
 		if (isServer())
 		{
-			this.set_u8("brain_delay", STUN_TICKS);
+			this.set_u8("brain_delay", ticks_to_stun);
 
 			this.setKeyPressed(key_left, false);
 			this.setKeyPressed(key_right, false);
@@ -20,7 +23,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			this.server_DetachAll(); //save players from gregs
 		}
 
-		this.set_u32("stun_time", getGameTime() + STUN_TICKS);
+		this.set_u32("stun_time", getGameTime() + ticks_to_stun);
 	}
 
 	return damage;

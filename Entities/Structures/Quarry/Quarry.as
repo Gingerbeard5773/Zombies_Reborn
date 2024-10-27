@@ -3,6 +3,7 @@
 
 #include "GenericButtonCommon.as"
 #include "Zombie_Translation.as"
+#include "Upgrades.as"
 
 const string[] fuel_names = {"mat_coal", "mat_wood"};
 const string[] fuel_icons = {"mat_coal_icon", "mat_wood"};
@@ -190,23 +191,41 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
+const f32 iron_chance = 0.15f;
+const f32 gold_chance = 0.05f;
+
 void server_spawnOre(CBlob@ this)
 {
-	CBlob@ stone = server_CreateBlobNoInit("mat_stone");
-	if (stone is null) return;
+	const int fuel = this.get_s16(fuel_prop);
+	const int actual_input = Maths::Min(input, fuel);
+	int amount_to_spawn = Maths::Floor(initial_output * actual_input / input);
 
-	const int blobCount = this.get_s16(fuel_prop);
-	int actual_input = Maths::Min(input, blobCount);
-	int amountToSpawn = Maths::Floor(initial_output * actual_input / input);
-	//round to 5
-	int remainder = amountToSpawn % 5;
-	amountToSpawn += (remainder < 3 ? -remainder : (5 - remainder));
+	// round to 5
+	const int remainder = amount_to_spawn % 5;
+	amount_to_spawn += (remainder < 3 ? -remainder : (5 - remainder));
 
-	stone.Tag("custom quantity");
-	stone.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
-	stone.server_SetQuantity(amountToSpawn);
-	stone.Init();
+	string ore_name = "mat_stone";
 
-	this.set_s16(fuel_prop, blobCount - actual_input); //burn fuel
+	const f32 random = XORRandom(100) / 100.0f;
+	if (random < gold_chance && hasUpgrade(Upgrade::ExtractionII))
+	{
+		ore_name = "mat_gold";
+		amount_to_spawn *= 0.25f;
+	}
+	else if (random < iron_chance + gold_chance && hasUpgrade(Upgrade::Extraction))
+	{
+		ore_name = "mat_iron";
+		amount_to_spawn *= 0.5f;
+	}
+
+	CBlob@ ore = server_CreateBlobNoInit(ore_name);
+	if (ore is null) return;
+
+	ore.Tag("custom quantity");
+	ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
+	ore.server_SetQuantity(amount_to_spawn);
+	ore.Init();
+
+	this.set_s16(fuel_prop, fuel - actual_input); // burn fuel
 	this.Sync(fuel_prop, true);
 }

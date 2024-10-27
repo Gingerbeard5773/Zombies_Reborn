@@ -2,6 +2,7 @@
 #include "RunnerTextures.as";
 #include "RunnerCommon.as";
 #include "Hitters.as";
+#include "Upgrades.as";
 
 const u8 helmet_variations = 3;
 
@@ -42,11 +43,12 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 {
 	RunnerMoveVars@ moveVars;
 	if (!equipper.get("moveVars", @moveVars)) return;
+	
+	if (hasUpgrade(Upgrade::LightArmor)) return;
 
 	//slow down player
 	moveVars.walkFactor *= 0.94f;
 	//moveVars.jumpFactor *= 0.97f;
-	//moveVars.canVault = false;
 }
 
 f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)

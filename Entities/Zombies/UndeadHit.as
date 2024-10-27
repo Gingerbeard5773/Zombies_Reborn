@@ -1,4 +1,5 @@
 #include "Hitters.as";
+#include "Upgrades.as";
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
@@ -11,6 +12,20 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::cata_boulder:
 			damage *= 2.0f;
 			break;
+		case Hitters::sword:
+			damage *= getSwordDamagePercent();
+			break;
+		case Hitters::builder:
+		{
+			if (hasUpgrade(Upgrade::CombatPickaxes))
+				damage *= 2.0f;
+		}
+		case Hitters::burn:
+		case Hitters::fire:
+		{
+			if (hasUpgrade(Upgrade::GreekFire))
+				damage *= 1.5f;
+		}
 		case Hitters::arrow:
 		{
 			//headshots deal additional damage
@@ -30,6 +45,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			ParticleBloodSplat(worldPoint, true);
 			break;
 		}
+	}
+	
+	if (isExplosionHitter(customData) || customData == Hitters::keg)
+	{
+		damage *= getExplosionDamagePercent();
 	}
 	
 	CPlayer@ player = this.getPlayer();
@@ -58,34 +78,63 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	this.Damage(damage, hitterBlob);
 	
 	//kill if health went below gibHealth
-	if (this.getHealth() <= this.get_f32("gib health"))
+	if (this.getHealth() <= this.get_f32("gib health") && !this.hasTag("died"))
 	{
 		this.getSprite().Gib();
-		
-		givePartialCoinsOnDeath(this);
+		server_givePartialCoinsOnDeath(this, worldPoint);
 		this.server_Die();
+		this.Tag("died");
 	}
 
 	return 0.0f;
 }
 
-void givePartialCoinsOnDeath(CBlob@ this)
+void server_givePartialCoinsOnDeath(CBlob@ this, Vec2f&in drop_pos)
 {
+	if (!isServer()) return;
+
 	const u16 coins = this.get_u16("coins on death");
-	Vec2f floor_pos = this.getPosition() + Vec2f(0, -3.0f);
 	if (coins <= 0) return;
 
 	// drop 100% of coins to floor
 	CPlayer@ player = this.getPlayerOfRecentDamage();
 	if (player is null)
 	{
-		server_DropCoins(floor_pos, coins);
+		server_DropCoins(drop_pos, coins);
 		return;
 	}
 
 	// drop 90% of coins to floor, give 10% to player
-	const u16 coinsToDrop = Maths::Floor(coins * 0.90f);
+	const u16 coinsToDrop = Maths::Floor(coins * getCoinDropPercent());
 	const u16 coinsLeft = coins - coinsToDrop;
-	server_DropCoins(floor_pos, coinsToDrop);
+	server_DropCoins(drop_pos, coinsToDrop);
 	player.server_setCoins(player.getCoins() + coinsLeft);
+}
+
+f32 getExplosionDamagePercent()
+{
+	f32 percent = 1.0f;
+	u32[]@ upgrades = getUpgrades();
+	if (hasUpgrade(upgrades, Upgrade::Shrapnel))    percent += 0.25f;
+	if (hasUpgrade(upgrades, Upgrade::ShrapnelII))  percent += 0.25f;
+	return percent;
+}
+
+f32 getSwordDamagePercent()
+{
+	f32 percent = 1.0f;
+	u32[]@ upgrades = getUpgrades();
+	if (hasUpgrade(upgrades, Upgrade::Swords))    percent += 0.25f;
+	if (hasUpgrade(upgrades, Upgrade::SwordsII))  percent += 0.25f;
+	return percent;
+}
+
+f32 getCoinDropPercent()
+{
+	f32 percent = 1.0f;
+	u32[]@ upgrades = getUpgrades();
+	if (hasUpgrade(upgrades, Upgrade::Coinage))    percent -= 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::CoinageII))  percent -= 0.10f;
+	if (hasUpgrade(upgrades, Upgrade::CoinageIII)) percent -= 0.10f;
+	return percent;
 }

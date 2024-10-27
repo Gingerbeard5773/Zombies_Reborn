@@ -8,26 +8,26 @@
 #include "KnockedCommon.as";
 #include "Upgrades.as";
 
-const f32 speed_thresh = 2.0f;
-const f32 speed_hard_thresh = 2.3f;
+const f32 speed_thresh = 2.4f;
+const f32 speed_hard_thresh = 2.6f;
 
 const string buzz_prop = "drill timer";
 
 const string heat_prop = "drill heat";
-const u8 heat_max = 250;
-const u8 heat_drop = 245;
+const u8 heat_max = 150;
+const u8 heat_drop = 140;
 const u8 high_damage_window = 40; // at how much heat before max drill deals increased damage
 
 const string last_drill_prop = "drill last active";
 
-const u8 heat_add = 2;
+const u8 heat_add = 7;
 const u8 heat_add_constructed = 2;
-const u8 heat_add_blob = 7;
+const u8 heat_add_blob = 6;
 const u8 heat_cool_amount = 2;
 
 const f32 heat_reduction_water = 0.5f;
 
-const u8 heat_cooldown_time = 5;
+const u8 heat_cooldown_time = 8;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
 const f32 max_heatbar_view_range = 65;
@@ -57,8 +57,8 @@ void onInit(CSprite@ this)
 
 void onInit(CBlob@ this)
 {
-	this.Tag("ignore_saw");
-	this.Tag("sawed");//hack
+	//this.Tag("ignore_saw");
+	//this.Tag("sawed");//hack
 
 	//todo: some tag-based keys to take interference (doesn't work on net atm)
 	/*AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
@@ -210,7 +210,6 @@ void onTick(CBlob@ this)
 
 	AimAtMouse(this, holder); // aim at our mouse pos
 
-	return;
 	if (int(heat) >= heat_drop)
 	{
 		makeSteamPuff(this, 1.5f, 3, false);

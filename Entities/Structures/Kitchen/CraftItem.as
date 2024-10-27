@@ -1,6 +1,7 @@
 ﻿#include "Requirements.as";
 #include "CraftItemCommon.as";
 #include "MaterialCommon.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -8,6 +9,7 @@ void onInit(CBlob@ this)
 	
 	this.addCommandID("server_set_crafting");
 	this.addCommandID("client_set_crafting");
+	this.addCommandID("client_produce_item");
 	
 	Craft@ craft = getCraft(this);
 	if (craft !is null)
@@ -23,7 +25,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	Craft@ craft = getCraft(this);
 	if (craft is null) return;
 
-	CButton@ button = caller.CreateGenericButton("$"+this.getName()+"_craft_icon_"+craft.selected+"$", craft.button_offset, this, CraftMenu, "Set Recipe");
+	CButton@ button = caller.CreateGenericButton("$"+this.getName()+"_craft_icon_"+craft.selected+"$", craft.button_offset, this, CraftMenu, Translate::SetRecipe);
 }
 
 void CraftMenu(CBlob@ this, CBlob@ caller)
@@ -33,7 +35,7 @@ void CraftMenu(CBlob@ this, CBlob@ caller)
 	Craft@ craft = getCraft(this);
 	if (craft is null) return;
 
-	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), this, craft.menu_size, "Recipes");
+	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), this, craft.menu_size, Translate::Recipes);
 	if (menu is null) return;
 
 	for (u8 i = 0; i < craft.items.length; i++)
@@ -45,8 +47,7 @@ void CraftMenu(CBlob@ this, CBlob@ caller)
 		
 		const bool isSelected = craft.selected == i;
 		const string recipe_name = item.title.split("\n")[0];
-
-		const string text = (isSelected ? "Current" : "Set") + " Recipe: " + recipe_name;
+		const string text = (isSelected ? Translate::CurrentRecipe : Translate::SetRecipe) + ": " + recipe_name;
 
 		CGridButton@ butt = menu.AddButton("$"+this.getName()+"_craft_icon_" + i + "$", text, this.getCommandID("server_set_crafting"), params);
 		butt.hoverText = item.title + "\n\n" + getButtonRequirementsText(item.reqs, false);
@@ -74,6 +75,27 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (!params.saferead_u8(craft.selected)) return;
 		craft.time = 0;
 		SetPullItems(this, craft);
+	}
+	else if (cmd == this.getCommandID("client_produce_item") && isClient())
+	{
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+
+		CBlob@ blob = getBlobByNetworkID(netid); //null checks go in onProduceItem as blob can be null intentionally
+		
+		if (!craft.produce_sound.isEmpty())
+		{
+			this.getSprite().PlaySound(craft.produce_sound);
+		}
+		
+		if (!isServer())
+		{
+			onProduceItemHandle@ onProduceItem;
+			if (this.get("onProduceItem handle", @onProduceItem))
+			{
+				onProduceItem(this, blob, craft);
+			}
+		}
 	}
 }
 
@@ -111,21 +133,27 @@ void onTick(CBlob@ this)
 	if (hasRequirements(inv, item.reqs, missing) && craft.can_craft)
 	{	
 		craft.time += 1;
-		if (craft.time >= item.seconds_to_produce)
+		if (craft.time >= item.seconds_to_produce * craft.time_modifier)
 		{
 			if (isServer())
 			{
-				//CBlob@ mat = server_CreateBlob(item.result_name, this.getTeamNum(), this.getPosition());
-				//mat.server_SetQuantity(item.result_count);
-				
-				Material::createFor(this, item.result_name, item.result_count);
+				CBlob@ blob = server_MakeItem(this, item);
+				if (blob !is null)
+				{
+					this.server_PutInInventory(blob);
+				}
 
 				server_TakeRequirements(inv, item.reqs);
-			}
-
-			if (isClient())
-			{
-				this.getSprite().PlaySound(craft.produce_sound);
+				
+				onProduceItemHandle@ onProduceItem;
+				if (this.get("onProduceItem handle", @onProduceItem))
+				{
+					onProduceItem(this, blob, craft);
+				}
+				
+				CBitStream stream;
+				stream.write_netid(blob is null ? 0 : blob.getNetworkID());
+				this.SendCommand(this.getCommandID("client_produce_item"), stream);
 			}
 			
 			craft.time = 1;
@@ -135,6 +163,30 @@ void onTick(CBlob@ this)
 	{
 		craft.time = 0;
 	}
+}
+
+CBlob@ server_MakeItem(CBlob@ this, CraftItem@ item)
+{
+	if (item.type == ItemType::nothing)
+	{
+		return null;
+	}
+	else if (item.type == ItemType::material)
+	{
+		Material::createFor(this, item.result_name, item.result_count);
+		return null;
+	}
+	
+	CBlob@ mat = server_CreateBlobNoInit(item.result_name);
+	if (mat !is null)
+	{
+		mat.Tag('custom quantity');
+		mat.setPosition(this.getPosition());
+		mat.server_setTeamNum(this.getTeamNum());
+		mat.Init();
+		mat.server_SetQuantity(item.result_count);
+	}
+	return mat;
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)

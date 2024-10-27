@@ -1,8 +1,6 @@
 ﻿#include "UndeadAttackCommon.as";
 #include "MakeDustParticle.as";
 
-const int COINS_ON_DEATH = 20;
-
 void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
@@ -20,8 +18,6 @@ void onInit(CBlob@ this)
 	this.Tag("builder always hit");
 	
 	AssignBodySize(this); //localhost
-	
-	this.getCurrentScript().removeIfTag = "dead";
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)

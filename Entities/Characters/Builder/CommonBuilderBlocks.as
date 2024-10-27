@@ -151,7 +151,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	BuildBlock[] page_1;
 	blocks.push_back(page_1);
 	{
-		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 102), 1), Translate::Windmill);
+		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 64), 0), Translate::Windmill);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 200);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 250);
 		b.buildOnGround = true;
@@ -190,15 +190,16 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		b.size.Set(56, 40);
 		blocks[1].push_back(b);
 	}
-	/*{
-		BuildBlock b(0, "library", getTeamIcon("library", "LibraryIcon.png", team_num, Vec2f(32, 19)), Translate::Library);
+	{
+		BuildBlock b(0, "library", getTeamIcon("library", "Library.png", team_num, Vec2f(56, 40)), Translate::Library);
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 150);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 50);
+		AddRequirement(b.reqs, "no more", "library", "Library", 1);
 		b.buildOnGround = true;
 		b.size.Set(56, 40);
 		blocks[1].push_back(b);
-	}*/
+	}
 	
 	BuildBlock[] page_2;
 	blocks.push_back(page_2);
