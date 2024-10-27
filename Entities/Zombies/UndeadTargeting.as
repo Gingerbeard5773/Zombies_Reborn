@@ -2,8 +2,8 @@
 
 shared void SetBestTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
 {
-	u16[] targetBlobs;
-	if (!getRules().get("target netids", targetBlobs)) return;
+	u16[]@ targetBlobs;
+	if (!getRules().get("target netids", @targetBlobs)) return;
 	
 	const bool seeThroughWalls = blob.hasTag("see_through_walls");
 	const Vec2f pos = blob.getPosition();
