@@ -145,7 +145,8 @@ void SyncGrapple(CBlob@ this)
 	this.SendCommand(this.getCommandID(grapple_sync_cmd), bt);
 }
 
-void HandleGrapple(CBlob@ this, CBitStream@ params, bool apply)
+//TODO: saferead
+void HandleGrapple(CBlob@ this, CBitStream@ bt, bool apply)
 {
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer)) return;
@@ -156,18 +157,15 @@ void HandleGrapple(CBlob@ this, CBitStream@ params, bool apply)
 	Vec2f grapple_pos;
 	Vec2f grapple_vel;
 
-	if (!params.saferead_bool(grappling)) return;
+	grappling = bt.read_bool();
 
 	if (grappling)
 	{
-		if (!params.saferead_u16(grapple_id)) return;
-		
-		u8 temp;
-		if (!params.saferead_u8(temp)) return;
-		if (!params.saferead_Vec2f(grapple_pos)) return;
-		if (!params.saferead_Vec2f(grapple_vel)) return;
-
+		grapple_id = bt.read_u16();
+		u8 temp = bt.read_u8();
 		grapple_ratio = temp / 250.0f;
+		grapple_pos = bt.read_Vec2f();
+		grapple_vel = bt.read_Vec2f();
 	}
 
 	if (apply)
