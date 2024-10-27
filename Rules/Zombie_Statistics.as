@@ -25,6 +25,7 @@ u16 server_getRecordDay(const u16&in current_day, bool&out new_record)
 	if (current_day > record_day)
 	{
 		cfg.add_u16("record_day", current_day);
+		cfg.add_u16("record_day_previous", record_day);
 		record_day = current_day;
 		new_record = true;
 	}
