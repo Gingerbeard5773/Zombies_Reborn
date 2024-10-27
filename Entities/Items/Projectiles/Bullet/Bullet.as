@@ -12,6 +12,10 @@ void onInit(CBlob@ this)
     consts.mapCollisions = false;
 	consts.bullet = true;
 	consts.net_threshold_multiplier = 4.0f;
+	
+	//dont collide with top of the map
+	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
+
 	this.server_SetTimeToDie(this.get_f32("bullet time"));	
 	this.Tag("projectile");
 }
