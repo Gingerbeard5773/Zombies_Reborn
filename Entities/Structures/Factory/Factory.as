@@ -80,6 +80,12 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	{
+		Production tech("Big Bombs", 19);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
+		tech.addProductionItem("bigbomb", "Big Bombs", "", 30, 3);
+		production_set.push_back(tech);
+	}
+	{
 		Production tech("Mines", 18);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
 		tech.addProductionItem("mine", "Mines", "", 20, 4);
@@ -95,13 +101,13 @@ void SetupProductionSet()
 	{
 		Production tech("Water Ammo", FactoryFrame::water_ammo);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 25);
-		tech.addProductionItem("mat_waterarrows", "Water Arrows", "", 25, 3);
-		tech.addProductionItem("mat_waterbombs", "Water Bombs", "", 25, 3);
+		tech.addProductionItem("mat_waterarrows", "Water Arrows", "", 15, 3);
+		tech.addProductionItem("mat_waterbombs", "Water Bombs", "", 15, 3);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Bomb Arrows", FactoryFrame::expl_ammo);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 35);
 		tech.addProductionItem("mat_bombarrows", "Bomb Arrows", "", 35, 4);
 		production_set.push_back(tech);
 	}
