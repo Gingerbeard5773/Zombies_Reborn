@@ -48,16 +48,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		for (u16 i = 0; i < blobsLength; i++)
 		{
 			CBlob@ b = blobsInRadius[i];
-			if (!b.hasTag("dead") || b.hasTag("undead")) continue;
+			if (!b.hasTag("dead") || b.hasTag("undead") || !b.exists("player_username")) continue;		
 
 			CPlayer@ dead_player = getPlayerByUsername(b.get_string("player_username")); //RunnerDeath.as
-			if ((dead_player !is null && dead_player.getBlob() is null) || b.getName() == "migrant")
-			{
-				if (dead_player.getTeamNum() == 3) continue;
-				
-				RevivePlayer(dead_player, b);
-				revived_positions.push_back(b.getPosition());
-			}
+			if (dead_player is null || dead_player.getBlob() !is null || dead_player.getTeamNum() == 3) continue;
+
+			RevivePlayer(dead_player, b);
+			revived_positions.push_back(b.getPosition());
 		}
 
 		const u8 revived_count = revived_positions.length;
