@@ -52,33 +52,33 @@ void SetupTechTree(CRules@ this)
 	ResearchTech CoinageII(Translate::CoinageII, Upgrade::CoinageII, Vec2f(6, 5), 240);
 	AddRequirement(CoinageII.requirements, "coin", "", "Coins", 1000);
 	
-	ResearchTech CoinageIII(Translate::CoinageIII, Upgrade::CoinageIII, Vec2f(6, 11), 1200);
+	ResearchTech CoinageIII(Translate::CoinageIII, Upgrade::CoinageIII, Vec2f(6, 11), 1100);
 	AddRequirement(CoinageIII.requirements, "coin", "", "Coins", 2500);
 
-	ResearchTech HardyWheat(Translate::HardyWheat, Upgrade::HardyWheat, Vec2f(12, 11), 240);
+	ResearchTech HardyWheat(Translate::HardyWheat, Upgrade::HardyWheat, Vec2f(12, 11), 140);
 	AddRequirement(HardyWheat.requirements, "coin", "", "Coins", 150);
 
-	ResearchTech HardyTrees(Translate::HardyTrees, Upgrade::HardyTrees, Vec2f(18, 11), 240);
+	ResearchTech HardyTrees(Translate::HardyTrees, Upgrade::HardyTrees, Vec2f(18, 11), 140);
 	AddRequirement(HardyTrees.requirements, "coin", "", "Coins", 150);
 
-	ResearchTech PlentifulWheat(Translate::PlentifulWheat, Upgrade::PlentifulWheat, Vec2f(24, 11), 330);
+	ResearchTech PlentifulWheat(Translate::PlentifulWheat, Upgrade::PlentifulWheat, Vec2f(24, 11), 240);
 	AddRequirement(PlentifulWheat.requirements, "coin", "", "Coins", 250);
 
 	ResearchTech Metallurgy(Translate::Metallurgy, Upgrade::Metallurgy, Vec2f(0, 7), 480);
 	AddRequirement(Metallurgy.requirements, "coin", "", "Coins", 500);
 	AddRequirement(Metallurgy.requirements, "blob", "mat_ironingot", "Iron Ingot", 10);
 
-	ResearchTech MetallurgyII(Translate::MetallurgyII, Upgrade::MetallurgyII, Vec2f(0, 17), 960);
+	ResearchTech MetallurgyII(Translate::MetallurgyII, Upgrade::MetallurgyII, Vec2f(0, 17), 480);
 	AddRequirement(MetallurgyII.requirements, "coin", "", "Coins", 750);
 	AddRequirement(MetallurgyII.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
 
 	ResearchTech MetallurgyIII(Translate::MetallurgyIII, Upgrade::MetallurgyIII, Vec2f(0, 27), 960);
 	AddRequirement(MetallurgyIII.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(MetallurgyIII.requirements, "blob", "mat_steelingot", "Steel Ingot", 5);
+	AddRequirement(MetallurgyIII.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
 
 	ResearchTech MetallurgyIV(Translate::MetallurgyIV, Upgrade::MetallurgyIV, Vec2f(0, 37), 960);
 	AddRequirement(MetallurgyIV.requirements, "coin", "", "Coins", 1500);
-	AddRequirement(MetallurgyIV.requirements, "blob", "mat_steelingot", "Steel Ingot", 5);
+	AddRequirement(MetallurgyIV.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
 	AddRequirement(MetallurgyIV.requirements, "blob", "mat_gold", "Gold", 25);
 
 	ResearchTech Refinement(Translate::Refinement, Upgrade::Refinement, Vec2f(6, 30), 240);
@@ -125,7 +125,7 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(Swords.requirements, "coin", "", "Coins", 400);
 	AddRequirement(Swords.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
 
-	ResearchTech SwordsII(Translate::SwordsII, Upgrade::SwordsII, Vec2f(12, 24), 480);
+	ResearchTech SwordsII(Translate::SwordsII, Upgrade::SwordsII, Vec2f(12, 24), 380);
 	AddRequirement(SwordsII.requirements, "coin", "", "Coins", 700);
 	AddRequirement(SwordsII.requirements, "blob", "mat_steelingot", "Steel Ingot", 6);
 
@@ -133,7 +133,7 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(LightArmor.requirements, "coin", "", "Coins", 400);
 	AddRequirement(LightArmor.requirements, "blob", "mat_ironingot", "Iron Ingot", 16);
 
-	ResearchTech CombatPickaxes(Translate::CombatPickaxes, Upgrade::CombatPickaxes, Vec2f(-6, 10), 480);
+	ResearchTech CombatPickaxes(Translate::CombatPickaxes, Upgrade::CombatPickaxes, Vec2f(-6, 10), 380);
 	AddRequirement(CombatPickaxes.requirements, "coin", "", "Coins", 400);
 	AddRequirement(CombatPickaxes.requirements, "blob", "mat_ironingot", "Iron Ingot", 8);
 
@@ -154,26 +154,25 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(Supplies.requirements, "blob", "mat_stone", "Stone", 250);
 	AddRequirement(Supplies.requirements, "blob", "mat_wood", "Wood", 300);
 
-	ResearchTech SuppliesII(Translate::SuppliesII, Upgrade::SuppliesII, Vec2f(-21, 5), 480);
+	ResearchTech SuppliesII(Translate::SuppliesII, Upgrade::SuppliesII, Vec2f(-21, 5), 340);
 	AddRequirement(SuppliesII.requirements, "coin", "", "Coins", 350);
 	AddRequirement(SuppliesII.requirements, "blob", "mat_stone", "Stone", 300);
 	AddRequirement(SuppliesII.requirements, "blob", "mat_wood", "Wood", 450);
 
-	ResearchTech SuppliesIII(Translate::SuppliesIII, Upgrade::SuppliesIII, Vec2f(-27, 5), 960);
+	ResearchTech SuppliesIII(Translate::SuppliesIII, Upgrade::SuppliesIII, Vec2f(-27, 5), 480);
 	AddRequirement(SuppliesIII.requirements, "coin", "", "Coins", 400);
 	AddRequirement(SuppliesIII.requirements, "blob", "mat_stone", "Stone", 400);
 	AddRequirement(SuppliesIII.requirements, "blob", "mat_wood", "Wood", 800);
 
 	ResearchTech Repeaters(Translate::Repeaters, Upgrade::Repeaters, Vec2f(-12, 17), 480);
 	AddRequirement(Repeaters.requirements, "coin", "", "Coins", 400);
-	AddRequirement(Repeaters.requirements, "blob", "mat_ironingot", "Iron Ingot", 8);
 	AddRequirement(Repeaters.requirements, "blob", "mat_gold", "Gold", 25);
 
-	ResearchTech LightBows(Translate::LightBows, Upgrade::LightBows, Vec2f(-12, 11), 480);
+	ResearchTech LightBows(Translate::LightBows, Upgrade::LightBows, Vec2f(-12, 11), 280);
 	AddRequirement(LightBows.requirements, "coin", "", "Coins", 300);
 	AddRequirement(LightBows.requirements, "blob", "mat_gold", "Gold", 50);
 
-	ResearchTech DeepQuiver(Translate::DeepQuiver, Upgrade::DeepQuiver, Vec2f(-12, 23), 960);
+	ResearchTech DeepQuiver(Translate::DeepQuiver, Upgrade::DeepQuiver, Vec2f(-12, 23), 480);
 	AddRequirement(DeepQuiver.requirements, "coin", "", "Coins", 250);
 	AddRequirement(DeepQuiver.requirements, "blob", "mat_gold", "Gold", 50);
 
@@ -181,7 +180,7 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(MachineBows.requirements, "coin", "", "Coins", 500);
 	AddRequirement(MachineBows.requirements, "blob", "mat_gold", "Gold", 50);
 
-	ResearchTech FastBurnPowder(Translate::FastBurnPowder, Upgrade::FastBurnPowder, Vec2f(-18, 29), 480);
+	ResearchTech FastBurnPowder(Translate::FastBurnPowder, Upgrade::FastBurnPowder, Vec2f(-18, 29), 240);
 	AddRequirement(FastBurnPowder.requirements, "coin", "", "Coins", 500);
 
 	ResearchTech HeavyLead(Translate::HeavyLead, Upgrade::HeavyLead, Vec2f(-18, 35), 480);
@@ -192,7 +191,7 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(RifledBarrels.requirements, "coin", "", "Coins", 400);
 	AddRequirement(RifledBarrels.requirements, "blob", "mat_ironingot", "Iron Ingot", 4);
 
-	ResearchTech Bandoliers(Translate::Bandoliers, Upgrade::Bandoliers, Vec2f(-24, 23), 480);
+	ResearchTech Bandoliers(Translate::Bandoliers, Upgrade::Bandoliers, Vec2f(-24, 23), 380);
 	AddRequirement(Bandoliers.requirements, "coin", "", "Coins", 450);
 	AddRequirement(Bandoliers.requirements, "blob", "mat_gold", "Gold", 50);
 
@@ -200,10 +199,10 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(GreekFire.requirements, "coin", "", "Coins", 500);
 	AddRequirement(GreekFire.requirements, "blob", "mat_gold", "Gold", 75);
 
-	ResearchTech Shrapnel(Translate::Shrapnel, Upgrade::Shrapnel, Vec2f(-18, 11), 480);
+	ResearchTech Shrapnel(Translate::Shrapnel, Upgrade::Shrapnel, Vec2f(-18, 11), 300);
 	AddRequirement(Shrapnel.requirements, "coin", "", "Coins", 300);
 
-	ResearchTech ShrapnelII(Translate::ShrapnelII, Upgrade::ShrapnelII, Vec2f(-18, 17), 960);
+	ResearchTech ShrapnelII(Translate::ShrapnelII, Upgrade::ShrapnelII, Vec2f(-18, 17), 480);
 	AddRequirement(ShrapnelII.requirements, "coin", "", "Coins", 500);
 
 	ResearchTech HighExplosives(Translate::HighExplosives, Upgrade::HighExplosives, Vec2f(-18, 23), 480);
@@ -220,7 +219,7 @@ void SetupTechTree(CRules@ this)
 	ResearchTech FlightTuning(Translate::FlightTuning, Upgrade::FlightTuning, Vec2f(18, 23), 240);
 	AddRequirement(FlightTuning.requirements, "coin", "", "Coins", 250);
 
-	ResearchTech IronChassis(Translate::IronChassis, Upgrade::IronChassis, Vec2f(18, 17), 480);
+	ResearchTech IronChassis(Translate::IronChassis, Upgrade::IronChassis, Vec2f(18, 17), 380);
 	AddRequirement(IronChassis.requirements, "coin", "", "Coins", 250);
 	AddRequirement(IronChassis.requirements, "blob", "mat_ironingot", "Iron Ingot", 10);
 
@@ -228,7 +227,7 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(SteelChassis.requirements, "coin", "", "Coins", 350);
 	AddRequirement(SteelChassis.requirements, "blob", "mat_steelingot", "Steel Ingot", 5);
 
-	ResearchTech TorsionWinch(Translate::TorsionWinch, Upgrade::TorsionWinch, Vec2f(12, 17), 480);
+	ResearchTech TorsionWinch(Translate::TorsionWinch, Upgrade::TorsionWinch, Vec2f(12, 17), 280);
 	AddRequirement(TorsionWinch.requirements, "coin", "", "Coins", 350);
 	AddRequirement(TorsionWinch.requirements, "blob", "mat_ironingot", "Iron Ingot", 2);
 
@@ -240,7 +239,7 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(Regeneration.requirements, "coin", "", "Coins", 250);
 	AddRequirement(Regeneration.requirements, "blob", "mat_gold", "Gold", 25);
 
-	ResearchTech RegenerationII(Translate::RegenerationII, Upgrade::RegenerationII, Vec2f(30, 11), 960);
+	ResearchTech RegenerationII(Translate::RegenerationII, Upgrade::RegenerationII, Vec2f(30, 11), 560);
 	AddRequirement(RegenerationII.requirements, "coin", "", "Coins", 750);
 	AddRequirement(RegenerationII.requirements, "blob", "mat_gold", "Gold", 50);
 
