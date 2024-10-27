@@ -4,7 +4,7 @@
 
 void onInit(CRules@ this)
 {
-	this.set_string("version", "1.4.1");
+	this.set_string("version", "1.5.0");
 	sv_contact_info = "github.com/Gingerbeard5773/Zombies_Reborn";
 	
 	sv_visiblity_scale = 1.25f;
