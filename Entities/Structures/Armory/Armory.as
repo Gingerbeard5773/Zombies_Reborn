@@ -68,6 +68,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 75);
 	}
 	{
+		ShopItem@ s = addShopItem(this, "Head Lamp", "$headlamp$", "headlamp", Translate::HeadLamp, false);
+		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 2);
+		AddRequirement(s.requirements, "blob", "lantern", "Lantern", 1);
+		AddRequirement(s.requirements, "coin", "", "Coins", 50);
+	}
+	{
 		ShopItem@ s = addShopItem(this, "Steel Drill", getTeamIcon("steeldrill", "SteelDrill.png", team_num, Vec2f(32, 16), 0), "steeldrill", Translate::SteelDrill, false);
 		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 2);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
