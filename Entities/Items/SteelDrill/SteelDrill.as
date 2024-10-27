@@ -210,7 +210,6 @@ void onTick(CBlob@ this)
 
 	AimAtMouse(this, holder); // aim at our mouse pos
 
-	return;
 	if (int(heat) >= heat_drop)
 	{
 		makeSteamPuff(this, 1.5f, 3, false);
