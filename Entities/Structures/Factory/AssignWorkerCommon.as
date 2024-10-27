@@ -119,7 +119,8 @@ void SetStandardWorkerPosition(CBlob@ this, CBlob@ worker)
 	for (u8 i = 0; i < aps.length; i++)
 	{
 		AttachmentPoint@ ap = aps[i];
-		if (ap.name != "WORKER" || ap.getOccupied() !is null) continue;
+		CBlob@ occupied = ap.getOccupied();
+		if (ap.name != "WORKER" || (occupied !is null && occupied !is worker)) continue;
 
 		Random rand(this.getNetworkID() + worker.getNetworkID());
 		const f32 width = int(rand.NextRanged(this.getWidth()*0.5f)) - (this.getWidth() * 0.25f);
