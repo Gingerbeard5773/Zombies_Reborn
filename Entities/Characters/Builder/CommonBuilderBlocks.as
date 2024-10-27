@@ -46,6 +46,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	AddIconToken("$iron_block_ZF$", "World.png", Vec2f(8, 8), CMap::tile_iron);
 	AddIconToken("$biron_block_ZF$", "World.png", Vec2f(8, 8), CMap::tile_biron);
 	AddIconToken("$iron_platform_ZF$", "IronPlatform.png", Vec2f(8, 8), 0);
+	AddIconToken("$iron_spikes_ZF$", "IronSpikes.png", Vec2f(8, 8), 0);
 	AddIconToken("$obstructor_ZF$", "Obstructor.png", Vec2f(8, 8), 8);
 
 	BuildBlock[] page_0;
@@ -129,6 +130,11 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	}
 	{
 		BuildBlock b(0, "iron_platform", "$iron_platform_ZF$", Translate::IronPlatform);
+		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
+		blocks[0].push_back(b);
+	}
+	{
+		BuildBlock b(0, "iron_spikes", "$iron_spikes_ZF$", Translate::IronSpikes);
 		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
 		blocks[0].push_back(b);
 	}
