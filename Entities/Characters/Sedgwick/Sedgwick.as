@@ -6,7 +6,7 @@
 enum SpellNum
 {
 	spell_skeleton = 0,
-	spell_wraith,
+	spell_transmute,
 	spell_delivery,
 	spell_portal,
 	spell_end
@@ -15,7 +15,7 @@ enum SpellNum
 const u8[] spell_countdown =
 {
 	20,      //spell_skeleton
-	10,      //spell_wraith
+	10,      //spell_transmute
 	10,      //spell_delivery
 	12,      //spell_portal
 	5        //spell_end
@@ -77,7 +77,7 @@ void onTick(CBlob@ this)
 		switch(spell)
 		{
 			case spell_skeleton:  SpellSkeletonRain(this, countdown);  break;
-			case spell_wraith:    SpellWraith(this, countdown);        break;
+			case spell_transmute: SpellTransmute(this, countdown);     break;
 			case spell_delivery:  SpellDelivery(this, countdown);      break;
 			case spell_portal:    SpellPortal(this, countdown);        break;
 			case spell_end:       SedgwickDeparture(this, countdown);  break;
@@ -96,7 +96,7 @@ void SpellSkeletonRain(CBlob@ this, const u8&in countdown)
 {	
 	if (countdown < 12)
 	{
-		const u16 skeleton_count = 3 + Maths::Floor(getPlayerCount()/3);
+		const u16 skeleton_count = 4 + Maths::Floor(getPlayerCount()/3);
 		if (isServer())
 		{
 			CMap@ map = getMap();
@@ -131,11 +131,13 @@ void SpellSkeletonRain(CBlob@ this, const u8&in countdown)
 	}
 }
 
-// convert skeletons into wraiths
-void SpellWraith(CBlob@ this, const u8&in countdown)
+// convert certain zombies into stronger ones
+void SpellTransmute(CBlob@ this, const u8&in countdown)
 {
 	CBlob@[] blobs;
-	if (!getBlobsByName("skeleton", @blobs))
+	getBlobsByName("skeleton", @blobs);
+	getBlobsByName("wraith", @blobs);
+	if (blobs.length < 15)
 	{
 		server_SetSpell(this, XORRandom(spell_end));
 		return;
@@ -146,22 +148,25 @@ void SpellWraith(CBlob@ this, const u8&in countdown)
 		const u16 blobsLength = blobs.length;
 		for (u16 i = 0; i < blobsLength; ++i)
 		{
-			CBlob@ skeleton = blobs[i];
+			CBlob@ blob = blobs[i];
 			
 			if (isClient())
 			{
 				ParticleAnimated("SmallExplosion" + (XORRandom(3) + 1) + ".png",
-					 skeleton.getPosition(), Vec2f(0, 0.5f), 0.0f, 1.0f, 3 + XORRandom(3), -0.1f, true);
+					 blob.getPosition(), Vec2f(0, 0.5f), 0.0f, 1.0f, 3 + XORRandom(3), -0.1f, true);
 				
-				CSprite@ blobSprite = skeleton.getSprite();
+				CSprite@ blobSprite = blob.getSprite();
 				blobSprite.PlaySound("KegExplosion.ogg", 0.5f);
 				blobSprite.Gib();
-				ShakeScreen(200, 50, skeleton.getPosition());
+				ShakeScreen(200, 50, blob.getPosition());
 			}
 			if (isServer())
 			{
-				server_CreateBlob("wraith", -1, skeleton.getPosition());
-				skeleton.server_Die();
+				string transmute_name = "wraith";
+				if (blob.getName() == "wraith") transmute_name = "darkwraith";
+				
+				server_CreateBlob(transmute_name, 3, blob.getPosition());
+				blob.server_Die();
 			}
 		}
 		

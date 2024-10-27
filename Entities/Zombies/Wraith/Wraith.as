@@ -32,9 +32,6 @@ void onInit(CBlob@ this)
 	this.set_bool("map_damage_raycast", true);
 	this.set_s32("auto_enrage_time", getGameTime() + TIME_TO_ENRAGE + XORRandom(TIME_TO_ENRAGE / 2));
 	//
-
-	this.getCurrentScript().runFlags |= Script::tick_not_attached;
-	this.getCurrentScript().removeIfTag = "dead";
 	
 	this.addCommandID("enrage_client");
 }

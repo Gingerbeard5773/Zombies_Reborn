@@ -1,11 +1,12 @@
 ﻿const u8 TIME_TO_EXPLODE = 5; //seconds
 const s32 TIME_TO_ENRAGE = 45 * 30;
 
-void server_SetEnraged(CBlob@ this, const bool&in enrage = true, const bool&in stun = true)
+void server_SetEnraged(CBlob@ this, const bool&in enrage = true, const bool&in stun = true, const bool&in water_check = true)
 {
 	if (!isServer()) return;
 	
-	if (enrage && (this.hasTag("exploding") || this.isInWater())) return;
+	const bool inWater = water_check && this.isInWater();
+	if (enrage && (this.hasTag("exploding") || inWater)) return;
 
 	this.set_bool("exploding", enrage);
 	this.Sync("exploding", true);
