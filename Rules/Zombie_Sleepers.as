@@ -41,9 +41,11 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	string[]@ tokens = player.getUsername().split("~");
+	/*string[]@ tokens = player.getUsername().split("~");
 	if (tokens.length <= 0) return;
-	const string username = tokens[0];
+	const string username = tokens[0];*/
+	
+	const string username = player.getUsername();
 
 	CBlob@[] sleepers;
 	if (!getBlobsByTag("sleeper", @sleepers)) return;
