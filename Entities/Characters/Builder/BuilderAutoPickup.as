@@ -34,8 +34,8 @@ void Take(CBlob@ this, CBlob@ blob)
 		{
 			if (this.server_PutInInventory(blob))
 				return;
-			//else if (server_PutInSecondaryBackpack(this, blob))
-				//return;
+			else if (server_PutInSecondaryBackpack(this, blob))
+				return;
 		}
 	}
 
