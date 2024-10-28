@@ -64,7 +64,7 @@ void SetupTechTree(CRules@ this)
 	ResearchTech PlentifulWheat(Translate::PlentifulWheat, Upgrade::PlentifulWheat, Vec2f(24, 11), 240);
 	AddRequirement(PlentifulWheat.requirements, "coin", "", "Coins", 250);
 
-	ResearchTech Metallurgy(Translate::Metallurgy, Upgrade::Metallurgy, Vec2f(0, 7), 480);
+	ResearchTech Metallurgy(Translate::Metallurgy, Upgrade::Metallurgy, Vec2f(0, 7), 240);
 	AddRequirement(Metallurgy.requirements, "coin", "", "Coins", 500);
 	AddRequirement(Metallurgy.requirements, "blob", "mat_ironingot", "Iron Ingot", 10);
 
@@ -74,7 +74,7 @@ void SetupTechTree(CRules@ this)
 
 	ResearchTech MetallurgyIII(Translate::MetallurgyIII, Upgrade::MetallurgyIII, Vec2f(0, 27), 960);
 	AddRequirement(MetallurgyIII.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(MetallurgyIII.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
+	AddRequirement(MetallurgyIII.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
 
 	ResearchTech MetallurgyIV(Translate::MetallurgyIV, Upgrade::MetallurgyIV, Vec2f(0, 37), 960);
 	AddRequirement(MetallurgyIV.requirements, "coin", "", "Coins", 1500);
@@ -96,17 +96,17 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(RefinementIII.requirements, "blob", "mat_coal", "Coal", 150);
 	AddRequirement(RefinementIII.requirements, "blob", "mat_gold", "Gold", 75);
 
-	ResearchTech RefinementIV(Translate::RefinementIV, Upgrade::RefinementIV, Vec2f(24, 30), 1440);
+	ResearchTech RefinementIV(Translate::RefinementIV, Upgrade::RefinementIV, Vec2f(24, 30), 1000);
 	AddRequirement(RefinementIV.requirements, "coin", "", "Coins", 750);
 	AddRequirement(RefinementIV.requirements, "blob", "mat_coal", "Coal", 200);
 	AddRequirement(RefinementIV.requirements, "blob", "mat_gold", "Gold", 100);
 
-	ResearchTech Extraction(Translate::Extraction, Upgrade::Extraction, Vec2f(-6, 37), 960);
-	AddRequirement(Extraction.requirements, "coin", "", "Coins", 1500);
+	ResearchTech Extraction(Translate::Extraction, Upgrade::Extraction, Vec2f(-6, 37), 760);
+	AddRequirement(Extraction.requirements, "coin", "", "Coins", 1000);
 	AddRequirement(Extraction.requirements, "blob", "mat_gold", "Gold", 100);
 
-	ResearchTech ExtractionII(Translate::ExtractionII, Upgrade::ExtractionII, Vec2f(-12, 37), 1440);
-	AddRequirement(ExtractionII.requirements, "coin", "", "Coins", 3000);
+	ResearchTech ExtractionII(Translate::ExtractionII, Upgrade::ExtractionII, Vec2f(-12, 37), 1000);
+	AddRequirement(ExtractionII.requirements, "coin", "", "Coins", 1500);
 	AddRequirement(ExtractionII.requirements, "blob", "mat_gold", "Gold", 150);
 
 	ResearchTech Milling(Translate::Milling, Upgrade::Milling, Vec2f(12, 5), 240);
@@ -143,7 +143,7 @@ void SetupTechTree(CRules@ this)
 
 	ResearchTech PrecisionDrills(Translate::PrecisionDrills, Upgrade::PrecisionDrills, Vec2f(-6, 22), 240);
 	AddRequirement(PrecisionDrills.requirements, "coin", "", "Coins", 600);
-	AddRequirement(PrecisionDrills.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
+	AddRequirement(PrecisionDrills.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
 
 	ResearchTech Architecture(Translate::Architecture, Upgrade::Architecture, Vec2f(-27, 11), 240);
 	AddRequirement(Architecture.requirements, "coin", "", "Coins", 300);
@@ -237,15 +237,14 @@ void SetupTechTree(CRules@ this)
 
 	ResearchTech Regeneration(Translate::Regeneration, Upgrade::Regeneration, Vec2f(30, 5), 480);
 	AddRequirement(Regeneration.requirements, "coin", "", "Coins", 250);
-	AddRequirement(Regeneration.requirements, "blob", "mat_gold", "Gold", 25);
 
 	ResearchTech RegenerationII(Translate::RegenerationII, Upgrade::RegenerationII, Vec2f(30, 11), 560);
 	AddRequirement(RegenerationII.requirements, "coin", "", "Coins", 750);
-	AddRequirement(RegenerationII.requirements, "blob", "mat_gold", "Gold", 50);
+	AddRequirement(RegenerationII.requirements, "blob", "mat_gold", "Gold", 30);
 
 	ResearchTech RegenerationIII(Translate::RegenerationIII, Upgrade::RegenerationIII, Vec2f(30, 17), 960);
 	AddRequirement(RegenerationIII.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(RegenerationIII.requirements, "blob", "mat_gold", "Gold", 100);
+	AddRequirement(RegenerationIII.requirements, "blob", "mat_gold", "Gold", 50);
 	
 	// setup connections
 	
