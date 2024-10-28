@@ -54,7 +54,7 @@ void onTick(CRules@ this)
 	const u32 dawn_respawn_time = timeTillDawn + gameTime;
 
 	dictionary@ respawns;
-	this.get("respawns", @respawns);
+	if (!this.get("respawns", @respawns)) { error("Failed to attain respawns! :: "+getCurrentScriptName()); return; }
 
 	const u8 plyCount = getPlayerCount();
 	for (u8 i = 0; i < plyCount; i++)
