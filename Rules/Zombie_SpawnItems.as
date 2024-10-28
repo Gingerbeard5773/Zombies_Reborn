@@ -1,6 +1,6 @@
 // Give spawn items to players
 
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const string give_items_cmd = "give_spawn_mats";
 const string timer_prop = "mats_time";
@@ -109,18 +109,18 @@ void getBuilderMats(CRules@ this, u16&out amount_wood, u16&out amount_stone)
 	amount_wood = warmup ? 200 : 100;
 	amount_stone = warmup ? 50 : 30;
 	
-	u32[]@ upgrades = getUpgrades();
-	if (hasUpgrade(upgrades, Upgrade::Supplies))
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Supplies))
 	{
 		amount_wood += 10;
 		amount_stone += 5;
 	}
-	if (hasUpgrade(upgrades, Upgrade::SuppliesII))
+	if (hasTech(TechTree, Tech::SuppliesII))
 	{
 		amount_wood += 10;
 		amount_stone += 5;
 	}
-	if (hasUpgrade(upgrades, Upgrade::SuppliesIII))
+	if (hasTech(TechTree, Tech::SuppliesIII))
 	{
 		amount_wood += 10;
 		amount_stone += 10;

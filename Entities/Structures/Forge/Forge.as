@@ -3,7 +3,7 @@
 #include "CraftItemCommon.as"
 #include "FireParticle.as"
 #include "Zombie_Translation.as"
-#include "Upgrades.as"
+#include "Zombie_TechnologyCommon.as"
 
 const string fuel_prop = "fuel_level";
 const int max_fuel = 500;
@@ -86,11 +86,11 @@ void onTick(CBlob@ this)
 f32 getTimeModifier()
 {
 	f32 time_modifier = 1.0f;
-	u32[]@ upgrades = getUpgrades();
-	if (hasUpgrade(upgrades, Upgrade::Metallurgy))    time_modifier -= 0.15f;
-	if (hasUpgrade(upgrades, Upgrade::MetallurgyII))  time_modifier -= 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::MetallurgyIII)) time_modifier -= 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::MetallurgyIV))  time_modifier -= 0.15f;
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Metallurgy))    time_modifier -= 0.15f;
+	if (hasTech(TechTree, Tech::MetallurgyII))  time_modifier -= 0.10f;
+	if (hasTech(TechTree, Tech::MetallurgyIII)) time_modifier -= 0.10f;
+	if (hasTech(TechTree, Tech::MetallurgyIV))  time_modifier -= 0.15f;
 	
 	return time_modifier;
 }
@@ -98,11 +98,11 @@ f32 getTimeModifier()
 f32 getRefinementPercent()
 {
 	f32 percent = 0.0f;
-	u32[]@ upgrades = getUpgrades();
-	if (hasUpgrade(upgrades, Upgrade::Refinement))    percent += 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::RefinementII))  percent += 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::RefinementIII)) percent += 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::RefinementIV))  percent += 0.10f;
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Refinement))    percent += 0.10f;
+	if (hasTech(TechTree, Tech::RefinementII))  percent += 0.10f;
+	if (hasTech(TechTree, Tech::RefinementIII)) percent += 0.10f;
+	if (hasTech(TechTree, Tech::RefinementIV))  percent += 0.10f;
 	
 	return percent;
 }

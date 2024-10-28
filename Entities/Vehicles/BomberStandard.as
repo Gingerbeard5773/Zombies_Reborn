@@ -3,7 +3,7 @@
 #include "VehicleCommon.as";
 #include "ActivationThrowCommon.as";
 #include "Hitters.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 void onTick(CBlob@ this)
 {
@@ -78,14 +78,14 @@ void Vehicle_FlyerControlsCustom(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, 
 	f32 flyAmount = v.fly_amount;
 	Vec2f force;
 	
-	const bool upgraded = hasUpgrade(Upgrade::FlightTuning);
+	const bool upgrade = hasTech(Tech::FlightTuning);
 
 	// fly up/down
 	const bool up = ap.isKeyPressed(key_action1);
 	const bool down = ap.isKeyPressed(key_action2) || ap.isKeyPressed(key_down);
 	if (up || down)
 	{
-		const f32 flight = 0.3f * (upgraded ? 1.25f : 1.0f);
+		const f32 flight = 0.3f * (upgrade ? 1.25f : 1.0f);
 		if (up)
 		{
 			flyAmount = Maths::Min(flyAmount + flight / getTicksASecond(), 1.0f);
@@ -121,7 +121,7 @@ void Vehicle_FlyerControlsCustom(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, 
 
 	if (left || right)
 	{
-		if (upgraded) force *= 1.25f;
+		if (upgrade) force *= 1.25f;
 		this.AddForce(force);
 	}
 }

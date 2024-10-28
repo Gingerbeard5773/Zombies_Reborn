@@ -1,7 +1,7 @@
 //Gingerbeard @ July 27, 2024
 #include "RunnerCommon.as";
 #include "CrossbowCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -119,7 +119,7 @@ void ManageBow(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, CrossbowInfo@
 
 	CSprite@ sprite = holder.getSprite();
 	
-	const bool repeater = hasUpgrade(Upgrade::Repeaters);
+	const bool repeater = hasTech(Tech::Repeaters);
 	
 	if (repeater && crossbow.charge_state < Crossbow::charged)
 	{

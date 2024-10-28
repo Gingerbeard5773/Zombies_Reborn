@@ -1,16 +1,16 @@
 //Gingerbeard @ September 30, 2024
 
 #include "Hitters.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const u8 STUN_TICKS = 6 * 30;
-const u8 STUN_TICKS_UPGRADED = 12 * 30;
+const u8 STUN_TICKS_TECH = 12 * 30;
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (customData == Hitters::water_stun || customData == Hitters::water_stun_force)
 	{
-		const u8 ticks_to_stun = hasUpgrade(Upgrade::HolyWater) ? STUN_TICKS_UPGRADED : STUN_TICKS;
+		const u8 ticks_to_stun = hasTech(Tech::HolyWater) ? STUN_TICKS_TECH : STUN_TICKS;
 		if (isServer())
 		{
 			this.set_u8("brain_delay", ticks_to_stun);

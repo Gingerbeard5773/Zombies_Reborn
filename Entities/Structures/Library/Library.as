@@ -1,9 +1,8 @@
 ﻿//Gingerbeard @ July 24, 2024
 
-#include "ResearchTechCommon.as";
 #include "AssignWorkerCommon.as";
 #include "Requirements.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 #include "Zombie_GlobalMessagesCommon.as";
 #include "Zombie_Translation.as";
 
@@ -33,7 +32,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	ResearchTech@ researched = getResearching(this);
+	Technology@ researched = getResearching(this);
 	if (researched is null) return;
 	
 	//each worker decreases tickFrequency by 1 tick.
@@ -43,13 +42,13 @@ void onTick(CBlob@ this)
 	researched.time++;
 	researched.paused = false;
 
-	if (researched.isUnlocked())
+	if (researched.time >= researched.time_to_unlock)
 	{
 		if (researched.available && isServer())
 		{
-			setUpgrade(researched.index);
+			researched.completed = true;
 			UpdateConnections(researched);
-			UpdateUpgradeHooks(researched.index);
+			UpdateTechnologyHooks(researched.index);
 
 			CBitStream stream;
 			stream.write_u8(researched.index);
@@ -63,7 +62,7 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
-	ResearchTech@ researched = getResearching(this);
+	Technology@ researched = getResearching(this);
 	if (researched !is null)
 		researched.paused = true;
 }
@@ -72,7 +71,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("server_research") && isServer())
 	{
-		ResearchTech@ researched = getResearching(this);
+		Technology@ researched = getResearching(this);
 		if (researched !is null) return;
 
 		CPlayer@ player = getNet().getActiveCommandPlayer();
@@ -87,7 +86,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		u8 index;
 		if (!params.saferead_u8(index)) return;
 		
-		ResearchTech@ tech = getTech(index);
+		Technology@ tech = getTech(index);
 		if (tech is null) return;
 		
 		const bool duplicate = tech.isResearching();
@@ -118,14 +117,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		u8 index;
 		if (!params.saferead_u8(index)) return;
 
-		ResearchTech@ tech = getTech(index);
+		Technology@ tech = getTech(index);
 		if (tech is null) return;
 		
 		if (!isServer())
 		{
-			setUpgrade(tech.index);
+			tech.completed = true;
 			UpdateConnections(tech);
-			UpdateUpgradeHooks(tech.index);
+			UpdateTechnologyHooks(tech.index);
 		}
 
 		Sound::Play("/ResearchComplete.ogg");
@@ -133,21 +132,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		const string[]@ tokens = tech.description.split("\n");
 		if (tokens.length > 0)
 		{
-			const string tech_completed = Translate::UpgradeComplete.replace("{UPGRADE}", tokens[0]);
+			const string tech_completed = Translate::TechComplete.replace("{TECH}", tokens[0]);
 			client_SendGlobalMessage(getRules(), tech_completed, 6, SColor(0xffa293ff)); 
 			print(tech_completed);
 		}
 	}
 }
 
-void SetResearching(CBlob@ this, ResearchTech@ tech)
+void SetResearching(CBlob@ this, Technology@ tech)
 {
 	if (tech is null) return;
 	tech.time++;
 	this.set_s32("researching", tech.index);
 }
 
-void UpdateConnections(ResearchTech@ tech)
+void UpdateConnections(Technology@ tech)
 {
 	for (u8 i = 0; i < tech.connections.length; i++)
 	{
@@ -155,13 +154,13 @@ void UpdateConnections(ResearchTech@ tech)
 	}
 }
 
-void UpdateUpgradeHooks(const u8&in index)
+void UpdateTechnologyHooks(const u8&in index)
 {
 	CRules@ rules = getRules();
-	onUpgradeRulesHandle@ onUpgradeRules;
-	if (rules.get("onUpgrade handle", @onUpgradeRules))
+	onTechnologyRulesHandle@ onTechnologyRules;
+	if (rules.get("onTechnology handle", @onTechnologyRules))
 	{
-		onUpgradeRules(rules, index);
+		onTechnologyRules(rules, index);
 	}
 
 	/*CBlob@[] blobs;
@@ -170,10 +169,10 @@ void UpdateUpgradeHooks(const u8&in index)
 	for (u16 i = 0; i < blobs.length; i++)
 	{
 		CBlob@ blob = blobs[i];
-		onUpgradeHandle@ onUpgrade;
-		if (blob.get("onUpgrade handle", @onUpgrade))
+		onTechnologyHandle@ onTechnology;
+		if (blob.get("onTechnology handle", @onTechnology))
 		{
-			onUpgrade(blob, index);
+			onTechnology(blob, index);
 		}
 	}*/
 }

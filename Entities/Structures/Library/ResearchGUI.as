@@ -1,7 +1,7 @@
 ﻿// Research GUI
 
-#include "ResearchTechCommon.as";
 #include "Requirements.as";
+#include "Zombie_TechnologyCommon.as";
 #include "Zombie_Translation.as";
 
 const f32 buttonsize = 50.0f;
@@ -31,12 +31,12 @@ void onTick(CSprite@ this)
 
 	Vec2f mouse = getControls().getMouseScreenPos();
 	
-	ResearchTech@ researched = getResearching(blob);
+	Technology@ researched = getResearching(blob);
 
-	ResearchTech@[]@ TechTree = getTechTree();
+	Technology@[]@ TechTree = getTechTree();
 	for (u8 i = 0; i < TechTree.length; i++)
 	{
-		ResearchTech@ tech = TechTree[i];
+		Technology@ tech = TechTree[i];
 		if (tech is null) continue;
 		
 		const bool duplicate = tech.isResearching() && researched is null;
@@ -48,7 +48,7 @@ void onTick(CSprite@ this)
 			getButtonFromTech(tech, origin, buttonUL, buttonLR);
 
 			const bool mouseHover = (mouse.x > buttonUL.x && mouse.x < buttonLR.x && mouse.y > buttonUL.y && mouse.y < buttonLR.y);
-			if (mouseHover && localBlob.isKeyJustPressed(key_action1) && researched is null && !tech.isUnlocked() && tech.available)
+			if (mouseHover && localBlob.isKeyJustPressed(key_action1) && researched is null && !tech.completed && tech.available)
 			{
 				Sound::Play(duplicate ? "Switch.ogg" : "/ChaChing.ogg");
 				CBitStream params;
@@ -90,7 +90,7 @@ void onRender(CSprite@ this)
 	Vec2f upperleft(pos2d.x-size.x*0.5f, pos2d.y-size.y*0.5f);
 	Vec2f lowerright(pos2d.x+size.x*0.5f, pos2d.y+size.y*0.5f);
 	
-	ResearchTech@ researched = getResearching(blob);
+	Technology@ researched = getResearching(blob);
 
 	GUI::DrawRectangle(upperleft, lowerright);
 	GUI::SetFont("menu");
@@ -99,10 +99,10 @@ void onRender(CSprite@ this)
 	GUI::GetIconDimensions("$TECHNOLOGY_HEADER$", iconDim);
 	GUI::DrawIconByName("$TECHNOLOGY_HEADER$", Vec2f(pos2d.x - iconDim.x, pos2d.y - size.y*0.5f - iconDim.y));
 
-	ResearchTech@[]@ TechTree = getTechTree();
+	Technology@[]@ TechTree = getTechTree();
 	for (u8 i = 0; i < TechTree.length; i++)
 	{
-		ResearchTech@ tech = TechTree[i];
+		Technology@ tech = TechTree[i];
 		if (tech is null) continue;
 
 		Vec2f buttonUL, buttonLR;
@@ -112,7 +112,7 @@ void onRender(CSprite@ this)
 
 		for (u8 i = 0; i < tech.connections.length; i++)
 		{
-			ResearchTech@ next_tech = tech.connections[i];
+			Technology@ next_tech = tech.connections[i];
 			if (next_tech is null) continue;
 
 			Vec2f nextButtonUL, nextButtonLR;
@@ -123,11 +123,11 @@ void onRender(CSprite@ this)
 			getArrowPositions(buttonUL + offset, nextButtonUL + offset, a, b);
 
 			const bool researching = next_tech.isResearching();
-			if (!tech.isUnlocked())
+			if (!tech.completed)
 			{
 				GUI::DrawArrow2D(a, b, color_grey);
 			}
-			else if (next_tech.isUnlocked())
+			else if (next_tech.completed)
 			{
 				GUI::DrawArrow2D(a, b, color_dark_green);
 			}
@@ -184,7 +184,7 @@ void ShowResearchProgress(CBlob@ blob, CBlob@ localBlob)
 	
 	if (!localBlob.isKeyPressed(key_use) || getHUD().hasMenus()) return;
 	
-	ResearchTech@ researched = getResearching(blob);
+	Technology@ researched = getResearching(blob);
 	if (researched is null) return;
 
 	Vec2f pos = blob.getPosition();
@@ -201,7 +201,7 @@ void ShowResearchProgress(CBlob@ blob, CBlob@ localBlob)
 
 	DrawProgressBar(blob, pos2d, researched, width);
 
-	GUI::DrawIcon("UpgradeIcons.png", researched.index, icon_size, pos2d - icon_size, 1.0f, blob.getTeamNum());
+	GUI::DrawIcon("TechnologyIcons.png", researched.index, icon_size, pos2d - icon_size, 1.0f, blob.getTeamNum());
 }
 
 string drawtext;
@@ -215,7 +215,7 @@ void getOrigin(Vec2f&out pos2d, Vec2f&out origin)
 	origin.y -= size.y*0.5f - 60.0f;
 }
 
-void getButtonFromTech(ResearchTech@ tech, Vec2f center, Vec2f &out ul, Vec2f &out lr)
+void getButtonFromTech(Technology@ tech, Vec2f center, Vec2f &out ul, Vec2f &out lr)
 {
 	ul = center + tech.offset*quarterbuttonsize - Vec2f(halfbuttonsize, halfbuttonsize);
 	lr.x = ul.x + buttonsize;
@@ -254,10 +254,10 @@ void getArrowPositions(Vec2f&in center1, Vec2f&in center2, Vec2f&out point1, Vec
     }
 }
 
-void DrawButton(CBlob@ blob, CBlob@ localBlob, ResearchTech@ tech, ResearchTech@ researched, Vec2f buttonUL, Vec2f buttonLR, const bool mouseHover)
+void DrawButton(CBlob@ blob, CBlob@ localBlob, Technology@ tech, Technology@ researched, Vec2f buttonUL, Vec2f buttonLR, const bool mouseHover)
 {
 	string suffix;
-	if (tech.isUnlocked())
+	if (tech.completed)
 	{
 		suffix = "\n\n" +"$GREEN$"+Translate::Completed+"$GREEN$";
 		GUI::DrawButtonPressed(buttonUL, buttonLR);
@@ -311,12 +311,12 @@ void DrawButton(CBlob@ blob, CBlob@ localBlob, ResearchTech@ tech, ResearchTech@
 		drawtextpos = buttonUL;
 	}
 
-	GUI::DrawIcon("UpgradeIcons.png", tech.index, icon_size, buttonUL + Vec2f(3.0f, 3.0f), 1.0f, blob.getTeamNum());
+	GUI::DrawIcon("TechnologyIcons.png", tech.index, icon_size, buttonUL + Vec2f(3.0f, 3.0f), 1.0f, blob.getTeamNum());
 }
 
 f32 old_progress = 0.0f;
 
-void DrawProgressBar(CBlob@ blob, Vec2f&in drawpos, ResearchTech@ researched, const f32&in width)
+void DrawProgressBar(CBlob@ blob, Vec2f&in drawpos, Technology@ researched, const f32&in width)
 {
 	if (researched is null)
 	{

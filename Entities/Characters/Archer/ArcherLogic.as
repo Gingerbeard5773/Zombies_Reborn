@@ -10,7 +10,7 @@
 #include "BombCommon.as";
 #include "RedBarrierCommon.as";
 #include "StandardControlsCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const int FLETCH_COOLDOWN = 45;
 const int PICKUP_COOLDOWN = 15;
@@ -528,7 +528,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			}
 			else
 			{
-				charge_time += hasUpgrade(Upgrade::LightBows) ? 2 : 1;
+				charge_time += hasTech(Tech::LightBows) ? 2 : 1;
 			}
 
 			if (charge_time >= TRIPLESHOT_CHARGE)

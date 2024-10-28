@@ -1,6 +1,6 @@
 // Wind Mill
 
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const u32 conversion_seconds = 30;
 
@@ -85,10 +85,10 @@ void convertToFlour(CBlob@ this, CBlob@ grain)
 f32 getMillingPercent()
 {
 	f32 percent = 1.0f;
-	u32[]@ upgrades = getUpgrades();
-	if (hasUpgrade(upgrades, Upgrade::Milling))    percent += 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::MillingII))  percent += 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::MillingIII)) percent += 0.15f;
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Milling))    percent += 0.10f;
+	if (hasTech(TechTree, Tech::MillingII))  percent += 0.10f;
+	if (hasTech(TechTree, Tech::MillingIII)) percent += 0.15f;
 	
 	return percent;
 }

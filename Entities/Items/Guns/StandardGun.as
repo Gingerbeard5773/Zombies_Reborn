@@ -1,6 +1,6 @@
 //Gingerbeard @ July 28, 2024
 #include "GunCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -54,7 +54,7 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 		{
 			gun.reload_time++;
 			
-			if (hasUpgrade(Upgrade::Bandoliers))
+			if (hasTech(Tech::Bandoliers))
 			{
 				gun.reload_time++;
 			}

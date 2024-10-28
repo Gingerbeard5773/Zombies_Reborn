@@ -1,6 +1,6 @@
 #include "CustomTiles.as"
 #include "canGrow.as"
-#include "Upgrades.as"
+#include "Zombie_TechnologyCommon.as"
 
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
@@ -241,7 +241,7 @@ void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
 
 u32 getCurrentBuildDelay(CBlob@ this)
 {
-	if (getRules().get_u16("day_number") < 2 || hasUpgrade(Upgrade::Architecture))
+	if (getRules().get_u16("day_number") < 2 || hasTech(Tech::Architecture))
 		return this.get_u32("warmup build delay");
 	return this.get_u32("build delay");
 }

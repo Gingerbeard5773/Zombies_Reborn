@@ -1,6 +1,6 @@
 //common "can a plant grow at this tile" code
 
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 #include "CustomTiles.as";
 
 bool isNotTouchingOthers(CBlob@ this)
@@ -47,11 +47,11 @@ bool canGrowOnTile(CBlob@ this, Vec2f&in pos, CMap@ map)
 	string name = this.getName();
 	if (name == "seed") name = this.get_string("seed_grow_blobname");
 
-	if ((name == "tree_bushy" || name == "tree_pine") && hasUpgrade(Upgrade::HardyTrees))
+	if ((name == "tree_bushy" || name == "tree_pine") && hasTech(Tech::HardyTrees))
 	{
 		return isTileGroundStuff(map, tile);
 	}
-	else if (name == "grain_plant" && hasUpgrade(Upgrade::HardyWheat))
+	else if (name == "grain_plant" && hasTech(Tech::HardyWheat))
 	{
 		return isTileGroundStuff(map, tile);
 	}

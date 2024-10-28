@@ -7,7 +7,7 @@
 #include "SplashWater.as";
 #include "TeamStructureNear.as";
 #include "KnockedCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -898,7 +898,7 @@ void SplashArrow(CBlob@ this)
 	if (!this.hasTag("splashed"))
 	{
 		this.Tag("splashed");
-		const int diameter = 3 * (hasUpgrade(Upgrade::HolyWater) ? 1.75f : 1.0f);
+		const int diameter = 3 * (hasTech(Tech::HolyWater) ? 1.75f : 1.0f);
 		Splash(this, diameter, diameter, 0.0f, true);
 		this.getSprite().PlaySound("GlassBreak");
 	}

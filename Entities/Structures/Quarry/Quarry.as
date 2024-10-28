@@ -3,7 +3,7 @@
 
 #include "GenericButtonCommon.as"
 #include "Zombie_Translation.as"
-#include "Upgrades.as"
+#include "Zombie_TechnologyCommon.as"
 
 const string[] fuel_names = {"mat_coal", "mat_wood"};
 const string[] fuel_icons = {"mat_coal_icon", "mat_wood"};
@@ -207,12 +207,12 @@ void server_spawnOre(CBlob@ this)
 	string ore_name = "mat_stone";
 
 	const f32 random = XORRandom(100) / 100.0f;
-	if (random < gold_chance && hasUpgrade(Upgrade::ExtractionII))
+	if (random < gold_chance && hasTech(Tech::ExtractionII))
 	{
 		ore_name = "mat_gold";
 		amount_to_spawn *= 0.25f;
 	}
-	else if (random < iron_chance + gold_chance && hasUpgrade(Upgrade::Extraction))
+	else if (random < iron_chance + gold_chance && hasTech(Tech::Extraction))
 	{
 		ore_name = "mat_iron";
 		amount_to_spawn *= 0.5f;

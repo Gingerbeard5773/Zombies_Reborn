@@ -1,6 +1,6 @@
 #include "PlantGrowthCommon.as";
 #include "MakeSeed.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -17,7 +17,7 @@ void onDie(CBlob@ this)
 	if (!isServer() || !this.hasTag("has grain")) return;
 
 	u8 quantity = 1;
-	if (XORRandom(5) == 0 && hasUpgrade(Upgrade::PlentifulWheat))
+	if (XORRandom(5) == 0 && hasTech(Tech::PlentifulWheat))
 	{
 		quantity += 1;
 	}

@@ -10,13 +10,13 @@
 #include "PlacementCommon.as";
 #include "ParticleSparks.as";
 #include "MaterialCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const f32 hit_damage = 0.5f;
 
 f32 pickaxe_distance = 10.0f;
 const u8 delay_between_hit = 12;
-const u8 delay_between_hit_upgrade = 9;
+const u8 delay_between_hit_technology = 9;
 const u8 delay_between_hit_structure = 10;
 
 void onInit(CBlob@ this)
@@ -170,7 +170,7 @@ void Pickaxe(CBlob@ this)
 		hitdata.tilepos = Vec2f_zero;
 	}
 
-	u8 delay = hasUpgrade(Upgrade::LightPickaxes) ? delay_between_hit_upgrade : delay_between_hit;
+	u8 delay = hasTech(Tech::LightPickaxes) ? delay_between_hit_technology : delay_between_hit;
 	if (PI.last_hit_structure) delay = delay_between_hit_structure;
 
 	if (PI.pickaxe_timer >= delay)
@@ -633,7 +633,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		PickaxeInfo@ SPI;
 		if (!this.get("spi", @SPI)) return;
 
-		u8 delay = hasUpgrade(Upgrade::LightPickaxes) ? delay_between_hit_upgrade : delay_between_hit;
+		u8 delay = hasTech(Tech::LightPickaxes) ? delay_between_hit_technology : delay_between_hit;
 		if (SPI.last_hit_structure) delay = delay_between_hit_structure;
 
 		QueuedHit@ queued_hit;

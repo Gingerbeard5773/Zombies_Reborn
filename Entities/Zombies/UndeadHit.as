@@ -1,5 +1,5 @@
 #include "Hitters.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
@@ -17,13 +17,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			break;
 		case Hitters::builder:
 		{
-			if (hasUpgrade(Upgrade::CombatPickaxes))
+			if (hasTech(Tech::CombatPickaxes))
 				damage *= 2.0f;
 		}
 		case Hitters::burn:
 		case Hitters::fire:
 		{
-			if (hasUpgrade(Upgrade::GreekFire))
+			if (hasTech(Tech::GreekFire))
 				damage *= 1.5f;
 		}
 		case Hitters::arrow:
@@ -114,27 +114,27 @@ void server_givePartialCoinsOnDeath(CBlob@ this, Vec2f&in drop_pos)
 f32 getExplosionDamagePercent()
 {
 	f32 percent = 1.0f;
-	u32[]@ upgrades = getUpgrades();
-	if (hasUpgrade(upgrades, Upgrade::Shrapnel))    percent += 0.25f;
-	if (hasUpgrade(upgrades, Upgrade::ShrapnelII))  percent += 0.25f;
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Shrapnel))    percent += 0.25f;
+	if (hasTech(TechTree, Tech::ShrapnelII))  percent += 0.25f;
 	return percent;
 }
 
 f32 getSwordDamagePercent()
 {
 	f32 percent = 1.0f;
-	u32[]@ upgrades = getUpgrades();
-	if (hasUpgrade(upgrades, Upgrade::Swords))    percent += 0.25f;
-	if (hasUpgrade(upgrades, Upgrade::SwordsII))  percent += 0.25f;
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Swords))    percent += 0.25f;
+	if (hasTech(TechTree, Tech::SwordsII))  percent += 0.25f;
 	return percent;
 }
 
 f32 getCoinDropPercent()
 {
 	f32 percent = 1.0f;
-	u32[]@ upgrades = getUpgrades();
-	if (hasUpgrade(upgrades, Upgrade::Coinage))    percent -= 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::CoinageII))  percent -= 0.10f;
-	if (hasUpgrade(upgrades, Upgrade::CoinageIII)) percent -= 0.10f;
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Coinage))    percent -= 0.10f;
+	if (hasTech(TechTree, Tech::CoinageII))  percent -= 0.10f;
+	if (hasTech(TechTree, Tech::CoinageIII)) percent -= 0.10f;
 	return percent;
 }

@@ -1,7 +1,7 @@
 #include "VehicleCommon.as"
 #include "KnockedCommon.as";
 #include "GenericButtonCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 // Catapult logic
 
@@ -33,7 +33,7 @@ class CatapultInfo : VehicleInfo
 		if (charge > 0 || isActionPressed)
 		{
 			u16 max_charge = getCurrentAmmo().max_charge_time;
-			if (hasUpgrade(Upgrade::SeigeCrank)) max_charge *= 0.75f;
+			if (hasTech(Tech::SeigeCrank)) max_charge *= 0.75f;
 
 			if (charge < max_charge && isActionPressed)
 			{
@@ -82,7 +82,7 @@ class CatapultInfo : VehicleInfo
 	void onFire(CBlob@ this, CBlob@ bullet, const u16 &in fired_charge)
 	{
 		u16 max_charge = getCurrentAmmo().max_charge_time;
-		if (hasUpgrade(Upgrade::SeigeCrank)) max_charge *= 0.75f;
+		if (hasTech(Tech::SeigeCrank)) max_charge *= 0.75f;
 
 		const u8 charge_contrib = 35;
 		const f32 temp_charge = baseline_charge + (f32(fired_charge) / f32(max_charge)) * charge_contrib;
@@ -99,7 +99,7 @@ class CatapultInfo : VehicleInfo
 			Vec2f vel = Vec2f(sign, -0.5f) * temp_charge * 0.3f;
 			vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
 			vel.RotateBy(this.getAngleDegrees());
-			vel *= hasUpgrade(Upgrade::TorsionWinch) ? 1.4f : 1.0f;
+			vel *= hasTech(Tech::TorsionWinch) ? 1.4f : 1.0f;
 
 			if (bullet.hasTag("player"))
 			{

@@ -4,14 +4,14 @@
 #include "KnockedCommon.as";
 #include "KnightCommon.as";
 #include "Hitters.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 bool canBlockExplosion(u8 type)
 {
 	if (isExplosionHitter(type))
 		return true;
 	
-	if (type == Hitters::keg && hasUpgrade(Upgrade::BlastShields))
+	if (type == Hitters::keg && hasTech(Tech::BlastShields))
 		return true;
 	
 	return false;

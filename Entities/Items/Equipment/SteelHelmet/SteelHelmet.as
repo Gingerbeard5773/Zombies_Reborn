@@ -2,7 +2,7 @@
 #include "RunnerTextures.as";
 #include "RunnerCommon.as";
 #include "Hitters.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const u8 helmet_variations = 3;
 
@@ -44,7 +44,7 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 	RunnerMoveVars@ moveVars;
 	if (!equipper.get("moveVars", @moveVars)) return;
 	
-	if (hasUpgrade(Upgrade::LightArmor)) return;
+	if (hasTech(Tech::LightArmor)) return;
 
 	//slow down player
 	moveVars.walkFactor *= 0.94f;

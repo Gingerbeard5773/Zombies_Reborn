@@ -21,7 +21,7 @@
 #include "ShieldCommon.as";
 #include "SplashWater.as";
 #include "CustomTiles.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 void makeSmallExplosionParticle(Vec2f pos)
 {
@@ -43,8 +43,8 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 	const string sound = this.exists("custom_explosion_sound") ? this.get_string("custom_explosion_sound") : "Bomb.ogg";
 	Sound::Play(sound, this.getPosition());
 	
-	u32[]@ upgrades = getUpgrades();
-	const bool high_explosive = hasUpgrade(upgrades, Upgrade::HighExplosives);
+	Technology@[]@ TechTree = getTechTree();
+	const bool high_explosive = hasTech(TechTree, Tech::HighExplosives);
 	const f32 radius_percent = high_explosive && !this.hasTag("undead") ? 1.35f : 1.0f;
 	radius *= radius_percent;
 
@@ -60,7 +60,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 	if (hitter == Hitters::water)
 	{
 		int tilesr = (r / map.tilesize) * 0.5f;
-		tilesr *= hasUpgrade(upgrades, Upgrade::HolyWater) ? 2.0f : 1.0f;
+		tilesr *= hasTech(TechTree, Tech::HolyWater) ? 2.0f : 1.0f;
 		Splash(this, tilesr, tilesr, 0.0f);
 		return;
 	}

@@ -3,7 +3,7 @@
 #include "RunnerCommon.as";
 #include "Hitters.as";
 #include "ParticleSparks.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -52,7 +52,7 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 
 	//slow down player
 
-	if (hasUpgrade(Upgrade::LightArmor))
+	if (hasTech(Tech::LightArmor))
 	{
 		moveVars.walkFactor *= 0.90f;
 		moveVars.jumpFactor *= 0.95f;

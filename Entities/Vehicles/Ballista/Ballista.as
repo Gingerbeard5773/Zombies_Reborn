@@ -1,6 +1,6 @@
 #include "VehicleCommon.as";
 #include "GenericButtonCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 // Ballista logic
 
@@ -28,7 +28,7 @@ class BallistaInfo : VehicleInfo
 		if ((charge > 0 || isActionPressed) && ammo.loaded_ammo > 0)
 		{
 			u16 max_charge = ammo.max_charge_time;
-			if (hasUpgrade(Upgrade::SeigeCrank)) max_charge *= 0.75f;
+			if (hasTech(Tech::SeigeCrank)) max_charge *= 0.75f;
 
 			if (charge < max_charge && isActionPressed)
 			{
@@ -47,7 +47,7 @@ class BallistaInfo : VehicleInfo
 	
 	void onFire(CBlob@ this, CBlob@ bullet, const u16 &in fired_charge)
 	{
-		const bool seige_crank = hasUpgrade(Upgrade::SeigeCrank);
+		const bool seige_crank = hasTech(Tech::SeigeCrank);
 		AmmoInfo@ ammo = getCurrentAmmo();
 		if (bullet !is null)
 		{
@@ -57,7 +57,7 @@ class BallistaInfo : VehicleInfo
 			const f32 temp_charge = 5.0f + 15.0f * (f32(fired_charge) / f32(max_charge));
 			const f32 angle = wep_angle + this.getAngleDegrees();
 			Vec2f vel = Vec2f(0.0f, -temp_charge).RotateBy(angle);
-			vel *= hasUpgrade(Upgrade::TorsionWinch) ? 1.4f : 1.0f;
+			vel *= hasTech(Tech::TorsionWinch) ? 1.4f : 1.0f;
 			bullet.setVelocity(vel);
 
 			if (ammo.ammo_name == "mat_bomb_bolts")

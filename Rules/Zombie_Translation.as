@@ -174,11 +174,11 @@ namespace Translate
 	Paused          = Translate("Paused - {PERCENT}",           ""),
 	Resume          = Translate("Click to resume",              ""),
 	Completed       = Translate("Completed",                    ""),
-	RequiresTech    = Translate("Requires previous upgrade",    ""),
-	UpgradeComplete = Translate("{UPGRADE} upgrade complete",   ""),
+	RequiresTech    = Translate("Requires previous technology", ""),
+	TechComplete    = Translate("{TECH} technology complete",   ""),
 	ResearchTime    = Translate("Research time: {TIME} days",   ""),
 
-	//upgrades
+	//technology
 	Coinage         = Translate("Coinage\nCoins auto-yield 10%.",                                    ""),
 	CoinageII       = Translate("Coinage II\nCoins auto-yield 20%.",                                 ""),
 	CoinageIII      = Translate("Coinage III\nCoins auto-yield 30%.",                                ""),

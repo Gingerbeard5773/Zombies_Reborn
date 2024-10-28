@@ -6,7 +6,7 @@
 #include "MaterialCommon.as";
 #include "ShieldCommon.as";
 #include "KnockedCommon.as";
-#include "Upgrades.as";
+#include "Zombie_TechnologyCommon.as";
 
 const f32 speed_thresh = 2.0f;
 const f32 speed_hard_thresh = 2.3f;
@@ -345,7 +345,7 @@ void onTick(CBlob@ this)
 
 				if (isServer())
 				{
-					const bool upgrade = hasUpgrade(Upgrade::PrecisionDrills);
+					const bool upgrade = hasTech(Tech::PrecisionDrills);
 					for (u8 i = 0; i < 2; i++)
 					{
 						//tile destroyed last hit
