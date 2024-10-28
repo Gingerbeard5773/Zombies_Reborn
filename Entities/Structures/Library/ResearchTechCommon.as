@@ -46,3 +46,24 @@ ResearchTech@[]@ getTechTree()
 	getRules().get("Technology Tree", @TechTree);
 	return TechTree;
 }
+
+ResearchTech@ getResearching(CBlob@ this)
+{
+	const int index = this.get_s32("researching");
+	if (index < 0) return null;
+
+	return getTech(index);
+}
+
+ResearchTech@ getTech(const u8&in index)
+{
+	ResearchTech@[] TechTree = getTechTree();
+	if (index >= TechTree.length)
+	{
+		error("Attempted to access invalid tech tree index! INDEX: "+index);
+		printTrace();
+		return null;
+	}
+
+	return TechTree[index];
+}

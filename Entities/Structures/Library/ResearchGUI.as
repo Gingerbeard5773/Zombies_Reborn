@@ -31,8 +31,7 @@ void onTick(CSprite@ this)
 
 	Vec2f mouse = getControls().getMouseScreenPos();
 	
-	ResearchTech@ researched;
-	blob.get("researching", @researched);
+	ResearchTech@ researched = getResearching(blob);
 
 	ResearchTech@[]@ TechTree = getTechTree();
 	for (u8 i = 0; i < TechTree.length; i++)
@@ -91,8 +90,7 @@ void onRender(CSprite@ this)
 	Vec2f upperleft(pos2d.x-size.x*0.5f, pos2d.y-size.y*0.5f);
 	Vec2f lowerright(pos2d.x+size.x*0.5f, pos2d.y+size.y*0.5f);
 	
-	ResearchTech@ researched;
-	blob.get("researching", @researched);
+	ResearchTech@ researched = getResearching(blob);
 
 	GUI::DrawRectangle(upperleft, lowerright);
 	GUI::SetFont("menu");
@@ -186,8 +184,8 @@ void ShowResearchProgress(CBlob@ blob, CBlob@ localBlob)
 	
 	if (!localBlob.isKeyPressed(key_use) || getHUD().hasMenus()) return;
 	
-	ResearchTech@ researched;
-	if (!blob.get("researching", @researched) || researched is null) return;
+	ResearchTech@ researched = getResearching(blob);
+	if (researched is null) return;
 
 	Vec2f pos = blob.getPosition();
 	Vec2f mouseWorld = getControls().getMouseWorldPos();

@@ -23,6 +23,8 @@ void onInit(CBlob@ this)
 	
 	this.getCurrentScript().tickFrequency = 30; //once a second
 	
+	this.set_s32("researching", -1);
+	
 	this.set_u8("maximum_worker_count", 3);
 	this.Tag("auto_assign_worker");
 	addOnAssignWorker(this, @onAssignWorker);
@@ -31,38 +33,37 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	ResearchTech@ tech;
-	if (!this.get("researching", @tech)) return;
+	ResearchTech@ researched = getResearching(this);
+	if (researched is null) return;
 	
 	//each worker decreases tickFrequency by 1 tick.
 	//1 tick is about 3.33% of a second, so 3 workers is 10% reduction.
 	this.getCurrentScript().tickFrequency = 30 - getWorkers(this).length;
 
-	tech.time++;
-	tech.paused = false;
+	researched.time++;
+	researched.paused = false;
 
-	if (tech.isUnlocked())
+	if (researched.isUnlocked())
 	{
-		if (tech.available && isServer())
+		if (researched.available && isServer())
 		{
-			setUpgrade(tech.index);
-			UpdateConnections(tech);
-			UpdateUpgradeHooks(tech.index);
+			setUpgrade(researched.index);
+			UpdateConnections(researched);
+			UpdateUpgradeHooks(researched.index);
 
 			CBitStream stream;
-			stream.write_u8(tech.index);
+			stream.write_u8(researched.index);
 			this.SendCommand(this.getCommandID("client_upgrade"), stream);
 		}
-		tech.available = false;
+		researched.available = false;
 		
-		this.set("researching", null);
+		this.set_s32("researching", -1);
 	}
 }
 
 void onDie(CBlob@ this)
 {
-	ResearchTech@ researched;
-	this.get("researching", @researched);
+	ResearchTech@ researched = getResearching(this);
 	if (researched !is null)
 		researched.paused = true;
 }
@@ -71,9 +72,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("server_research") && isServer())
 	{
-		ResearchTech@ researched;
-		if (this.get("researching", @researched) && researched !is null) return;
-		
+		ResearchTech@ researched = getResearching(this);
+		if (researched !is null) return;
+
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
 		
@@ -86,7 +87,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		u8 index;
 		if (!params.saferead_u8(index)) return;
 		
-		ResearchTech@ tech = getTechTree()[index];
+		ResearchTech@ tech = getTech(index);
 		if (tech is null) return;
 		
 		const bool duplicate = tech.isResearching();
@@ -110,14 +111,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		u8 index;
 		if (!params.saferead_u8(index)) return;
 
-		SetResearching(this, getTechTree()[index]);
+		SetResearching(this, getTech(index));
 	}
 	else if (cmd == this.getCommandID("client_upgrade") && isClient())
 	{
 		u8 index;
 		if (!params.saferead_u8(index)) return;
 
-		ResearchTech@ tech = getTechTree()[index];
+		ResearchTech@ tech = getTech(index);
 		if (tech is null) return;
 		
 		if (!isServer())
@@ -134,6 +135,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		{
 			const string tech_completed = Translate::UpgradeComplete.replace("{UPGRADE}", tokens[0]);
 			client_SendGlobalMessage(getRules(), tech_completed, 6, SColor(0xffa293ff)); 
+			print(tech_completed);
 		}
 	}
 }
@@ -142,7 +144,7 @@ void SetResearching(CBlob@ this, ResearchTech@ tech)
 {
 	if (tech is null) return;
 	tech.time++;
-	this.set("researching", @tech);
+	this.set_s32("researching", tech.index);
 }
 
 void UpdateConnections(ResearchTech@ tech)
