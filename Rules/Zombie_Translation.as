@@ -91,7 +91,7 @@ namespace Translate
 	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     "Плавильня\nПереплавляют сырую руду в слитки."),
 	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes.",   "Рассадник\nРассадник для сельскохозяйственных культур."),
 	Armory         = Translate("Armory\nBuild weapons and change your class.",          "Оружейная\nИспользуя слитки выковывайте оружие, так же вы можете поменять свой класс."),
-	Library        = Translate("Library\nA place of study to obtain new technologies.", "Библиотека\nМесто хранения знаний и открытий, здесь можно освоить новые технологии"),
+	Library        = Translate("Library\nA place of study to obtain new technologies.", "Библиотека\nМесто хранения знаний и открытий, здесь можно освоить новые технологии."),
 	
 	//workers
 	AssignWorker   = Translate("Assign Worker",                    "Назначить Рабочего"),
@@ -106,6 +106,8 @@ namespace Translate
 	Recipes        = Translate("Recipes",                        "Рецепты\nСписок всех доступных рецептов."),
 	SetRecipe      = Translate("Set Recipe",                     "Выбрать рецепт\nИспользует выбранный рецепт."),
 	CurrentRecipe  = Translate("Current Recipe",                 "Нынешний рецепт\nНынешний выбранный рецепт."),
+	Equip          = Translate("Equip {ITEM}",                   "Оснастить {ITEM}"),
+	Unequip        = Translate("Unequip {ITEM}",                 "Снять {ITEM}"),
 
 	//building
 	Factory        = Translate("A generic factory for various items. Requires a free worker to produce items.", "Общая фабрика для различных вещей. Требуется свободный рабочий для изготовления предметов."),
@@ -142,7 +144,7 @@ namespace Translate
 	Musket         = Translate("Musket\nFires musket balls.\nHold right mouse button to reload.",                       "Мушкет\nСтреляет патронами для Мушкета.\nЗажмите ПКМ, чтобы перезарядить."),
 	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              "Пули Мушкета\nПатроны для Мушкета"),
 	Chainsaw       = Translate("Chainsaw\nCuts through wood fast.",                                                     "Бензопила\nРежет дерево быстрее."),
-	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", "Молотов\nФляга с горючей жидкостью которую можно бросить во врага. Нажмите [Space] для активации"),
+	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", "Молотов\nФляга с горючей жидкостью которую можно бросить во врага. Нажмите [Space] для активации."),
 	ScubaGear      = Translate("Scuba Gear\nAllows breathing under water.",                                             "Акваланг\nПозволяет дышать под водой."),
 	HeadLamp       = Translate("Head Lamp\nWearable lantern for easy illumination!"                                     "Головной фонарь\nПереносной фонарь для легкого освещения!"),
 	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             "Стальное сверло\nМощный бур, способный вести добычу в течение длительного времени."),
@@ -195,9 +197,9 @@ namespace Translate
 	RefinementIV    = Translate("Refinement IV\nForging has a 40% chance to yield an extra ingot.",  "Кузнечество IV\nВероятность получения дополнительного слитка при ковке составляет 40%."),
 	Extraction      = Translate("Extraction \nQuarrys have a chance to yield iron ore.",             "Добыча Ископаемых I\nИз Карьера есть шанс добыть железную руду."),
 	ExtractionII    = Translate("Extraction II\nQuarrys have a chance to yield gold ore.",           "Добыча Ископаемых II\nИз Карьера есть шанс получить золотую руду."),
-	Milling         = Translate("Milling\nWind mills produce 10% more flour."                        "Переработка Зерна I\nВетряные мельницы производят на 10% больше муки."),
-	MillingII       = Translate("Milling II\nWind mills produce 20% more flour."                     "Переработка Зерна II\nВетряные мельницы производят на 20% больше муки."),
-	MillingIII      = Translate("Milling III\nWind mills produce 35% more flour."                    "Переработка Зерна III\nВетряные мельницы производят на 35% больше муки."),
+	Milling         = Translate("Milling\nWind mills produce 10% more flour.",                       "Переработка Зерна I\nВетряные мельницы производят на 10% больше муки."),
+	MillingII       = Translate("Milling II\nWind mills produce 20% more flour.",                    "Переработка Зерна II\nВетряные мельницы производят на 20% больше муки."),
+	MillingIII      = Translate("Milling III\nWind mills produce 35% more flour.",                   "Переработка Зерна III\nВетряные мельницы производят на 35% больше муки."),
 	Swords          = Translate("Sharpening Stone\nSwords deal +25% damage.",                        "Точильный Камень\nПравильно заточенные мечи наносят на +25% урона больше."),
 	SwordsII        = Translate("Damascus Steel\nSwords deal +25% damage.",                          "Дамасская Сталь\nМатериал дает лезвию дополнительную остроту прибовляя +25% к урону."),
 	LightArmor      = Translate("Lightweight Armor\nArmor encumbrance -50%.",                        "Сегментированная Броня\nПластичность и легкость брони увеличивает вашу скорость +50%."),
