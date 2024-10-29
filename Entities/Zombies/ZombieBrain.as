@@ -51,7 +51,7 @@ void onTick(CBrain@ this)
 			blob.setAimPos(targetPos);
 
 			// chase target
-			if ((targetPos - blob.getPosition()).Length() > blob.getRadius() + blob.get_f32("attack distance") / 2)
+			if ((targetPos - blob.getPosition()).Length() > blob.getRadius())
 			{
 				CMap@ map = getMap();
 				
