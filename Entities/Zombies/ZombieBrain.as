@@ -3,13 +3,12 @@
 #include "UndeadTargeting.as";
 #include "PressOldKeys.as";
 
+const f32 brain_target_radius = 512.0f;
+
 void onInit(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 	blob.set_u8("brain_delay", 5 + XORRandom(5));
-
-	if (!blob.exists("brain_target_rad"))
-		 blob.set_f32("brain_target_rad", 512.0f);
 	
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
@@ -83,7 +82,7 @@ const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 	if (target.hasTag("dead"))
 		return true;
 	
-	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32("brain_target_rad"))
+	if ((target.getPosition() - blob.getPosition()).Length() > brain_target_radius)
 		return true;
 	
 	return false;
@@ -94,7 +93,7 @@ void GoSomewhere(CBrain@ this, CBlob@ blob)
 	CMap@ map = getMap();
 	
 	// look for a target along the way :)
-	SetBestTarget(this, blob, blob.get_f32("brain_target_rad"));
+	SetBestTarget(this, blob, brain_target_radius);
 
 	// get our destination
 	Vec2f destination = blob.get_Vec2f("brain_destination");

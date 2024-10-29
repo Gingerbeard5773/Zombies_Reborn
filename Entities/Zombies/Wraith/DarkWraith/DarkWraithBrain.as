@@ -4,13 +4,12 @@
 #include "PressOldKeys.as";
 #include "WraithCommon.as";
 
+const f32 brain_target_radius = 512.0f;
+
 void onInit(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 	blob.set_u8("brain_delay", 5 + XORRandom(5));
-
-	if (!blob.exists("brain_target_rad"))
-		 blob.set_f32("brain_target_rad", 512.0f);
 }
 
 void onTick(CBrain@ this)
@@ -59,7 +58,6 @@ void onTick(CBrain@ this)
 			const s32 timer = blob.get_s32("auto_enrage_time") - getGameTime();
 			if (((destination - pos).Length() < blob.get_f32("explosive_radius") || timer < 0))
 			{
-				// get mad
 				server_SetEnraged(blob, true, false, false);
 			}
 		}
@@ -153,7 +151,7 @@ const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 	if (target.hasTag("dead"))
 		return true;
 	
-	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32("brain_target_rad"))
+	if ((target.getPosition() - blob.getPosition()).Length() > brain_target_radius)
 		return true;
 	
 	return false;
@@ -164,7 +162,7 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 	CMap@ map = getMap();
 	
 	// look for a target along the way :)
-	SetBestTarget(this, blob, blob.get_f32("brain_target_rad"));
+	SetBestTarget(this, blob, brain_target_radius);
 
 	// get our destination
 	Vec2f destination = blob.get_Vec2f("brain_destination");

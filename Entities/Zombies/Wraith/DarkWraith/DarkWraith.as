@@ -8,7 +8,6 @@ const u32 TIME_TO_ENRAGE_DARK = TIME_TO_ENRAGE * 2.0f;
 void onInit(CBlob@ this)
 {
 	this.set_u16("coins on death", COINS_ON_DEATH);
-	this.set_f32("brain_target_rad", 512.0f);
 
 	this.getSprite().PlaySound("WraithSpawn.ogg");
 
@@ -47,12 +46,10 @@ void onTick(CBlob@ this)
 	if (player is null) return;
 
 	const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
-	const u8 delay = this.get_u8("brain_delay");
-	if ((this.isKeyPressed(key_action1) && delay == 0 && !this.hasTag("exploding")) || auto_explode_timer < 0)
+	if ((this.isKeyPressed(key_action1) && !this.hasTag("exploding")) || auto_explode_timer < 0)
 	{
 		server_SetEnraged(this, true, false, false);
 	}
-	this.set_u8("brain_delay", Maths::Max(0, delay - 1));
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -78,6 +75,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (!params.saferead_bool(enrage)) return;
 		if (!params.saferead_bool(stun)) return;
 
+		this.set_bool("exploding", enrage);
+
 		if (enrage)
 		{
 			this.getSprite().PlaySound("WraithDie", 1.0f, 0.8f);
@@ -100,7 +99,7 @@ void onDie(CBlob@ this)
 		if (isServer())
 		{
 			Vec2f pos = this.getPosition();
-			for (int i = 0; i < 6; i++)
+			for (u8 i = 0; i < 6; i++)
 			{
 				CBlob@ blob = server_CreateBlob("flame", -1, pos);
 				if (blob is null) continue;

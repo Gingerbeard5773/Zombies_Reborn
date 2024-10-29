@@ -9,8 +9,7 @@ void server_SetEnraged(CBlob@ this, const bool&in enrage = true, const bool&in s
 	if (enrage && (this.hasTag("exploding") || inWater)) return;
 
 	this.set_bool("exploding", enrage);
-	this.Sync("exploding", true);
-	
+
 	this.server_SetTimeToDie(enrage ? TIME_TO_EXPLODE : -1);
 
 	if (!enrage && stun)

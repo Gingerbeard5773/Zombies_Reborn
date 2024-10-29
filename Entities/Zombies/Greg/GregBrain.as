@@ -4,16 +4,12 @@
 #include "PressOldKeys.as";
 #include "GetSurvivors.as";
 
+const f32 brain_target_radius = 512.0f;
+
 void onInit(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 	blob.set_u8("brain_delay", 5 + XORRandom(5));
-
-	if (!blob.exists("brain_target_rad"))
-		blob.set_f32("brain_target_rad", 512.0f);
-
-	this.getCurrentScript().removeIfTag	= "dead";
-	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
 
 void onTick(CBrain@ this)
@@ -120,7 +116,7 @@ const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 	if (target.hasTag("dead") || target.isAttached())
 		return true;
 		
-	if ((target.getPosition() - blob.getPosition()).Length() > blob.get_f32("brain_target_rad"))
+	if ((target.getPosition() - blob.getPosition()).Length() > brain_target_radius)
 		return true;
 	
 	return !isTargetVisible(blob, target);
@@ -131,7 +127,7 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 	CMap@ map = getMap();
 	
 	// look for a target along the way :)
-	FindTarget(this, blob, blob.get_f32("brain_target_rad"), map);
+	FindTarget(this, blob, map);
 
 	// get our destination
 	Vec2f destination = blob.get_Vec2f("brain_destination");
@@ -154,7 +150,7 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 	StayAboveGroundLevel(blob, map);
 }
 
-void FindTarget(CBrain@ this, CBlob@ blob, const f32&in radius, CMap@ map)
+void FindTarget(CBrain@ this, CBlob@ blob, CMap@ map)
 {
 	CBlob@ player_target = getBlobByNetworkID(blob.get_netid("brain_player_target"));
 	if (player_target is null)
@@ -163,7 +159,7 @@ void FindTarget(CBrain@ this, CBlob@ blob, const f32&in radius, CMap@ map)
 	Vec2f pos = blob.getPosition();
 	
 	CBlob@[] nearBlobs;
-	map.getBlobsInRadius(pos, radius, @nearBlobs);
+	map.getBlobsInRadius(pos, brain_target_radius, @nearBlobs);
 
 	CBlob@[] taxiCandidates;
 	CBlob@ bestCandidate;

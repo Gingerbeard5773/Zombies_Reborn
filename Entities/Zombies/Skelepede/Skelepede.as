@@ -4,6 +4,8 @@
 
 const int COINS_ON_DEATH = 125;
 
+const f32 brain_target_radius = 220.0f;
+
 void onInit(CBlob@ this)
 {
 	UndeadAttackVars attackVars;
@@ -166,7 +168,7 @@ void GoSomewhere(CBlob@ this)
             // Directly target the player
             vec = destination - Vec2f(0.0f, 128.0f) - pos;
         }
-        else if (vel.Length() < 1.8f && (destination - pos).Length() < this.get_f32("brain_target_rad") && Maths::Abs(destination.x - pos.x) > 16.0f)
+        else if (vel.Length() < 1.8f && (destination - pos).Length() < brain_target_radius && Maths::Abs(destination.x - pos.x) > 16.0f)
         {
             // Move below ground
             vec = Vec2f(destination.x, map.getMapDimensions().y) - pos;

@@ -7,7 +7,6 @@ const int GRAB_COOLDOWN = 30;
 void onInit(CBlob@ this)
 {
 	this.set_u16("coins on death", COINS_ON_DEATH);
-	this.set_f32("brain_target_rad", 512.0f);
 	this.set_u32("greg_next_grab", 0);
 	
 	this.getSprite().SetEmitSound("Wings.ogg");
@@ -21,9 +20,6 @@ void onInit(CBlob@ this)
 	
 	this.set_f32("gib health", 0.0f);
 	this.Tag("flesh");
-	
-	this.getCurrentScript().runFlags |= Script::tick_not_attached;
-	this.getCurrentScript().removeIfTag = "dead";
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
