@@ -84,6 +84,7 @@ class VoteKickFunctor : VoteFunctor
 		if (kickplayer !is null && outcome)
 		{
 			client_AddToChat(getTranslatedString("Votekick passed! {USER} will be kicked out.").replace("{USER}", kickplayer.getUsername()), vote_message_colour());
+			print("Set player to undead by vote kick : "+kickplayer.getUsername());
 
 			if (isServer())
 			{

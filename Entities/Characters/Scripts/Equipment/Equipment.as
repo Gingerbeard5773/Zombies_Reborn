@@ -98,7 +98,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		u16 unequipped = 0;
 
 		u8 index;
-		if (!params.saferead_u8(index)) return;
+		if (!params.saferead_u8(index)) { error("Failed to access equipment index : "+this.getNetworkID()); return; }
 		
 		//unequip
 		CBlob@ equippedblob = getBlobByNetworkID(ids[index]);
@@ -135,8 +135,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	else if (cmd == this.getCommandID("client_equip") && isClient())
 	{
 		u16 unequipped_netid, equipped_netid;
-		if (!params.saferead_netid(unequipped_netid)) return;
-		if (!params.saferead_netid(equipped_netid)) return;
+		if (!params.saferead_netid(unequipped_netid)) { error("Failed to access unequipped! : "+this.getNetworkID()); return; }
+		if (!params.saferead_netid(equipped_netid))   { error("Failed to access equipped! : "+this.getNetworkID());   return; } 
 
 		CBlob@ unequippedblob = getBlobByNetworkID(unequipped_netid);
 		if (unequippedblob !is null)
@@ -145,7 +145,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (equippedblob !is null)
 			EquipBlob(this, equippedblob);
 
-		UnserializeEquipment(this, params);
+		if (!UnserializeEquipment(this, params)) { error("Failed to access equipment [3] : "+this.getName()+" : "+this.getNetworkID()); return; }
 	}
 }
 
