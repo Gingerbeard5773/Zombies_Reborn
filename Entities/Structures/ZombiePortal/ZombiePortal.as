@@ -94,7 +94,7 @@ void SpawnZombies(CBlob@ this)
 			else if (r >= 75)  blobname = "zombieknight";  // 15%
 			else if (r >= 40)  blobname = "zombie";        // 35%
 			
-			//server_CreateBlob(blobname, -1, pos);
+			server_CreateBlob(blobname, -1, pos);
 		}
 	}
 }
