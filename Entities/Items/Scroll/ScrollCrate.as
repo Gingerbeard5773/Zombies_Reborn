@@ -52,7 +52,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 const bool canCrate(CBlob@ blob)
 {
 	const string name = blob.getName();
-	return name != "scroll" && name != "crate" && blob.getPlayer() is null;
+	return name != "scroll" && name != "crate" && name != "library" && blob.getPlayer() is null;
 }
 
 void onDie(CBlob@ this)
