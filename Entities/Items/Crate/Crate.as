@@ -546,7 +546,7 @@ void BoobyTrap(CBlob@ this, CBlob@ caller, CBlob@ mine)
 
 void Unpack(CBlob@ this)
 {
-	if (!isServer()) return;
+	if (!isServer() || this.hasTag("unpacked")) return;
 	
 	CMap@ map = getMap();
 	Vec2f space = this.get_Vec2f("required space");
@@ -571,6 +571,7 @@ void Unpack(CBlob@ this)
 		blob.SetFacingLeft(this.isFacingLeft());
 	}
 
+	this.Tag("unpacked");
 	this.set_s32("gold building amount", 0); // for crates with vehicles that cost gold
 	this.server_SetHealth(-1.0f); // TODO: wont gib on client
 	this.server_Die();
@@ -795,7 +796,7 @@ void onDie(CBlob@ this)
 		CParticle@ temp = makeGibParticle(fname, pos, vel + getRandomVelocity(90, 1 , 120), 9, 2 + i, Vec2f(16, 16), 2.0f, 20, "Sounds/material_drop.ogg", 0);
 	}
 	
-	if (isServer() && this.get_string("packed") == "sedgwick")
+	if (isServer() && this.get_string("packed") == "sedgwick" && !this.hasTag("unpacked"))
 	{
 		server_CreateBlob("sedgwick", 3, pos);
 	}
