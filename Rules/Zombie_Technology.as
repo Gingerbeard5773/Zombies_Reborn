@@ -446,6 +446,7 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 		stream.write_u32(tech.time);
 		stream.write_bool(tech.available);
 		stream.write_bool(tech.paused);
+		stream.write_bool(tech.completed);
 	}
 
 	this.SendCommand(this.getCommandID("client_synchronize_technology"), stream, player);
@@ -475,6 +476,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			if (!params.saferead_u32(tech.time))       return;
 			if (!params.saferead_bool(tech.available)) return;
 			if (!params.saferead_bool(tech.paused))    return;
+			if (!params.saferead_bool(tech.completed))    return;
 		}
 	}
 }
