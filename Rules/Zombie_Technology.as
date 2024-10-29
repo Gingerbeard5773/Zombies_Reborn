@@ -64,15 +64,15 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(Metallurgy.requirements, "coin", "", "Coins", 500);
 	AddRequirement(Metallurgy.requirements, "blob", "mat_ironingot", "Iron Ingot", 10);
 
-	Technology MetallurgyII(Translate::MetallurgyII, Tech::MetallurgyII, Vec2f(0, 17), 480);
+	Technology MetallurgyII(Translate::MetallurgyII, Tech::MetallurgyII, Vec2f(0, 17), 380);
 	AddRequirement(MetallurgyII.requirements, "coin", "", "Coins", 750);
 	AddRequirement(MetallurgyII.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
 
-	Technology MetallurgyIII(Translate::MetallurgyIII, Tech::MetallurgyIII, Vec2f(0, 27), 960);
+	Technology MetallurgyIII(Translate::MetallurgyIII, Tech::MetallurgyIII, Vec2f(0, 27), 760);
 	AddRequirement(MetallurgyIII.requirements, "coin", "", "Coins", 1000);
 	AddRequirement(MetallurgyIII.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
 
-	Technology MetallurgyIV(Translate::MetallurgyIV, Tech::MetallurgyIV, Vec2f(0, 37), 960);
+	Technology MetallurgyIV(Translate::MetallurgyIV, Tech::MetallurgyIV, Vec2f(0, 37), 860);
 	AddRequirement(MetallurgyIV.requirements, "coin", "", "Coins", 1500);
 	AddRequirement(MetallurgyIV.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
 	AddRequirement(MetallurgyIV.requirements, "blob", "mat_gold", "Gold", 25);
@@ -82,17 +82,17 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(Refinement.requirements, "blob", "mat_coal", "Coal", 100);
 	AddRequirement(Refinement.requirements, "blob", "mat_gold", "Gold", 25);
 
-	Technology RefinementII(Translate::RefinementII, Tech::RefinementII, Vec2f(12, 30), 480);
+	Technology RefinementII(Translate::RefinementII, Tech::RefinementII, Vec2f(12, 30), 380);
 	AddRequirement(RefinementII.requirements, "coin", "", "Coins", 750);
 	AddRequirement(RefinementII.requirements, "blob", "mat_coal", "Coal", 100);
 	AddRequirement(RefinementII.requirements, "blob", "mat_gold", "Gold", 50);
 
-	Technology RefinementIII(Translate::RefinementIII, Tech::RefinementIII, Vec2f(18, 30), 960);
+	Technology RefinementIII(Translate::RefinementIII, Tech::RefinementIII, Vec2f(18, 30), 760);
 	AddRequirement(RefinementIII.requirements, "coin", "", "Coins", 750);
 	AddRequirement(RefinementIII.requirements, "blob", "mat_coal", "Coal", 150);
 	AddRequirement(RefinementIII.requirements, "blob", "mat_gold", "Gold", 75);
 
-	Technology RefinementIV(Translate::RefinementIV, Tech::RefinementIV, Vec2f(24, 30), 1000);
+	Technology RefinementIV(Translate::RefinementIV, Tech::RefinementIV, Vec2f(24, 30), 900);
 	AddRequirement(RefinementIV.requirements, "coin", "", "Coins", 750);
 	AddRequirement(RefinementIV.requirements, "blob", "mat_coal", "Coal", 200);
 	AddRequirement(RefinementIV.requirements, "blob", "mat_gold", "Gold", 100);
@@ -476,7 +476,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			if (!params.saferead_u32(tech.time))       return;
 			if (!params.saferead_bool(tech.available)) return;
 			if (!params.saferead_bool(tech.paused))    return;
-			if (!params.saferead_bool(tech.completed))    return;
+			if (!params.saferead_bool(tech.completed)) return;
 		}
 	}
 }
