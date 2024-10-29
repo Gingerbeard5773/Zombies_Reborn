@@ -102,7 +102,7 @@ void onDie(CBlob@ this)
 void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
 	u16[] netids;
-	this.get("assigned netids", @netids);
+	this.get("assigned netids", netids);
 	
 	stream.write_u8(netids.length);
 	for (u8 i = 0; i < netids.length; i++)
