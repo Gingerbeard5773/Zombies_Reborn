@@ -794,6 +794,11 @@ void onDie(CBlob@ this)
 	{
 		CParticle@ temp = makeGibParticle(fname, pos, vel + getRandomVelocity(90, 1 , 120), 9, 2 + i, Vec2f(16, 16), 2.0f, 20, "Sounds/material_drop.ogg", 0);
 	}
+	
+	if (isServer() && this.get_string("packed") == "sedgwick")
+	{
+		server_CreateBlob("sedgwick", 3, pos);
+	}
 }
 
 bool canUnpackHere(CBlob@ this)
