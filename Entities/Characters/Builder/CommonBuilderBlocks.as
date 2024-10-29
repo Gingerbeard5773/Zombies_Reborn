@@ -176,7 +176,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	}	
 	{
 		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), Translate::Nursery);
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 400);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 400);
 		AddRequirement(b.reqs, "blob", "seed", "Seed", 1);
 		b.buildOnGround = true;
 		b.size.Set(40, 32);
@@ -184,7 +184,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	}
 	{
 		BuildBlock b(0, "armory", getTeamIcon("armory", "Armory.png", team_num, Vec2f(56, 40)), Translate::Armory);
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 300);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 200);
 		b.buildOnGround = true;
 		b.size.Set(56, 40);
@@ -192,7 +192,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	}
 	{
 		BuildBlock b(0, "library", getTeamIcon("library", "Library.png", team_num, Vec2f(56, 40)), Translate::Library);
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood\n", 300);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 150);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 50);
 		AddRequirement(b.reqs, "no more", "library", "Library", 1);
