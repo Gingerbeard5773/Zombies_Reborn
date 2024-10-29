@@ -79,41 +79,13 @@ void onInit(CBlob@ this)
 	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
 
 	this.set_u32(last_drill_prop, 0);
-		this.Tag("ignore fall");
-}
-
-bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
-{
-	u8 heat = this.get_u8(heat_prop);
-	if (heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
-
-	return true;
+	this.Tag("ignore fall");
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return (this.get_u8(heat_prop) < heat_drop);
 }
-
-void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
-{
-	u8 heat = this.get_u8(heat_prop);
-	if (heat > 0) // do we need to run this?
-	{
-		u32 gameTimeCache = getGameTime(); // so we dont need to keep calling it
-		u32 dif = this.get_u32("time_enter"); // grab the temp time, better then doing difference since we might underflow
-
-		while (dif < gameTimeCache)
-		{
-			dif += heat_cooldown_time; // add so we can beat our condition
-			heat--;
-			if (heat == 0) break; // if we reach the limit, stop running
-		}
-
-		this.set_u8(heat_prop, heat);
-	}
-}
-
 
 void onTick(CSprite@ this)
 {
@@ -448,6 +420,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
 {
+	this.doTickScripts = true;
 	this.getSprite().SetEmitSoundPaused(true);
 }
 
@@ -483,7 +456,6 @@ void onRender(CSprite@ this)
 	GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(transparency, 148, 27, 27));
 	GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(transparency, 183, 51, 51));
 }
-
 
 void makeSteamParticle(CBlob@ this, const Vec2f vel, const string filename = "SmallSteam")
 {

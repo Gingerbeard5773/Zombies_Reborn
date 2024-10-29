@@ -68,34 +68,6 @@ void onInit(CBlob@ this)
 	this.set_u32(last_drill_prop, 0);
 }
 
-bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
-{
-	u8 heat = this.get_u8(heat_prop);
-	if (heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
-
-	return true;
-}
-
-void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
-{
-	u8 heat = this.get_u8(heat_prop);
-	if (heat > 0) // do we need to run this?
-	{
-		u32 gameTimeCache = getGameTime(); // so we dont need to keep calling it
-		u32 dif = this.get_u32("time_enter"); // grab the temp time, better then doing difference since we might underflow
-
-		while (dif < gameTimeCache)
-		{
-			dif += heat_cooldown_time; // add so we can beat our condition
-			heat--;
-			if (heat == 0) break; // if we reach the limit, stop running
-		}
-
-		this.set_u8(heat_prop, heat);
-	}
-}
-
-
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -137,7 +109,6 @@ void onTick(CSprite@ this)
 	}
 }
 
-
 void onTick(CBlob@ this)
 {
 	u8 heat = this.get_u8(heat_prop);
@@ -169,159 +140,151 @@ void onTick(CBlob@ this)
 		this.set_u8(heat_prop, heat);
 	}
 	sprite.SetEmitSoundPaused(true);
-	if (this.isAttached())
-	{
-		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-		CBlob@ holder = point.getOccupied();
-		if (holder is null) return;
 
-		AimAtMouse(this, holder); // aim at our mouse pos
-
-		// cool faster if holder is moving
-		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % heat_cooldown_time == 0)
-		{
-			heat--;
-		}
-
-		if (int(heat) >= heat_max - (heat_add * 1.5))
-		{
-			makeSteamPuff(this, 1.5f, 3, false);
-			this.server_Hit(holder, holder.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
-			this.server_DetachFrom(holder);
-			sprite.PlaySound("DrillOverheat.ogg");
-		}
-
-		if (!holder.isKeyPressed(key_action1) || isKnocked(holder))
-		{
-			this.set_bool(buzz_prop, false);
-			return;
-		}
-
-		//set funny sound under water
-		if (inwater)
-		{
-			sprite.SetEmitSoundSpeed(0.8f + (getGameTime() % 13) * 0.01f);
-		}
-		else
-		{
-			sprite.SetEmitSoundSpeed(1.0f);
-		}
-
-		sprite.SetEmitSoundPaused(false);
-		this.set_bool(buzz_prop, true);
-
-		if (heat < heat_max)
-		{
-			heat++;
-		}
-
-		const u8 delay_amount = inwater ? 20 : 8;
-		bool skip = (gametime < this.get_u32(last_drill_prop) + delay_amount);
-
-		if (skip)
-		{
-			return;
-		}
-		else
-		{
-			this.set_u32(last_drill_prop, gametime); // update last drill time
-		}
-
-		// delay drill
-		const bool facingleft = this.isFacingLeft();
-		Vec2f direction = Vec2f(1, 0).RotateBy(this.getAngleDegrees() + (facingleft ? 180.0f : 0.0f));
-		const f32 sign = (facingleft ? -1.0f : 1.0f);
-
-		const f32 attack_distance = 6.0f;
-		Vec2f attackVel = direction * attack_distance;
-
-		const f32 distance = 25.0f;
-
-		CMap@ map = getMap();
-		HitInfo@[] hitInfos;
-		map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, true, @hitInfos);
-
-		bool hitwood = false;
-		for (uint i = 0; i < hitInfos.length; i++)
-		{
-			f32 attack_dam = 1.0f;
-			HitInfo@ hi = hitInfos[i];
-			CBlob@ b = hi.blob;
-			if (b !is null) // blob
-			{
-				// blob ignore list, this stops the drill from overheating f a s t
-				// or blobs to increase damage to (for the future)
-				string name = b.getName();
-
-				if (b.hasTag("invincible")) continue;
-
-				if ((b.getTeamNum() == holder.getTeamNum() && !b.hasTag("dead")) || b.hasTag("stone") || b.hasTag("blocks sword"))
-					continue;
-
-				if (name == "log" || name == "tree_pine" || name == "tree_bushy" || name == "seed" || b.hasTag("wooden")) 
-					hitwood = true;
-
-				if (isServer())
-				{
-					if (int(heat) > heat_max * 0.7f) // are we at high heat? more damamge!
-					{
-						attack_dam += 0.5f;
-					}
-
-					if (b.hasTag("shielded") && blockAttack(b, attackVel, 0.0f)) // are they shielding? reduce damage!
-					{
-						attack_dam /= 2;
-					}
-
-					this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill, true);
-
-					Material::fromBlob(holder, hi.blob, attack_dam, this);
-				}
-
-				if (heat < heat_max)
-				{
-					const f32 heat_to_add = hitwood ? heat_add : heat_add_blob;
-
-					heat = Maths::Min(heat + heat_to_add, heat_max);
-				}
-				hitwood = false;
-			}
-			else // map
-			{
-				if (map.getSectorAtPosition(hi.hitpos, "no build") !is null)
-					continue;
-
-				TileType tile = hi.tile;
-
-				if (isServer())
-				{
-					for (uint i = 0; i < 2; i++)
-					{
-						//tile destroyed last hit
-						
-						if (!map.isTileSolid(map.getTile(hi.tileOffset))) break;
-
-						if (map.isTileWood(tile))
-						{
-							map.server_DestroyTile(hi.hitpos, 1.0f, this);
-
-							//Material::fromTile(holder, tile, 1.0f);
-						}
-					}
-				}
-			}
-		}
-		this.set_u8(heat_prop, heat);
-	}
-	else
+	if (!this.isAttached())
 	{
 		this.getShape().SetRotationsAllowed(true);
 		this.set_bool(buzz_prop, false);
 		if (heat <= 0)
-		{
 			this.getCurrentScript().runFlags |= Script::tick_not_sleeping;
+
+		return;
+	}
+
+	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
+	CBlob@ holder = point.getOccupied();
+	if (holder is null) return;
+
+	AimAtMouse(this, holder); // aim at our mouse pos
+
+	// cool faster if holder is moving
+	if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % heat_cooldown_time == 0)
+	{
+		heat--;
+	}
+
+	if (int(heat) >= heat_max - (heat_add * 1.5))
+	{
+		sprite.PlaySound("DrillOverheat.ogg");
+		makeSteamPuff(this, 1.5f, 3, false);
+		this.server_Hit(holder, holder.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
+		this.server_DetachFrom(holder);
+	}
+
+	if (!holder.isKeyPressed(key_action1) || isKnocked(holder))
+	{
+		this.set_bool(buzz_prop, false);
+		return;
+	}
+
+	//set funny sound under water
+	if (inwater)
+	{
+		sprite.SetEmitSoundSpeed(0.8f + (getGameTime() % 13) * 0.01f);
+	}
+	else
+	{
+		sprite.SetEmitSoundSpeed(1.0f);
+	}
+
+	sprite.SetEmitSoundPaused(false);
+	this.set_bool(buzz_prop, true);
+
+	if (heat < heat_max)
+	{
+		heat++;
+	}
+
+	const u8 delay_amount = inwater ? 20 : 8;
+	bool skip = (gametime < this.get_u32(last_drill_prop) + delay_amount);
+
+	if (skip)
+	{
+		return;
+	}
+	else
+	{
+		this.set_u32(last_drill_prop, gametime); // update last drill time
+	}
+
+	// delay drill
+	const bool facingleft = this.isFacingLeft();
+	Vec2f direction = Vec2f(1, 0).RotateBy(this.getAngleDegrees() + (facingleft ? 180.0f : 0.0f));
+	const f32 sign = (facingleft ? -1.0f : 1.0f);
+
+	const f32 attack_distance = 6.0f;
+	Vec2f attackVel = direction * attack_distance;
+
+	const f32 distance = 25.0f;
+
+	CMap@ map = getMap();
+	HitInfo@[] hitInfos;
+	map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, true, @hitInfos);
+
+	bool hitwood = false;
+	for (uint i = 0; i < hitInfos.length; i++)
+	{
+		f32 attack_dam = 1.0f;
+		HitInfo@ hi = hitInfos[i];
+		CBlob@ b = hi.blob;
+		if (b !is null) // blob
+		{
+			if (b.hasTag("invincible")) continue;
+
+			if ((b.getTeamNum() == holder.getTeamNum() && !b.hasTag("dead")) || b.hasTag("stone") || b.hasTag("blocks sword"))
+				continue;
+
+			string name = b.getName();
+			if (name == "log" || name == "tree_pine" || name == "tree_bushy" || name == "seed" || b.hasTag("wooden")) 
+				hitwood = true;
+
+			if (isServer())
+			{
+				if (int(heat) > heat_max * 0.7f) // are we at high heat? more damamge!
+				{
+					attack_dam += 0.5f;
+				}
+
+				if (b.hasTag("shielded") && blockAttack(b, attackVel, 0.0f)) // are they shielding? reduce damage!
+				{
+					attack_dam /= 2;
+				}
+
+				this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill, true);
+
+				Material::fromBlob(holder, hi.blob, attack_dam, this);
+			}
+
+			if (heat < heat_max)
+			{
+				const f32 heat_to_add = hitwood ? heat_add : heat_add_blob;
+
+				heat = Maths::Min(heat + heat_to_add, heat_max);
+			}
+			hitwood = false;
+		}
+		else // map
+		{
+			if (map.getSectorAtPosition(hi.hitpos, "no build") !is null)
+				continue;
+
+			if (isServer())
+			{
+				for (uint i = 0; i < 2; i++)
+				{
+					if (!map.isTileSolid(map.getTile(hi.tileOffset))) break;
+
+					if (map.isTileWood(hi.tile))
+					{
+						map.server_DestroyTile(hi.hitpos, 1.0f, this);
+
+						//Material::fromTile(holder, hi.tile, 1.0f);
+					}
+				}
+			}
 		}
 	}
+	this.set_u8(heat_prop, heat);
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -344,87 +307,47 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getCurrentScript().runFlags &= ~Script::tick_not_sleeping;
-	CPlayer@ player = attached.getPlayer();
-	if (player !is null)
-		this.set_u16("showHeatTo", player.getNetworkID());
-
-	CShape@ shape = this.getShape();
-	if (shape !is null)
-	{
-		this.setPosition(attached.getPosition()); // required to stop the first tick to be out of position
-
-		shape.SetGravityScale(0); // this stops the shape from 'falling' when its attached to something, (helps the heat bar from looking bad above 30 fps)
-	}
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
-{
-	this.set_u16("showHeatTo", 0);
-
-	CShape@ shape = this.getShape();
-	if (shape !is null)
-	{
-		shape.SetGravityScale(1);
-	}
+	this.setPosition(attached.getPosition()); // required to stop the first tick to be out of position
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
 {
+	this.doTickScripts = true;
 	this.getSprite().SetEmitSoundPaused(true);
 }
 
 void onRender(CSprite@ this)
 {
-	CPlayer@ local = getLocalPlayer();
-	CBlob@ localBlob = local.getBlob();
-
-	if (local is null || localBlob is null)
-		return;
-
 	CBlob@ blob = this.getBlob();
-	u16 holderID = blob.get_u16("showHeatTo");
+	
+	AttachmentPoint@ point = blob.getAttachments().getAttachmentPointByName("PICKUP");
+	CBlob@ holder = point.getOccupied();
+	if (holder is null || !holder.isMyPlayer()) return;
 
-	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
-	if (holder is null){return;}
+	if (holder.getName() != required_class) return;
 
-	CBlob@ holderBlob = holder.getBlob();
-	if (holderBlob is null){return;}
+	int transparency = 255;
+	u8 heat = blob.get_u8(heat_prop);
+	f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 
-	Vec2f mousePos = getControls().getMouseWorldPos();
-	Vec2f blobPos = blob.getPosition();
-	Vec2f localPos = localBlob.getPosition();
+	Vec2f pos = holder.getInterpolatedScreenPos() + (blob.getScreenPos() - holder.getScreenPos()) + Vec2f(-22, 16);
+	Vec2f dimension = Vec2f(42, 4);
+	Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
-	bool inRange = (blobPos - localPos).getLength() < max_heatbar_view_range;
-	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
-
-	if ((hover && inRange) || (holder !is null && holder.isLocal()))
+	if ((heat > 0 && show_heatbar_when_idle) || (blob.get_bool(buzz_prop)))
 	{
-		int transparency = 255;
-		u8 heat = blob.get_u8(heat_prop);
-		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
-
-		//Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
-
-		Vec2f pos = holderBlob.getInterpolatedScreenPos() + (blob.getScreenPos() - holderBlob.getScreenPos()) + Vec2f(-22, 16);
-		Vec2f dimension = Vec2f(42, 4);
-		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
-
-		if ((heat > 0 && show_heatbar_when_idle) || (blob.get_bool(buzz_prop)))
-		{
-			GUI::DrawIconByName("$opaque_heatbar$", pos);
-		}
-		else
-		{
-			transparency = 168;
-			GUI::DrawIconByName("$transparent_heatbar$", pos);
-		}
-
-		GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(transparency, 59, 20, 6));
-		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(transparency, 148, 27, 27));
-		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(transparency, 183, 51, 51));
+		GUI::DrawIconByName("$opaque_heatbar$", pos);
 	}
-}
+	else
+	{
+		transparency = 168;
+		GUI::DrawIconByName("$transparent_heatbar$", pos);
+	}
 
+	GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(transparency, 59, 20, 6));
+	GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(transparency, 148, 27, 27));
+	GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(transparency, 183, 51, 51));
+}
 
 void makeSteamParticle(CBlob@ this, const Vec2f vel, const string filename = "SmallSteam")
 {
