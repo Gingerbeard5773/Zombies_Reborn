@@ -104,8 +104,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		crossbow.arrow_type = arrowType;
 
-		if (crossbow.loaded)
-			CreateArrow(this, holder, arrowPos, arrowVel, arrowType);
+		CreateArrow(this, holder, arrowPos, arrowVel, arrowType);
 
 		crossbow.loaded = false;
 
