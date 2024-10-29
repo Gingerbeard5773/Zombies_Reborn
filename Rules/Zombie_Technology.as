@@ -160,13 +160,13 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(SuppliesIII.requirements, "blob", "mat_stone", "Stone", 400);
 	AddRequirement(SuppliesIII.requirements, "blob", "mat_wood", "Wood", 800);
 
-	Technology Repeaters(Translate::Repeaters, Tech::Repeaters, Vec2f(-12, 17), 480);
-	AddRequirement(Repeaters.requirements, "coin", "", "Coins", 400);
+	Technology Repeaters(Translate::Repeaters, Tech::Repeaters, Vec2f(-12, 17), 280);
+	AddRequirement(Repeaters.requirements, "coin", "", "Coins", 250);
 	AddRequirement(Repeaters.requirements, "blob", "mat_gold", "Gold", 25);
 
 	Technology LightBows(Translate::LightBows, Tech::LightBows, Vec2f(-12, 11), 280);
-	AddRequirement(LightBows.requirements, "coin", "", "Coins", 300);
-	AddRequirement(LightBows.requirements, "blob", "mat_gold", "Gold", 50);
+	AddRequirement(LightBows.requirements, "coin", "", "Coins", 250);
+	AddRequirement(LightBows.requirements, "blob", "mat_gold", "Gold", 25);
 
 	Technology DeepQuiver(Translate::DeepQuiver, Tech::DeepQuiver, Vec2f(-12, 23), 480);
 	AddRequirement(DeepQuiver.requirements, "coin", "", "Coins", 250);
@@ -193,7 +193,7 @@ void SetupTechTree(CRules@ this)
 
 	Technology GreekFire(Translate::GreekFire, Tech::GreekFire, Vec2f(-30, 17), 480);
 	AddRequirement(GreekFire.requirements, "coin", "", "Coins", 500);
-	AddRequirement(GreekFire.requirements, "blob", "mat_gold", "Gold", 75);
+	AddRequirement(GreekFire.requirements, "blob", "mat_gold", "Gold", 50);
 
 	Technology Shrapnel(Translate::Shrapnel, Tech::Shrapnel, Vec2f(-18, 11), 300);
 	AddRequirement(Shrapnel.requirements, "coin", "", "Coins", 300);
@@ -210,18 +210,18 @@ void SetupTechTree(CRules@ this)
 
 	Technology BlastShields(Translate::BlastShields, Tech::BlastShields, Vec2f(12, 37), 960);
 	AddRequirement(BlastShields.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(BlastShields.requirements, "blob", "mat_steelingot", "Steel Ingot", 8);
+	AddRequirement(BlastShields.requirements, "blob", "mat_steelingot", "Steel Ingot", 6);
 
 	Technology FlightTuning(Translate::FlightTuning, Tech::FlightTuning, Vec2f(18, 23), 240);
 	AddRequirement(FlightTuning.requirements, "coin", "", "Coins", 250);
 
 	Technology IronChassis(Translate::IronChassis, Tech::IronChassis, Vec2f(18, 17), 380);
 	AddRequirement(IronChassis.requirements, "coin", "", "Coins", 250);
-	AddRequirement(IronChassis.requirements, "blob", "mat_ironingot", "Iron Ingot", 10);
+	AddRequirement(IronChassis.requirements, "blob", "mat_ironingot", "Iron Ingot", 8);
 
 	Technology SteelChassis(Translate::SteelChassis, Tech::SteelChassis, Vec2f(24, 17), 480);
 	AddRequirement(SteelChassis.requirements, "coin", "", "Coins", 350);
-	AddRequirement(SteelChassis.requirements, "blob", "mat_steelingot", "Steel Ingot", 5);
+	AddRequirement(SteelChassis.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
 
 	Technology TorsionWinch(Translate::TorsionWinch, Tech::TorsionWinch, Vec2f(12, 17), 280);
 	AddRequirement(TorsionWinch.requirements, "coin", "", "Coins", 350);
