@@ -41,8 +41,8 @@ const string[] server_messages =
 
 void onInit(CRules@ this)
 {
-	onRecieveGlobalMessageHandle@ handle = @onRecieveGlobalMessage;
-	this.set("onRecieveGlobalMessage Handle", @handle);
+	onReceiveGlobalMessageHandle@ handle = @onReceiveGlobalMessage;
+	this.set("onReceiveGlobalMessage Handle", @handle);
 }
 
 void onRestart(CRules@ this)
@@ -122,7 +122,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
-void onRecieveGlobalMessage(CRules@ this, string message, u8 time, SColor color)
+void onReceiveGlobalMessage(CRules@ this, string message, u8 time, SColor color)
 {
 	GlobalMessage new_message(message, time, color);
 	global_messages.push_back(@new_message);

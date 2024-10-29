@@ -226,24 +226,32 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 
 ///NETWORK
 
-void onSendCreateData(CBlob@ this, CBitStream@ params)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
 	Craft@ craft = getCraft(this);
 	if (craft is null) return;
 
-	params.write_u8(craft.selected);
-	params.write_u16(craft.time);
-	params.write_bool(craft.can_craft);
+	stream.write_u8(craft.selected);
+	stream.write_u16(craft.time);
+	stream.write_bool(craft.can_craft);
 }
 
-bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	if (!UnserializeCraft(this, stream))
+	{
+		error("Failed to access craft data! : "+this.getName()+" : "+this.getNetworkID());
+		return false;
+	}
+	return true;
+}
+
+bool UnserializeCraft(CBlob@ this, CBitStream@ stream)
 {
 	Craft@ craft = getCraft(this);
 	if (craft is null) return false;
-
-	if (!params.saferead_u8(craft.selected)) return false;
-	if (!params.saferead_u16(craft.time)) return false;
-	if (!params.saferead_bool(craft.can_craft)) return false;
-
+	if (!stream.saferead_u8(craft.selected))    return false;
+	if (!stream.saferead_u16(craft.time))       return false;
+	if (!stream.saferead_bool(craft.can_craft)) return false;
 	return true;
 }

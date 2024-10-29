@@ -228,22 +228,30 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	}
 }
 
-void onSendCreateData(CBlob@ this, CBitStream@ params)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
 	GunInfo@ gun;
 	if (!this.get("gunInfo", @gun)) return;
 
-	params.write_u16(gun.reload_time);
-	params.write_u16(gun.ammo_count);
+	stream.write_u16(gun.reload_time);
+	stream.write_u16(gun.ammo_count);
 }
 
-bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	if (!UnserializeGunInfo(this, stream))
+	{
+		error("Failed to access gun info! : "+this.getName()+" : "+this.getNetworkID());
+		return false;
+	}
+	return true;
+}
+
+bool UnserializeGunInfo(CBlob@ this, CBitStream@ stream)
 {
 	GunInfo@ gun;
 	if (!this.get("gunInfo", @gun)) return false;
-	
-	if (!params.saferead_u16(gun.reload_time)) return false;
-	if (!params.saferead_u16(gun.ammo_count)) return false;
-
+	if (!stream.saferead_u16(gun.reload_time)) return false;
+	if (!stream.saferead_u16(gun.ammo_count))  return false;
 	return true;
 }

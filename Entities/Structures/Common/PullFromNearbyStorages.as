@@ -85,32 +85,40 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 ///NETWORK
 
-void onSendCreateData(CBlob@ this, CBitStream@ params)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
 	string[] pull_names;
 	if (!this.get("pull_items", pull_names)) return;
 	
-	params.write_u8(pull_names.length);
+	stream.write_u8(pull_names.length);
 	for (u8 i = 0; i < pull_names.length; i++)
 	{
-		params.write_string(pull_names[i]);
+		stream.write_string(pull_names[i]);
 	}
 }
 
-bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	string[] pull_names;
-	
+	if (!UnserializePullItems(this, stream))
+	{
+		error("Failed to access pull items! : "+this.getName()+" : "+this.getNetworkID());
+		return false;
+	}
+	return true;
+}
+
+bool UnserializePullItems(CBlob@ this, CBitStream@ stream)
+{
 	u8 pull_names_length;
-	if (!params.saferead_u8(pull_names_length)) return false;
+	if (!stream.saferead_u8(pull_names_length)) return false;
+	
+	string[] pull_names(pull_names_length);
 	for (u8 i = 0; i < pull_names_length; i++)
 	{
-		string pull_name;
-		if (!params.saferead_string(pull_name)) return false;
-		pull_names.push_back(pull_name);
+		if (!stream.saferead_string(pull_names[i])) return false;
 	}
 
-	if (this.exists("pull_items") || pull_names.length > 0)
+	if (pull_names.length > 0)
 	{
 		this.set("pull_items", pull_names);
 	}

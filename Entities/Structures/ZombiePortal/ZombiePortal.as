@@ -178,6 +178,11 @@ void onSendCreateData(CBlob@ this, CBitStream@ stream)
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	if (!stream.saferead_u16(maximum_zombies)) return false;
+	if (!stream.saferead_u16(maximum_zombies))
+	{
+		error("Failed to access maximum zombies for zombieportal");
+		return false;
+	}
+
 	return true;
 }

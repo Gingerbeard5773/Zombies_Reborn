@@ -272,5 +272,10 @@ void onSendCreateData(CBlob@ this, CBitStream@ stream)
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	return UnserializeShopItems(this, stream);
+	if (!UnserializeShopItems(this, stream))
+	{
+		error("Failed to access shop data! : "+this.getNetworkID());
+		return false;
+	}
+	return true;
 }

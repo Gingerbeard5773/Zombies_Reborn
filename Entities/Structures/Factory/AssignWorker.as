@@ -113,6 +113,16 @@ void onSendCreateData(CBlob@ this, CBitStream@ stream)
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
+	if (!UnserializeAssigned(this, stream))
+	{
+		error("Failed to access assigned workers! : "+this.getName()+" : "+this.getNetworkID());
+		return false;
+	}
+	return true;
+}
+
+bool UnserializeAssigned(CBlob@ this, CBitStream@ stream)
+{
 	u8 netids_length;
 	if (!stream.saferead_u8(netids_length)) return false;
 	
@@ -125,6 +135,6 @@ bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 	}
 	
 	this.set("assigned netids", netids);
-	
+
 	return true;
 }

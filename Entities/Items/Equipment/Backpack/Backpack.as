@@ -98,13 +98,3 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 	return forBlob.getNetworkID() == equipper_id;
 }
-
-void onSendCreateData(CBlob@ this, CBitStream@ stream)
-{
-	
-}
-
-bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
-{
-	return true;
-}

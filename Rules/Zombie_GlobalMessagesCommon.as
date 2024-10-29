@@ -1,6 +1,6 @@
 // Zombie Global Messages Common
 
-funcdef void onRecieveGlobalMessageHandle(CRules@, string, u8, SColor);
+funcdef void onReceiveGlobalMessageHandle(CRules@, string, u8, SColor);
 
 //Sends a global message by server. uses index of a client-side message. index is used to access a client-side translated message.
 void server_SendGlobalMessage(CRules@ this, const u8&in message_index, const u8&in message_seconds, const u32&in message_color = color_white.color, CPlayer@ player = null)
@@ -54,9 +54,9 @@ void server_SendGlobalMessageCommand(CRules@ this, CBitStream@ stream, CPlayer@ 
 //Sends a global message by client.
 void client_SendGlobalMessage(CRules@ this, const string&in message, const u8&in message_seconds, SColor message_color = color_white)
 {
-	onRecieveGlobalMessageHandle@ onRecieveGlobalMessage;
-	if (this.get("onRecieveGlobalMessage Handle", @onRecieveGlobalMessage))
+	onReceiveGlobalMessageHandle@ onReceiveGlobalMessage;
+	if (this.get("onReceiveGlobalMessage Handle", @onReceiveGlobalMessage))
 	{
-		onRecieveGlobalMessage(this, message, message_seconds, message_color);
+		onReceiveGlobalMessage(this, message, message_seconds, message_color);
 	}
 }

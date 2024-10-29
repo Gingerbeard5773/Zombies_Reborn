@@ -286,6 +286,16 @@ void onSendCreateData(CBlob@ this, CBitStream@ stream)
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
+	if (!UnserializeProduction(this, stream))
+	{
+		error("Failed to access production! : "+this.getName()+" : "+this.getNetworkID());
+		return false;
+	}
+	return true;
+}
+
+bool UnserializeProduction(CBlob@ this, CBitStream@ stream)
+{
 	bool sendData = false;
 	if (!stream.saferead_bool(sendData)) return false;
 	if (!sendData) return true;
@@ -323,6 +333,6 @@ bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 	}
 	
 	this.set("production", @production);
-
+	
 	return true;
 }

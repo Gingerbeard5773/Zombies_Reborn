@@ -458,13 +458,17 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	{
 		//unserialize tech tree
 		u8 tech_tree_length;
-		if (!params.saferead_u8(tech_tree_length)) return;
+		if (!params.saferead_u8(tech_tree_length))
+		{
+			error("Failed to access tech tree!");
+			return;
+		}
 
 		Technology@[]@ TechTree = getTechTree();
 		const u8 client_tech_tree_length = TechTree.length;
 		if (tech_tree_length != client_tech_tree_length)
 		{
-			error("Tech tree size desynchronized! SERVER ["+tech_tree_length+"], CLIENT["+client_tech_tree_length+"]");
+			error("Failed to access tech tree! SERVER ["+tech_tree_length+"], CLIENT["+client_tech_tree_length+"]");
 			return;
 		}
 
@@ -473,10 +477,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			Technology@ tech = TechTree[i];
 			if (tech is null) continue;
 
-			if (!params.saferead_u32(tech.time))       return;
-			if (!params.saferead_bool(tech.available)) return;
-			if (!params.saferead_bool(tech.paused))    return;
-			if (!params.saferead_bool(tech.completed)) return;
+			if (!params.saferead_u32(tech.time))       { error("Tech ["+i+"] Failed [0]"); return; }
+			if (!params.saferead_bool(tech.available)) { error("Tech ["+i+"] Failed [1]"); return; }
+			if (!params.saferead_bool(tech.paused))    { error("Tech ["+i+"] Failed [2]"); return; }
+			if (!params.saferead_bool(tech.completed)) { error("Tech ["+i+"] Failed [3]"); return; }
 		}
 	}
 }

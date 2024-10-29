@@ -210,7 +210,11 @@ void onSendCreateData(CBlob@ this, CBitStream@ stream)
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))                return true;
-	if (!stream.saferead_f32(v.fly_amount))          return false;
+	if (!this.get("VehicleInfo", @v)) return true;
+	if (!stream.saferead_f32(v.fly_amount))
+	{
+		error("Failed to access bomber fly amount! : "+this.getName()+" : "+this.getNetworkID());
+		return false;
+	}
 	return true;
 }
