@@ -390,8 +390,9 @@ void managePages(Vec2f&in imageSize, Vec2f&in center)
 void drawPage(Vec2f&in imageSize, Vec2f&in center, const string&in header, Vec2f&in imagePos, const u8&in pageNum = 0)
 {
 	GUI::DrawIcon("Page"+(pageNum+1)+".png", imagePos);
-	drawTextWithFont(header, center - Vec2f(0, imageSize.y - 50), "big font");
-	drawTextWithFont(page_tips[pageNum], center - Vec2f(0, imageSize.y - 140), "medium font");
+	const bool isRussian = g_locale == "ru";
+	drawTextWithFont(header, center - Vec2f(0, imageSize.y - 50), isRussian ? "vinque" : "big font");
+	drawTextWithFont(page_tips[pageNum], center - Vec2f(0, imageSize.y - 140), isRussian ? "anticva" : "medium font");
 }
 
 void drawTextWithFont(const string&in text, const Vec2f&in pos, const string&in font)

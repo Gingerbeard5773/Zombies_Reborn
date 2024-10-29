@@ -46,11 +46,21 @@ void AddFonts()
 	const bool isRussian = g_locale == "ru";
 	if (!GUI::isFontLoaded("big font"))
 	{
-        GUI::LoadFont("big font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Bold.ttf", isRussian ? 25 : 50, true);
-    }
+		GUI::LoadFont("big font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Bold.ttf", isRussian ? 25 : 50, true);
+	}
 	
 	if (!GUI::isFontLoaded("medium font"))
 	{
-        GUI::LoadFont("medium font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Regular.ttf", isRussian ? 10 : 20, true);
-    }
+		GUI::LoadFont("medium font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Regular.ttf", isRussian ? 10 : 20, true);
+	}
+
+	if (!GUI::isFontLoaded("anticva"))
+	{
+		GUI::LoadFont("anticva", CFileMatcher("Anticva.ttf").getFirst(), 17, true);
+	}
+
+	if (!GUI::isFontLoaded("vinque"))
+	{
+		GUI::LoadFont("vinque", CFileMatcher("VinqueRg.ttf").getFirst(), 30, true);
+	}
 }
