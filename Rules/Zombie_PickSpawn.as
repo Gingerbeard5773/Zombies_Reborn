@@ -1,4 +1,5 @@
 #include "CTF_PopulateSpawnList.as"
+#include "Zombie_Translation.as"
 
 #define CLIENT_ONLY
 
@@ -71,7 +72,7 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player, CBlob@[] respawns)
 	//parachute option
 	stream.ResetBitIndex();
 	stream.write_u16(0);
-	CGridButton@ pbutton = menu.AddButton("$parachute$", "Spawn in the sky", "Zombie_PickSpawn.as", "Callback_PickSpawn", Vec2f(BUTTON_SIZE, BUTTON_SIZE), stream);
+	CGridButton@ pbutton = menu.AddButton("$parachute$", Translate::Respawn3, "Zombie_PickSpawn.as", "Callback_PickSpawn", Vec2f(BUTTON_SIZE, BUTTON_SIZE), stream);
 	if (pbutton !is null)
 	{
 		pbutton.selectOneOnClick = true;
