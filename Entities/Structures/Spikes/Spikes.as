@@ -131,7 +131,7 @@ void onTick(CBlob@ this)
 			CBlob@[] overlapping;
 			if (this.getOverlapping(@overlapping))
 			{
-				for (u8 i = 0; i < overlapping.length; i++)
+				for (u16 i = 0; i < overlapping.length; i++)
 				{
 					CBlob@ b = overlapping[i];
 					if (team == b.getTeamNum() || !canStab(b)) continue;
@@ -159,7 +159,7 @@ void onTick(CBlob@ this)
 				CBlob@[] overlapping;
 				if (this.getOverlapping(@overlapping))
 				{
-					for (u8 i = 0; i < overlapping.length; i++)
+					for (u16 i = 0; i < overlapping.length; i++)
 					{
 						CBlob@ b = overlapping[i];
 						if (!canStab(b)) continue;

@@ -51,8 +51,8 @@ void copyInventory(CBlob@ blob, CBlob@ clone)
 	CInventory@ inv = blob.getInventory();
 	if (inv is null) return;
 	
-	const u8 count = inv.getItemsCount();
-	for (u8 i = 0; i < count; i++)
+	const u16 count = inv.getItemsCount();
+	for (u16 i = 0; i < count; i++)
 	{
 		CBlob@ item = inv.getItem(i);
 		if (item is null) continue;

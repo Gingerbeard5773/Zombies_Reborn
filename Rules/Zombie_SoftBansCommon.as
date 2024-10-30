@@ -131,7 +131,7 @@ void SetUndead(CRules@ this, CPlayer@ player)
 	CBlob@[] available_undeads;
 	if (getBlobsByTag("undead", @undeads))
 	{
-		for (u8 i = 0; i < undeads.length; i++)
+		for (u16 i = 0; i < undeads.length; i++)
 		{
 			CBlob@ undead = undeads[i];
 			if (undead.getPlayer() !is null) continue;

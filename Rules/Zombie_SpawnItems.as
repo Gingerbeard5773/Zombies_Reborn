@@ -34,18 +34,17 @@ void onTick(CRules@ this)
 	if (getMatsTime(this, name) > gameTime || !canReceiveMats(name)) return;
 
 	CBlob@[] overlapping;
-	if (blob.getOverlapping(@overlapping))
+	if (!blob.getOverlapping(@overlapping)) return;
+
+	const u16 overlappingLength = overlapping.length;
+	for (u16 i = 0; i < overlappingLength; ++i)
 	{
-		const u8 overlappingLength = overlapping.length;
-		for (u8 i = 0; i < overlappingLength; ++i)
+		const string overlapped = overlapping[i].getName();
+		if ((overlapped == "buildershop" && name == "builder") ||
+			(overlapped == "archershop" && name == "archer") ||
+			(overlapped == "armory"))
 		{
-			const string overlapped = overlapping[i].getName();
-			if ((overlapped == "buildershop" && name == "builder") ||
-				(overlapped == "archershop" && name == "archer") ||
-				(overlapped == "armory"))
-			{
-				client_GiveMats(this, blob);
-			}
+			client_GiveMats(this, blob);
 		}
 	}
 }

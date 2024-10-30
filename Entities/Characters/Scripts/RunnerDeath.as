@@ -211,7 +211,7 @@ CBlob@ getRevivalScroll(CBlob@ this)
 	CInventory@ inventory = this.getInventory();
 	if (inventory !is null)
 	{
-		for (u8 i = 0; i < inventory.getItemsCount(); ++i)
+		for (u16 i = 0; i < inventory.getItemsCount(); ++i)
 		{
 			CBlob@ blob = inventory.getItem(i);
 			if (blob.hasCommandID("server_revive")) return blob;

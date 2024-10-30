@@ -129,17 +129,15 @@ void onTick(CBlob@ this)
 	
 	//heal overlapping vehicles
 	CBlob@[] overlapping;
-	if (this.getOverlapping(@overlapping))
+	if (!this.getOverlapping(@overlapping)) return;
+
+	for (u16 i = 0; i < overlapping.length; ++i)
 	{
-		const u8 blobsLength = overlapping.length;
-		for (u8 i = 0; i < blobsLength; ++i)
+		CBlob@ blob = overlapping[i];
+		const f32 initialHealth = blob.getInitialHealth();
+		if (blob.hasTag("vehicle") && blob.getHealth() < initialHealth)
 		{
-			CBlob@ blob = overlapping[i];
-			const f32 initialHealth = blob.getInitialHealth();
-			if (blob.hasTag("vehicle") && blob.getHealth() < initialHealth)
-			{
-				blob.server_SetHealth(Maths::Min(blob.getHealth() + initialHealth / 15, initialHealth));
-			}
+			blob.server_SetHealth(Maths::Min(blob.getHealth() + initialHealth / 15, initialHealth));
 		}
 	}
 }

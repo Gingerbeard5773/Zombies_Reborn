@@ -42,8 +42,8 @@ void onTick(CBlob@ this)
 		CBlob@[] overlapping;
 		if (this.getOverlapping(@overlapping))
 		{
-			const u8 overlappingLength = overlapping.length;
-			for (u8 i = 0; i < overlappingLength; i++)
+			const u16 overlappingLength = overlapping.length;
+			for (u16 i = 0; i < overlappingLength; i++)
 			{
 				CBlob@ b = overlapping[i];
 				if (b.hasTag("dead") || b.hasTag("player") || b.hasTag("invincible")) continue;

@@ -201,7 +201,7 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 	if (countdown == 0) //activate spell
 	{
 		CBlob@[] survivors = getSurvivors();
-		const u8 survivorsLength = survivors.length;
+		const u16 survivorsLength = survivors.length;
 		if (survivorsLength <= 0)
 		{
 			server_SetSpell(this, XORRandom(spell_end));
@@ -210,7 +210,7 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 		
 		const u16 undeadPerPlayer = blobs.length/survivorsLength;
 		u16 undeadIndex = 0;
-		for (u8 i = 0; i < survivorsLength; ++i)
+		for (u16 i = 0; i < survivorsLength; ++i)
 		{
 			CBlob@ survivor = survivors[i];
 			

@@ -8,7 +8,7 @@ bool isNotTouchingOthers(CBlob@ this)
 	CBlob@[] overlapping;
 	if (!this.getOverlapping(@overlapping)) return true;
 
-	for (u8 i = 0; i < overlapping.length; i++)
+	for (u16 i = 0; i < overlapping.length; i++)
 	{
 		CBlob@ blob = overlapping[i];
 		if (blob.getName() == "seed" || blob.getName() == "tree_bushy" || blob.getName() == "tree_pine")

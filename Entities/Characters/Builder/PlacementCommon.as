@@ -129,7 +129,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 		CBlob@[] blobsAtPos;
 		if (blob !is null && map.getBlobsAtPosition(p, @blobsAtPos) && (isDoor || isPlatform))
 		{
-			for (u8 i = 0; i < blobsAtPos.length; i++)
+			for (u16 i = 0; i < blobsAtPos.length; i++)
 			{
 				CBlob@ blobAtPos = blobsAtPos[i];
 				if (blobAtPos.getName() == blob.getName() && 
@@ -148,7 +148,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 
 		CBlob@[] blobsInRadius;
 		map.getBlobsInRadius(p, buildSolid ? map.tilesize : 0.0f, @blobsInRadius);
-		for (u8 i = 0; i < blobsInRadius.length; i++)
+		for (u16 i = 0; i < blobsInRadius.length; i++)
 		{
 			CBlob@ b = blobsInRadius[i];
 			if (b.isAttached() || b is blob) continue;
@@ -203,7 +203,7 @@ void DestroyScenary(Vec2f tl, Vec2f br)
 
 	CBlob@[] overlapping;
 	getMap().getBlobsInBox(tl, br, @overlapping);
-	for (u8 i = 0; i < overlapping.length; i++)
+	for (u16 i = 0; i < overlapping.length; i++)
 	{
 		CBlob@ blob = overlapping[i];
 		if (blob.getName() == "bush")

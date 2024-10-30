@@ -219,7 +219,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					hash = parseInt(tokens[1]);
 				}
 				
-				for (u8 i = 0; i < props.length; ++i)
+				for (u16 i = 0; i < props.length; ++i)
 				{
 					const string prop = props[i];
 					if (prop.getHash() == hash)

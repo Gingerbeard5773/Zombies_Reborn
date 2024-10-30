@@ -221,7 +221,8 @@ void onDie(CBlob@ this)
 	{
 		if (this.hasTag("collided"))
 		{
-			for (u8 i = 0; i < 2 + XORRandom(2); i++)
+			const u8 flame_count = 2 + XORRandom(2);
+			for (u8 i = 0; i < flame_count; i++)
 			{
 				CBlob@ blob = server_CreateBlob("flame", -1, pos + Vec2f(0, -8));
 				if (blob is null) continue;

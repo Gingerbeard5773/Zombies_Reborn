@@ -48,7 +48,7 @@ void onTick(CMovement@ this)
 			CBlob@[] overlapping;
 			if (blob.getOverlapping(@overlapping))
 			{
-				for (u8 i = 0; i < overlapping.length; i++)
+				for (u16 i = 0; i < overlapping.length; i++)
 				{
 					CBlob@ overlapped = overlapping[i];
 					if (!overlapped.isCollidable() || !overlapped.getShape().isStatic()) continue;

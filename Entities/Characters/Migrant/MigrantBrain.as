@@ -116,7 +116,7 @@ void FindDormitory(CBlob@ blob)
 	CBlob@[] dorms;
 	if (!getBlobsByName("dorm", @dorms)) return;
 	
-	for (u8 i = 0; i < dorms.length; i++)
+	for (u16 i = 0; i < dorms.length; i++)
 	{
 		CBlob@ dorm = dorms[i];
 		if (blob.getDistanceTo(dorm) < 300.0f)

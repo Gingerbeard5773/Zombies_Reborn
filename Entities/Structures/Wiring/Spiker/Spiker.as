@@ -40,13 +40,14 @@ class Spiker : Component
 		{
 			CBlob@[] blobs;
 			if (spike.getOverlapping(@blobs))
-
-			for (u8 i = 0; i < blobs.length; i++)
 			{
-				CBlob@ blob = blobs[i];
-				if (!blob.hasTag("flesh")) continue;
+				for (u16 i = 0; i < blobs.length; i++)
+				{
+					CBlob@ blob = blobs[i];
+					if (!blob.hasTag("flesh")) continue;
 
-				spike.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 0.5f, Hitters::spikes, true);
+					spike.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 0.5f, Hitters::spikes, true);
+				}
 			}
 		}
 		

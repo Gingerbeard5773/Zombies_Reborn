@@ -217,7 +217,7 @@ void LoadCrossbow(CBlob@ holder, CrossbowInfo@ crossbow)
 	CInventory@ inv = holder.getInventory();
 	if (inv is null) return;
 
-	for (u8 i = 0; i < inv.getItemsCount(); i++)
+	for (u16 i = 0; i < inv.getItemsCount(); i++)
 	{
 		CBlob@ item = inv.getItem(i);
 		const int arrow = arrowTypeNames.find(item.getName());
