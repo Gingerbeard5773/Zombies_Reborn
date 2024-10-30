@@ -11,7 +11,7 @@ shared const string Translate(const string&in en, const string&in ru = "")
 {
 	string text_out = "";
 	if (g_locale == "en") text_out = en; //english
-	if (g_locale == "ru") text_out = ru; //russian 
+	if (g_locale == "ru") text_out = ru; //russian Sinecura & Quantal 
 
 	if (text_out.isEmpty()) text_out = en; //default to english if we dont have a translation
 
@@ -39,7 +39,7 @@ namespace Translate
 	Manual    = Translate("Press {KEY} to toggle the help manual on/off.",    "Нажмите {KEY} чтобы включить/выключить справочное руководство."),
 	DayNum    = Translate("Day: {DAYS}",                                      "День: {DAYS}"),
 	Zombies   = Translate("Zombies: {AMOUNT}",                                "Нежити: {AMOUNT}"),
-	Survivors = Translate("Survivors",                                        "Выживших"),
+	Survivors = Translate("Survivors",                                        "Выжившие"),
 	
 	//respawning
 	Respawn0 = Translate("Waiting for dawn...",              "В ожидании рассвета..."),
@@ -52,8 +52,8 @@ namespace Translate
 	GameOver = Translate("Game over! All players perished! You survived {INPUT} days.", "Конец игры! Все игроки погибли! Вы выжили на протяжении {INPUT} дней."),
 	GameWin  = Translate("Day {INPUT} Reached! You win!",                               "День {INPUT} Достигнут! Вы победили!"),
 	Trader   = Translate("A flying merchant has arrived!",                              "Прибыл летающий-торговец!"),
-	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                      "Некромант Сэ́джуик только что явился!"),
-	Migrant1 = Translate("A refugee has arrived!",                                      "Прибыл Беженец!"),
+	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                      "Некромант Седжвик только что явился!"),
+	Migrant1 = Translate("A refugee has arrived!",                                      "Прибыл беженец!"),
 	Migrant2 = Translate("Refugees have arrived!",                                      "Беженцы прибывают!"),
 
 	//stats
@@ -148,19 +148,19 @@ namespace Translate
 	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", "Молотов\nФляга с горючей жидкостью которую можно бросить во врага. Нажмите [Space] для активации."),
 	ScubaGear      = Translate("Scuba Gear\nAllows breathing under water.",                                             "Акваланг\nПозволяет дышать под водой."),
 	HeadLamp       = Translate("Head Lamp\nWearable lantern for easy illumination!"                                     "Головной фонарь\nПереносной фонарь для легкого освещения!"),
-	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             "Стальное сверло\nМощный бур, способный вести добычу в течение длительного времени."),
+	SteelDrill     = Translate("Steel Drill\nA strong drill that can mine for an extended length of time.",             "Стальной бур\nМощный бур, способный вести добычу в течение длительного времени."),
 	SteelHelmet    = Translate("Steel Helmet\nA durable helmet to protect your head.",                                  "Стальной шлем\nПрочный шлем для защиты вашей головы."),
 	SteelArmor     = Translate("Steel Chestplate\nA durable chestplate to protect your body.",                          "Стальной нагрудник\nПрочная нагрудная пластина для защиты вашего тела."),
 	Backpack       = Translate("Backpack\nA backpack to carry your belongings.",                                        "Рюкзак\nРюкзак для переноски ваших вещей."),
 	Parachutepack  = Translate("Parachute Pack\nAllows you to fall slowly. Press [Shift] to activate.",                 "Парашютный ранец\nПозволяет вам медленно падать. Нажмите [Shift] для активации."),
 
 	//trader
-	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            "Сэ́джуик действительно не хочет чтобы это было у меня."),
+	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            "Седжвик действительно не хочет чтобы это было у меня."),
 	TradeScrollMidas    = Translate("Makes the rocks shiny.",                                   "Придает камням блеск."),
 	TradeScrollSea      = Translate("A powerful spell known to flood entire villages.",         "Мощное заклинание, способное затопить целые деревни."),
 	TradeScrollTeleport = Translate("This one can take you anywhere.",                          "Этот доставит вас куда угодно."),
 	TradeScrollStone    = Translate("If you need rocks.",                                       "Если вам нужны камни."),
-	TradeScrollRevive   = Translate("Bring back a friend of yours, or maybe even yourself.",    "Возвращает назад вашего друга или, может быть, даже вас самих."),
+	TradeScrollRevive   = Translate("Bring back a friend of yours, or maybe even yourself.",    "Воскрешает вашего друга или, может быть, даже вас самих."),
 	TradeScrollCrate    = Translate("It can put anything in a box, somehow.",                   "Каким-то образом он может поместить в коробку все, что угодно."),
 	TradeScrollDupe     = Translate("Long lost magic that appears to make a copy of anything!", "Давно утраченная магия, которая, кажется, создает копию чего угодно!"),
 	TradeScrollDrought  = Translate("Vaporizes bodies of water.",                               "Испаряет водоемы."),
@@ -206,7 +206,7 @@ namespace Translate
 	LightArmor      = Translate("Lightweight Armor\nArmor encumbrance -50%.",                        "Сегментированная Броня\nПластичность и легкость брони увеличивает вашу скорость +50%."),
 	CombatPickaxes  = Translate("Combat Pickaxes\nPickaxes deal an extra +1/2 heart of damage.",     "Боевые Кирки\nКирки наносят дополнительный урон +1,5."),
 	LightPickaxes   = Translate("Light Pickaxes\nPickaxe mining speed increased.",                   "Легкие Кирки\nСкорость добычи с помощью кирки увеличена."),
-	PrecisionDrills = Translate("Precision Drilling\nDrills yield 100%.",                            "Мастерство Сверления\nПроизводительность сверла достигает своего 100% пика."),
+	PrecisionDrills = Translate("Precision Drilling\nDrills yield 100%.",                            "Мастерство Бурения\nПроизводительность бура достигает своего 100% пика."),
 	Architecture    = Translate("Architecture\nBlock placement is faster.",                          "Каменщик\nРазмещение блоков происходит быстрее."),
 	Supplies        = Translate("Supplies\n+5 stone, +10 wood per resupply.",                        "Снабжение I\n+5 камней, +10 досок к снабжению."),
 	SuppliesII      = Translate("Supplies II\n+5 stone, +10 wood per resupply.",                     "Снабжение II\n+5 камней, +10 досок к снабжению."),
