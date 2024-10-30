@@ -35,10 +35,11 @@ namespace Translate
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.", "Мигранты будут приходить к вам каждый день,\nесли численность всей нежити будет минимальной"),
 	
 	//scoreboard
-	Manual    = Translate("Press {KEY} to toggle the help manual on/off.", "Нажмите {KEY} чтобы включить/выключить справочное руководство."),
-	DayNum    = Translate("Day: {DAYS}",                                   "День: {DAYS}"),
-	Zombies   = Translate("Zombies: {AMOUNT}",                             "Нежити: {AMOUNT}"),
-	Survivors = Translate("Survivors",                                     "Выживших"),
+	ZF2       = Translate("Zombie Fortress",                                  "Зомби Крепость"),
+	Manual    = Translate("Press {KEY} to toggle the help manual on/off.",    "Нажмите {KEY} чтобы включить/выключить справочное руководство."),
+	DayNum    = Translate("Day: {DAYS}",                                      "День: {DAYS}"),
+	Zombies   = Translate("Zombies: {AMOUNT}",                                "Нежити: {AMOUNT}"),
+	Survivors = Translate("Survivors",                                        "Выживших"),
 	
 	//respawning
 	Respawn0 = Translate("Waiting for dawn...",              "В ожидании рассвета..."),

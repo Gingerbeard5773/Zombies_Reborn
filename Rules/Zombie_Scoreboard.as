@@ -254,8 +254,8 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 	Vec2f pos(x, y);
 	f32 width = 200;
 
-	const string info = getTranslatedString(this.gamemode_name) + ": " + getTranslatedString(this.gamemode_info);
-	const string mapName = getTranslatedString("Map name : ") + this.get_string("map_name");
+	const string info = Translate::ZF2;
+	const string mapName = getTranslatedString("Map: {MAP}").replace("{MAP}", this.get_string("map_name"));
 	const string dayRecord = Translate::Stat4.replace("{INPUT}", this.get_u16("day_record")+"");
 	const string dayCount = Translate::DayNum.replace("{DAYS}", this.get_u16("day_number")+"");
 	
