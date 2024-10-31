@@ -6,10 +6,10 @@
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("server_attach_worker");
-	this.addCommandID("client_attach_worker");
-	this.addCommandID("server_detach_worker");
-	this.addCommandID("client_detach_worker");
+	this.addCommandID("server_assign_worker");
+	this.addCommandID("client_assign_worker");
+	this.addCommandID("server_unassign_worker");
+	this.addCommandID("client_unassign_worker");
 	
 	this.getCurrentScript().tickFrequency = 90;
 	
@@ -43,14 +43,14 @@ void server_AutoAssignWorker(CBlob@ this)
 		if (b.isAttached() || b.get_u8("strategy") == Strategy::runaway || b.get_netid("assigned netid") > 0) continue;
 		
 		AssignWorker(this, b.getNetworkID());
-		Client_AttachWorker(this, b.getNetworkID());
+		Client_AssignWorker(this, b.getNetworkID());
 		break;
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("server_attach_worker") && isServer())
+	if (cmd == this.getCommandID("server_assign_worker") && isServer())
 	{
 		if (!hasAvailableWorkerSlots(this)) return;
 
@@ -58,16 +58,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (!params.saferead_netid(worker_netid))  { error("Failed to assign worker! [0] : "+this.getNetworkID()); return; }
 
 		AssignWorker(this, worker_netid);
-		Client_AttachWorker(this, worker_netid);
+		Client_AssignWorker(this, worker_netid);
 	}
-	else if (cmd == this.getCommandID("client_attach_worker") && isClient())
+	else if (cmd == this.getCommandID("client_assign_worker") && isClient())
 	{
 		u16 worker_netid;
 		if (!params.saferead_netid(worker_netid)) { error("Failed to assign worker! [1] : "+this.getNetworkID()); return; }
 
 		AssignWorker(this, worker_netid);
 	}
-	else if (cmd == this.getCommandID("server_detach_worker") && isServer())
+	else if (cmd == this.getCommandID("server_unassign_worker") && isServer())
 	{
 		u16[]@ netids = getWorkers(this);
 		if (netids.length <= 0) return;
@@ -79,9 +79,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			worker.IgnoreCollisionWhileOverlapped(this); //dont auto-assign the worker
 
 		UnassignWorker(this, worker_netid);
-		Client_DetachWorker(this, worker_netid);
+		Client_UnassignWorker(this, worker_netid);
 	}
-	else if (cmd == this.getCommandID("client_detach_worker") && isClient())
+	else if (cmd == this.getCommandID("client_unassign_worker") && isClient())
 	{
 		u16 worker_netid;
 		if (!params.saferead_netid(worker_netid)) { error("Failed to unassign worker! [0] : "+this.getNetworkID()); return; }

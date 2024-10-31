@@ -15,7 +15,7 @@ bool AssignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 	{
 		CBitStream stream;
 		stream.write_netid(carried.getNetworkID());
-		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_attach_worker"), Translate::AssignWorker, stream);
+		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_assign_worker"), Translate::AssignWorker, stream);
 		return true;
 	}
 	return false;
@@ -25,7 +25,7 @@ bool UnassignWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 {
 	if (getWorkers(this).length > 0)
 	{
-		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_detach_worker"), Translate::UnassignWorker);
+		caller.CreateGenericButton("$worker_migrant$", offset, this, this.getCommandID("server_unassign_worker"), Translate::UnassignWorker);
 		return true;
 	}
 	return false;
@@ -40,20 +40,20 @@ void RequiresWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 	}
 }
 
-void Client_AttachWorker(CBlob@ this, const u16&in worker_netid)
+void Client_AssignWorker(CBlob@ this, const u16&in worker_netid)
 {
 	if (isClient()) return;
 	CBitStream stream;
 	stream.write_netid(worker_netid);
-	this.SendCommand(this.getCommandID("client_attach_worker"), stream);
+	this.SendCommand(this.getCommandID("client_assign_worker"), stream);
 }
 
-void Client_DetachWorker(CBlob@ this, const u16&in worker_netid)
+void Client_UnassignWorker(CBlob@ this, const u16&in worker_netid)
 {
 	if (isClient()) return;
 	CBitStream stream;
 	stream.write_netid(worker_netid);
-	this.SendCommand(this.getCommandID("client_detach_worker"), stream);
+	this.SendCommand(this.getCommandID("client_unassign_worker"), stream);
 }
 
 void AssignWorker(CBlob@ this, const u16&in worker_netid)

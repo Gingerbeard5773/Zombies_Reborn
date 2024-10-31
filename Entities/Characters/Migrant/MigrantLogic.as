@@ -1,5 +1,4 @@
 #include "MigrantCommon.as";
-#include "KnockedCommon.as";
 #include "AssignWorkerCommon.as";
 
 void onInit(CBlob@ this)
@@ -12,16 +11,14 @@ void onInit(CBlob@ this)
 	
 	this.getBrain().server_SetActive(true);
 
-	this.getCurrentScript().tickFrequency = 150; // opt
+	this.getCurrentScript().tickFrequency = 150;
 }
 
 void onTick(CBlob@ this)
 {
-	DoKnockedUpdate(this);
-	
 	if (this.hasTag("dead"))
 	{
-		UpdateAssigned(this);
+		server_UpdateAssignment(this);
 	}
 }
 
@@ -47,6 +44,8 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	{
 		attachedPoint.offset = Vec2f(-4, 0);
 	}
+	
+	server_UpdateAssignment(this, attached);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
@@ -63,26 +62,29 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 }
 
-void UpdateAssigned(CBlob@ this)
+void server_UpdateAssignment(CBlob@ this, CBlob@ attached = null)
 {
-	if (!this.exists("assigned netid")) return;
+	if (!isServer() || !this.exists("assigned netid")) return;
 
 	CBlob@ assigned = getBlobByNetworkID(this.get_netid("assigned netid"));
 	if (assigned is null) return;
+	
+	if (attached !is null && attached is assigned) return;
 
 	UnassignWorker(assigned, this.getNetworkID());
+	Client_UnassignWorker(assigned, this.getNetworkID());
 }
 
 void onDie(CBlob@ this)
 {
-	UpdateAssigned(this);
+	server_UpdateAssignment(this);
 }
 
-f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+/*f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (damage > 0.0f && this.isAttachedToPoint("WORKER"))
 	{
-		UpdateAssigned(this);
+		server_UpdateAssignment(this);
 	}
 	return damage;
-}
+}*/

@@ -81,7 +81,7 @@ void DitchAssigned(CBlob@ blob)
 	if (assigned !is null)
 	{
 		UnassignWorker(assigned, blob.getNetworkID());
-		Client_DetachWorker(assigned, blob.getNetworkID());
+		Client_UnassignWorker(assigned, blob.getNetworkID());
 	}
 }
 
