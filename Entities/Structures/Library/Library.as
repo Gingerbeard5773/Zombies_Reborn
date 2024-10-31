@@ -18,7 +18,7 @@ void onInit(CBlob@ this)
 	this.Tag("builder always hit");
 	this.addCommandID("server_research");
 	this.addCommandID("client_research");
-	this.addCommandID("client_upgrade");
+	this.addCommandID("client_finish_technology");
 	
 	this.getCurrentScript().tickFrequency = 30; //once a second
 	
@@ -41,22 +41,14 @@ void onTick(CBlob@ this)
 
 	researched.time++;
 	researched.paused = false;
-
-	if (researched.time >= researched.time_to_unlock)
+	
+	if (isServer() && researched.time >= researched.time_to_unlock && researched.available)
 	{
-		if (researched.available && isServer())
-		{
-			researched.completed = true;
-			UpdateConnections(researched);
-			UpdateTechnologyHooks(researched.index);
+		onFinishTechnology(this, researched);
 
-			CBitStream stream;
-			stream.write_u8(researched.index);
-			this.SendCommand(this.getCommandID("client_upgrade"), stream);
-		}
-		researched.available = false;
-		
-		this.set_s32("researching", -1);
+		CBitStream stream;
+		stream.write_u8(researched.index);
+		this.SendCommand(this.getCommandID("client_finish_technology"), stream);
 	}
 }
 
@@ -112,7 +104,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		SetResearching(this, getTech(index));
 	}
-	else if (cmd == this.getCommandID("client_upgrade") && isClient())
+	else if (cmd == this.getCommandID("client_finish_technology") && isClient())
 	{
 		u8 index;
 		if (!params.saferead_u8(index)) return;
@@ -122,9 +114,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		
 		if (!isServer())
 		{
-			tech.completed = true;
-			UpdateConnections(tech);
-			UpdateTechnologyHooks(tech.index);
+			onFinishTechnology(this, tech);
 		}
 
 		Sound::Play("/ResearchComplete.ogg");
@@ -146,21 +136,22 @@ void SetResearching(CBlob@ this, Technology@ tech)
 	this.set_s32("researching", tech.index);
 }
 
-void UpdateConnections(Technology@ tech)
+void onFinishTechnology(CBlob@ this, Technology@ tech)
 {
+	tech.completed = true;
+	tech.available = false;
+	this.set_s32("researching", -1);
+
 	for (u8 i = 0; i < tech.connections.length; i++)
 	{
 		tech.connections[i].available = true;
 	}
-}
-
-void UpdateTechnologyHooks(const u8&in index)
-{
+	
 	CRules@ rules = getRules();
 	onTechnologyRulesHandle@ onTechnologyRules;
 	if (rules.get("onTechnology handle", @onTechnologyRules))
 	{
-		onTechnologyRules(rules, index);
+		onTechnologyRules(rules, tech.index);
 	}
 
 	/*CBlob@[] blobs;
@@ -172,7 +163,7 @@ void UpdateTechnologyHooks(const u8&in index)
 		onTechnologyHandle@ onTechnology;
 		if (blob.get("onTechnology handle", @onTechnology))
 		{
-			onTechnology(blob, index);
+			onTechnology(blob, tech.index);
 		}
 	}*/
 }
