@@ -96,7 +96,7 @@ void server_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob)
 		server_SpawnMats(blob, "mat_wood", amount_wood);
 		server_SpawnMats(blob, "mat_stone", amount_stone);
 	}
-	else if (name == "archer")
+	else if (name == "archer" && !hasTech(Tech::DeepQuiver))
 	{
 		server_SpawnMats(blob, "mat_arrows", 30);
 	}
