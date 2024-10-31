@@ -16,7 +16,6 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("activate client");
 	
-	this.SetLight(false);
 	this.SetLightRadius(20.0f);
 	this.SetLightColor(SColor(255, 255, 200, 50));
 }
@@ -51,6 +50,7 @@ void onActivate(CBitStream@ params)
 	CBlob@ this = getBlobByNetworkID(this_id);
 	if (this is null) return;
 	
+	this.SetLight(true);
 	this.server_SetTimeToDie(5);
 	this.SendCommand(this.getCommandID("activate client"));
 }
@@ -105,51 +105,50 @@ void onDie(CBlob@ this)
 
 void DoExplosion(CBlob@ this)
 {
-	if (!this.hasTag("dead") && this.hasTag("activated"))
+	if (this.hasTag("dead") || !this.hasTag("activated")) return;
+
+	if (isServer())
 	{
-		if (isServer())
+		CMap@ map = getMap();
+		Vec2f pos = this.getPosition();
+		const int radius = 2; //size of the circle
+		const f32 radsq = radius * 8 * radius * 8;
+		for (int x_step = -radius; x_step < radius; ++x_step)
 		{
-			CMap@ map = getMap();
-			Vec2f pos = this.getPosition();
-			const int radius = 2; //size of the circle
-			const f32 radsq = radius * 8 * radius * 8;
-			for (int x_step = -radius; x_step < radius; ++x_step)
+			for (int y_step = -radius; y_step < radius; ++y_step)
 			{
-				for (int y_step = -radius; y_step < radius; ++y_step)
-				{
-					Vec2f off(x_step * map.tilesize, y_step * map.tilesize);
-					if (off.LengthSquared() > radsq) continue;
-					
-					map.server_setFireWorldspace(pos + off, true);
-				}
-			}
-
-			Vec2f vel = this.getOldVelocity();
-			for (int i = 0; i < 6 + XORRandom(2); i++)
-			{
-				CBlob@ blob = server_CreateBlob("flame", -1, pos + Vec2f(0, -8));
-				if (blob is null) continue;
+				Vec2f off(x_step * map.tilesize, y_step * map.tilesize);
+				if (off.LengthSquared() > radsq) continue;
 				
-				Vec2f nv = Vec2f((XORRandom(100) * 0.01f * vel.x * 1.30f), -(XORRandom(100) * 0.01f * 3.00f));
-				if (Maths::Abs(nv.x) < 1.0f)
-				{
-					nv.x = XORRandom(nv.Length() * 2 * 100)/100;
-					if (XORRandom(100) < 50) nv.x *= -1;
-				}
-
-				blob.setVelocity(nv);
-				blob.server_SetTimeToDie(5 + XORRandom(6));
-				blob.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+				map.server_setFireWorldspace(pos + off, true);
 			}
 		}
 
-		CSprite@ sprite = this.getSprite();
-		sprite.SetEmitSoundPaused(true);
-		sprite.PlaySound("MolotovExplosion.ogg", 1.6f);
-		sprite.Gib();
+		Vec2f vel = this.getOldVelocity();
+		for (int i = 0; i < 6 + XORRandom(2); i++)
+		{
+			CBlob@ blob = server_CreateBlob("flame", -1, pos + Vec2f(0, -8));
+			if (blob is null) continue;
+			
+			Vec2f nv = Vec2f((XORRandom(100) * 0.01f * vel.x * 1.30f), -(XORRandom(100) * 0.01f * 3.00f));
+			if (Maths::Abs(nv.x) < 1.0f)
+			{
+				nv.x = XORRandom(nv.Length() * 2 * 100)/100;
+				if (XORRandom(100) < 50) nv.x *= -1;
+			}
 
-		this.Tag("dead");
+			blob.setVelocity(nv);
+			blob.server_SetTimeToDie(5 + XORRandom(6));
+			blob.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+		}
 	}
+
+	CSprite@ sprite = this.getSprite();
+	sprite.SetEmitSoundPaused(true);
+	sprite.PlaySound("MolotovExplosion.ogg", 1.6f);
+	sprite.Gib();
+
+	this.Tag("dead");
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
