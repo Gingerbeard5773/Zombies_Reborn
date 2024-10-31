@@ -420,53 +420,62 @@ bool HitBlob(CBlob@ this, Vec2f&in mapPos, CBlob@ hit_blob, const f32&in radius,
 	Vec2f hit_blob_pos = hit_blob.getPosition();
 	Vec2f hitvec = hit_blob_pos - pos;
 
-	if (bother_raycasting) // have we already checked the rays?
+	HitInfo@[] hitInfos;
+	if (map.getHitInfosFromRay(pos, -hitvec.getAngle(), hitvec.getLength(), this, @hitInfos))
 	{
-		HitInfo@[] hitInfos;
-		if (map.getHitInfosFromRay(pos, -hitvec.getAngle(), hitvec.getLength(), this, @hitInfos))
+		for (uint i = 0; i < hitInfos.length; i++)
 		{
-			for (uint i = 0; i < hitInfos.length; i++)
+			HitInfo@ hi = hitInfos[i];
+			if (!bother_raycasting)
 			{
-				HitInfo@ hi = hitInfos[i];
-				if (hi.blob is null) return false; //hit solid tile
-
-				// mapPos == position ignores blobs that are tiles when the explosion starts in the same tile
-				if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable() || mapPos == hi.blob.getPosition())
+				CBlob@ b = hi.blob;
+				if (b is null)
 				{
+					if (isTileIron(hi.tile)) return false;
 					continue;
 				}
-
-				CBlob@ b = hi.blob;
-				if (b.isPlatform())
+				
+				if (b is this || b is hit_blob || !b.isCollidable()) continue; 
+				
+				if (b.getName() == "iron_door") return false;
+				
+				if (b.getName() == "iron_platform")
 				{
 					ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
 					Vec2f dir = plat.direction;
-					if (!plat.ignore_rotations)
-					{
-						dir.RotateBy(b.getAngleDegrees());
-					}
+					if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
 
-					// Does the platform block damage
-					Vec2f hitvec_dir = -hitvec;
-					if (hit_blob.isPlatform())
-					{
-						hitvec_dir = hitvec;
-					}
-
-					if (Maths::Abs(dir.AngleWith(hitvec_dir)) < plat.angleLimit)
-					{
-						return false;
-					}
-					continue;
+					if (Maths::Abs(dir.AngleWith(-hitvec)) < plat.angleLimit) return false;
 				}
+				continue;
+			}
 
-				// only shield and heavy things block explosions
-				if (hi.blob.hasTag("heavy weight") ||
-						hi.blob.getMass() > 500 || hi.blob.getShape().isStatic() ||
-						(hi.blob.hasTag("shielded") && blockAttack(hi.blob, hitvec, 0.0f)))
-				{
-					return false;
-				}
+			if (hi.blob is null) return false; //hit solid tile
+
+			// mapPos == position ignores blobs that are tiles when the explosion starts in the same tile
+			if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable() || mapPos == hi.blob.getPosition())
+			{
+				continue;
+			}
+
+			CBlob@ b = hi.blob;
+			if (b.isPlatform())
+			{
+				ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+				Vec2f dir = plat.direction;
+				if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
+
+				Vec2f hitvec_dir = hit_blob.isPlatform() ? hitvec : -hitvec;
+				if (Maths::Abs(dir.AngleWith(hitvec_dir)) < plat.angleLimit) return false;
+				continue;
+			}
+
+			// only shield and heavy things block explosions
+			if (hi.blob.hasTag("heavy weight") ||
+					hi.blob.getMass() > 500 || hi.blob.getShape().isStatic() ||
+					(hi.blob.hasTag("shielded") && blockAttack(hi.blob, hitvec, 0.0f)))
+			{
+				return false;
 			}
 		}
 	}
