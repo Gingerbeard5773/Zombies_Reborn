@@ -128,7 +128,7 @@ void GoSomewhere(CBlob@ this)
 				segment_sprite.SetEmitSound("chattercentipede2");
 				segment_sprite.SetEmitSoundPaused(false);
 				const f32 volume = segment_sprite.getEmitSoundVolume() + (inGround ? -0.014f : 0.01f);
-				segment_sprite.SetEmitSoundVolume(Maths::Clamp(volume, 0.0f, 0.4f));
+				segment_sprite.SetEmitSoundVolume(Maths::Clamp(volume, 0.0f, 1.0f));
 			}
 		}
 		
@@ -142,8 +142,8 @@ void GoSomewhere(CBlob@ this)
 
     if (inGround || SegmentsInGround)
     {
-        ShakeScreen(25, 8, pos);
-        sprite.SetEmitSoundVolume(vel.Length() * 0.15f);
+        ShakeScreen(50, 8, pos);
+        sprite.SetEmitSoundVolume(vel.Length() * 0.25f);
         shape.setDrag(0.61);
         shape.SetGravityScale(0);
     }
