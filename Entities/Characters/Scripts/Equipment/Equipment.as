@@ -241,17 +241,19 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onDie(CBlob@ this)
 {
-	u16[]@ ids;
-	if (!this.get("equipment_ids", @ids)) return;
+	u16[] ids;
+	if (!this.get("equipment_ids", ids)) return;
 	for (u8 i = 0; i < ids.length; i++)
 	{
 		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
 		if (equippedblob is null) continue;
 
-		ids[i] = 0;
 		UnequipBlob(this, equippedblob, false);
 	}
-	
+
+	u16[] clear_ids(equipment.length);
+	this.set("equipment_ids", clear_ids);
+
 	EquipToNewPlayerBlob(this, ids);
 }
 
