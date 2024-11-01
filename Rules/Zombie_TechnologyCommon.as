@@ -9,6 +9,7 @@
 	Auto Saws        : Saws auto chop trees they are overlapping
 	Swift Bearings   : Ground vehicle speed +25%
 	Streamlined Hull : Boats are 25% faster
+	Fireproof Hull   : Vehicles are fireproof
 */
 
 //funcdef void onTechnologyHandle(CBlob@, u8);

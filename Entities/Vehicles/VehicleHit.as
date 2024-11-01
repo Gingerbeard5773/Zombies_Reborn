@@ -12,6 +12,6 @@ f32 getDurabilityPercent()
 	f32 percent = 1.0f;
 	Technology@[]@ TechTree = getTechTree();
 	if (hasTech(TechTree, Tech::IronChassis))  percent -= 0.25f;
-	if (hasTech(TechTree, Tech::SteelChassis)) percent -= 0.25f;
+	if (hasTech(TechTree, Tech::SteelChassis)) percent -= 0.35f;
 	return percent;
 }

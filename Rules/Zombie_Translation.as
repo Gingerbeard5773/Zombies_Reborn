@@ -228,7 +228,7 @@ namespace Translate
 	BlastShields    = Translate("Blast Shields\nShields are resistant to strong explosions.",        "Взрывоустойчивые Щиты\nЩиты устойчивы к сильным взрывам."),
 	FlightTuning    = Translate("Flight Tuning\nAerial vehicles fly 25% faster.",                    "Регулировка Полёта\nЛетательные аппараты летают на 25% быстрее."),
 	IronChassis     = Translate("Iron Chassis\nLand vehicles are 25% more durable.",                 "Железное Шасси\nНаземные транспортные средства на 25% крепче."),
-	SteelChassis    = Translate("Steel Chassis\nLand vehicles are 25% more durable.",                "Стальное Шасси\nНаземные транспортные средства на 25% крепче."),
+	SteelChassis    = Translate("Steel Chassis\nLand vehicles are 35% more durable.",                "Стальное Шасси\nНаземные транспортные средства на 35% крепче."),
 	TorsionWinch    = Translate("Torsion Winch\nSeige vehicles fire projectiles 35% farther.",       "Закрученная Лебедка\nШтурмовые машины стреляют снарядами на 35% дальше."),
 	SeigeCrank      = Translate("Seige Crank\nSeige vehicles fire 25% faster",                       "Заводная Ручка\nОсадные машины стреляют на 25% быстрее."),
 	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              "Восстановление I\nВыжившие исцеляют половину сердца каждый день."),
