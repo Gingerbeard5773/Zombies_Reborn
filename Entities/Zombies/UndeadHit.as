@@ -12,6 +12,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::cata_boulder:
 			damage *= 2.0f;
 			break;
+		case Hitters::bomb_arrow:
+			damage *= 1.5f;
+			break;
 		case Hitters::sword:
 			damage *= getSwordDamagePercent();
 			break;
@@ -19,12 +22,14 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		{
 			if (hasTech(Tech::CombatPickaxes))
 				damage *= 2.0f;
+			break;
 		}
 		case Hitters::burn:
 		case Hitters::fire:
 		{
 			if (hasTech(Tech::GreekFire))
 				damage *= 1.5f;
+			break;
 		}
 		case Hitters::arrow:
 		{
