@@ -13,10 +13,6 @@ void WarnPlayer(CPlayer@ admin, string playerName, u32 duration, string reason)
     string adminUsername = admin.getUsername();
     ConfigFile@ cfg = getWarnsConfig();
 
-    // ignore if player is admin or player is the person who executed the command
-    CPlayer@ playerObject = getPlayerByUsername(player);
-    if (adminUsername == player || (playerObject !is null && playerBanImmune(playerObject))) return;
-
     // First remove any expired warns to get accurate count
     removeExpiredWarns(player);
 
@@ -199,14 +195,4 @@ string getPlayerUsername(string player)
 	string[]@ tokens = player.split("~");
 	if (tokens.length <= 0) return "";
 	return tokens[0];
-}
-
-bool canPlayerBan(CPlayer@ player)
-{
-    return getSecurity().checkAccess_Command(player, "ban");
-}
-
-bool playerBanImmune(CPlayer@ player)
-{
-    return getSecurity().checkAccess_Feature(player, "ban_immunity");
 }
