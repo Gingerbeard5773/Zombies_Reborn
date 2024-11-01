@@ -317,7 +317,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 			// for fire arrows, make fire
 			if (arrowType == ArrowType::fire && !this.hasTag("no_fire"))
-				this.server_Hit(blob, point1, initVelocity, 0.0f, Hitters::fire);
+			{
+				const f32 fire_damage = blob.getName() == "darkwraith" ? 5.0f : 0.0f; //hack
+				this.server_Hit(blob, point1, initVelocity, fire_damage, Hitters::fire);
+			}
 			
 			this.Tag("collided");
 		}
