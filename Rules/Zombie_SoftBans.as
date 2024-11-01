@@ -37,8 +37,8 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	const u8 plyCount = getPlayerCount();
-	for (u8 i = 0; i < plyCount; i++)
+	const u8 playerCount = getPlayerCount();
+	for (u8 i = 0; i < playerCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;

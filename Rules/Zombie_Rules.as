@@ -113,13 +113,6 @@ void onGameEnd(CRules@ this)
 	}
 }
 
-/*void onPlayerLeave(CRules@ this, CPlayer@ player)
-{
-	if (getPlayersCount() <= 1) return;
-
-	checkGameEnded(this, player);
-}*/
-
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
 	checkGameEnded(this, victim);

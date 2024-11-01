@@ -96,7 +96,7 @@ void SpellSkeletonRain(CBlob@ this, const u8&in countdown)
 {	
 	if (countdown < 12)
 	{
-		const u16 skeleton_count = 4 + Maths::Floor(getPlayerCount()/3);
+		const u16 skeleton_count = 4 + Maths::Floor(getRules().get_u8("survivor player count")/3);
 		if (isServer())
 		{
 			CMap@ map = getMap();
@@ -322,8 +322,8 @@ void server_SetPortalSpawn(CBlob@ this)
 	CMap@ map = getMap();
 	Vec2f spawn = Vec2f_zero;
 	int most_ground = 0;
-	const u8 playersLength = getPlayerCount();
-	for (u8 i = 0; i < playersLength; ++i)
+	const u8 playerCount = getPlayerCount();
+	for (u8 i = 0; i < playerCount; ++i)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;

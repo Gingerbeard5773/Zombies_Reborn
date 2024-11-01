@@ -133,7 +133,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (hitterBlob !is null && hitterBlob.hasTag("undead")) return 0.0f;
 	
-	const u8 player_count = getPlayerCount() - 1;
+	const u8 player_count = getRules().get_u8("survivor player count") - 1;
 	const f32 player_factor = Maths::Max(1.0f - (player_count * 0.05f), 0.4f);
 	damage *= player_factor;
 	

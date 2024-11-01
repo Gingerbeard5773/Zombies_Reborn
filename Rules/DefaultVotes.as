@@ -237,7 +237,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 			//write all players on our team
 			bool added = false;
-			for (int i = 0; i < getPlayersCount(); ++i)
+			for (int i = 0; i < getPlayerCount(); ++i)
 			{
 				CPlayer@ player = getPlayer(i);
 				if (player is null) continue;

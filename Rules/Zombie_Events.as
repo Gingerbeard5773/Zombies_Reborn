@@ -91,8 +91,8 @@ void doTraderEvent(CRules@ this, CMap@ map)
 	//find a proper spawning position near an elegible player
 	const bool doGroundCheck = this.get_u16("undead count") > 20;
 	Vec2f[] spawns;
-	const u8 playersLength = getPlayerCount();
-	for (u8 i = 0; i < playersLength; ++i)
+	const u8 playerCount = getPlayerCount();
+	for (u8 i = 0; i < playerCount; ++i)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;

@@ -75,7 +75,7 @@ void onTick(CRules@ this)
 
 	f32 difficulty;
 	u32 spawnRate;
-	getSpawnRates(dayNumber, spawnRate, difficulty);
+	getSpawnRates(dayNumber, spawnRate, difficulty, getRules().get_u8("survivor player count"));
 
 	if (getGameTime() % spawnRate != 0) return;
 
@@ -89,9 +89,9 @@ void onTick(CRules@ this)
 }
 
 //Calculate our spawn rates and gamemode-difficulty based on the day number and amount of players on the server
-void getSpawnRates(const u16&in dayNumber, u32&out spawnRate, f32&out difficulty, const u8&in playerCount = getPlayersCount())
+void getSpawnRates(const u16&in dayNumber, u32&out spawnRate, f32&out difficulty, const u8&in playerCount)
 {
-	f32 player_modifier = (playerCount - 1) * 0.2f;
+	f32 player_modifier = playerCount - 1 * 0.2f;
 	player_modifier *= Maths::Min(1.0f, dayNumber / 5.0f); //lessen the impact of player count during early days (full effect is reached on day 5)
 
 	const f32 difficulty_ramp = Maths::Pow(dayNumber * 0.25f, 1.0001f);
@@ -201,7 +201,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		if (tokens.length > 1 && tokens[0] == "!spawnrates")
 		{
-			const u8 playerCount = tokens.length > 2 ? parseInt(tokens[2]) : getPlayersCount();
+			const u8 playerCount = tokens.length > 2 ? parseInt(tokens[2]) : getPlayerCount();
 			PrintSpawnRates(this, parseInt(tokens[1]), playerCount);
 			return false;
 		}

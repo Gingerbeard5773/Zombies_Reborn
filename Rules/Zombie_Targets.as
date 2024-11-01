@@ -60,3 +60,33 @@ const bool canTarget(CBlob@ blob)
 {
 	return blob.hasTag("player");
 }
+
+///
+
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+{
+	SetSurvivorPlayerCount(this);
+}
+
+void onPlayerLeave(CRules@ this, CPlayer@ player)
+{
+	SetSurvivorPlayerCount(this);
+}
+
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	SetSurvivorPlayerCount(this);
+}
+
+void SetSurvivorPlayerCount(CRules@ this)
+{
+	u8 count = 0;
+	for (u8 i = 0; i < getPlayerCount(); i++)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player !is null && player.getTeamNum() == 0)
+			count++;
+	}
+	this.set_u8("survivor player count", count);
+	this.Sync("survivor player count", true);
+}

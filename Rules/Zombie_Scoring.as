@@ -24,7 +24,7 @@ void onRestart(CRules@ this)
 	this.Sync("map_name", true);
 	
 	//reset player scores
-	for (u8 i = 0; i < getPlayersCount(); i++)
+	for (u8 i = 0; i < getPlayerCount(); i++)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;

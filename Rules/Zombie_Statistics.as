@@ -53,7 +53,7 @@ void getEndGameStatistics(CRules@ this, string[]@ inputs)
 	string mostKillsPlayer = "N/A";
 	string mostDeathsPlayer = "N/A";
 
-	for (u8 i = 0; i < getPlayersCount(); i++)
+	for (u8 i = 0; i < getPlayerCount(); i++)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;

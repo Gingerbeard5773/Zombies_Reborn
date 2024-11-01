@@ -29,8 +29,8 @@ void Reset(CRules@ this)
 	dictionary respawns;
 	this.set("respawns", @respawns);
 
-	const u8 plyCount = getPlayerCount();
-	for (u8 i = 0; i < plyCount; i++)
+	const u8 playerCount = getPlayerCount();
+	for (u8 i = 0; i < playerCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null || player.getTeamNum() == 3) continue;
@@ -56,8 +56,8 @@ void onTick(CRules@ this)
 	dictionary@ respawns;
 	if (!this.get("respawns", @respawns)) { error("Failed to attain respawns! :: "+getCurrentScriptName()); return; }
 
-	const u8 plyCount = getPlayerCount();
-	for (u8 i = 0; i < plyCount; i++)
+	const u8 playerCount = getPlayerCount();
+	for (u8 i = 0; i < playerCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null || player.getBlob() !is null || player.getTeamNum() == 3) continue;

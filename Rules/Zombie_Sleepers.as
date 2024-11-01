@@ -123,8 +123,8 @@ void UseSleepersAsRespawn(CRules@ this)
 		CBlob@ sleeper = sleepers[i];
 		if (!sleeper.hasTag("dead") && sleeper.get_u32("sleeper_time") < getGameTime() - unused_time_required)
 		{
-			const u8 plyCount = getPlayerCount();
-			for (u8 p = 0; p < plyCount; p++)
+			const u8 playerCount = getPlayerCount();
+			for (u8 p = 0; p < playerCount; p++)
 			{
 				CPlayer@ player = getPlayer(p);
 				if (player is null || player.getBlob() !is null || player.getTeamNum() == 3) continue;
