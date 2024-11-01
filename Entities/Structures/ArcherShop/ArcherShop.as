@@ -48,7 +48,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Molotov Arrows", "$mat_molotovarrows_icon$", "mat_molotovarrows", Translate::MolotovArrows, true);
-		AddRequirement(s.requirements, "coin", "", "Coins", 45);
+		AddRequirement(s.requirements, "coin", "", "Coins", 50);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Firework Rockets", "$mat_fireworkarrows$", "mat_fireworkarrows", Translate::FireworkArrows, true);

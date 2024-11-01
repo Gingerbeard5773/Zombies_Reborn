@@ -123,7 +123,7 @@ void onDie(CBlob@ this)
 		}
 
 		Vec2f vel = this.getOldVelocity();
-		for (int i = 0; i < 6 + XORRandom(2); i++)
+		for (int i = 0; i < 5 + XORRandom(2); i++)
 		{
 			CBlob@ blob = server_CreateBlob("flame", -1, pos + Vec2f(0, -8));
 			if (blob is null) continue;
