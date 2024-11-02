@@ -129,7 +129,7 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(LightArmor.requirements, "coin", "", "Coins", 400);
 	AddRequirement(LightArmor.requirements, "blob", "mat_ironingot", "Iron Ingot", 16);
 
-	Technology CombatPickaxes(Translate::CombatPickaxes, Tech::CombatPickaxes, Vec2f(-6, 10), 380);
+	Technology CombatPickaxes(Translate::CombatPickaxes, Tech::CombatPickaxes, Vec2f(-6, 10), 240);
 	AddRequirement(CombatPickaxes.requirements, "coin", "", "Coins", 400);
 	AddRequirement(CombatPickaxes.requirements, "blob", "mat_ironingot", "Iron Ingot", 8);
 

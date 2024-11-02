@@ -205,7 +205,7 @@ namespace Translate
 	Swords          = Translate("Sharpening Stone\nSwords deal +25% damage.",                        "Точильный Камень\nПравильно заточенные мечи наносят на +25% урона больше."),
 	SwordsII        = Translate("Damascus Steel\nSwords deal +25% damage.",                          "Дамасская Сталь\nМатериал дает лезвию дополнительную остроту прибовляя +25% к урону."),
 	LightArmor      = Translate("Lightweight Armor\nArmor encumbrance -50%.",                        "Сегментированная Броня\nПластичность и легкость брони увеличивает вашу скорость +50%."),
-	CombatPickaxes  = Translate("Combat Pickaxes\nPickaxes deal an extra +1/2 heart of damage.",     "Боевые Кирки\nКирки наносят дополнительный урон +1,5."),
+	CombatPickaxes  = Translate("Combat Pickaxes\nPickaxes deal 2x damage.",                         "Боевые Кирки\nКирки наносят дополнительный урон +1,5."),
 	LightPickaxes   = Translate("Light Pickaxes\nPickaxe mining speed increased.",                   "Легкие Кирки\nСкорость добычи с помощью кирки увеличена."),
 	PrecisionDrills = Translate("Precision Drilling\nDrills yield 100%.",                            "Мастерство Бурения\nПроизводительность бура достигает своего 100% пика."),
 	Architecture    = Translate("Architecture\nBlock placement is faster.",                          "Каменщик\nРазмещение блоков происходит быстрее."),
