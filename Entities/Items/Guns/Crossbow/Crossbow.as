@@ -226,8 +226,14 @@ void LoadCrossbow(CBlob@ holder, CrossbowInfo@ crossbow)
 			crossbow.loaded = true;
 			crossbow.arrow_type = arrow;
 			holder.TakeBlob(arrowTypeNames[arrow], 1);
-			break;
+			return;
 		}
+	}
+
+	if (hasTech(Tech::DeepQuiver))
+	{
+		crossbow.loaded = true;
+		crossbow.arrow_type = ArrowType::normal;
 	}
 }
 
