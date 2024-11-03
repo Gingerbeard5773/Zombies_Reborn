@@ -24,39 +24,33 @@ void onTick(CBlob@ this)
 
 	if (this.isInWater()) this.server_Die();
 
-	if (this.getTickSinceCreated() > 5) 
-	{
-		// getMap().server_setFireWorldspace(this.getPosition() + Vec2f(XORRandom(16) - 8, XORRandom(16) - 8), true);
-		
-		Vec2f pos = this.getPosition();
-		CMap@ map = getMap();
+	if (this.getTickSinceCreated() <= 5) return; 
+
+	Vec2f pos = this.getPosition();
+	CMap@ map = getMap();
+
+	map.server_setFireWorldspace(pos, true);
 	
-		map.server_setFireWorldspace(pos, true);
-		
-		for (int i = 0; i < 3; i++)
-		{
-			Vec2f bpos = pos + Vec2f(12 - XORRandom(24), XORRandom(8));
-			TileType t = map.getTile(bpos).type;
-			map.server_setFireWorldspace(bpos, true);
-		}
+	for (int i = 0; i < 3; i++)
+	{
+		Vec2f bpos = pos + Vec2f(12 - XORRandom(24), XORRandom(8));
+		map.server_setFireWorldspace(bpos, true);
+	}
+
+	if (getGameTime() % 8 == 0)
+	{
 		CBlob@[] blobs;
 		getMap().getBlobsInRadius(pos, this.getRadius()*3, blobs);
 		for (u16 i = 0; i < blobs.length; i++)
 		{
 			CBlob@ b = blobs[i];
-			if (b is null) continue;
+			if (!b.hasTag("flesh") && !b.getShape().getConsts().isFlammable) continue;
+
 			if (map.rayCastSolidNoBlobs(pos, b.getPosition())) continue;
-			
-			else if (b.hasTag("flesh") || b.getShape().getConsts().isFlammable)
-			{
-				if (getGameTime() % 8 == 0)
-				{
-					this.server_Hit(b, pos, Vec2f(0, 0.33f), 0.6f, Hitters::fire, true);
-				}
-			}
+
+			this.server_Hit(b, pos, Vec2f(0, 0.33f), 0.6f, Hitters::fire, true);
 		}
 	}
-
 }
 
 void onTick(CSprite@ this)
@@ -72,33 +66,32 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (isServer())
+	if (!isServer()) return;
+
+	if (solid) 
 	{
-		if (solid) 
-		{
-			Vec2f pos = this.getPosition();
-			CMap@ map = getMap();
+		Vec2f pos = this.getPosition();
+		CMap@ map = getMap();
+	
+		map.server_setFireWorldspace(pos, true);
 		
-			map.server_setFireWorldspace(pos, true);
-			
-			for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
+		{
+			Vec2f bpos = pos + Vec2f(12 - XORRandom(24), XORRandom(8));
+			TileType t = map.getTile(bpos).type;
+			if (map.isTileGround(t) && t != CMap::tile_ground_d0 && (XORRandom(100) < 50 ? true : t != CMap::tile_ground_d1))
 			{
-				Vec2f bpos = pos + Vec2f(12 - XORRandom(24), XORRandom(8));
-				TileType t = map.getTile(bpos).type;
-				if (map.isTileGround(t) && t != CMap::tile_ground_d0 && (XORRandom(100) < 50 ? true : t != CMap::tile_ground_d1))
-				{
-					map.server_DestroyTile(bpos, 1, this);
-				}
-				else
-				{
-					map.server_setFireWorldspace(bpos, true);
-				}
+				map.server_DestroyTile(bpos, 1, this);
+			}
+			else
+			{
+				map.server_setFireWorldspace(bpos, true);
 			}
 		}
-		else if (blob !is null && blob.isCollidable())
-		{
-			if (this.getTeamNum() != blob.getTeamNum()) this.server_Hit(blob, this.getPosition(), Vec2f(), 0.0f, Hitters::fire, true);
-		}
+	}
+	else if (blob !is null && blob.isCollidable())
+	{
+		if (this.getTeamNum() != blob.getTeamNum()) this.server_Hit(blob, this.getPosition(), Vec2f(), 0.0f, Hitters::fire, true);
 	}
 }
 

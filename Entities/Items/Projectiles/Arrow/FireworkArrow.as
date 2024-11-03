@@ -11,7 +11,7 @@
 
 const f32 ARROW_PUSH_FORCE = 6.0f;
 const f32 ARROW_SPEED = 12.0f;
-const f32 ARROW_RANGE = 460.0f;
+const f32 ARROW_RANGE = 600.0f;
 
 const string[] streamers = 
 {
