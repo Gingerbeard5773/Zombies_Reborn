@@ -11,7 +11,6 @@ namespace custom_colors
 	{
 		ironore = 0xff705648,
 		coal = 0xff2E2E2E,
-		steel = 0xff879092,
 		iron = 0xff6B7273,
 		biron = 0xff3F4141
 	};
@@ -31,7 +30,6 @@ class ZombiePNGLoader : PNGLoader
 		{
 			case custom_colors::ironore:  map.SetTile(offset, CMap::tile_ironore + XORRandom(4)); break;
 			case custom_colors::coal:     map.SetTile(offset, CMap::tile_coal + XORRandom(2));    break;
-			case custom_colors::steel:    map.SetTile(offset, CMap::tile_steel);                  break;
 			case custom_colors::iron:     map.SetTile(offset, CMap::tile_iron);                   break;
 			case custom_colors::biron:    map.SetTile(offset, CMap::tile_biron);                  break;
 		};
@@ -126,22 +124,6 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 
 			case CMap::tile_coal_f:
 				return CMap::tile_empty;
-
-
-			// STEEL //
-			case CMap::tile_steel:
-			case CMap::tile_steel_d0:
-			case CMap::tile_steel_d1:
-			case CMap::tile_steel_d2:
-			case CMap::tile_steel_d3:
-			case CMap::tile_steel_d4:
-			case CMap::tile_steel_d5:
-			case CMap::tile_steel_d6:
-				return oldTileType + 1;
-
-			case CMap::tile_steel_f:
-				return CMap::tile_empty;
-				
 			
 			// IRON //
 			case CMap::tile_iron:
@@ -246,7 +228,6 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 		{
 			case CMap::tile_ironore_f: OnIronOreTileDestroyed(map, index); break;
 			case CMap::tile_coal_f:    OnCoalTileDestroyed(map, index);    break;
-			case CMap::tile_steel_f:   OnSteelTileDestroyed(map, index);   break;
 			case CMap::tile_iron_f:    OnIronTileDestroyed(map, index);    break;
 			case CMap::tile_biron_f:   OnBIronTileDestroyed(map, index);   break;
 		};
@@ -297,25 +278,6 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 				OnCoalTileHit(map, index);
 				break;
 
-
-			// STEEL //
-			case CMap::tile_steel:
-				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
-				if (isClient()) Sound::Play("build_wall.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
-				break;
-
-			case CMap::tile_steel_d0:
-			case CMap::tile_steel_d1:
-			case CMap::tile_steel_d2:
-			case CMap::tile_steel_d3:
-			case CMap::tile_steel_d4:
-			case CMap::tile_steel_d5:
-			case CMap::tile_steel_d6:
-			case CMap::tile_steel_f:
-				OnSteelTileHit(map, index);
-				break;
-				
 			
 			// IRON //
 			case CMap::tile_iron:
@@ -423,22 +385,6 @@ void OnCoalTileDestroyed(CMap@ map, const u32&in index)
 {
 	if (isClient()) Sound::Play("destroy_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 	if (isClient()) Sound::Play("Rubble"+(1+XORRandom(2))+".ogg", map.getTileWorldPosition(index), 0.5f, 1.0f);
-}
-
-
-/// STEEL
-
-void OnSteelTileHit(CMap@ map, const u32&in index)
-{
-	map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-	map.RemoveTileFlag(index, Tile::LIGHT_PASSES);
-
-	if (isClient()) Sound::Play("dig_stone1.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
-}
-
-void OnSteelTileDestroyed(CMap@ map, const u32&in index)
-{
-	if (isClient()) Sound::Play("destroy_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 }
 
 

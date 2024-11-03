@@ -27,16 +27,6 @@ namespace CMap
 		tile_coal_d2,
 		tile_coal_d3,
 		tile_coal_f,
-
-		tile_steel = 416,
-		tile_steel_d0,
-		tile_steel_d1,
-		tile_steel_d2,
-		tile_steel_d3,
-		tile_steel_d4,
-		tile_steel_d5,
-		tile_steel_d6,
-		tile_steel_f,
 		
 		tile_iron = 432,
 		tile_iron_v0,
@@ -90,11 +80,6 @@ bool isTileCoal(const u16&in tile)
 	return tile >= CMap::tile_coal && tile <= CMap::tile_coal_f;
 }
 
-bool isTileSteel(const u16&in tile)
-{
-	return tile >= CMap::tile_steel && tile <= CMap::tile_steel_f;
-}
-
 bool isTileIron(const u16&in tile)
 {
 	return tile >= CMap::tile_iron && tile <= CMap::tile_iron_f;
@@ -114,7 +99,7 @@ bool isTileBetween(const u16&in tile, const u16&in min, const u16&in max)
 //engine replacement since the engine is garbage and cannot be modified script side
 bool isTileSolid(CMap@ map, const u16&in tile)
 {
-	return map.isTileSolid(tile) || isTileIronOre(tile) || isTileCoal(tile) || isTileSteel(tile) || isTileIron(tile);
+	return map.isTileSolid(tile) || isTileIronOre(tile) || isTileCoal(tile) || isTileIron(tile);
 }
 
 bool isTileGroundStuff(CMap@ map, const u16&in tile)
