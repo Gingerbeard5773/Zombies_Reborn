@@ -74,7 +74,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		this.set_Vec2f("shop offset", Vec2f(6, 0));
 		CBitStream params;
 		params.write_netid(carried.getNetworkID());
-		caller.CreateGenericButton("$worker_migrant$", Vec2f(-6, 0), this, this.getCommandID("rest"), Translate::RestWorker, params);
+		caller.CreateGenericButton("$worker_migrant$", Vec2f(-6, 0), this, this.getCommandID("server_rest"), Translate::RestWorker, params);
 	}
 	else
 	{
