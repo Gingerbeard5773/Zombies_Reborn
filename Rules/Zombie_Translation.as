@@ -19,7 +19,7 @@ namespace Translate
 	const string
 
 	//gamehelp
-	ZF   = Translate("ZOMBIE FORTRESS",                                                     "КРЕПОСТЬ ЗОМБИ"),
+	ZF   = Translate("ZOMBIE FORTRESS",                                                     "ZOMBIE FORTRESS"),
 	Tips = Translate("TIPS",                                                                "Советы"),
 	Tip0 = Translate("Build a great castle and endure the masses of zombies!",              "Постройте вместе громадный замок,\n\nчтобы после сражаться с ордами нежити!"),
 	Tip1 = Translate("When night arrives, the undead will appear at these gateways.",       "С наступленим ночи, мертвецы будут появляться у ваших ворот."),
@@ -31,12 +31,12 @@ namespace Translate
 	Tip7 = Translate("Migrants will come every other day if the undead population is low.", "Мигранты будут приходить к вам каждый день,\n\nесли численность всей нежити будет минимальной"),
 	
 	//scoreboard
-	ZF2       = Translate("Zombie Fortress",                                  "Крепость зомби"),
+	ZF2       = Translate("Zombie Fortress",                                  "Zombie Fortress"),
 	Manual    = Translate("Press {KEY} to toggle the help manual on/off.",    "Нажмите {KEY} чтобы включить/выключить справочное руководство."),
 	DayNum    = Translate("Day: {DAYS}",                                      "День: {DAYS}"),
 	Zombies   = Translate("Zombies: {AMOUNT}",                                "Нежити: {AMOUNT}"),
 	Survivors = Translate("Survivors",                                        "Выжившие"),
-	
+
 	//respawning
 	Respawn0 = Translate("Waiting for dawn...",              "В ожидании рассвета..."),
 	Respawn1 = Translate("Waiting to spawn as an undead...", "В ожидании восстания из мертвых..."),
@@ -87,7 +87,7 @@ namespace Translate
 	IronSpikes     = Translate("Iron Spikes\nDurable spikes",                           "Железные шипы\nПрочные шипы."),
 	Windmill       = Translate("Wind Mill\nA grain mill for producing flour.",          "Мельница\nЗерновая мельница для производства муки."),
 	Kitchen        = Translate("Kitchen\nCreate various foods for healing.",            "Кухня\nГотовьте различную еду для восстановления здоровья и сил."),
-	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     "Кузница\nПереплавляет сырую руду в слитки."),
+	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     "Плавильня\nПереплавляет сырую руду в слитки."),
 	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes.",   "Рассадник\nРассадник для сельскохозяйственных культур."),
 	Armory         = Translate("Armory\nBuild weapons and change your class.",          "Оружейная\nСлужит для создания оружия из слитков, позволяет сменить класс."),
 	Library        = Translate("Library\nA place of study to obtain new technologies.", "Библиотека\nМесто хранения знаний и открытий, здесь можно освоить новые технологии."),
