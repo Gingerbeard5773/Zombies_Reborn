@@ -395,7 +395,7 @@ void onInit(CSprite@ this)
 	}
 	else if (XORRandom(3) == 0)
 	{
-		CSpriteLayer@ flag = this.addSpriteLayer("flag", "Ballista.png", 32, 32, XORRandom(8), 0);
+		CSpriteLayer@ flag = this.addSpriteLayer("flag", "Entities/Vehicles/Ballista/Ballista.png", 32, 32, XORRandom(8), 0);
 		if (flag !is null)
 		{
 			flag.addAnimation("default", 3, true);
