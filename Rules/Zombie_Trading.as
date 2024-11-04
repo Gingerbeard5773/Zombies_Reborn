@@ -159,7 +159,7 @@ void awardCoins(CBitStream@ params)
 		{
 			coins = coinsOnBuildComponent;
 		}
-		else if (name == "iron_door" || name == "iron_platform")
+		else if (name == "iron_door" || name == "iron_platform" || name == "iron_spikes")
 		{
 			coins = coinsOnBuildIronDoor;
 		}
