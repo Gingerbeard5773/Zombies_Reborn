@@ -147,7 +147,7 @@ namespace Translate
 	Scythe         = Translate("Scythe\nA tool for cutting crops fast.\nAllows for grain auto-pickup.",                 "Коса\nИнструмент для быстрого срезания урожая.\nПозволяет поднямать зерна автоматически."),
 	Crossbow       = Translate("Crossbow\nFires any arrow type.\nHold right mouse button to reload.",                   "Арбалет\nСтреляет Любыми стрелами\nЗажмите ПКМ, чтобы перезарядить."),
 	Musket         = Translate("Musket\nFires musket balls.\nHold right mouse button to reload.",                       "Мушкет\nСтреляет патронами для Мушкета.\nЗажмите ПКМ, чтобы перезарядить."),
-	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              "Пули Мушкета\nПатроны для Мушкета"),
+	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              "Пули для Мушкета\nПатроны для Мушкета"),
 	Chainsaw       = Translate("Chainsaw\nCuts through wood fast.",                                                     "Бензопила\nРежет дерево быстрее."),
 	Molotov        = Translate("Molotov\nA flask of fire which can be thrown at the enemy. Press [Space] to activate.", "Молотов\nФляга с горючей жидкостью которую можно бросить во врага. Нажмите [Space] для активации."),
 	ScubaGear      = Translate("Scuba Gear\nAllows breathing under water.",                                             "Акваланг\nПозволяет дышать под водой."),
