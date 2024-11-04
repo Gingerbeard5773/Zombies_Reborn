@@ -7,6 +7,7 @@
 #include "ShieldCommon.as";
 #include "KnockedCommon.as";
 #include "Zombie_TechnologyCommon.as";
+#include "Zombie_Translation.as";
 
 const f32 speed_thresh = 2.0f;
 const f32 speed_hard_thresh = 2.3f;
@@ -80,6 +81,8 @@ void onInit(CBlob@ this)
 
 	this.set_u32(last_drill_prop, 0);
 	this.Tag("ignore fall");
+	
+	this.setInventoryName(name(Translate::SteelDrill));
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)

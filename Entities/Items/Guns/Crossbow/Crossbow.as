@@ -2,6 +2,7 @@
 #include "RunnerCommon.as";
 #include "CrossbowCommon.as";
 #include "Zombie_TechnologyCommon.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -20,6 +21,8 @@ void onInit(CBlob@ this)
 	
 	CrossbowInfo crossbow;
 	this.set("crossbowInfo", @crossbow);
+	
+	this.setInventoryName(name(Translate::Crossbow));
 }
 
 void onTick(CBlob@ this)

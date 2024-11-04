@@ -42,7 +42,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 12);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Molotov", "$molotov$", "molotov", Translate::Molotov, false);
+		ShopItem@ s = addShopItem(this, name(Translate::Molotov), "$molotov$", "molotov", Translate::Molotov, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", 30);
 	}
 	{

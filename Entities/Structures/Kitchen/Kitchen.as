@@ -47,18 +47,18 @@ void onInit(CBlob@ this)
 	
 	{
 		CraftItem i("bread", Translate::Bread+"\n$heart_full$$heart_half$", 4, 30);
-		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 20);
+		AddRequirement(i.reqs, "blob", "mat_flour", Translate::Flour, 20);
 		craft.addItem(this, i);
 	}
 	{
 		CraftItem i("cake", Translate::Cake+"\n$heart_full$$heart_full$$heart_full$", 5, 30);
-		AddRequirement(i.reqs, "blob", "mat_flour", "Flour", 15);
+		AddRequirement(i.reqs, "blob", "mat_flour", Translate::Flour, 15);
 		AddRequirement(i.reqs, "blob", "egg", "Egg", 1);
 		craft.addItem(this, i);
 	}
 	{
 		CraftItem i("cookedfish", Translate::Cookedfish+"\n$heart_full$$heart_full$$heart_full$$heart_half$", 1, 30);
-		AddRequirement(i.reqs, "blob", "fishy", "Fish", 1);
+		AddRequirement(i.reqs, "blob", "fishy", "Fishy", 1);
 		craft.addItem(this, i);
 	}
 	{
@@ -69,7 +69,7 @@ void onInit(CBlob@ this)
 	{
 		CraftItem i("food", Translate::Burger+"\n$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_full$$heart_half$", 6, 30);
 		AddRequirement(i.reqs, "blob", "steak", "Steak", 1);
-		AddRequirement(i.reqs, "blob", "bread", "Bread", 1);
+		AddRequirement(i.reqs, "blob", "bread", name(Translate::Bread), 1);
 		craft.addItem(this, i);
 	}
 }

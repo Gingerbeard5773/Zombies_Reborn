@@ -4,6 +4,7 @@
 #include "Hitters.as";
 #include "ParticleSparks.as";
 #include "Zombie_TechnologyCommon.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -16,6 +17,8 @@ void onInit(CBlob@ this)
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnHitOwner(this, @onHitOwner);
 	addOnClientJoin(this, @onClientJoin);
+	
+	this.setInventoryName(name(Translate::SteelArmor));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

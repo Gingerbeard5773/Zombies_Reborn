@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
-	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, Translate::ScrollCrate);
+	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Spell, desc(Translate::ScrollCrate));
 }
 
 void Callback_Spell(CBlob@ this, CBlob@ caller)

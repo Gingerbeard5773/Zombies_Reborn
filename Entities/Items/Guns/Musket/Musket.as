@@ -1,6 +1,7 @@
 //Gingerbeard @ July 28, 2024
 #include "RunnerCommon.as"
 #include "GunCommon.as"
+#include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
 {
@@ -27,6 +28,8 @@ void onInit(CBlob@ this)
 
 	onReloadHandle@ reload_handle = @onReload;
 	this.set("onReload handle", @reload_handle);
+	
+	this.setInventoryName(name(Translate::Musket));
 }
 
 void onReload(CBlob@ this, CBlob@ holder, GunInfo@ gun)

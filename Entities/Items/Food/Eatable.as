@@ -1,4 +1,5 @@
 #include "EatCommon.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -11,6 +12,19 @@ void onInit(CBlob@ this)
 	this.addCommandID("heal command server");
 
 	this.Tag("pushedByDoor");
+
+	this.setInventoryName(getTranslatedInventoryName(this));
+}
+
+string getTranslatedInventoryName(CBlob@ this)
+{
+	const string blob_name = this.getName();
+	if (blob_name == "bread")       return name(Translate::Bread);
+	if (blob_name == "cake")        return name(Translate::Cake);
+	if (blob_name == "cookedfish")  return name(Translate::Cookedfish);
+	if (blob_name == "cookedsteak") return name(Translate::Cookedsteak);
+	
+	return this.getInventoryName();
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)

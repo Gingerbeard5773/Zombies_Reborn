@@ -119,13 +119,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		Sound::Play("/ResearchComplete.ogg");
 
-		const string[]@ tokens = tech.description.split("\n");
-		if (tokens.length > 0)
-		{
-			const string tech_completed = Translate::TechComplete.replace("{TECH}", tokens[0]);
-			client_SendGlobalMessage(getRules(), tech_completed, 6, SColor(0xffa293ff)); 
-			print(tech_completed);
-		}
+		const string tech_completed = Translate::TechComplete.replace("{TECH}", name(tech.description));
+		client_SendGlobalMessage(getRules(), tech_completed, 6, SColor(0xffa293ff)); 
+		print(tech_completed);
 	}
 }
 

@@ -1,5 +1,6 @@
 #include "EquipmentCommon.as";
 #include "RunnerTextures.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -9,6 +10,8 @@ void onInit(CBlob@ this)
 
 	addOnEquip(this, @OnEquip);
 	addOnUnequip(this, @OnUnequip);
+	
+	this.setInventoryName(name(Translate::ScubaGear));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

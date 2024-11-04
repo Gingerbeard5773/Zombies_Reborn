@@ -62,39 +62,39 @@ void SetupTechTree(CRules@ this)
 
 	Technology Metallurgy(Translate::Metallurgy, Tech::Metallurgy, Vec2f(0, 7), 240);
 	AddRequirement(Metallurgy.requirements, "coin", "", "Coins", 500);
-	AddRequirement(Metallurgy.requirements, "blob", "mat_ironingot", "Iron Ingot", 10);
+	AddRequirement(Metallurgy.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 10);
 
 	Technology MetallurgyII(Translate::MetallurgyII, Tech::MetallurgyII, Vec2f(0, 17), 380);
 	AddRequirement(MetallurgyII.requirements, "coin", "", "Coins", 750);
-	AddRequirement(MetallurgyII.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
+	AddRequirement(MetallurgyII.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
 
 	Technology MetallurgyIII(Translate::MetallurgyIII, Tech::MetallurgyIII, Vec2f(0, 27), 760);
 	AddRequirement(MetallurgyIII.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(MetallurgyIII.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
+	AddRequirement(MetallurgyIII.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
 
 	Technology MetallurgyIV(Translate::MetallurgyIV, Tech::MetallurgyIV, Vec2f(0, 37), 860);
 	AddRequirement(MetallurgyIV.requirements, "coin", "", "Coins", 1500);
-	AddRequirement(MetallurgyIV.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
+	AddRequirement(MetallurgyIV.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 4);
 	AddRequirement(MetallurgyIV.requirements, "blob", "mat_gold", "Gold", 25);
 
 	Technology Refinement(Translate::Refinement, Tech::Refinement, Vec2f(6, 30), 240);
 	AddRequirement(Refinement.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(Refinement.requirements, "blob", "mat_coal", "Coal", 100);
+	AddRequirement(Refinement.requirements, "blob", "mat_coal", name(Translate::Coal), 100);
 	AddRequirement(Refinement.requirements, "blob", "mat_gold", "Gold", 25);
 
 	Technology RefinementII(Translate::RefinementII, Tech::RefinementII, Vec2f(12, 30), 380);
 	AddRequirement(RefinementII.requirements, "coin", "", "Coins", 750);
-	AddRequirement(RefinementII.requirements, "blob", "mat_coal", "Coal", 100);
+	AddRequirement(RefinementII.requirements, "blob", "mat_coal", name(Translate::Coal), 100);
 	AddRequirement(RefinementII.requirements, "blob", "mat_gold", "Gold", 50);
 
 	Technology RefinementIII(Translate::RefinementIII, Tech::RefinementIII, Vec2f(18, 30), 760);
 	AddRequirement(RefinementIII.requirements, "coin", "", "Coins", 750);
-	AddRequirement(RefinementIII.requirements, "blob", "mat_coal", "Coal", 150);
+	AddRequirement(RefinementIII.requirements, "blob", "mat_coal", name(Translate::Coal), 150);
 	AddRequirement(RefinementIII.requirements, "blob", "mat_gold", "Gold", 75);
 
 	Technology RefinementIV(Translate::RefinementIV, Tech::RefinementIV, Vec2f(24, 30), 900);
 	AddRequirement(RefinementIV.requirements, "coin", "", "Coins", 750);
-	AddRequirement(RefinementIV.requirements, "blob", "mat_coal", "Coal", 200);
+	AddRequirement(RefinementIV.requirements, "blob", "mat_coal", name(Translate::Coal), 200);
 	AddRequirement(RefinementIV.requirements, "blob", "mat_gold", "Gold", 100);
 
 	Technology Extraction(Translate::Extraction, Tech::Extraction, Vec2f(-6, 37), 760);
@@ -107,39 +107,39 @@ void SetupTechTree(CRules@ this)
 
 	Technology Milling(Translate::Milling, Tech::Milling, Vec2f(12, 5), 240);
 	AddRequirement(Milling.requirements, "coin", "", "Coins", 150);
-	AddRequirement(Milling.requirements, "blob", "mat_flour", "Flour", 25);
+	AddRequirement(Milling.requirements, "blob", "mat_flour", Translate::Flour, 25);
 
 	Technology MillingII(Translate::MillingII, Tech::MillingII, Vec2f(18, 5), 340);
 	AddRequirement(MillingII.requirements, "coin", "", "Coins", 250);
-	AddRequirement(MillingII.requirements, "blob", "mat_flour", "Flour", 50);
+	AddRequirement(MillingII.requirements, "blob", "mat_flour", Translate::Flour, 50);
 
 	Technology MillingIII(Translate::MillingIII, Tech::MillingIII, Vec2f(24, 5), 440);
 	AddRequirement(MillingIII.requirements, "coin", "", "Coins", 350);
-	AddRequirement(MillingIII.requirements, "blob", "mat_flour", "Flour", 100);
+	AddRequirement(MillingIII.requirements, "blob", "mat_flour", Translate::Flour, 100);
 
 	Technology Swords(Translate::Swords, Tech::Swords, Vec2f(6, 24), 240);
 	AddRequirement(Swords.requirements, "coin", "", "Coins", 400);
-	AddRequirement(Swords.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
+	AddRequirement(Swords.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 4);
 
 	Technology SwordsII(Translate::SwordsII, Tech::SwordsII, Vec2f(12, 24), 380);
 	AddRequirement(SwordsII.requirements, "coin", "", "Coins", 700);
-	AddRequirement(SwordsII.requirements, "blob", "mat_steelingot", "Steel Ingot", 6);
+	AddRequirement(SwordsII.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 6);
 
 	Technology LightArmor(Translate::LightArmor, Tech::LightArmor, Vec2f(6, 37), 480);
 	AddRequirement(LightArmor.requirements, "coin", "", "Coins", 400);
-	AddRequirement(LightArmor.requirements, "blob", "mat_ironingot", "Iron Ingot", 16);
+	AddRequirement(LightArmor.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 16);
 
 	Technology CombatPickaxes(Translate::CombatPickaxes, Tech::CombatPickaxes, Vec2f(-6, 10), 240);
 	AddRequirement(CombatPickaxes.requirements, "coin", "", "Coins", 400);
-	AddRequirement(CombatPickaxes.requirements, "blob", "mat_ironingot", "Iron Ingot", 8);
+	AddRequirement(CombatPickaxes.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 8);
 
 	Technology LightPickaxes(Translate::LightPickaxes, Tech::LightPickaxes, Vec2f(-6, 16), 240);
 	AddRequirement(LightPickaxes.requirements, "coin", "", "Coins", 500);
-	AddRequirement(LightPickaxes.requirements, "blob", "mat_ironingot", "Iron Ingot", 16);
+	AddRequirement(LightPickaxes.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 16);
 
 	Technology PrecisionDrills(Translate::PrecisionDrills, Tech::PrecisionDrills, Vec2f(-6, 22), 240);
 	AddRequirement(PrecisionDrills.requirements, "coin", "", "Coins", 600);
-	AddRequirement(PrecisionDrills.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
+	AddRequirement(PrecisionDrills.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
 
 	Technology Architecture(Translate::Architecture, Tech::Architecture, Vec2f(-27, 11), 240);
 	AddRequirement(Architecture.requirements, "coin", "", "Coins", 300);
@@ -181,11 +181,11 @@ void SetupTechTree(CRules@ this)
 
 	Technology HeavyLead(Translate::HeavyLead, Tech::HeavyLead, Vec2f(-18, 35), 480);
 	AddRequirement(HeavyLead.requirements, "coin", "", "Coins", 600);
-	AddRequirement(HeavyLead.requirements, "blob", "mat_ironingot", "Iron Ingot", 8);
+	AddRequirement(HeavyLead.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 8);
 
 	Technology RifledBarrels(Translate::RifledBarrels, Tech::RifledBarrels, Vec2f(-24, 29), 480);
 	AddRequirement(RifledBarrels.requirements, "coin", "", "Coins", 400);
-	AddRequirement(RifledBarrels.requirements, "blob", "mat_ironingot", "Iron Ingot", 4);
+	AddRequirement(RifledBarrels.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 4);
 
 	Technology Bandoliers(Translate::Bandoliers, Tech::Bandoliers, Vec2f(-24, 23), 380);
 	AddRequirement(Bandoliers.requirements, "coin", "", "Coins", 450);
@@ -210,26 +210,26 @@ void SetupTechTree(CRules@ this)
 
 	Technology BlastShields(Translate::BlastShields, Tech::BlastShields, Vec2f(12, 37), 960);
 	AddRequirement(BlastShields.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(BlastShields.requirements, "blob", "mat_steelingot", "Steel Ingot", 6);
+	AddRequirement(BlastShields.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 6);
 
 	Technology FlightTuning(Translate::FlightTuning, Tech::FlightTuning, Vec2f(18, 23), 240);
 	AddRequirement(FlightTuning.requirements, "coin", "", "Coins", 250);
 
 	Technology IronChassis(Translate::IronChassis, Tech::IronChassis, Vec2f(18, 17), 380);
 	AddRequirement(IronChassis.requirements, "coin", "", "Coins", 250);
-	AddRequirement(IronChassis.requirements, "blob", "mat_ironingot", "Iron Ingot", 8);
+	AddRequirement(IronChassis.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 8);
 
 	Technology SteelChassis(Translate::SteelChassis, Tech::SteelChassis, Vec2f(24, 17), 480);
 	AddRequirement(SteelChassis.requirements, "coin", "", "Coins", 350);
-	AddRequirement(SteelChassis.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
+	AddRequirement(SteelChassis.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 4);
 
 	Technology TorsionWinch(Translate::TorsionWinch, Tech::TorsionWinch, Vec2f(12, 17), 280);
 	AddRequirement(TorsionWinch.requirements, "coin", "", "Coins", 350);
-	AddRequirement(TorsionWinch.requirements, "blob", "mat_ironingot", "Iron Ingot", 2);
+	AddRequirement(TorsionWinch.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 2);
 
 	Technology SeigeCrank(Translate::SeigeCrank, Tech::SeigeCrank, Vec2f(6, 17), 240);
 	AddRequirement(SeigeCrank.requirements, "coin", "", "Coins", 250);
-	AddRequirement(SeigeCrank.requirements, "blob", "mat_ironingot", "Iron Ingot", 4);
+	AddRequirement(SeigeCrank.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 4);
 
 	Technology Regeneration(Translate::Regeneration, Tech::Regeneration, Vec2f(30, 5), 480);
 	AddRequirement(Regeneration.requirements, "coin", "", "Coins", 250);

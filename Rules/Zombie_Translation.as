@@ -3,10 +3,6 @@
 // Gingerbeard @ September 21 2024
 //translated strings for zombies reborn
 
-//todo:
-//trader buy/sell strings
-//item names
-
 shared const string Translate(const string&in en, const string&in ru = "")
 {
 	string text_out = "";
@@ -65,22 +61,23 @@ namespace Translate
 	Stat4 = Translate("All-time record: {INPUT} Days",   "Нынешний рекорд: {INPUT} Дней"),
 
 	//scrolls
-	ScrollClone    = Translate("Use this to duplicate an object you are pointing to.",                         "Использовав единоразово, он клонирует объект, на который вы указываете курсором."),
-	ScrollCrate    = Translate("Use this to crate an object you are pointing at.",                             "Использовав единоразово, запечатывает в ящик объект на который вы указываете курсором."),
-	ScrollFish     = Translate("Use this to summon a shark.",                                                  "Использовав единоразово, вы призываете морское существо - акулу."),
-	ScrollFlora    = Translate("Use this to create plants nearby.",                                            "Использовав единоразово, рядом с вами вырвутся из под земли плодородные растения."),
-	ScrollFowl     = Translate("Use this to summon a flock of chickens.",                                      "Использовав единоразово, вы призываете стадо кур."),
-	ScrollRevive   = Translate("Use this near a dead body to ressurect them.\nCan auto-resurrect the holder.", "Используйте этот свиток рядом с мертвым телом, чтобы воскресить его.\nАвтоматически воскрешает владельца."),
-	ScrollRoyalty  = Translate("Use this to summon a geti.",                                                   "Использовав единоразово, вы призавете Гети."),
-	ScrollSea      = Translate("Use this to generate a source of water.",                                      "Использовав единоразово, создает под вами источник воды."),
-	ScrollTeleport = Translate("Use this to teleport to the area you are pointing to.",                        "Использовав единоразово, телепортирует вас туда, куда вы указали курсором."),
-	ScrollStone    = Translate("Use this to convert nearby stone into thick stone.",                           "Использовав единоразово, превращает обычную почву рядом с вами в жилы камня."),
-	ScrollWisent   = Translate("Use this to summon a bison.",                                                  "Использовав единоразово, вы призываете сухопутное существо - бизона."),
-	ScrollHealth   = Translate("Use this to heal yourself and others around you.",                             "Использовав единоразово, придает жизненную силу, исцеляя вас и всех окружающих."),
-	ScrollRepair   = Translate("Use this to repair everything around you.",                                    "Использовав единоразово, ремонтирует строения и блоки, а также все что окружает вас."),
-	ScrollCreation = Translate("Use this to magically construct a structure from thin air.",                   "Использовав единоразово, волшебным образом сооружает строение из воздуха."),
-	ScrollEarth    = Translate("Use this to fill in dirt background with dirt.",                               "Использовав единоразово, заполняет раскопанные блоки почвы."),
-	ScrollChaos    = Translate("Use this to ???.",                                                             "Использовав единоразово, свиток не является определенным и может оказаться непредсказуемым."),
+	ScrollClone    = Translate("Scroll of Duplication\nUse this to duplicate an object you are pointing to.",                          "Свиток дублирования\nИспользовав единоразово, он клонирует объект, на который вы указываете курсором."),
+	ScrollCrate    = Translate("Scroll of Compaction\nUse this to crate an object you are pointing at.",                               "Свиток уплотнения\nИспользовав единоразово, запечатывает в ящик объект на который вы указываете курсором."),
+	ScrollFish     = Translate("Scroll of Fish\nUse this to summon a shark.",                                                          "Свиток Рыбы\nИспользовав единоразово, вы призываете морское существо - акулу."),
+	ScrollFlora    = Translate("Scroll of Flora\nUse this to create plants nearby.",                                                   "Свиток Флоры\nИспользовав единоразово, рядом с вами вырвутся из под земли плодородные растения."),
+	ScrollFowl     = Translate("Scroll of Fowl\nUse this to summon a flock of chickens.",                                              "Свиток Птицы\nИспользовав единоразово, вы призываете стадо кур."),
+	ScrollRevive   = Translate("Scroll of Resurrection\nUse this near a dead body to ressurect them.\nCan auto-resurrect the holder.", "Свиток Воскрешения\nИспользуйте этот свиток рядом с мертвым телом, чтобы воскресить его.\nАвтоматически воскрешает владельца."),
+	ScrollRoyalty  = Translate("Scroll of Royalty\nUse this to summon a geti.",                                                        "Свиток королевской власти\nИспользовав единоразово, вы призавете Гети."),
+	ScrollSea      = Translate("Scroll of Sea\nUse this to generate a source of water.",                                               "Свиток моря\nИспользовав единоразово, создает под вами источник воды."),
+	ScrollTeleport = Translate("Scroll of Conveyance\nUse this to teleport to the area you are pointing to.",                          "Свиток телепортации\nИспользовав единоразово, телепортирует вас туда, куда вы указали курсором."),
+	ScrollStone    = Translate("Scroll of Quarry\nUse this to convert nearby dirt into stone and iron.",                               "Свиток Карьера\nИспользовав единоразово, превращает обычную почву рядом с вами в жилы камня."),
+	ScrollWisent   = Translate("Scroll of Wisent\nUse this to summon a bison.",                                                        "Свиток Зубра\nИспользовав единоразово, вы призываете сухопутное существо - бизона."),
+	ScrollHealth   = Translate("Scroll of Health\nUse this to heal yourself and others around you.",                                   "Свиток Здоровья\nИспользовав единоразово, придает жизненную силу, исцеляя вас и всех окружающих."),
+	ScrollRepair   = Translate("Scroll of Repair\nUse this to repair everything around you.",                                          "Свиток ремонта\nИспользовав единоразово, ремонтирует строения и блоки, а также все что окружает вас."),
+	ScrollCreation = Translate("Scroll of Creation\nUse this to magically construct a structure from thin air.",                       "Свиток Творения\nИспользовав единоразово, волшебным образом сооружает строение из воздуха."),
+	ScrollEarth    = Translate("Scroll of Earth\nUse this to fill in dirt background with dirt.",                                      "Свиток Земли\nИспользовав единоразово, заполняет раскопанные блоки почвы."),
+	ScrollChaos    = Translate("Scroll of Chaos\nUse this to ???.",                                                                    "Свиток Хаоса\nИспользовав единоразово, свиток не является определенным и может оказаться непредсказуемым."),
+	ScrollMidas    = Translate("Scroll of Midas",                                                                                      "Свиток Мидаса"),
 
 	//builder
 	IronBlock      = Translate("Iron Block\nResistant to explosions.",                  "Железный Блок\nВзрывоустойчивый Блок."),
@@ -96,6 +93,7 @@ namespace Translate
 	Library        = Translate("Library\nA place of study to obtain new technologies.", "Библиотека\nМесто хранения знаний и открытий, здесь можно освоить новые технологии."),
 	
 	//workers
+	Worker         = Translate("Worker",                           "Рабочего"),
 	AssignWorker   = Translate("Assign Worker",                    "Назначить Рабочего"),
 	UnassignWorker = Translate("Unassign Worker",                  "Уволить Рабочего"),
 	WorkerRequired = Translate("Requires a worker",                "Требуется Рабочий"),
@@ -115,20 +113,24 @@ namespace Translate
 	Factory        = Translate("A generic factory for various items. Requires a free worker to produce items.", "Общая фабрика для различных вещей. Требуется свободный рабочий для изготовления предметов."),
 	Dormitory      = Translate("A dorm for recruiting and healing workers. Functions as a respawn point.",      "Общежитие для набора и лечения рабочих. Это также, место для возрождения и новоприбывших."),
 
+	//factory
+	Bigbomb        = Translate("Big Bomb", "Большая бомба"),
+
 	//vehicleshop
-	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs.",       "Воздушный шар, способный летать. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
-	Armoredbomber  = Translate("A balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", "Воздушный шар с защитным покрытием. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
-	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",            "Переносная стреляющая стрелами механизм смерти. Может быть установлена на некоторые транспортные средства."),
-	Tank           = Translate("A seige tank. Allows attachments.",                                                   "Осадный танк. Позволяет устанавливать навесное оборудование."),
-	LightBallista  = Translate("A portable ballista. Can be attached to some vehicles.",                              "Передвижная баллиста. Может устанавливаться на некоторые транспортные средства."),
-	Cannon         = Translate("A cannon that is capable of obliterating any foe. Can be attached to some vehicles.", "Пушка, способная уничтожить любого противника. Может устанавливаться на некоторые транспортные средства."),
-	Zeppelin       = Translate("A sky fortress with many accomodations on board. Functions as a respawn point.",      "Небесная крепость с множеством жилых помещений на борту. Служит точкой возрождения."),
+	Bomber         = Translate("A balloon capable of flying. Allows attachments. Press [Space] to drop bombs.",                       "Воздушный шар, способный летать. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
+	Armoredbomber  = Translate("Armored Bomber\nA balloon with protective plating. Allows attachments. Press [Space] to drop bombs.", "Бронированный бомбардировщик\nВоздушный шар с защитным покрытием. Позволяет устанавливать навесное оборудование. Нажмите [Пробел], чтобы сбросить бомбы."),
+	Mountedbow     = Translate("A portable arrow-firing death machine. Can be attached to some vehicles.",                            "Переносная стреляющая стрелами механизм смерти. Может быть установлена на некоторые транспортные средства."),
+	Tank           = Translate("Tank\nA seige tank. Allows attachments.",                                                             "Танк\nОсадный танк. Позволяет устанавливать навесное оборудование."),
+	LightBallista  = Translate("Light Ballista\nA portable ballista. Can be attached to some vehicles.",                              "Легкая баллиста\nПередвижная баллиста. Может устанавливаться на некоторые транспортные средства."),
+	Cannon         = Translate("Cannon\nA cannon that is capable of obliterating any foe. Can be attached to some vehicles.",         "Пушка\nПушка, способная уничтожить любого противника. Может устанавливаться на некоторые транспортные средства."),
+	Zeppelin       = Translate("Zeppelin\nA sky fortress with many accomodations on board. Functions as a respawn point.",            "Цеппелин\nНебесная крепость с множеством жилых помещений на борту. Служит точкой возрождения."),
 
 	//archershop
-	MolotovArrows  = Translate("Molotov arrows to incinerate the enemy.",   "Стрелы Молотова, испепеляющие врага."),
-	FireworkArrows = Translate("Firework rockets. Explodes where you aim.", "Фейерверки. Взрывается там, куда вы целитесь."),
+	MolotovArrows  = Translate("Molotov arrows\nFor incinerating the enemy.", "Стрелы Молотова\nДля испепеления врага."),
+	FireworkArrows = Translate("Firework rockets\nExplodes where you aim.",   "Фейерверки\nВзрывается там, куда вы целитесь."),
 
 	//kitchen
+	Flour          = Translate("Flour",                                       "Мука"),
 	Bread          = Translate("Bread\nDelicious crunchy whole-wheat bread.", "Хлеб\nВкусный хрустящий хлеб из цельнозерновой муки."),
 	Cake           = Translate("Cake\nFluffy cake made from egg and wheat.",  "Пирог\nПышный пирог из яиц и пшеницы."),
 	Cookedfish     = Translate("Cooked Fish\nA cooked fish on a stick.",      "Приготовленная Рыба\nПриготовленная рыба на палочке."),
@@ -136,8 +138,9 @@ namespace Translate
 	Burger         = Translate("Burger\nSeared meat in a bun!",               "Бургер\nОбжареное мясо в булочке!"),
 
 	//forge
+	IronOre        = Translate("Iron Ore",                                                        "Железная руда"),
+	Coal           = Translate("Coal\nCan be used for fuel or be used to refine steel.",          "Уголь\nМожно использовать в качестве топлива или для очистки стали."),
 	IronIngot      = Translate("Iron Ingot\nCan be used to create weapons and equipment",         "Железный слиток\nМожно использовать для создания оружия и снаряжения."),
-	CharCoal       = Translate("Coal\nCan be used for fuel or be used to refine steel.",          "Уголь\nМожно использовать в качестве топлива или для очистки стали."),
 	SteelIngot     = Translate("Steel Ingot\nCan be used to create strong weapons and equipment", "Стальной слиток\nМожно использовать для создания прочного оружия и снаряжения."),
 
 	//armory
@@ -156,6 +159,12 @@ namespace Translate
 	Parachutepack  = Translate("Parachute Pack\nAllows you to fall slowly. Press [Shift] to activate.",                 "Парашютный ранец\nПозволяет вам медленно падать. Нажмите [Shift] для активации."),
 
 	//trader
+	Buy                 = Translate("Buy {ITEM} ({QUANTITY})",                                  "Купить {ITEM} ({QUANTITY})"),
+	Buy2                = Translate("Buy {QUANTITY} {ITEM} for {COINS} $COIN$",                 "Купить {QUANTITY} {ITEM} за {COINS} $COIN$"),
+	Sell                = Translate("Sell {ITEM} ({QUANTITY})",                                 "Продать {ITEM} ({QUANTITY})"),
+	Sell2               = Translate("Sell {QUANTITY} {ITEM} for {COINS} $COIN$",                "Продать {QUANTITY} {ITEM} за {COINS} $COIN$"),
+	InStock             = Translate("{QUANTITY} In stock",                                      "{QUANTITY} В наличии"),
+	OutOfStock          = Translate("Out of stock",                                             "Распродано"),
 	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            "Седжвик действительно не хочет чтобы это было у меня."),
 	TradeScrollMidas    = Translate("Makes the rocks shiny.",                                   "Придает камням блеск."),
 	TradeScrollSea      = Translate("A powerful spell known to flood entire villages.",         "Мощное заклинание, способное затопить целые деревни."),
@@ -234,4 +243,18 @@ namespace Translate
 	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              "Восстановление I\nВыжившие исцеляют половину сердца каждый день."),
 	RegenerationII  = Translate("Regeneration II\nSurvivors heal one heart every day.",              "Восстановление II\nВыжившие исцеляют по одному сердцу каждый день."),
 	RegenerationIII = Translate("Regeneration III\nSurvivors heal two hearts every day.",            "Восстановление III\nВыжившие исцеляют два сердца каждый день.");
+}
+
+string name(const string&in translated)
+{
+	const string[]@ tokens = translated.split("\n");
+	if (tokens.length == 0) return "FAILED NAME - CONSULT TRANSLATIONS";
+	return tokens[0];
+}
+
+string desc(const string&in translated)
+{
+	const int token = translated.findFirst("\n");
+	if (token == -1) return "FAILED DESCRIPTION - CONSULT TRANSLATIONS";
+	return translated.substr(token + 1);
 }

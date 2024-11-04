@@ -15,7 +15,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	CBitStream params;
 	params.write_bool(false);
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_revive"), Translate::ScrollRevive, params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_revive"), desc(Translate::ScrollRevive), params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)

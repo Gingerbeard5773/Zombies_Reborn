@@ -3,6 +3,7 @@
 #include "RunnerCommon.as";
 #include "Hitters.as";
 #include "Zombie_TechnologyCommon.as";
+#include "Zombie_Translation.as";
 
 const u8 helmet_variations = 3;
 
@@ -25,6 +26,8 @@ void onInit(CBlob@ this)
 	this.inventoryIconFrame = this.getNetworkID() % helmet_variations;
 	this.getSprite().SetFrame(this.inventoryIconFrame);
 	this.set_string("equipment_icon", "$steelhelmet_"+this.inventoryIconFrame+"$");
+	
+	this.setInventoryName(name(Translate::SteelHelmet));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)
