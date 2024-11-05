@@ -73,7 +73,9 @@ void convertToFlour(CBlob@ this, CBlob@ grain)
 		const u16 quantity = (10 + XORRandom(7)) * getMillingPercent();
 		flour.server_SetQuantity(quantity);
 		
-		grain.server_Die();
+		const int grainQuantity = grain.getQuantity() - 1; // int in case its quantity was 0 at the start
+		if (grainQuantity < 1) grain.server_Die();
+		else grain.server_SetQuantity(grainQuantity);
 		
 		//if (!this.server_PutInInventory(flour))
 			flour.setPosition(this.getPosition() + Vec2f(4, 24));

@@ -11,6 +11,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("heal command server");
 
 	this.Tag("pushedByDoor");
+	if (this.getName() == "grain") this.maxQuantity = 5;
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
