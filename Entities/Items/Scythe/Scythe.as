@@ -2,6 +2,7 @@
 //Gingerbeard @ August 5, 2024
 
 #include "Hitters.as"
+#include "Zombie_Translation.as"
 
 const u16 attack_time = 10;
 const f32 scythe_arc_degrees = 130.0f; 
@@ -21,6 +22,8 @@ void onInit(CBlob@ this)
 	this.getShape().SetOffset(Vec2f(0, -4));
 
 	this.Tag("place norotate"); //stop rotation from locking. blame builder code apparently
+	
+	this.setInventoryName(name(Translate::Scythe));
 }
 
 void addChopLayer(CSprite@ this)

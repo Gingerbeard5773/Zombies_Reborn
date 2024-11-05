@@ -31,7 +31,7 @@ void onTick(CBlob@ this)
 {
 	if (this.hasTag("collided")) return;
 
-	ParticleAnimated("SmallFire", this.getPosition(), Vec2f(0, -1 - XORRandom(2)), 0, 1.0f, 2, 0.25f, false);
+	ParticleAnimated("SmallFire", this.getPosition(), Vec2f(0, -1 - XORRandom(2)), 0, 1.0f, 2, 0.25f, true);
 
 	//prevent leaving the map
 	Vec2f pos = this.getPosition();

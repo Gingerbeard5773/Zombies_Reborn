@@ -1,4 +1,5 @@
 #include "ArrowCommon.as"
+#include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
 {
@@ -7,4 +8,6 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::remove_after_this;
 
 	setArrowHoverRect(this);
+	
+	this.setInventoryName(name(Translate::MolotovArrows));
 }

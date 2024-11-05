@@ -17,14 +17,14 @@ void onInit(CBlob@ this)
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(-10, 0));
 	this.set_Vec2f("shop menu size", Vec2f(4, 4));
-	this.set_string("shop description", "Armory");
+	this.set_string("shop description", name(Translate::Armory));
 	this.set_u8("shop icon", 25);
 
 	int team_num = this.getTeamNum();
 	
 	{
-		ShopItem@ s = addShopItem(this, "Scythe", getTeamIcon("scythe", "Scythe.png", team_num, Vec2f(16, 25), 0), "scythe", Translate::Scythe, false);
-		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 2);
+		ShopItem@ s = addShopItem(this, name(Translate::Scythe), getTeamIcon("scythe", "Scythe.png", team_num, Vec2f(16, 25), 0), "scythe", Translate::Scythe, false);
+		AddRequirement(s.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 2);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 25);
 		AddRequirement(s.requirements, "coin", "", "Coins", 40);
 		s.customButton = true;
@@ -32,8 +32,8 @@ void onInit(CBlob@ this)
 		s.buttonheight = 2;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Crossbow", getTeamIcon("crossbow", "Crossbow.png", team_num, Vec2f(18, 14), 0), "crossbow", Translate::Crossbow, false);
-		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 1);
+		ShopItem@ s = addShopItem(this, name(Translate::Crossbow), getTeamIcon("crossbow", "Crossbow.png", team_num, Vec2f(18, 14), 0), "crossbow", Translate::Crossbow, false);
+		AddRequirement(s.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 1);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
 		AddRequirement(s.requirements, "coin", "", "Coins", 30);
 		s.customButton = true;
@@ -41,8 +41,8 @@ void onInit(CBlob@ this)
 		s.buttonheight = 1;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Musket", getTeamIcon("musket", "Musket.png", team_num, Vec2f(30, 9), 0), "musket", Translate::Musket, false);
-		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 2);
+		ShopItem@ s = addShopItem(this, name(Translate::Musket), getTeamIcon("musket", "Musket.png", team_num, Vec2f(30, 9), 0), "musket", Translate::Musket, false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 2);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
 		AddRequirement(s.requirements, "coin", "", "Coins", 70);
 		s.customButton = true;
@@ -50,12 +50,12 @@ void onInit(CBlob@ this)
 		s.buttonheight = 1;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Musket Balls", "$mat_musketballs$", "mat_musketballs", Translate::MusketBalls, false);
-		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 1);
+		ShopItem@ s = addShopItem(this, name(Translate::MusketBalls), "$mat_musketballs$", "mat_musketballs", Translate::MusketBalls, false);
+		AddRequirement(s.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 1);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Chainsaw", getTeamIcon("chainsaw", "Chainsaw.png", team_num, Vec2f(32, 16), 0), "chainsaw", Translate::Chainsaw, false);
-		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 1);
+		ShopItem@ s = addShopItem(this, name(Translate::Chainsaw), getTeamIcon("chainsaw", "Chainsaw.png", team_num, Vec2f(32, 16), 0), "chainsaw", Translate::Chainsaw, false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 1);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
 		AddRequirement(s.requirements, "coin", "", "Coins", 30);
 		s.customButton = true;
@@ -63,19 +63,19 @@ void onInit(CBlob@ this)
 		s.buttonheight = 1;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Scuba Mask", "$scubagear$", "scubagear", Translate::ScubaGear, false);
-		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 3);
+		ShopItem@ s = addShopItem(this, name(Translate::ScubaGear), "$scubagear$", "scubagear", Translate::ScubaGear, false);
+		AddRequirement(s.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 75);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Head Lamp", "$headlamp$", "headlamp", Translate::HeadLamp, false);
-		AddRequirement(s.requirements, "blob", "mat_ironingot", "Iron Ingot", 2);
+		ShopItem@ s = addShopItem(this, name(Translate::HeadLamp), "$headlamp$", "headlamp", Translate::HeadLamp, false);
+		AddRequirement(s.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 2);
 		AddRequirement(s.requirements, "blob", "lantern", "Lantern", 1);
 		AddRequirement(s.requirements, "coin", "", "Coins", 50);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Steel Drill", getTeamIcon("steeldrill", "SteelDrill.png", team_num, Vec2f(32, 16), 0), "steeldrill", Translate::SteelDrill, false);
-		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 2);
+		ShopItem@ s = addShopItem(this, name(Translate::SteelDrill), getTeamIcon("steeldrill", "SteelDrill.png", team_num, Vec2f(32, 16), 0), "steeldrill", Translate::SteelDrill, false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 2);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
 		AddRequirement(s.requirements, "coin", "", "Coins", 100);
 		s.customButton = true;
@@ -83,23 +83,23 @@ void onInit(CBlob@ this)
 		s.buttonheight = 1;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Steel Helmet", getTeamIcon("steelhelmet", "SteelHelmet.png", team_num, Vec2f(16, 16), 0), "steelhelmet", Translate::SteelHelmet, false);
-		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 1);
+		ShopItem@ s = addShopItem(this, name(Translate::SteelHelmet), getTeamIcon("steelhelmet", "SteelHelmet.png", team_num, Vec2f(16, 16), 0), "steelhelmet", Translate::SteelHelmet, false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 1);
 		AddRequirement(s.requirements, "coin", "", "Coins", 50);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Steel Chestplate", getTeamIcon("steelarmor", "SteelArmor.png", team_num, Vec2f(16, 16), 0), "steelarmor", Translate::SteelArmor, false);
-		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 3);
+		ShopItem@ s = addShopItem(this, name(Translate::SteelArmor), getTeamIcon("steelarmor", "SteelArmor.png", team_num, Vec2f(16, 16), 0), "steelarmor", Translate::SteelArmor, false);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Backpack", getTeamIcon("backpack", "Backpack.png", team_num, Vec2f(16, 16), 0), "backpack", Translate::Backpack, false);
+		ShopItem@ s = addShopItem(this, name(Translate::Backpack), getTeamIcon("backpack", "Backpack.png", team_num, Vec2f(16, 16), 0), "backpack", Translate::Backpack, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Parachute Pack", getTeamIcon("parachutepack", "Parachutepack.png", team_num, Vec2f(16, 16), 0), "parachutepack", Translate::Parachutepack, false);
+		ShopItem@ s = addShopItem(this, name(Translate::Parachutepack), getTeamIcon("parachutepack", "Parachutepack.png", team_num, Vec2f(16, 16), 0), "parachutepack", Translate::Parachutepack, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 50);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 		AddRequirement(s.requirements, "coin", "", "Coins", 200);

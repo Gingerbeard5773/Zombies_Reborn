@@ -28,7 +28,7 @@ shared class ProductionItem
 	ProductionItem(const string&in blob_name, const string&in name, string&in icon_name, const u32&in seconds_to_produce, const u8&in maximum_produced, const u8&in product_type)
 	{
 		this.blob_name = blob_name;
-		this.name = name;
+		this.name = getTranslatedString(name);
 		this.seconds_to_produce = seconds_to_produce;
 		this.maximum_produced = maximum_produced;
 		this.product_type = product_type;

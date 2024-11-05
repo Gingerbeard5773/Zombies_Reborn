@@ -25,19 +25,19 @@ void onInit(CBlob@ this)
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
 	this.set_Vec2f("shop menu size", Vec2f(2, 2));
-	this.set_string("shop description", "Dormitory");
+	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 11);
 	this.Tag(SHOP_AUTOCLOSE);
 
 	{
-		ShopItem@ s = addShopItem(this, "Worker", "$worker_migrant$", "migrant", Translate::RecruitWorker);
+		ShopItem@ s = addShopItem(this, Translate::Worker, "$worker_migrant$", "migrant", Translate::RecruitWorker);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 35);
 	}
 
 	this.SetLightRadius(60.0f);
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
@@ -74,7 +74,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		this.set_Vec2f("shop offset", Vec2f(6, 0));
 		CBitStream params;
 		params.write_netid(carried.getNetworkID());
-		caller.CreateGenericButton("$worker_migrant$", Vec2f(-6, 0), this, this.getCommandID("rest"), Translate::RestWorker, params);
+		caller.CreateGenericButton("$worker_migrant$", Vec2f(-6, 0), this, this.getCommandID("server_rest"), Translate::RestWorker, params);
 	}
 	else
 	{

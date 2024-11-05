@@ -1,4 +1,5 @@
 #include "ArrowCommon.as"
+#include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
 {
@@ -9,4 +10,6 @@ void onInit(CBlob@ this)
 	setArrowHoverRect(this);
 
 	this.getSprite().ReloadSprites(0, 0); //blue team
+	
+	this.setInventoryName(name(Translate::FireworkArrows));
 }

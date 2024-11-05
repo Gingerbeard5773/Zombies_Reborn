@@ -115,27 +115,27 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	}
 	{
 		BuildBlock b(CMap::tile_iron, "iron_block_ZF", "$iron_block_ZF$", Translate::IronBlock);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 2);
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 2);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(CMap::tile_biron, "biron_block_ZF", "$biron_block_ZF$", Translate::IronBlockBack);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 1);
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 1);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "iron_door", getTeamIcon("iron_door", "1x1IronDoor.png", team_num, Vec2f(16, 8)), Translate::IronDoor);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 4);
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 4);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "iron_platform", "$iron_platform_ZF$", Translate::IronPlatform);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "iron_spikes", "$iron_spikes_ZF$", Translate::IronSpikes);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
 		blocks[0].push_back(b);
 	}
 	//lantern is useful enough. no real reason to add the fireplace

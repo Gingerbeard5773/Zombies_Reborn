@@ -41,10 +41,10 @@ void onInit(CBlob@ this)
 	}
 	{
 		const string bomber_icon = getTeamIcon("armoredbomber", "Icon_ArmoredBomber.png", team_num, Vec2f(44, 74), 0);
-		ShopItem@ s = addShopItem(this, "Armored Bomber", bomber_icon, "armoredbomber", Translate::Armoredbomber, false, true);
+		ShopItem@ s = addShopItem(this, name(Translate::Armoredbomber), bomber_icon, "armoredbomber", desc(Translate::Armoredbomber), false, true);
 		s.crate_icon = 7;
 		AddRequirement(s.requirements, "coin", "", "Coins", 200);
-		AddRequirement(s.requirements, "blob", "mat_steelingot", "Steel Ingot", 4);
+		AddRequirement(s.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 4);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 200);
 	}
 	{
@@ -61,7 +61,7 @@ void onInit(CBlob@ this)
 	}
 	{
 		const string bomber_icon = getTeamIcon("tank", "Icon_tank.png", team_num, Vec2f(55, 32), 0);
-		ShopItem@ s = addShopItem(this, "Tank", bomber_icon, "tank", Translate::Tank, false, true);
+		ShopItem@ s = addShopItem(this, name(Translate::Tank), bomber_icon, "tank", desc(Translate::Tank), false, true);
 		s.crate_icon = 11;
 		AddRequirement(s.requirements, "coin", "", "Coins", 150);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 300);

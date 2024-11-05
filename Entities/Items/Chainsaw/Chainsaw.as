@@ -4,6 +4,7 @@
 #include "MaterialCommon.as";
 #include "ShieldCommon.as";
 #include "KnockedCommon.as";
+#include "Zombie_Translation.as";
 
 const f32 speed_thresh = 2.4f;
 const f32 speed_hard_thresh = 2.6f;
@@ -66,6 +67,8 @@ void onInit(CBlob@ this)
 	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
 
 	this.set_u32(last_drill_prop, 0);
+	
+	this.setInventoryName(name(Translate::Chainsaw));
 }
 
 void onTick(CSprite@ this)

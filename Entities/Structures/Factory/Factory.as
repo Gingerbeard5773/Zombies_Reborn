@@ -36,9 +36,9 @@ void SetupProductionSet()
 
 	Production@[] production_set;
 	{
-		Production tech("Bombs", FactoryFrame::military_basics);
+		Production tech("Bomb", FactoryFrame::military_basics);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 35);
-		tech.addProductionItem("mat_bombs", "Bombs", "", 10, 5);
+		tech.addProductionItem("mat_bombs", "Bomb", "", 10, 5);
 		production_set.push_back(tech);
 	}
 	{
@@ -62,9 +62,9 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	{
-		Production tech("Tank", 11);
+		Production tech(name(Translate::Tank), 11);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 150);
-		tech.addProductionItem("tank", "Tank", "", 80, 1, Product::crate);
+		tech.addProductionItem("tank", name(Translate::Tank), "", 80, 1, Product::crate);
 		production_set.push_back(tech);
 	}
 	{
@@ -74,28 +74,28 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	{
-		Production tech("Kegs", FactoryFrame::explosives);
+		Production tech("Keg", FactoryFrame::explosives);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
-		tech.addProductionItem("keg", "Kegs", "", 40, 1);
+		tech.addProductionItem("keg", "Keg", "", 40, 1);
 		production_set.push_back(tech);
 	}
 	{
-		Production tech("Big Bombs", 19);
+		Production tech(Translate::Bigbomb, 19);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
-		tech.addProductionItem("bigbomb", "Big Bombs", "", 30, 3);
+		tech.addProductionItem("bigbomb", Translate::Bigbomb, "", 30, 3);
 		production_set.push_back(tech);
 	}
 	{
-		Production tech("Mines", 18);
+		Production tech("Mine", 18);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
-		tech.addProductionItem("mine", "Mines", "", 20, 4);
+		tech.addProductionItem("mine", "Mine", "", 20, 4);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Pyrotechnics", FactoryFrame::pyro);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
-		tech.addProductionItem("molotov", "Molotov", "", 25, 2);
-		tech.addProductionItem("mat_molotovarrows", "Molotov Arrows", "", 35, 2);
+		tech.addProductionItem("molotov", name(Translate::Molotov), "", 25, 2);
+		tech.addProductionItem("mat_molotovarrows", name(Translate::MolotovArrows), "", 35, 2);
 		production_set.push_back(tech);
 	}
 	{
@@ -106,9 +106,9 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	{
-		Production tech("Bomb Arrows", FactoryFrame::expl_ammo);
+		Production tech("Bomb Arrow", FactoryFrame::expl_ammo);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 35);
-		tech.addProductionItem("mat_bombarrows", "Bomb Arrows", "", 35, 4);
+		tech.addProductionItem("mat_bombarrows", "Bomb Arrow", "", 35, 4);
 		production_set.push_back(tech);
 	}
 	getRules().set("factory_production_set", production_set);
@@ -120,7 +120,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!this.exists("production"))
 	{
-		caller.CreateGenericButton(12, Vec2f(0, 0), this, BuildUpgradeMenu, getTranslatedString("Convert Factory"));
+		caller.CreateGenericButton(12, Vec2f(0, 0), this, BuildUpgradeMenu, getTranslatedString("Convert Workshop"));
 	}
 	else if (!AssignWorkerButton(this, caller) && !UnassignWorkerButton(this, caller, Vec2f(0, -14)))
 	{

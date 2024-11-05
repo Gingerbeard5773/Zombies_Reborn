@@ -44,7 +44,7 @@ void onTick(CBlob@ this)
 	
 	if (isServer() && researched.time >= researched.time_to_unlock && researched.available)
 	{
-		onFinishTechnology(this, researched);
+		onFinishTechnology(researched);
 
 		CBitStream stream;
 		stream.write_u8(researched.index);
@@ -114,18 +114,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		
 		if (!isServer())
 		{
-			onFinishTechnology(this, tech);
+			onFinishTechnology(tech);
 		}
 
 		Sound::Play("/ResearchComplete.ogg");
 
-		const string[]@ tokens = tech.description.split("\n");
-		if (tokens.length > 0)
-		{
-			const string tech_completed = Translate::TechComplete.replace("{TECH}", tokens[0]);
-			client_SendGlobalMessage(getRules(), tech_completed, 6, SColor(0xffa293ff)); 
-			print(tech_completed);
-		}
+		const string tech_completed = Translate::TechComplete.replace("{TECH}", name(tech.description));
+		client_SendGlobalMessage(getRules(), tech_completed, 6, SColor(0xffa293ff)); 
+		print(tech_completed);
 	}
 }
 
@@ -136,11 +132,21 @@ void SetResearching(CBlob@ this, Technology@ tech)
 	this.set_s32("researching", tech.index);
 }
 
-void onFinishTechnology(CBlob@ this, Technology@ tech)
+void onFinishTechnology(Technology@ tech)
 {
 	tech.completed = true;
 	tech.available = false;
-	this.set_s32("researching", -1);
+
+	CBlob@[] libraries;
+	getBlobsByName("library", @libraries);
+	for (u16 i = 0; i < libraries.length; i++)
+	{
+		CBlob@ library = libraries[i];
+		if (library.get_s32("researching") == tech.index)
+		{
+			library.set_s32("researching", -1);
+		}
+	}
 
 	for (u8 i = 0; i < tech.connections.length; i++)
 	{

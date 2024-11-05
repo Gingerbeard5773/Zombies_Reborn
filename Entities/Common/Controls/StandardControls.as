@@ -42,7 +42,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller is null) return;
 		if (caller !is this) return;
 		if (caller.isInInventory()) return;
-		if (caller.isAttached()) return;
+		//if (caller.isAttached()) return;
 
 		CBlob@ held = this.getCarriedBlob();
 		if (held is null) return;
