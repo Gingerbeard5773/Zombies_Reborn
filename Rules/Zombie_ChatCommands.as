@@ -24,7 +24,9 @@ string CommandsList()
 	"!seed : get the map seed\n" +
 	"!warn [player] [duration / in days, 0 for permanent] [reason] : warn a player\n" +
 	"!technology : unlock all technologies\n" +
-	"!debugprop [hash] : finds a string that pairs with the hash input\n";
+	"!debugprop [hash] : finds a string that pairs with the hash input\n" +
+	"!structure [index] : loads a structure from cfg. no index = random\n" +
+	"!savestructure : saves a structure at the player's position";
 }
 
 const string[] isCool = { "MrHobo" };
