@@ -193,7 +193,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (blob is null || blob.getName() != "mat_wood") return;
+	if (blob is null) return;
+
+	const string fuel_name = fuel_names[0];
+	const int fuel_amount = fuel_strength[0];
+	
+	if (blob.getName() != fuel_name) return;
 
 	const int requestedAmount = Maths::Min(250, max_fuel - this.get_s16(fuel_prop));
 	if (requestedAmount <= 0) return;
@@ -208,7 +213,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			blob.server_SetQuantity(quantity - amountToStore);
 			if (amountToStore >= quantity) blob.server_Die();
 
-			this.add_s16(fuel_prop, amountToStore * fuel_strength[1]);
+			this.add_s16(fuel_prop, amountToStore * fuel_amount);
 			this.Sync(fuel_prop, true);
 		}
 	}
