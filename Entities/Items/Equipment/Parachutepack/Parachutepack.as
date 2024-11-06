@@ -20,6 +20,7 @@ void onInit(CBlob@ this)
 	addOnClientJoin(this, @onClientJoin);
 	
 	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
+	AddIconToken("$parachutepack$", "Parachutepack.png", Vec2f(16, 16), 1, 0);
 	
 	this.setInventoryName(name(Translate::Parachutepack));
 }

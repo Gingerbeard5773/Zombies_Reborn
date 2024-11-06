@@ -10,7 +10,9 @@ void onInit(CBlob@ this)
 
 	addOnEquip(this, @OnEquip);
 	addOnUnequip(this, @OnUnequip);
-	
+
+	AddIconToken("$scubagear$", "ScubaGear.png", Vec2f(16, 16), 1, 0);
+
 	this.setInventoryName(name(Translate::ScubaGear));
 }
 

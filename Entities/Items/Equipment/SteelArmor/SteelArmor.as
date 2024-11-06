@@ -17,7 +17,9 @@ void onInit(CBlob@ this)
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnHitOwner(this, @onHitOwner);
 	addOnClientJoin(this, @onClientJoin);
-	
+
+	AddIconToken("$steelarmor$", "SteelArmor.png", Vec2f(16, 16), 1, 0);
+
 	this.setInventoryName(name(Translate::SteelArmor));
 }
 

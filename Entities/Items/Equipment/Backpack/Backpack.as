@@ -13,6 +13,8 @@ void onInit(CBlob@ this)
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
 	addOnClientJoin(this, @onClientJoin);
+
+	AddIconToken("$backpack$", "Backpack.png", Vec2f(16, 16), 1, 0);
 	
 	this.setInventoryName(name(Translate::Backpack));
 }
