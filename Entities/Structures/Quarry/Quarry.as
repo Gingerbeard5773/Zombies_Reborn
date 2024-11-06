@@ -208,7 +208,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			blob.server_SetQuantity(quantity - amountToStore);
 			if (amountToStore >= quantity) blob.server_Die();
 
-			this.add_s16(fuel_prop, amountToStore * fuel_strength[1]);
+			this.add_s16(fuel_prop, amountToStore * fuel_strength[0]);
 			this.Sync(fuel_prop, true);
 		}
 	}
