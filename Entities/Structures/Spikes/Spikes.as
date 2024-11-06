@@ -157,7 +157,7 @@ void onTick(CBlob@ this)
 				this.getSprite().PlaySound("/SpikesOut.ogg");
 
 				CBlob@[] overlapping;
-				if (this.getOverlapping(@overlapping))
+				if (isServer() && this.getOverlapping(@overlapping))
 				{
 					for (u16 i = 0; i < overlapping.length; i++)
 					{
@@ -214,14 +214,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (state == falling)
 	{
 		const f32 vellen = this.getVelocity().Length();
-		if (vellen < 4.0f) //slow, minimal dmg
-			this.server_Hit(blob, point, Vec2f(0, 1), 1.0f, Hitters::spikes, true);
-		else if (vellen < 5.5f) //faster, kill archer
-			this.server_Hit(blob, point, Vec2f(0, 1), 2.0f, Hitters::spikes, true);
-		else if (vellen < 7.0f) //faster, kill builder
-			this.server_Hit(blob, point, Vec2f(0, 1), 3.0f, Hitters::spikes, true);
-		else			//fast, instakill
-			this.server_Hit(blob, point, Vec2f(0, 1), 4.0f, Hitters::spikes, true);
+		f32 damage = 4.0f;
+		if (vellen < 4.0f) damage = 1.0f;
+		else if (vellen < 5.5f) damage = 2.0f;
+		else if (vellen < 7.0f) damage = 3.0f;
+
+		this.server_Hit(blob, point, Vec2f(0, 1), damage, Hitters::spikes, true);
 		return;
 	}
 
