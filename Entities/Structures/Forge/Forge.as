@@ -6,11 +6,11 @@
 #include "Zombie_TechnologyCommon.as"
 
 const string fuel_prop = "fuel_level";
-const int max_fuel = 1000;
+const int max_fuel = 500;
 
-const string[] fuel_names = {"mat_wood", "mat_coal"};
-const string[] fuel_icons = {"mat_wood", "mat_coal_icon"};
-const int[] fuel_strength = { 1, 4 };
+const string[] fuel_names = {"mat_coal", "mat_wood"};
+const string[] fuel_icons = {"mat_coal_icon", "mat_wood"};
+const int[] fuel_strength = { 3, 1 };
 
 void onInit(CBlob@ this)
 {

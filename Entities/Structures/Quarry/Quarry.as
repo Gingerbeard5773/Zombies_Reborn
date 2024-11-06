@@ -5,9 +5,9 @@
 #include "Zombie_Translation.as"
 #include "Zombie_TechnologyCommon.as"
 
-const string[] fuel_names = {"mat_wood", "mat_coal"};
-const string[] fuel_icons = {"mat_wood", "mat_coal_icon"};
-const int[] fuel_strength = { 1, 4 };
+const string[] fuel_names = {"mat_coal", "mat_wood"};
+const string[] fuel_icons = {"mat_coal_icon", "mat_wood"};
+const int[] fuel_strength = { 3, 1 };
 
 //balance
 const int input = 100;					// input cost in fuel
@@ -17,9 +17,9 @@ const int conversion_frequency = 30;	// how often to convert, in seconds
 const int min_input = Maths::Ceil(input / initial_output);
 
 //fuel levels for animation
-const int max_fuel = 1000;
-const int mid_fuel = 600;
-const int low_fuel = 250;
+const int max_fuel = 500;
+const int mid_fuel = 300;
+const int low_fuel = 150;
 
 //property names
 const string fuel_prop = "fuel_level";
