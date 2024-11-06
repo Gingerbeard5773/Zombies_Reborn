@@ -43,15 +43,15 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 15);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows", Descriptions::bombarrows, true);
+		ShopItem@ s = addShopItem(this, "Bomb Arrow", "$mat_bombarrows$", "mat_bombarrows", Descriptions::bombarrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", 25);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Molotov Arrows", "$mat_molotovarrows_icon$", "mat_molotovarrows", Translate::MolotovArrows, true);
+		ShopItem@ s = addShopItem(this, name(Translate::MolotovArrows), "$mat_molotovarrows_icon$", "mat_molotovarrows", Translate::MolotovArrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", 50);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Firework Rockets", "$mat_fireworkarrows$", "mat_fireworkarrows", Translate::FireworkArrows, true);
+		ShopItem@ s = addShopItem(this, name(Translate::FireworkArrows), "$mat_fireworkarrows$", "mat_fireworkarrows", Translate::FireworkArrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", 60);
 	}
 }

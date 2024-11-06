@@ -9,6 +9,7 @@
 #include "MaterialCommon.as";
 #include "TraderShopCommon.as";
 #include "GenericButtonCommon.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -179,7 +180,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!shop.available) return;
 
-	CButton@ button = caller.CreateGenericButton(shop.button_icon, shop.button_offset, this, BuildShopMenu, shop.description);
+	CButton@ button = caller.CreateGenericButton(shop.button_icon, shop.button_offset, this, BuildShopMenu, getTranslatedString(shop.description));
 	if (button !is null)
 	{
 		button.enableRadius = shop.button_enable_radius;
@@ -230,7 +231,7 @@ void AddItemStockDescription(CGridButton@ button, SaleItem@ item)
 	if (item.stock < 0) return;
 
 	const string color = item.stock > 0 ? "$GREEN$" : "$RED$";
-	const string description = item.stock > 0 ? (item.stock+" In stock") : "Out of stock";
+	const string description = item.stock > 0 ? Translate::InStock.replace("{QUANTITY}", item.stock+"") : Translate::OutOfStock;
 	button.hoverText += "\n " + color + description + color;
 	if (item.stock <= 0)
 		button.SetEnabled(false);

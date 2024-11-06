@@ -45,18 +45,18 @@ void onInit(CBlob@ this)
 	
 	{
 		CraftItem i("mat_ironingot", Translate::IronIngot, 0, 10);
-		AddRequirement(i.reqs, "blob", "mat_iron", "Iron Ore", 15);
+		AddRequirement(i.reqs, "blob", "mat_iron", Translate::IronOre, 15);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("mat_coal", Translate::CharCoal, 2, 10, 10, ItemType::material);
+		CraftItem i("mat_coal", Translate::Coal, 2, 10, 10, ItemType::material);
 		AddRequirement(i.reqs, "blob", "mat_wood", "Wood", 25);
 		craft.addItem(this, i);
 	}
 	{
 		CraftItem i("mat_steelingot", Translate::SteelIngot, 1, 20);
-		AddRequirement(i.reqs, "blob", "mat_ironingot", "Iron Ingot", 3);
-		AddRequirement(i.reqs, "blob", "mat_coal", "Coal", 25);
+		AddRequirement(i.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
+		AddRequirement(i.reqs, "blob", "mat_coal", name(Translate::Coal), 25);
 		craft.addItem(this, i);
 	}
 }

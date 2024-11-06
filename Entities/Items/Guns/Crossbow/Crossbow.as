@@ -2,6 +2,7 @@
 #include "RunnerCommon.as";
 #include "CrossbowCommon.as";
 #include "Zombie_TechnologyCommon.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -20,6 +21,8 @@ void onInit(CBlob@ this)
 	
 	CrossbowInfo crossbow;
 	this.set("crossbowInfo", @crossbow);
+	
+	this.setInventoryName(name(Translate::Crossbow));
 }
 
 void onTick(CBlob@ this)
@@ -226,8 +229,14 @@ void LoadCrossbow(CBlob@ holder, CrossbowInfo@ crossbow)
 			crossbow.loaded = true;
 			crossbow.arrow_type = arrow;
 			holder.TakeBlob(arrowTypeNames[arrow], 1);
-			break;
+			return;
 		}
+	}
+
+	if (hasTech(Tech::DeepQuiver))
+	{
+		crossbow.loaded = true;
+		crossbow.arrow_type = ArrowType::normal;
 	}
 }
 
@@ -238,6 +247,19 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		attached.getSprite().AddScript("WeaponCursor.as");
 		attached.Tag("weapon cursor");
 	}
+	this.Tag("invincible");
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	this.Untag("invincible");
+}
+
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (this.hasTag("invincible")) return 0.0f;
+
+	return damage;
 }
 
 void onSendCreateData(CBlob@ this, CBitStream@ stream)

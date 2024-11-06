@@ -1,5 +1,6 @@
 #include "EquipmentCommon.as";
 #include "RunnerTextures.as";
+#include "Zombie_Translation.as";
 
 const u32 parachute_delay = 3*30; //3 secs
 
@@ -19,6 +20,8 @@ void onInit(CBlob@ this)
 	addOnClientJoin(this, @onClientJoin);
 	
 	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
+	
+	this.setInventoryName(name(Translate::Parachutepack));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

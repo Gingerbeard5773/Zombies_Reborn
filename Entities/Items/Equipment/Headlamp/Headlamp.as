@@ -2,6 +2,7 @@
 
 #include "EquipmentCommon.as";
 #include "RunnerTextures.as";
+#include "Zombie_Translation.as";
 
 void onInit(CBlob@ this)
 {
@@ -25,6 +26,8 @@ void onInit(CBlob@ this)
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
 	addOnClientJoin(this, @onClientJoin);
+	
+	this.setInventoryName(name(Translate::HeadLamp));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

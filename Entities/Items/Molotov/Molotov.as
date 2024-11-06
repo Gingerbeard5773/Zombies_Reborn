@@ -1,5 +1,6 @@
 #include "Hitters.as";
 #include "ActivationThrowCommon.as"
+#include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
 {	
@@ -18,14 +19,16 @@ void onInit(CBlob@ this)
 	
 	this.SetLightRadius(20.0f);
 	this.SetLightColor(SColor(255, 255, 200, 50));
+	
+	this.setInventoryName(name(Translate::Molotov));
 }
 
 void onInit(CSprite@ this)
 {
 	//burning sound	    
-    this.SetEmitSound("MolotovBurning.ogg");
-    this.SetEmitSoundVolume(5.0f);
-    this.SetEmitSoundPaused(true);
+	this.SetEmitSound("MolotovBurning.ogg");
+	this.SetEmitSoundVolume(5.0f);
+	this.SetEmitSoundPaused(true);
 }
 
 void onTick(CBlob@ this)
@@ -72,7 +75,7 @@ void onTick(CSprite@ this)
 	if (blob.hasTag("activated"))
 	{
 		this.SetFrame(1);
-		ParticleAnimated("SmallFire", blob.getPosition() + Vec2f(1 - XORRandom(3), -4), Vec2f(0, -1 - XORRandom(2)), 0, 1.0f, 2, 0.25f, false);
+		ParticleAnimated("SmallFire", blob.getPosition() + Vec2f(1 - XORRandom(3), -4), Vec2f(0, -1 - XORRandom(2)), 0, 1.0f, 2, 0.25f, true);
 
 		this.RotateAllBy(5 * blob.getVelocity().x, Vec2f_zero);
 	}
