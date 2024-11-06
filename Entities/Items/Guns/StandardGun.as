@@ -1,6 +1,7 @@
 //Gingerbeard @ July 28, 2024
 #include "GunCommon.as";
 #include "Zombie_TechnologyCommon.as";
+#include "GetBackpack.as";
 
 void onInit(CBlob@ this)
 {
@@ -49,8 +50,8 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 
 	if (pressed_action2) //reload
 	{
-		CInventory@ inv = holder.getInventory();
-		if (gun.ammo_count <= 0 && inv !is null && inv.getItem(gun.ammo_name) !is null)
+		CBlob@ ammo_holder = getAmmoHolder(holder, gun);
+		if (gun.ammo_count <= 0 && ammo_holder !is null)
 		{
 			gun.reload_time++;
 			
@@ -76,7 +77,7 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 				sprite.PlaySound("LoadingTick"+(XORRandom(2)+1));
 				gun.ammo_count = gun.ammo_capacity;
 				gun.reload_time = 0;
-				holder.TakeBlob(gun.ammo_name, 1);
+				ammo_holder.TakeBlob(gun.ammo_name, 1);
 			}
 		}
 	}
@@ -108,6 +109,22 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 		}
 		this.set_u8("frame", frame);
 	}
+}
+
+CBlob@ getAmmoHolder(CBlob@ holder, GunInfo@ gun)
+{
+	CInventory@ inv = holder.getInventory();
+	if (inv !is null && inv.getItem(gun.ammo_name) !is null)
+		return holder;
+
+	CBlob@ backpack = getBackpack(holder);
+	if (backpack is null) return null;
+
+	@inv = backpack.getInventory();
+	if (inv !is null && inv.getItem(gun.ammo_name) !is null)
+		return backpack;
+
+	return null;
 }
 
 void ClientFire(CBlob@ this, CBlob@ holder, GunInfo@ gun)

@@ -3,6 +3,7 @@
 #include "CrossbowCommon.as";
 #include "Zombie_TechnologyCommon.as";
 #include "Zombie_Translation.as";
+#include "GetBackpack.as";
 
 void onInit(CBlob@ this)
 {
@@ -217,8 +218,24 @@ void ManageBow(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, CrossbowInfo@
 
 void LoadCrossbow(CBlob@ holder, CrossbowInfo@ crossbow)
 {
-	CInventory@ inv = holder.getInventory();
-	if (inv is null) return;
+	if (TakeAmmo(holder, crossbow) || TakeAmmo(getBackpack(holder), crossbow))
+	{
+		return;
+	}
+
+	if (hasTech(Tech::DeepQuiver))
+	{
+		crossbow.loaded = true;
+		crossbow.arrow_type = ArrowType::normal;
+	}
+}
+
+bool TakeAmmo(CBlob@ blob, CrossbowInfo@ crossbow)
+{
+	if (blob is null) return false;
+
+	CInventory@ inv = blob.getInventory();
+	if (inv is null) return false;
 
 	for (u16 i = 0; i < inv.getItemsCount(); i++)
 	{
@@ -228,16 +245,12 @@ void LoadCrossbow(CBlob@ holder, CrossbowInfo@ crossbow)
 		{
 			crossbow.loaded = true;
 			crossbow.arrow_type = arrow;
-			holder.TakeBlob(arrowTypeNames[arrow], 1);
-			return;
+			blob.TakeBlob(arrowTypeNames[arrow], 1);
+			return true;
 		}
 	}
 
-	if (hasTech(Tech::DeepQuiver))
-	{
-		crossbow.loaded = true;
-		crossbow.arrow_type = ArrowType::normal;
-	}
+	return false;
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)

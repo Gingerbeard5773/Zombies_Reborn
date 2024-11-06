@@ -1,6 +1,7 @@
 #define SERVER_ONLY
 
 #include "CratePickupCommon.as"
+#include "GetBackpack.as"
 
 void onInit(CBlob@ this)
 {
@@ -34,7 +35,7 @@ void Take(CBlob@ this, CBlob@ blob)
 		{
 			if (this.server_PutInInventory(blob))
 				return;
-			else if (server_PutInSecondaryBackpack(this, blob))
+			else if (server_PutInBackpack(this, blob))
 				return;
 		}
 	}
@@ -46,18 +47,12 @@ void Take(CBlob@ this, CBlob@ blob)
 	}
 }
 
-bool server_PutInSecondaryBackpack(CBlob@ this, CBlob@ blob)
+bool server_PutInBackpack(CBlob@ this, CBlob@ blob)
 {
-	u16[] ids;
-	if (!this.get("equipment_ids", ids) || ids.length < 2) return false;
+	CBlob@ backpack = getBackpack(this);
+	if (backpack is null) return false;
 
-	CBlob@ torso = getBlobByNetworkID(ids[1]);
-	if (torso !is null && torso.getName() == "backpack")
-	{
-		return torso.server_PutInInventory(blob);
-	}
-
-	return false;
+	return backpack.server_PutInInventory(blob);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
