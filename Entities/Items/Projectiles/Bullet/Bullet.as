@@ -19,6 +19,8 @@ void onInit(CBlob@ this)
 
 	this.server_SetTimeToDie(this.get_f32("bullet time"));	
 	this.Tag("projectile");
+	this.Tag("ignore_saw");
+	this.Tag("sawed"); //hack
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
