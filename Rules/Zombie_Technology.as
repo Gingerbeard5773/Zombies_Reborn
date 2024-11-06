@@ -385,10 +385,13 @@ void onTick(CRules@ this)
 	{
 		CBlob@ survivor = survivors[i];
 
+		const f32 health = survivor.getHealth();
 		const f32 initialHealth = survivor.getInitialHealth();
+		if (health >= initialHealth) continue;
+
 		const f32 heal = 0.125f;
 		const f32 healthRatio = heal / (1.5f / initialHealth); //ratio the health between classes
-		const f32 newHealth = Maths::Min(survivor.getHealth() + healthRatio, initialHealth);
+		const f32 newHealth = Maths::Min(health + healthRatio, initialHealth);
 		survivor.server_SetHealth(newHealth);
 	}
 }
