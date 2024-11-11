@@ -42,8 +42,8 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		string[]@ tokens = text_in.split(" ");
 
 		const bool isLocalhost = isServer() && isClient();
-		const bool isDev = isCool.find(player.getUsername()) != -1 || isLocalhost;
-		const bool isMod = isDev || player.isMod() || player.isRCON() || getSecurity().checkAccess_Command(player, "ban");
+		const bool isDev = isCool.find(player.getUsername()) != -1 || isLocalhost || player.isMod() || player.isRCON();
+		const bool isMod = isDev || getSecurity().checkAccess_Command(player, "ban");
 
 		if (!PlayerCommands(this, tokens, player, blob))
 			return false;
