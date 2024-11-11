@@ -62,7 +62,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", 250);
 	}
 	{
-		SaleItem s(shop.items, sell("Wood", 250), "$COIN$", "coin", sell2("Wood", 250, 60), ItemType::coin, 50);
+		SaleItem s(shop.items, sell("Wood", 250), "$COIN$", "coin", sell2("Wood", 250, 50), ItemType::coin, 50);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 250);
 	}
 	{
