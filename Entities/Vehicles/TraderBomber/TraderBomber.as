@@ -70,7 +70,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 300);
 	}
 	{
-		SaleItem s(shop.items, buy("Steak", 1), "$steak$", "steak", buy2("Steak", 1, 300));
+		SaleItem s(shop.items, buy("Steak", 1), "$steak$", "steak", buy2("Steak", 1, 230));
 		AddRequirement(s.requirements, "coin", "", "Coins", 230);
 	}
 	{
