@@ -117,6 +117,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 u8 getTileStrength(CMap@ map, TileType tile)
 {
 	if (isTileGroundStuff(map, tile)) return 2;
+	if (isTileBIron(tile))            return 3;
 	if (isTileIron(tile))             return 5; //iron STRONG.
 	return 0;
 }
