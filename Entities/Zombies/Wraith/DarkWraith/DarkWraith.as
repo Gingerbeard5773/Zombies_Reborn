@@ -9,10 +9,10 @@ void onInit(CBlob@ this)
 {
 	this.set_u16("coins on death", COINS_ON_DEATH);
 
-	this.getSprite().PlaySound("WraithSpawn.ogg");
-
-	this.getSprite().SetEmitSound("DarkWraithChatter.ogg");
-	this.getSprite().SetEmitSoundPaused(false);
+	CSprite@ sprite = this.getSprite();
+	sprite.PlaySound("WraithSpawn.ogg");
+	sprite.SetEmitSound("DarkWraithChatter.ogg");
+	sprite.SetEmitSoundPaused(false);
 	this.getShape().SetRotationsAllowed(false);
 
 	this.getBrain().server_SetActive(true);
@@ -33,12 +33,49 @@ void onInit(CBlob@ this)
 	this.set_bool("map_damage_raycast", true);
 	this.set_s32("auto_enrage_time", getGameTime() + TIME_TO_ENRAGE_DARK + XORRandom(TIME_TO_ENRAGE_DARK / 2));
 	//
+
+	CRules@ rules = getRules();
+	const u16 day_number = rules.get_u16("day_number");
+	const u16 player_count = rules.get_u8("survivor player count");
+	const u32 difficulty = (day_number * 5) + (player_count * 2);
+	const u32 probability = 600 - Maths::Min(difficulty, 600);
+	Random rand(this.getNetworkID() + day_number + player_count);
+	if (rand.NextRanged(probability) == 0) this.Tag("jerry");
+	
+	if (this.hasTag("jerry"))
+	{
+		this.Tag("jerry");
+		sprite.SetEmitSound("JerryChatter.ogg");
+		sprite.SetEmitSoundPaused(false);
+		sprite.ReloadSprite("Jerry.png");
+		
+		this.Untag("bomberman_style");
+		
+		this.server_SetHealth(this.getInitialHealth() * 4.0f);
+		
+		this.SetLight(true);
+		this.SetLightRadius(this.get_f32("explosive_radius"));
+		this.SetLightColor(SColor(255, 138, 3, 3));
+		
+		this.setInventoryName("Jerry");
+	}
 	
 	this.addCommandID("enrage_client");
 }
 
 void onTick(CBlob@ this)
 {
+	if (isClient() && this.hasTag("jerry"))
+	{
+		const f32 time_to_die = this.getTimeToDie();
+		if (time_to_die > 0.0f)
+		{
+			CSprite@ sprite = this.getSprite();
+			const f32 currentSpeed = sprite.getEmitSoundSpeed() + 0.01f;
+			this.getSprite().SetEmitSoundSpeed(currentSpeed);
+		}
+	}
+
 	if (!isServer()) return;
 
 	//player functionality
@@ -59,7 +96,21 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.getSprite().PlaySound("ZombieHit");
 	}
 	
-	if (customData == Hitters::fire)
+	const bool jerry = this.hasTag("jerry");
+	if (jerry)
+	{
+		switch(customData)
+		{
+			case Hitters::spikes:
+				damage *= 0.25f;
+				break;
+			case Hitters::arrow:
+				damage *= 0.5f;
+				break;
+		}
+	}
+
+	if (customData == Hitters::fire && !jerry)
 	{
 		server_SetEnraged(this);
 	}
@@ -79,11 +130,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		if (enrage)
 		{
-			this.getSprite().PlaySound("WraithDie", 1.0f, 0.8f);
+			const bool jerry = this.hasTag("jerry");
+			this.getSprite().PlaySound(jerry ? "JerryIgnite" : "WraithDie", jerry ? 2.5f : 1.0f, 0.8f);
 
 			this.SetLight(true);
 			this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
 			this.SetLightColor(SColor(255, 211, 121, 224));
+			
+			if (jerry)
+			{
+				this.SetLightRadius(this.get_f32("explosive_radius"));
+				this.SetLightColor(SColor(255, 200, 20, 20));
+			}
 		}
 	}
 }
@@ -92,22 +150,28 @@ void onDie(CBlob@ this)
 {
 	this.getSprite().PlaySound("DarkWraithDie");
 	
-	if (this.hasTag("exploding"))
-	{
-		this.getSprite().PlaySound("DarkWraithExplode", 1.0f, 0.9f);
+	if (!this.hasTag("exploding")) return;
 
-		if (isServer())
+	this.getSprite().PlaySound("DarkWraithExplode", 1.0f, 0.9f);
+
+	if (isServer())
+	{
+		const bool jerry = this.hasTag("jerry");
+
+		Vec2f pos = this.getPosition();
+		if (jerry)
+			server_CreateBlob("nukeexplosion", -1, pos);
+
+		const u8 flame_amount = jerry ? 10 : 6;
+		const f32 flame_vel_magnitude = jerry ? 15.0f : 10.0f;
+		for (u8 i = 0; i < flame_amount; i++)
 		{
-			Vec2f pos = this.getPosition();
-			for (u8 i = 0; i < 6; i++)
-			{
-				CBlob@ blob = server_CreateBlob("flame", -1, pos);
-				if (blob is null) continue;
-				
-				Vec2f vel = getRandomVelocity(XORRandom(360), 10.0f, 0.0f);
-				blob.setVelocity(vel);
-				blob.server_SetTimeToDie(5 + XORRandom(3));
-			}
+			CBlob@ blob = server_CreateBlob("flame", -1, pos);
+			if (blob is null) continue;
+			
+			Vec2f vel = getRandomVelocity(XORRandom(360), flame_vel_magnitude, 0.0f);
+			blob.setVelocity(vel);
+			blob.server_SetTimeToDie(8 + XORRandom(4));
 		}
 	}
 }
