@@ -8,7 +8,7 @@ void onInit(CBlob@ this)
 				  30.0f, // move speed
 				  0.31f,  // turn speed
 				  Vec2f(0.0f, 0.0f), // jump out velocity
-				  false  // inventory access
+				  true  // inventory access
 				 );
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
