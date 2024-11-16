@@ -63,6 +63,8 @@ void onTick(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
+	if (blob.getTickSinceCreated() < 90) return false;
+
 	return blob.hasTag("flesh") || blob.hasTag("vehicle");
 }
 
