@@ -9,7 +9,7 @@ u16 maximum_skelepedes = 4;
 
 const u8 skeleton_merge_amount = 4;
 const u8 zombie_merge_amount = 2;
-const u8 zombieknight_merge_amount = 30;
+const u8 zombieknight_merge_amount = 4;
 
 const u8 merge_attempts = 10;
 
@@ -38,11 +38,13 @@ void onTick(CRules@ this)
 	CBlob@[] skeletons;       getBlobsByName("skeleton", @skeletons);
 	CBlob@[] zombies;         getBlobsByName("zombie", @zombies);
 	CBlob@[] zombieknights;   getBlobsByName("zombieknight", @zombieknights);
+	//CBlob@[] horrors;         getBlobsByName("horrors", @zombieknights);
 	//CBlob@[] skelepedes;      getBlobsByName("skelepede", @skelepedes);
 	
 	int skeletons_length = skeletons.length;
 	int zombies_length = zombies.length;
 	int zombieknights_length = zombieknights.length;
+	//int horrors_length = horrors.length;
 	//int skelepedes_length = skelepedes.length;
 	
 	for (u8 m = 0; m < merge_attempts; m++)
@@ -82,7 +84,25 @@ void onTick(CRules@ this)
 		}
 
 		if (undead_count < merge_zombies) return;
-		
+
+		//merge zombie knights into horrors
+		if (zombieknights_length >= zombieknight_merge_amount)
+		{
+			zombieknights_length--;
+			server_CreateBlob("horror", -1, zombieknights[zombieknights_length].getPosition());
+			for (u8 i = 0; i < zombieknight_merge_amount; i++)
+			{
+				CBlob@ zombieknight = zombieknights[zombieknights_length];
+				zombieknight.SetPlayerOfRecentDamage(null, 1.0f);
+				zombieknight.server_Die();
+
+				zombieknights_length--;
+				undead_count--;
+			}
+		}
+
+		if (undead_count < merge_zombies) return;
+
 		//merge zombie knights into skelepede
 		/*if (zombieknights_length >= zombieknight_merge_amount && skelepedes_length < maximum_skelepedes)
 		{

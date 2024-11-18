@@ -16,7 +16,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		
 		if (isClient())
 		{
-			const string sound = this.getName() == "zombieknight" ? "ZombieKnightDie" : "ZombieDie";
+			const string name = this.getName();
+			string sound = "ZombieDie";
+			if (name == "zombieknight") sound = "ZombieKnightDie";
+			else if (name == "horror")  sound = "HorrorDie";
+
 			this.getSprite().PlaySound(sound);
 		}
 
@@ -59,7 +63,12 @@ void onTick(CBlob@ this)
 		if (isClient())
 		{
 			this.getSprite().SetAnimation("revive");
-			Sound::Play(this.getName() == "zombieknight" ? "ZombieKnightGrowl" : "ZombieSpawn", this.getPosition());
+
+			const string name = this.getName();
+			string sound = "ZombieSpawn";
+			if (name == "zombieknight") sound = "ZombieKnightGrowl";
+
+			Sound::Play(sound, this.getPosition());
 		}
 		
 		this.Untag("dead");
