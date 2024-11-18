@@ -120,8 +120,8 @@ f32 getExplosionDamagePercent()
 {
 	f32 percent = 1.0f;
 	Technology@[]@ TechTree = getTechTree();
-	if (hasTech(TechTree, Tech::Shrapnel))    percent += 0.25f;
-	if (hasTech(TechTree, Tech::ShrapnelII))  percent += 0.25f;
+	if (hasTech(TechTree, Tech::Shrapnel))    percent += 0.3f;
+	if (hasTech(TechTree, Tech::ShrapnelII))  percent += 0.3f;
 	return percent;
 }
 
