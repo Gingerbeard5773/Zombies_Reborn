@@ -44,8 +44,8 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 	Sound::Play(sound, this.getPosition());
 	
 	Technology@[]@ TechTree = getTechTree();
-	const bool high_explosive = hasTech(TechTree, Tech::HighExplosives);
-	const f32 radius_percent = high_explosive && !this.hasTag("undead") ? 1.35f : 1.0f;
+	const bool high_explosive = hasTech(TechTree, Tech::HighExplosives) && this.getTeamNum() == 0;
+	const f32 radius_percent = high_explosive ? 1.35f : 1.0f;
 	radius *= radius_percent;
 
 	const f32 map_damage_radius =   this.exists("map_damage_radius")  ? this.get_f32("map_damage_radius")   : 0.0f;
@@ -70,7 +70,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 
 	if (this.hasTag("bomberman_style"))
 	{
-		BombermanExplosion(this, radius, damage, hitter, should_teamkill, high_explosive);
+		BombermanExplosion(this, radius, damage, hitter, should_teamkill);
 		return; //------------------------------------------------------ END WHEN BOMBERMAN
 	}
 
@@ -374,7 +374,7 @@ void LinearExplosion(CBlob@ this, const Vec2f&in _direction, f32 length, const f
 	}
 }
 
-void BombermanExplosion(CBlob@ this, const f32&in radius, const f32&in damage, const u8&in hitter, const bool&in should_teamkill, const bool&in high_explosive)
+void BombermanExplosion(CBlob@ this, const f32&in radius, const f32&in damage, const u8&in hitter, const bool&in should_teamkill)
 {
 	Vec2f pos = this.getPosition();
 	CMap@ map = getMap();
