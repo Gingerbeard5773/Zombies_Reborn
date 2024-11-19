@@ -38,6 +38,7 @@ const Spawn@[] spawns =
 f32 game_difficulty = 1.0f;  //zombie spawnrate multiplier
 u16 maximum_zombies = 400;   //maximum amount of zombies that can be on the map at once
 u16 maximum_skelepedes = 4;  //maximum amount of skelepedes that can be on the map at once
+u16 maximum_gregs = 50;      //maximum amount of gregs that can be on the map at once
 
 int spawn_weights_sum = 0;
 
@@ -59,6 +60,7 @@ void Reset(CRules@ this)
 		game_difficulty = cfg.exists("game_difficulty") ? cfg.read_f32("game_difficulty") : 1.0f;
 		maximum_zombies = cfg.exists("maximum_zombies") ? cfg.read_u16("maximum_zombies") : 400;
 		maximum_skelepedes = cfg.exists("maximum_skelepedes") ? cfg.read_u16("maximum_skelepedes") : 4;
+		maximum_gregs = cfg.exists("maximum_gregs") ? cfg.read_u16("maximum_gregs") : 50;
 	}
 	
 	//initialize spawn weights
@@ -136,6 +138,13 @@ void SpawnZombie(CMap@ map, const u16&in dayNumber, const f32&in difficulty)
 	}
 	else if (spawn.name == "greg" || spawn.name == "wraith")
 	{
+		if (spawn.name == "greg")
+		{
+			CBlob@[] gregs;
+			getBlobsByName("greg", @gregs);
+			if (gregs.length >= maximum_gregs)
+				return;
+		}
 		//flying enemies spawn at a random height at world edge
 		Vec2f spawn_pos = getZombieSpawnPos(map);
 		spawn_pos.y = XORRandom(spawn_pos.y);
