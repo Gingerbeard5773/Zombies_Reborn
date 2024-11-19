@@ -44,15 +44,10 @@ void onTick(CBlob@ this)
 			server_SetEnraged(this, false, false);
 		}
 
-		//player functionality
-		CPlayer@ player = this.getPlayer();
-		if (player !is null)
-		{	
-			const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
-			if ((this.isKeyPressed(key_action1) && !this.hasTag("exploding")) || auto_explode_timer < 0)
-			{
-				server_SetEnraged(this);
-			}
+		const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
+		if (auto_explode_timer < 0 || this.isKeyPressed(key_action1))
+		{
+			server_SetEnraged(this);
 		}
 	}
 	

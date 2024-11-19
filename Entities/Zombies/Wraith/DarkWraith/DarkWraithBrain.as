@@ -54,9 +54,7 @@ void onTick(CBrain@ this)
 			}
 
 			// should we be mad?
-			// auto-enrage after some time if we cannot get to target
-			const s32 timer = blob.get_s32("auto_enrage_time") - getGameTime();
-			if (((destination - pos).Length() < blob.get_f32("explosive_radius") || timer < 0))
+			if ((destination - pos).Length() < blob.get_f32("explosive_radius"))
 			{
 				server_SetEnraged(blob, true, false, false);
 			}

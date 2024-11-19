@@ -76,16 +76,13 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (!isServer()) return;
-
-	//player functionality
-	CPlayer@ player = this.getPlayer();
-	if (player is null) return;
-
-	const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
-	if ((this.isKeyPressed(key_action1) && !this.hasTag("exploding")) || auto_explode_timer < 0)
+	if (isServer())
 	{
-		server_SetEnraged(this, true, false, false);
+		const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
+		if (this.isKeyPressed(key_action1) || auto_explode_timer < 0)
+		{
+			server_SetEnraged(this, true, false, false);
+		}
 	}
 }
 
@@ -154,10 +151,16 @@ void onDie(CBlob@ this)
 
 	this.getSprite().PlaySound("DarkWraithExplode", 1.0f, 0.9f);
 
+	const bool jerry = this.hasTag("jerry");
+	
+	if (isClient() && jerry)
+	{
+		this.getSprite().PlaySound("JerryExplode.ogg", 1.3f, 1.0f);
+		Sound::Play("JerryExplodeDistant.ogg");
+	}
+
 	if (isServer())
 	{
-		const bool jerry = this.hasTag("jerry");
-
 		Vec2f pos = this.getPosition();
 		if (jerry)
 			server_CreateBlob("nukeexplosion", -1, pos);
