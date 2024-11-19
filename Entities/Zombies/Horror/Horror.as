@@ -17,7 +17,6 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -3.0f);
 	this.set_u16("coins on death", COINS_ON_DEATH);
 
-	this.getSprite().PlaySound("HorrorGrowl", 5.0f);
 	this.getShape().SetRotationsAllowed(false);
 
 	this.getBrain().server_SetActive(true);
@@ -25,18 +24,22 @@ void onInit(CBlob@ this)
 	this.Tag("flesh");
 	this.Tag("heavy weight");
 
+	this.getSprite().SetEmitSound("HorrorChatter.ogg");
+	this.getSprite().SetEmitSoundVolume(0.6f);
+	this.getSprite().SetEmitSoundPaused(false);
+
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
 
-void onTick(CBlob@ this)
+/*void onTick(CBlob@ this)
 {
 	if (this.hasTag("dead")) return;
 	
 	if (isClient() && XORRandom(1024) == 0)
 	{
-		this.getSprite().PlaySound("HorrorGrowl", 5.0f);
+		this.getSprite().PlaySound("HorrorGrowl", 3.0f);
 	}
-}
+}*/
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
