@@ -22,9 +22,10 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			CBlob@ occBlob = ap.getOccupied();
 			if (occBlob !is null && occBlob.hasTag("vehicle")) //detach button
 			{
-				CBitStream params;
-				params.write_netid(occBlob.getNetworkID());
-				caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), "Detach " + occBlob.getInventoryName(), params);
+				CBitStream stream;
+				stream.write_netid(occBlob.getNetworkID());
+				const string message = getTranslatedString("Detach {ITEM}").replace("{ITEM}", occBlob.getInventoryName());
+				caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), message, stream);
 			}
 		}
 	}
