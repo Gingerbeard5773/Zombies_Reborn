@@ -10,6 +10,8 @@ u16 maximum_skelepedes = 4;
 const u8 skeleton_merge_amount = 4;
 const u8 zombie_merge_amount = 2;
 const u8 zombieknight_merge_amount = 4;
+const u8 horror_merge_amount = 5;
+const u8 horror_merge_threshold = 350; //how many horrors we need in order to start merging them into dark wraiths
 
 const u8 merge_attempts = 10;
 
@@ -38,14 +40,12 @@ void onTick(CRules@ this)
 	CBlob@[] skeletons;       getBlobsByName("skeleton", @skeletons);
 	CBlob@[] zombies;         getBlobsByName("zombie", @zombies);
 	CBlob@[] zombieknights;   getBlobsByName("zombieknight", @zombieknights);
-	//CBlob@[] horrors;         getBlobsByName("horrors", @zombieknights);
-	//CBlob@[] skelepedes;      getBlobsByName("skelepede", @skelepedes);
+	CBlob@[] horrors;         getBlobsByName("horror", @horrors);
 	
 	int skeletons_length = skeletons.length;
 	int zombies_length = zombies.length;
 	int zombieknights_length = zombieknights.length;
-	//int horrors_length = horrors.length;
-	//int skelepedes_length = skelepedes.length;
+	int horrors_length = horrors.length;
 	
 	for (u8 m = 0; m < merge_attempts; m++)
 	{
@@ -102,26 +102,23 @@ void onTick(CRules@ this)
 		}
 
 		if (undead_count < merge_zombies) return;
-
-		//merge zombie knights into skelepede
-		/*if (zombieknights_length >= zombieknight_merge_amount && skelepedes_length < maximum_skelepedes)
+		
+		//merge horrors into dark wraiths
+		if (horrors_length >= horror_merge_amount && horrors_length > horror_merge_threshold)
 		{
-			zombieknights_length--;
-			Vec2f skelepede_spawn_pos = zombieknights[zombieknights_length].getPosition();
-			skelepede_spawn_pos.y = getMap().getMapDimensions().y + 100 + XORRandom(200);
-			server_CreateBlob("skelepede", -1, skelepede_spawn_pos);
-			skelepedes_length++;
-			for (u8 i = 0; i < zombieknight_merge_amount; i++)
+			horrors_length--;
+			server_CreateBlob("darkwraith", -1, horrors[horrors_length].getPosition());
+			for (u8 i = 0; i < horror_merge_amount; i++)
 			{
-				CBlob@ zombieknight = zombieknights[zombieknights_length];
-				zombieknight.SetPlayerOfRecentDamage(null, 1.0f);
-				zombieknight.server_Die();
+				CBlob@ horror = horrors[horrors_length];
+				horror.SetPlayerOfRecentDamage(null, 1.0f);
+				horror.server_Die();
 
-				zombieknights_length--;
+				horrors_length--;
 				undead_count--;
 			}
 		}
 
-		if (undead_count < merge_zombies) return;*/
+		if (undead_count < merge_zombies) return;
 	}
 }
