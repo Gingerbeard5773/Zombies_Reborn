@@ -31,15 +31,10 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
 
-/*void onTick(CBlob@ this)
+void onTick(CBlob@ this)
 {
-	if (this.hasTag("dead")) return;
-	
-	if (isClient() && XORRandom(1024) == 0)
-	{
-		this.getSprite().PlaySound("HorrorGrowl", 3.0f);
-	}
-}*/
+	this.getSprite().SetEmitSoundPaused(this.hasTag("dead"));
+}
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
