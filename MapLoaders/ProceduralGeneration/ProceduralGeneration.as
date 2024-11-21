@@ -322,11 +322,11 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 
 				if (j > SeaLevel)
 				{
-					if (r.NextRanged(13) == 0)
+					if (r.NextRanged(17) == 0)
 					{
 						World[i][j] = CMap::tile_gold;
 					}
-					else if (biome[i] == BiomeType::Desert && r.NextRanged(9) == 0)
+					else if (biome[i] == BiomeType::Desert && r.NextRanged(11) == 0)
 					{
 						World[i][j] = CMap::tile_gold;
 					}
@@ -431,18 +431,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
-	const int bed_start = 6;
-	for (int i = 0; i < width; i += 1) //Set bedrock at bottom
-	{
-		for (int j = height - bed_start; j < height; j += 1)
-		{
-			const f32 frac = j + (map_noise.Fractal(i / 2.0f, j / 2.0f) * 2 - 1) * 3;
-			if (frac > height - bed_start)
-			{
-				World[i][j] = CMap::tile_bedrock;
-			}
-		}
-	}
+
 
 	/// Unnatural structures ///
 	
@@ -724,6 +713,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
+
 	/// NATURE ///
 	
 	for (int i = 0; i < width; i += 1) //Plants \o/
@@ -867,6 +857,26 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 			}
 		}
 	}
+
+
+	/// BEDROCK ///
+	const int bed_start = 4;
+	const float midpoint = width / 2;
+	const int bed_end = 16;
+	for (int i = 0; i < width; i += 1) //Set bedrock at bottom
+	{
+		const float mid_dist = Maths::Abs(i - midpoint) / width * 2;
+		for (int j = 0; j < height; j += 1)
+		{
+			const f32 frac = map_noise.Fractal(i / 8.0f, 0) * 8 * (1 - mid_dist);
+			const int curve = Maths::Min(bed_end, Maths::Pow(mid_dist * 1.2f, 5.0f) * 9);
+			if (height - j < bed_start + curve + frac || ((1 - mid_dist) * width <= 3 && height - j <= 9))
+			{
+				World[i][j] = CMap::tile_bedrock;
+			}
+		}
+	}
+
 
 	for (int i = 0; i < width; i += 1) //Finally, set the tiles
 	{
