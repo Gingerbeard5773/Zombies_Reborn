@@ -333,12 +333,12 @@ void onInit(CRules@ this)
 void onRender(CRules@ this)
 {
 	if (!show_gamehelp) return;
-	
+
 	CPlayer@ player = getLocalPlayer();
 	if (player is null) return;
-	
+
 	Vec2f center = getDriver().getScreenCenterPos();
-	
+
 	//background
 	Vec2f imageSize;
 	GUI::GetIconDimensions("$HELP$", imageSize);
@@ -488,7 +488,7 @@ void drawStagingPopup(Vec2f&in pos)
 
 	GUI::SetFont("menu");
 	string info = "Staging\n\n"+
-	              "Zombie Fortress is best\nsuited to be played\n"+
+	              "Lagging? Zombie Fortress is best\nsuited to be played\n"+
 	              "with a staging client.\n\n"+
 	              "What is Staging?\n"+
 	              "Staging is a version of KAG\nwith incredible optimization.\n"+
@@ -500,7 +500,7 @@ void drawStagingPopup(Vec2f&in pos)
 	if (g_locale == "ru")
 	{
 		info = "Staging\n\n"+
-		       "Зомби Крепости лучше всего\nподходит для того чтобы сыграть\n"+
+		       "Игра медленная? Зомби Крепости лучше всего\nподходит для того чтобы сыграть\n"+
 		       "Используя 'staging client'.\n\n"+
 		       "Что такое 'Staging'?\n"+
 		       "Staging это версия оригинальной игры KAG\nс потрясающей оптимизацией.\n"+
@@ -521,4 +521,40 @@ void drawStagingPopup(Vec2f&in pos)
 
 	pos.y += 10.0f;
 	GUI::DrawText(info, pos - dim, SColor(0xffffffff));
+}
+
+const string[] lag =
+{
+	"lag",
+	"lagging",
+	"lagg",
+	"laggy"
+};
+
+const bool SaidLag(const string&in textIn)
+{
+	const string lower = textIn.toLower();
+	string[] tokens = lower.split(" ");
+	for (u8 i = 0; i < tokens.length; i++)
+	{
+		if (lag.find(tokens[i]) != -1) return true;
+	}
+	return false;
+}
+
+bool onClientProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
+{
+	#ifdef STAGING
+	return true;
+	#endif
+
+	if (player !is null && player.isMyPlayer())
+	{
+		if (SaidLag(textIn))
+		{
+			show_gamehelp = true;
+		}
+	}
+	
+	return true;
 }
