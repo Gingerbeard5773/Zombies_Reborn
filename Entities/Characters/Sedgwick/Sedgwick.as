@@ -28,10 +28,9 @@ void onInit(CBlob@ this)
 	
 	//dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
-	
-	CSprite@ sprite = this.getSprite();
-	sprite.ReloadSprites(3, 0); //purple
-	
+
+	this.server_setTeamNum(3);
+
 	Sound::Play("EvilNotice.ogg");
 	ParticleZombieLightning(this.getPosition());
 	
