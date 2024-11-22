@@ -36,7 +36,7 @@ void onInit(CBlob@ this)
 
 	Random seed(this.getNetworkID());
 
-	Shop shop(this, "Buy");
+	Shop shop(this, "Trader");
 	shop.menu_size = Vec2f(3, 6);
 
 	AddRandomItemsToShop(shop, seed, 3);

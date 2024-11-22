@@ -73,6 +73,8 @@ void Reset(CRules@ this)
 
 void onTick(CRules@ this)
 {
+	if (this.get_bool("pause_undead_spawns")) return;
+
 	const u16 dayNumber = this.get_u16("day_number");
 	if (dayNumber < 2) return;
 

@@ -52,6 +52,7 @@ namespace Translate
 	Sedgwick = Translate("Sedgwick the necromancer has appeared!",                      "Некромант Седжвик только что явился!"),
 	Migrant1 = Translate("A refugee has arrived!",                                      "Прибыл беженец!"),
 	Migrant2 = Translate("Refugees have arrived!",                                      "Беженцы прибывают!"),
+	Tim      = Translate("Tim has appeared!",                                           "Тим появился!"),
 
 	//stats
 	Stat0 = Translate("Total zombies killed: {INPUT}",   "Больше всех убивал зомби: {INPUT}"),
@@ -85,7 +86,7 @@ namespace Translate
 	IronDoor       = Translate("Iron Door\nPlace next to walls.",                       "Железная дверь\nСтавьте возле стены."),
 	IronPlatform   = Translate("Iron Platform\nOne way platform",                       "Железная платформа\nОдносторонняя платформа."),
 	IronSpikes     = Translate("Iron Spikes\nDurable spikes",                           "Железные шипы\nПрочные шипы."),
-	Dirt           = Translate("Dirt\nPlace on existing dirt",                          ""),
+	Dirt           = Translate("Dirt\nPlace on existing dirt",                          "Грязь\nПоместить на существующую грязь"),
 	Windmill       = Translate("Wind Mill\nA grain mill for producing flour.",          "Мельница\nЗерновая мельница для производства муки."),
 	Kitchen        = Translate("Kitchen\nCreate various foods for healing.",            "Кухня\nГотовьте различную еду для восстановления здоровья и сил."),
 	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     "Плавильня\nПереплавляет сырую руду в слитки."),
@@ -147,6 +148,7 @@ namespace Translate
 
 	//armory
 	Scythe         = Translate("Scythe\nA tool for cutting crops fast.\nAllows for grain auto-pickup.",                 "Коса\nИнструмент для быстрого срезания урожая.\nПозволяет поднямать зерна автоматически."),
+	Spear          = Translate("Spear\nA long polearm for stabbing from a distance.",                                   "Копье\nДлинное древковое оружие для нанесения ударов на расстоянии."),
 	Crossbow       = Translate("Crossbow\nFires any arrow type.\nHold right mouse button to reload.",                   "Арбалет\nСтреляет любыми стрелами\nЗажмите ПКМ, чтобы перезарядить."),
 	Musket         = Translate("Musket\nFires musket balls.\nHold right mouse button to reload.",                       "Мушкет\nСтреляет патронами для Мушкета.\nЗажмите ПКМ, чтобы перезарядить."),
 	MusketBalls    = Translate("Musket Balls\nAmmunition for the Musket.",                                              "Мушкетные пули\nПатроны для мушкета"),
@@ -185,6 +187,14 @@ namespace Translate
 	TradeScrollFish     = Translate("Summons a bloodthirsty shark.",                            "Вызывает кровожадную акулу."),
 	TradeScrollHealth   = Translate("This one can heal even the worst injuries.",               "Это может залечить даже самые тяжелые травмы."),
 	TradeScrollRepair   = Translate("This one will fix up whatever is nearby!",                 "Этот починит всё, что находится поблизости!"),
+
+	//tim
+	HolyGrenade     = Translate("Holy Hand Grenade\nDo mot askj me where I got this.,..",   "Святая ручная граната\nНе спрашивайте меня, откуда я это взял..."),
+	Tim0            = Translate("I'll be takinge my leave soonm,,..",                       "Я скоро уйду."),
+	Tim1            = Translate("Goodbye.",                                                 "Прощай."),
+	Tim2            = Translate("Be carefule withe that!!.",                                "Будьте с этим осторожны."),
+	Tim3            = Translate("Lotsa of valuables! for sale!",                            "Множество ценных вещей на продажу!"),
+	Tim4            = Translate("Hi!!! Buy my stuff! :D",                                   "Здравствуйте, я здесь, чтобы продать свои ценности. Приходите взглянуть!"),
 
 	//library
 	Researching     = Translate("Researching - {PERCENT}",      "Исследование - {PERCENT}"),

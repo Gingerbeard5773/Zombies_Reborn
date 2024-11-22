@@ -7,6 +7,7 @@
 
 const u8 GAME_WON = 5;
 f32 lastDayHour;
+u16 tim_day;
 
 void onStateChange(CRules@ this, const u8 oldState)
 {
@@ -27,6 +28,26 @@ void onStateChange(CRules@ this, const u8 oldState)
 	}
 }
 
+void onInit(CRules@ this)
+{
+	Reset(this);
+}
+
+void onRestart(CRules@ this)
+{
+	Reset(this);
+}
+
+void Reset(CRules@ this)
+{
+	tim_day = getTimInterval();
+}
+
+u16 getTimInterval()
+{
+	return 20 + XORRandom(11);
+}
+
 void onTick(CRules@ this)
 {
 	if (!isServer()) return;
@@ -43,11 +64,18 @@ void checkHourChange(CRules@ this)
 	const u8 dayHour = Maths::Roundf(map.getDayTime()*10);
 	if (dayHour != lastDayHour)
 	{
+		const u16 day_number = this.get_u16("day_number");
+		this.set_bool("pause_undead_spawns", day_number == tim_day);
+
 		lastDayHour = dayHour;
 		switch(dayHour)
 		{
 			case 3:
 			{
+				if (day_number > tim_day)
+				{
+					tim_day = day_number + getTimInterval();
+				}
 				doMigrantEvent(this, map);
 				break;
 			}
@@ -58,6 +86,12 @@ void checkHourChange(CRules@ this)
 			}
 			case 10: //midnight
 			{
+				if (day_number == tim_day)
+				{
+					doTimEvent(this, map);
+					break;
+				}
+				
 				doSedgwickEvent(this, map);
 				break;
 			}
@@ -147,4 +181,15 @@ void doSedgwickEvent(CRules@ this, CMap@ map)
 	
 	Vec2f spawn = survivors[XORRandom(survivors.length)].getPosition();
 	server_CreateBlob("sedgwick", -1, spawn);
+}
+
+void doTimEvent(CRules@ this, CMap@ map)
+{
+	CBlob@[] survivors = getSurvivors();
+	if (survivors.length <= 0) return;
+
+	server_SendGlobalMessage(this, 9, 6);
+
+	Vec2f spawn = survivors[XORRandom(survivors.length)].getPosition();
+	server_CreateBlob("tim", 0, spawn);
 }
