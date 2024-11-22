@@ -76,28 +76,28 @@ void onTick(CBlob@ this)
 }
 
 void GoSomewhere(CBlob@ this)
-{	
+{
 	CMap@ map = getMap();
-    Vec2f pos = this.getPosition();
-    Vec2f vel = this.getVelocity();
-    CShape@ shape = this.getShape();
-    CSprite@ sprite = this.getSprite();
-    Vec2f destination = this.getAimPos();
+	Vec2f pos = this.getPosition();
+	Vec2f vel = this.getVelocity();
+	CShape@ shape = this.getShape();
+	CSprite@ sprite = this.getSprite();
+	Vec2f destination = this.getAimPos();
 
-    const bool inGround = map.isTileSolid(pos) || pos.y >= map.getMapDimensions().y;
-    const bool wasSolidGround = map.isTileSolid(this.getOldPosition()) || this.getOldPosition().y >= map.getMapDimensions().y;
-	const bool SegmentsInGround = areSegmentsInGround(this, map);
-	
+	const bool inGround = map.isTileSolid(pos) || pos.y >= map.getMapDimensions().y;
+	const bool wasSolidGround = map.isTileSolid(this.getOldPosition()) || this.getOldPosition().y >= map.getMapDimensions().y;
+	const bool SegmentsInGround = areSegmentsInGround(this, map) || isTouchingUndead(this);
+
 	//effects
-    if (isClient())
-    {
+	if (isClient())
+	{
 		//effects when surfacing
-        if ((!inGround && wasSolidGround) || (inGround && !wasSolidGround) && pos.y < map.getMapDimensions().y - map.tilesize)
-        {
-           // sprite.PlaySound("/rocks_explode"+(1+XORRandom(2)), 0.4f, 0.8f);
-            MakeDustParticle(this.getPosition(), "/Dust2.png");
-        }
-		
+		if ((!inGround && wasSolidGround) || (inGround && !wasSolidGround) && pos.y < map.getMapDimensions().y - map.tilesize)
+		{
+		   // sprite.PlaySound("/rocks_explode"+(1+XORRandom(2)), 0.4f, 0.8f);
+			MakeDustParticle(this.getPosition(), "/Dust2.png");
+		}
+
 		//particle effects in front of the skelepede's path, to help players expect where it will surface
 		if (inGround && getGameTime() % 3 == 0)
 		{
@@ -138,69 +138,83 @@ void GoSomewhere(CBlob@ this)
 			sprite.PlaySound("spawncentipede", 1.2f, 1.0f);
 			this.Tag("skelepede roar");
 		}
-    }
+	}
 
-    if (inGround || SegmentsInGround)
-    {
-        ShakeScreen(50, 8, pos);
-        sprite.SetEmitSoundVolume(vel.Length() * 0.25f);
-        shape.setDrag(0.61);
-        shape.SetGravityScale(0);
-    }
-    else
-    {
-        sprite.SetEmitSoundVolume(sprite.getEmitSoundVolume() * 0.85f);
-        shape.setDrag(0.042);
-        shape.SetGravityScale(0.5);
-    }
+	if (inGround || SegmentsInGround)
+	{
+		ShakeScreen(50, 8, pos);
+		sprite.SetEmitSoundVolume(vel.Length() * 0.25f);
+		shape.setDrag(0.61);
+		shape.SetGravityScale(0);
+	}
+	else
+	{
+		sprite.SetEmitSoundVolume(sprite.getEmitSoundVolume() * 0.85f);
+		shape.setDrag(0.042);
+		shape.SetGravityScale(0.5);
+	}
 
 	//movement
 	if (inGround || SegmentsInGround)
-    {
-        Vec2f vec(0,0);
-        if (this.hasAttached())
-        {
-            // Move to the void
-            vec = Vec2f(destination.x, map.getMapDimensions().y + 24) - pos;
-        }
-        else if (vel.Length() > 3.75f && destination.y < pos.y)
-        {
-            // Directly target the player
-            vec = destination - Vec2f(0.0f, 128.0f) - pos;
-        }
-        else if (vel.Length() < 1.8f && (destination - pos).Length() < brain_target_radius && Maths::Abs(destination.x - pos.x) > 16.0f)
-        {
-            // Move below ground
-            vec = Vec2f(destination.x, map.getMapDimensions().y) - pos;
-        }
-        else
-        {
-            const float compensation_amount = 10; //40
-            if (destination.x < pos.x)
-            {
-                if (destination.y < pos.y)
-                    vec = (destination + Vec2f(-compensation_amount, -compensation_amount)) - pos;
-                else
-                    vec = (destination + Vec2f(-compensation_amount, compensation_amount*3)) - pos;
-            }
-            else
-            {
-                if (destination.y < pos.y)
-                    vec = (destination + Vec2f(compensation_amount, -compensation_amount)) - pos;
-                else
-                    vec = (destination + Vec2f(compensation_amount, compensation_amount*3)) - pos;
-            }
-        }
+	{
+		Vec2f vec(0,0);
+		if (this.hasAttached())
+		{
+			// Move to the void
+			vec = Vec2f(destination.x, map.getMapDimensions().y + 24) - pos;
+		}
+		else if (vel.Length() > 3.75f && destination.y < pos.y)
+		{
+			// Directly target the player
+			vec = destination - Vec2f(0.0f, 128.0f) - pos;
+		}
+		else if (vel.Length() < 1.8f && (destination - pos).Length() < brain_target_radius && Maths::Abs(destination.x - pos.x) > 16.0f)
+		{
+			// Move below ground
+			vec = Vec2f(destination.x, map.getMapDimensions().y) - pos;
+		}
+		else
+		{
+			const float compensation_amount = 10; //40
+			if (destination.x < pos.x)
+			{
+				if (destination.y < pos.y)
+					vec = (destination + Vec2f(-compensation_amount, -compensation_amount)) - pos;
+				else
+					vec = (destination + Vec2f(-compensation_amount, compensation_amount*3)) - pos;
+			}
+			else
+			{
+				if (destination.y < pos.y)
+					vec = (destination + Vec2f(compensation_amount, -compensation_amount)) - pos;
+				else
+					vec = (destination + Vec2f(compensation_amount, compensation_amount*3)) - pos;
+			}
+		}
 
-        vec.Normalize();
-        vec *= 0.3;
-        this.setVelocity(cappedVel(vel + vec, 3.2f));
-    }
+		vec.Normalize();
+		vec *= 0.3;
+		this.setVelocity(cappedVel(vel + vec, 3.2f));
+	}
 }
 
 Vec2f cappedVel(Vec2f &in velocity, f32 &in cap)
 {
-    return Vec2f(Maths::Clamp(velocity.x, -cap, cap), Maths::Clamp(velocity.y, -cap, cap));
+	return Vec2f(Maths::Clamp(velocity.x, -cap, cap), Maths::Clamp(velocity.y, -cap, cap));
+}
+
+bool isTouchingUndead(CBlob@ this)
+{
+	CBlob@[] overlapping;
+	if (!this.getOverlapping(@overlapping)) return false;
+
+	for (u16 i = 0; i < overlapping.length; i++)
+	{
+		CBlob@ blob = overlapping[i];
+		if (blob.hasTag("undead")) return true;
+	}
+	
+	return false;
 }
 
 bool areSegmentsInGround(CBlob@ this, CMap@ map, const u8 &in segmentsToCheck = 13)
@@ -226,9 +240,9 @@ void MoveSegments(CBlob@ this)
 {
 	u16[] segment_netids;
 	if (!this.get("skelepede_segment_netids", segment_netids)) return;
-	
+
 	CBlob@ previousSegment = @this;
-	
+
 	const u8 segmentsLength = segment_netids.length;
 	for (u8 i = 0; i < segmentsLength; i++)
 	{
