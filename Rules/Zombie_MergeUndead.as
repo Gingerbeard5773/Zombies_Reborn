@@ -10,6 +10,7 @@ u16 maximum_skelepedes = 4;
 const u8 skeleton_merge_amount = 4;
 const u8 zombie_merge_amount = 2;
 const u8 zombieknight_merge_amount = 4;
+const u8 zombieknight_merge_threshold = 350; //how many zombieknights we need in order to start merging them into horrors
 const u8 horror_merge_amount = 5;
 const u8 horror_merge_threshold = 350; //how many horrors we need in order to start merging them into dark wraiths
 
@@ -86,7 +87,7 @@ void onTick(CRules@ this)
 		if (undead_count < merge_zombies) return;
 
 		//merge zombie knights into horrors
-		if (zombieknights_length >= zombieknight_merge_amount)
+		if (zombieknights_length >= zombieknight_merge_amount && zombieknights_length > zombieknight_merge_threshold)
 		{
 			zombieknights_length--;
 			server_CreateBlob("horror", -1, zombieknights[zombieknights_length].getPosition());
