@@ -113,20 +113,20 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.getShape().checkCollisionsAgain = true;
 		this.getShape().SetGravityScale(1.0f);
 		//set velocity to blob in hand
-        CBlob@ carried = this.getCarriedBlob();
-        if (carried !is null)
-        {
-            Vec2f current_vel = this.getVelocity() * CARRIED_BLOB_VEL_SCALE;
-            if (carried.hasTag("medium weight"))
-                current_vel = current_vel * MEDIUM_CARRIED_BLOB_VEL_SCALE;
-            else if (carried.hasTag("heavy weight"))
-                current_vel = current_vel * HEAVY_CARRIED_BLOB_VEL_SCALE;
-            //the item is detatched from the player before setting the velocity
-            //otherwise it wont go anywhere
-            this.server_DetachFrom(carried);
-            carried.setVelocity(current_vel);
-        }
-        // fall out of attachments/seats // drop all held things
+		CBlob@ carried = this.getCarriedBlob();
+		if (carried !is null)
+		{
+			Vec2f current_vel = this.getVelocity() * CARRIED_BLOB_VEL_SCALE;
+			if (carried.hasTag("medium weight"))
+				current_vel = current_vel * MEDIUM_CARRIED_BLOB_VEL_SCALE;
+			else if (carried.hasTag("heavy weight"))
+				current_vel = current_vel * HEAVY_CARRIED_BLOB_VEL_SCALE;
+			//the item is detatched from the player before setting the velocity
+			//otherwise it wont go anywhere
+			this.server_DetachFrom(carried);
+			carried.setVelocity(current_vel);
+		}
+		// fall out of attachments/seats // drop all held things
 		this.server_DetachAll();
 
 		StuffFallsOut(this);
@@ -139,6 +139,17 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
+void onDie(CBlob@ this)
+{
+	//fix for onPlayerDie not being called
+	if (!isServer() || this.hasTag("dead")) return;
+
+	CPlayer@ player = this.getPlayer();
+	if (player is null) return;
+
+	getRules().server_PlayerDie(player);
+	this.server_SetPlayer(null);
+}
 
 bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
