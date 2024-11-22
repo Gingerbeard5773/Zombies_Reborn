@@ -37,6 +37,8 @@ Crate@[] base_presets =
 	
 	Crate("bomber",        7,  Vec2f(4, 4)),
 	Crate("armoredbomber", 7,  Vec2f(4, 4)),
+	Crate("lightballista", 0,  Vec2f(3, 3)),
+	Crate("cannon",        0,  Vec2f(3, 3)),
 	Crate("tank",          11, Vec2f(7, 4))
 };
 

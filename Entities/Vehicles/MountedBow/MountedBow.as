@@ -181,19 +181,19 @@ void Vehicle_MountedBowControls(CBlob@ this, VehicleInfo@ v)
 	}
 	
 	//allow non-players to shoot vehicle weapons
-    const bool isBot = blob.getPlayer() is null;
+	const bool isBot = blob.getPlayer() is null;
 	const bool press_action1 = isBot ? blob.isKeyPressed(key_action1) : ap.isKeyPressed(key_action1);
-    if (isServer() && press_action1 && v.canFire())
-    {
+	if (isServer() && press_action1 && v.canFire())
+	{
 		v.getCurrentAmmo().fire_delay = hasTech(Tech::MachineBows) ? 9 : 15;
 		
-        CBitStream bt;
-        bt.write_u16(blob.getNetworkID());
-        bt.write_u16(v.charge);
-        this.SendCommand(this.getCommandID("fire client"), bt);
+		CBitStream bt;
+		bt.write_u16(blob.getNetworkID());
+		bt.write_u16(v.charge);
+		this.SendCommand(this.getCommandID("fire client"), bt);
 
-        Fire(this, v, blob, v.charge);
-    }
+		Fire(this, v, blob, v.charge);
+	}
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
@@ -237,36 +237,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-    return blob.isCollidable() && blob.getShape().isStatic();
-}
-
-//auto grab ammunition from carrier vehicle
-void onInventoryQuantityChange(CBlob@ this, CBlob@ blob, int oldQuantity)
-{
-	if (!isServer()) return;
-
-	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PASSENGER");
-	if (ap is null) return;
-	
-	CBlob@ vehicle = ap.getOccupied();
-	if (vehicle is null) return;
-	
-	CInventory@ inv = vehicle.getInventory();
-	if (inv is null) return;
-	
-	string[] autograb_blobs;
-	if (!this.get("autograb blobs", autograb_blobs)) return;
-
-	const int itemsCount = inv.getItemsCount();
-	for (uint i = 0; i < itemsCount; i++)
-	{
-		CBlob@ b = inv.getItem(i);
-		if (autograb_blobs.find(b.getName()) != -1 && !this.getInventory().isFull())
-		{
-			this.server_PutInInventory(b);
-			break;
-		}
-	}
+	return blob.isCollidable() && blob.getShape().isStatic();
 }
 
 void onAssignWorker(CBlob@ this, CBlob@ worker)

@@ -47,9 +47,11 @@ void onTick(CBrain@ this)
 				Vec2f targetPos = target.getPosition();
 				if (!getMap().rayCastSolidNoBlobs(blob.getPosition(), targetPos))
 					blob.setKeyPressed(key_action1, true);
-				
-				const f32 distance = (blob.getPosition() - targetPos).Length();
-				Vec2f aimpos = targetPos + (target.getVelocity() * Maths::FastSqrt(distance) * 1.0f / 1.0f);
+
+				Vec2f aimpos = targetPos;
+				//const f32 distance = (blob.getPosition() - targetPos).Length();
+				//aimpos += (target.getVelocity() * Maths::FastSqrt(distance) * 1.0f / 1.0f);
+
 				blob.setAimPos(aimpos);
 			}
 			else if (!Runaway(this, blob, target))

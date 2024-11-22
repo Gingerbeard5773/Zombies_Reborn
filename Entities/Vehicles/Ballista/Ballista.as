@@ -4,12 +4,9 @@
 
 // Ballista logic
 
-const u8 cooldown_time_bolt = 60;
-const u8 cooldown_time_bomb = 90;
-
 //naming here is kinda counter intuitive, but 0 == up, 90 == sideways
 const f32 high_angle = 20.0f;
-const f32 low_angle = 60.0f;
+const f32 low_angle = 75.0f;
 
 class BallistaInfo : VehicleInfo
 {
@@ -90,7 +87,7 @@ void onInit(CBlob@ this)
 
 	// bolt ammo
 	Vehicle_AddAmmo(this, v,
-	                    cooldown_time_bolt, // fire delay (ticks)
+	                    60, // fire delay (ticks)
 	                    1, // fire bullets amount
 	                    1, // fire cost
 	                    "mat_bolts", // bullet ammo config name
@@ -104,7 +101,7 @@ void onInit(CBlob@ this)
 
 	// explosive bolt ammo
 	Vehicle_AddAmmo(this, v,
-	                    cooldown_time_bomb, // fire delay (ticks)
+	                    60, // fire delay (ticks)
 	                    1, // fire bullets amount
 	                    1, // fire cost
 	                    "mat_bomb_bolts", // bullet ammo config name

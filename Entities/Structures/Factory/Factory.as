@@ -50,7 +50,7 @@ void SetupProductionSet()
 	{
 		Production tech("Ballista", FactoryFrame::ballista);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 100);
-		tech.addProductionItem("ballista", "Ballista", "", 60, 1, Product::crate);
+		tech.addProductionItem("lightballista", "Ballista", "", 60, 1, Product::crate);
 		tech.addProductionItem("mat_bolts", "Ballista Bolts", "", 60, 1);
 		tech.addProductionItem("mat_bomb_bolts", "Ballista Shells", "", 60, 1);
 		production_set.push_back(tech);

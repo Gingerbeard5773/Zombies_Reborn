@@ -26,7 +26,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(9, 4));
+	this.set_Vec2f("shop menu size", Vec2f(11, 4));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
@@ -51,20 +51,7 @@ void onInit(CBlob@ this)
 		const string cata_icon = getTeamIcon("catapult", "VehicleIcons.png", team_num, Vec2f(32, 32), 0);
 		ShopItem@ s = addShopItem(this, "Catapult", cata_icon, "catapult", cata_icon + "\n\n\n" + Descriptions::catapult, false, true);
 		s.crate_icon = 4;
-		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::catapult);
-	}
-	{
-		const string ballista_icon = getTeamIcon("ballista", "VehicleIcons.png", team_num, Vec2f(32, 32), 1);
-		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + Descriptions::ballista, false, true);
-		s.crate_icon = 5;
-		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
-	}
-	{
-		const string bomber_icon = getTeamIcon("tank", "Icon_tank.png", team_num, Vec2f(55, 32), 0);
-		ShopItem@ s = addShopItem(this, name(Translate::Tank), bomber_icon, "tank", desc(Translate::Tank), false, true);
-		s.crate_icon = 11;
-		AddRequirement(s.requirements, "coin", "", "Coins", 150);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 300);
+		AddRequirement(s.requirements, "coin", "", "Coins", 100);
 	}
 	{
 		const string bow_icon = getTeamIcon("mounted_bow", "MountedBow.png", team_num, Vec2f(16, 16), 6);
@@ -76,20 +63,56 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 85);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 100);
 	}
+	/*{
+		const string ballista_icon = getTeamIcon("ballista", "VehicleIcons.png", team_num, Vec2f(32, 32), 1);
+		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + Descriptions::ballista, false, true);
+		s.crate_icon = 5;
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
+	}*/
 	{
-		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
+		const string cannon_icon = getTeamIcon("cannon", "Icon_Cannon.png", team_num, Vec2f(32, 24), 1);
+		ShopItem@ s = addShopItem(this, name(Translate::Cannon), cannon_icon, "cannon", cannon_icon + "\n\n\n" + desc(Translate::Cannon), false, true);
+		s.crate_icon = 0;
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 2;
+		AddRequirement(s.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 10);
+		AddRequirement(s.requirements, "coin", "", "Coins", 150);
+	}
+	{
+		ShopItem@ s = addShopItem(this, name(Translate::Cannonballs), "$mat_cannonballs$", "mat_cannonballs", desc(Translate::Cannonballs), false, false);
 		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 1;
-		s.buttonheight = 1;
+		s.buttonheight = 2;
+		AddRequirement(s.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 2);
+		AddRequirement(s.requirements, "coin", "", "Coins", 50);
+	}
+	{
+		const string bomber_icon = getTeamIcon("tank", "Icon_tank.png", team_num, Vec2f(55, 32), 0);
+		ShopItem@ s = addShopItem(this, name(Translate::Tank), bomber_icon, "tank", desc(Translate::Tank), false, true);
+		s.crate_icon = 11;
+		AddRequirement(s.requirements, "coin", "", "Coins", 150);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 300);
+	}
+	{
+		const string ballista_icon = getTeamIcon("lightballista", "Icon_LightBallista.png", team_num, Vec2f(46, 34), 1);
+		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "lightballista", ballista_icon + "\n\n\n" + Translate::LightBallista, false, true);
+		s.crate_icon = 0;
+		AddRequirement(s.requirements, "coin", "", "Coins", 140);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
+		s.customButton = true;
+		s.buttonwidth = 1;
+		s.buttonheight = 2;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_ammo);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Ballista Shells", "$mat_bomb_bolts$", "mat_bomb_bolts", "$mat_bomb_bolts$\n\n\n" + Descriptions::ballista_bomb_ammo, false, false);
-		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 1;
-		s.buttonheight = 1;
+		s.buttonheight = 2;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_bomb_ammo);
 	}
 }
