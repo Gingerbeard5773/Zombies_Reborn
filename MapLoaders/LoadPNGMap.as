@@ -199,19 +199,11 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 
 		switch(tile_new)
 		{
-			case Dummy::SOLID:
 			case Dummy::OBSTRUCTOR:
-				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::WATER_PASSES);
 				break;
 			case Dummy::BACKGROUND:
-			case Dummy::OBSTRUCTOR_BACKGROUND:
 				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
-				break;
-			case Dummy::LADDER:
-				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::LADDER | Tile::WATER_PASSES);
-				break;
-			case Dummy::PLATFORM:
-				map.AddTileFlag(index, Tile::PLATFORM);
 				break;
 		}
 	}

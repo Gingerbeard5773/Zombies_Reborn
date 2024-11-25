@@ -12,51 +12,47 @@ class Obstructor : Component
 	{
 		x = position.x;
 		y = position.y;
+
 		id = _id;
 	}
 
 	void Activate(CBlob@ this)
 	{
 		this.getShape().getConsts().collidable = true;
-		//this.getShape().getConsts().lightPasses = false;
-		//this.getShape().getConsts().waterPasses = false;
-		//this.Tag("blocks water");
-
-		/*if (isServer())
-		{
-			getMap().server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR);
-		}*/
 
 		CSprite@ sprite = this.getSprite();
 		sprite.SetAnimation("closed");
 		sprite.PlaySound("door_close.ogg");
+		sprite.SetRelativeZ(600);
 		MakeDamageFrame(this);
+
+		if (isServer())
+		{
+			getMap().server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR);
+		}
 	}
 
 	void Deactivate(CBlob@ this)
 	{
 		this.getShape().getConsts().collidable = false;
-		//this.getShape().getConsts().lightPasses = true;
-		//this.getShape().getConsts().waterPasses = true;
-		//this.Untag("blocks water");
 
+		CSprite@ sprite = this.getSprite();
+		sprite.SetAnimation("open");
+		sprite.PlaySound("door_close.ogg");
+		sprite.SetRelativeZ(0);
+		MakeDamageFrame(this);
+		
 		for (u16 i = 0; i < this.getTouchingCount(); i++)
 		{
 			this.getTouchingByIndex(i).AddForce(Vec2f_zero); // forces collision checks again
 		}
 
-		/*if (isServer())
+		if (isServer())
 		{
-			getMap().server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR_BACKGROUND);
-		}*/
-
-		CSprite@ sprite = this.getSprite();
-		sprite.SetAnimation("open");
-		sprite.PlaySound("door_close.ogg");
-		MakeDamageFrame(this);
+			getMap().server_SetTile(this.getPosition(), Dummy::BACKGROUND);
+		}
 	}
 }
-
 
 void onInit(CBlob@ this)
 {
@@ -69,14 +65,7 @@ void onInit(CBlob@ this)
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
-	this.set_TileType("background tile", CMap::tile_castle_back);
-
-	// used by DummyOnStatic.as
-	//this.set_TileType(Dummy::TILE, Dummy::OBSTRUCTOR_BACKGROUND);
-
-	this.getShape().SetRotationsAllowed(false);
 	this.getShape().getConsts().collidable = false;
-	//this.getShape().getConsts().waterPasses = true;
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -101,16 +90,27 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		INFO_LOAD,                          // information
 		0,                                  // power
 		component.id);                      // id
+
+		getMap().server_SetTile(this.getPosition(), Dummy::BACKGROUND);
 	}
 
 	CSprite@ sprite = this.getSprite();
 	sprite.SetZ(-50);
 	sprite.SetFacingLeft(false);
+	MakeDamageFrame(this);
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
+}
+
+void onDie(CBlob@ this)
+{
+	if (isServer() && this.getShape().isStatic())
+	{
+		getMap().server_SetTile(this.getPosition(), CMap::tile_empty);
+	}
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
@@ -135,4 +135,37 @@ void MakeDamageFrame(CBlob@ this)
 			sprite.animation.frame = (1.0f - ratio) * (sprite.animation.getFramesCount());
 		}
 	}
+}
+
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	switch(customData)
+	{
+		case Hitters::bomb:
+		case Hitters::explosion:
+			damage *= 7.5f;
+			break;
+	}
+	
+	return damage;
+}
+
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
+{
+	stream.write_bool(this.getShape().getConsts().collidable);
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	bool collidable;
+	if (!stream.saferead_bool(collidable)) return false;
+
+	this.getShape().getConsts().collidable = collidable;
+
+	CSprite@ sprite = this.getSprite();
+	sprite.SetAnimation(collidable ? "closed" : "open");
+	sprite.SetRelativeZ(collidable ? 600 : 0);
+	MakeDamageFrame(this);
+
+	return true;
 }
