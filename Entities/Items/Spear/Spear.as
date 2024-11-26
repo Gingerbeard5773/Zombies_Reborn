@@ -21,7 +21,7 @@ void onTick(CBlob@ this)
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	CBlob@ holder = point.getOccupied();
-	if (holder is null || holder.isAttached()) return;
+	if (holder is null) return;
 
 	const f32 aimAngle = getAimAngle(this, holder);
 	this.setAngleDegrees(aimAngle);
