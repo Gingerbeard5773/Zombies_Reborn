@@ -14,9 +14,12 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	this.set_u16("undead count", 0);
+	CBlob@[] undead;
+	getBlobsByTag("undead", @undead);
+
+	this.set_u16("undead count", undead.length);
 	this.Sync("undead count", true);
-	
+
 	u16[] netids;
 	this.set("target netids", netids);
 }

@@ -3,6 +3,7 @@
 #include "Zombie_SoftBansCommon.as";
 #include "Zombie_GlobalMessagesCommon.as";
 #include "Zombie_WarnsCommon.as";
+#include "MapSaver.as";
 
 //Use ' !list ' in game to view the commands list.
 
@@ -26,7 +27,9 @@ string CommandsList()
 	"!technology : unlock all technologies\n" +
 	"!debugprop [hash] : finds a string that pairs with the hash input\n" +
 	"!structure [index] : loads a structure from cfg. no index = random\n" +
-	"!savestructure : saves a structure at the player's position";
+	"!savestructure : saves a structure at the player's position\n" +
+	"!savemap [save slot] : saves the current map to your save slot\n" +
+	"!loadsave [save slot] : loads a saved map from config";
 }
 
 const string[] isCool = { "MrHobo" };
@@ -41,9 +44,11 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		string[]@ tokens = text_in.split(" ");
 
+		CSecurity@ sec = getSecurity();
+		const string role = sec.getPlayerSeclev(player).getName();
 		const bool isLocalhost = isServer() && isClient();
-		const bool isDev = isCool.find(player.getUsername()) != -1 || isLocalhost || player.isMod() || player.isRCON();
-		const bool isMod = isDev || getSecurity().checkAccess_Command(player, "ban");
+		const bool isDev = isCool.find(player.getUsername()) != -1 || isLocalhost || player.isMod() || player.isRCON() || role == "Super Admin";
+		const bool isMod = isDev || role == "Admin" || sec.checkAccess_Command(player, "ban");
 
 		if (!PlayerCommands(this, tokens, player, blob))
 			return false;
@@ -265,6 +270,14 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 				print(prop+" : "+prop.getHash());
 		}
 	}
+	else if (tokens[0] == "!loadsave")
+	{
+		const u8 SaveSlot = tokens.length > 1 ? parseInt(tokens[1]) : 0; 
+		this.set_u8("mapsaver_save_slot", SaveSlot);
+		this.set_bool("loaded_saved_map", false);
+		LoadNextMap();
+		return false;
+	}
 	else if (tokens[0] == "!ripserver")
 	{
 		error("SERVER SHUT OFF by "+ player.getUsername());
@@ -272,5 +285,24 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 		return false;
 	}
 	
+	return true;
+}
+
+bool onClientProcessChat(CRules@ this, const string &in text_in, string &out text_out, CPlayer@ player)
+{
+	if (player.isMyPlayer() && text_in.substr(0, 1) == "!")
+	{
+		const string[]@ tokens = text_in.split(" ");
+		if (tokens[0] == "!savemap")
+		{
+			const u8 SaveSlot = tokens.length > 1 ? parseInt(tokens[1]) : 0;
+			const string message = "Map saved to your cache: Slot [ "+SaveSlot+" ]";
+			print(message, 0xff66C6FF);
+			client_SendGlobalMessage(this, message, 5, 0xff66C6FF);
+			SaveMap(getMap(), SaveSlot);
+			return false;
+		}
+	}
+
 	return true;
 }

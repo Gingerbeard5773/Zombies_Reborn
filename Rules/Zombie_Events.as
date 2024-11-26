@@ -3,10 +3,10 @@
 #include "MigrantCommon.as";
 #include "ZombieSpawnPos.as";
 #include "Zombie_GlobalMessagesCommon.as";
+#include "Zombie_DaysCommon.as";
 #include "GetSurvivors.as";
 
 const u8 GAME_WON = 5;
-f32 lastDayHour;
 u16 tim_day;
 
 void onStateChange(CRules@ this, const u8 oldState)
@@ -31,6 +31,8 @@ void onStateChange(CRules@ this, const u8 oldState)
 void onInit(CRules@ this)
 {
 	Reset(this);
+
+	addOnNewDayHour(this, @onNewDayHour);
 }
 
 void onRestart(CRules@ this)
@@ -48,60 +50,45 @@ u16 getTimInterval()
 	return 20 + XORRandom(11);
 }
 
-void onTick(CRules@ this)
-{
-	if (!isServer()) return;
-	
-	if (getGameTime() % 60 == 0)
-	{
-		checkHourChange(this);
-	}
-}
-
-void checkHourChange(CRules@ this)
+void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 {
 	CMap@ map = getMap();
-	const u8 dayHour = Maths::Roundf(map.getDayTime()*10);
-	if (dayHour != lastDayHour)
-	{
-		const u16 day_number = this.get_u16("day_number");
-		this.set_bool("pause_undead_spawns", day_number == tim_day);
 
-		lastDayHour = dayHour;
-		switch(dayHour)
+	this.set_bool("pause_undead_spawns", day_number == tim_day);
+
+	switch(day_hour)
+	{
+		case 3:
 		{
-			case 3:
+			if (day_number > tim_day)
 			{
-				if (day_number > tim_day)
-				{
-					tim_day = day_number + getTimInterval();
-				}
-				doMigrantEvent(this, map);
+				tim_day = day_number + getTimInterval();
+			}
+			doMigrantEvent(this, map, day_number);
+			break;
+		}
+		case 5: //mid day
+		{
+			doTraderEvent(this, map);
+			break;
+		}
+		case 10: //midnight
+		{
+			if (day_number == tim_day)
+			{
+				doTimEvent(this, map);
 				break;
 			}
-			case 5: //mid day
-			{
-				doTraderEvent(this, map);
-				break;
-			}
-			case 10: //midnight
-			{
-				if (day_number == tim_day)
-				{
-					doTimEvent(this, map);
-					break;
-				}
-				
-				doSedgwickEvent(this, map);
-				break;
-			}
+			
+			doSedgwickEvent(this, map, day_number);
+			break;
 		}
 	}
 }
 
-void doMigrantEvent(CRules@ this, CMap@ map)
+void doMigrantEvent(CRules@ this, CMap@ map, const u16&in day_number)
 {
-	if (this.get_u16("day_number") % 2 != 0) return; //every other day
+	if (day_number % 2 != 0) return; //every other day
 
 	if (this.get_u16("undead count") > 15) return; //don't if too many zombies
 	
@@ -170,9 +157,9 @@ void doTraderEvent(CRules@ this, CMap@ map)
 	server_CreateBlob("traderbomber", 0, spawn);
 }
 
-void doSedgwickEvent(CRules@ this, CMap@ map)
+void doSedgwickEvent(CRules@ this, CMap@ map, const u16&in day_number)
 {
-	if ((this.get_u16("day_number")+1) % 5 != 0) return; //night before every fifth day
+	if ((day_number+1) % 5 != 0) return; //night before every fifth day
 	
 	CBlob@[] survivors = getSurvivors();
 	if (survivors.length <= 0) return;

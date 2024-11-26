@@ -440,7 +440,6 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 
 	//serialize tech tree
 	Technology@[]@ TechTree = getTechTree();
-	stream.write_u8(TechTree.length);
 	for (u8 i = 0; i < TechTree.length; i++)
 	{
 		Technology@ tech = TechTree[i];
@@ -460,22 +459,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("client_synchronize_technology") && isClient())
 	{
 		//unserialize tech tree
-		u8 tech_tree_length;
-		if (!params.saferead_u8(tech_tree_length))
-		{
-			error("Failed to access tech tree!");
-			return;
-		}
-
 		Technology@[]@ TechTree = getTechTree();
-		const u8 client_tech_tree_length = TechTree.length;
-		if (tech_tree_length != client_tech_tree_length)
-		{
-			error("Failed to access tech tree! SERVER ["+tech_tree_length+"], CLIENT["+client_tech_tree_length+"]");
-			return;
-		}
-
-		for (u8 i = 0; i < tech_tree_length; i++)
+		for (u8 i = 0; i < TechTree.length; i++)
 		{
 			Technology@ tech = TechTree[i];
 			if (tech is null) continue;

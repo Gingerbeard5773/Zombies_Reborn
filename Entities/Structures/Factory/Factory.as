@@ -26,8 +26,10 @@ void onInit(CBlob@ this)
 
 	addOnAssignWorker(this, @onAssignWorker);
 	addOnUnassignWorker(this, @onUnassignWorker);
-	
+
 	SetupProductionSet();
+
+	addSetFactoryData(this, @SetFactoryData);
 }
 
 void SetupProductionSet()
@@ -217,25 +219,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (!hasRequirements(inv, production.reqs, missing)) return;
 		
 		server_TakeRequirements(inv, production.reqs);
-		
+
 		this.Tag("auto_assign_worker");
-		
-		Production factory_production(production);
-		factory_production.ResetProduction();
-		this.set("production", @factory_production);
-		
-		string req, blobName, friendlyName;
-		u16 quantity = 0;
-		factory_production.reqs.ResetBitIndex();
-		while (!factory_production.reqs.isBufferEnd())
-		{
-			ReadRequirement(factory_production.reqs, req, blobName, friendlyName, quantity);
-			if (blobName == "mat_gold")
-			{
-				this.set_s32("gold building amount", quantity * building_gold_percent);
-				break;
-			}
-		}
+
+		SetFactoryData(this, production);
 
 		CBitStream stream;
 		stream.write_u8(index);
@@ -260,6 +247,26 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		SetHelp(this, "help use", "", getTranslatedString("Check production    $KEY_E$"), "", 2);
 
 		this.getSprite().PlaySound("/ConstructShort.ogg");
+	}
+}
+
+void SetFactoryData(CBlob@ this, Production@ production)
+{
+	Production factory_production(production);
+	factory_production.ResetProduction();
+	this.set("production", @factory_production);
+
+	string req, blobName, friendlyName;
+	u16 quantity = 0;
+	factory_production.reqs.ResetBitIndex();
+	while (!factory_production.reqs.isBufferEnd())
+	{
+		ReadRequirement(factory_production.reqs, req, blobName, friendlyName, quantity);
+		if (blobName == "mat_gold")
+		{
+			this.set_s32("gold building amount", quantity * building_gold_percent);
+			break;
+		}
 	}
 }
 

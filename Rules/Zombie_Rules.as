@@ -4,19 +4,24 @@
 
 #include "Zombie_GlobalMessagesCommon.as";
 #include "Zombie_Statistics.as";
+#include "Zombie_DaysCommon.as";
 #include "GetSurvivors.as";
 
 u16 days_to_survive = -1; //days players must survive to win, -1 to disable win condition
 
 const u8 GAME_WON = 5;
 const u8 nextmap_seconds = 15;
-f32 lastDayHour;
 u8 seconds_till_nextmap = nextmap_seconds;
 bool hitRecord = false;
 
 void onInit(CRules@ this)
 {
 	Reset(this);
+
+	onNewDayHourHandle@[] handles;
+	this.set("onNewDayHour handles", @handles);
+
+	addOnNewDayHour(this, @onNewDayHour);
 }
 
 void onRestart(CRules@ this)
@@ -35,7 +40,6 @@ void Reset(CRules@ this)
 	this.set_u16("day_record", server_getRecordDay());
 	this.Sync("day_record", true);
 
-	lastDayHour = 0.0f;
 	this.set_u16("day_number", 0);
 	this.Sync("day_number", true);
 
@@ -60,39 +64,54 @@ void onTick(CRules@ this)
 	}
 }
 
-// Protocols when the day changes
 void checkDayChange(CRules@ this)
 {
-	const f32 dayHour = Maths::Roundf(getMap().getDayTime()*10)/10;
-	if (dayHour == lastDayHour) return;
-	lastDayHour = dayHour;
+	const u16 day_hour = Maths::Roundf(getMap().getDayTime()*10);
+	if (day_hour == this.get_u16("last_day_hour")) return;
 
-	if (dayHour != this.daycycle_start) return;
+	const u16 day_number = this.get_u16("day_number");
 
-	const u16 dayNumber = this.get_u16("day_number") + 1;
-	this.set_u16("day_number", dayNumber);
+	onNewDayHourHandle@[]@ handles;
+	if (this.get("onNewDayHour handles", @handles))
+	{
+		for (u8 i = 0; i < handles.length; ++i)
+		{
+			handles[i](this, day_number, day_hour);
+		}
+	}
+
+	this.set_u16("last_day_hour", day_hour);
+}
+
+// Protocols when the day changes
+void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
+{
+	if (day_hour != this.daycycle_start*10) return;
+
+	day_number++;
+	this.set_u16("day_number", day_number);
 	this.Sync("day_number", true);
-	
+
 	bool new_record;
-	const u16 recordDay = server_getRecordDay(dayNumber, new_record);
+	const u16 recordDay = server_getRecordDay(day_number, new_record);
 
 	//end game if we reached the last day
-	if (dayNumber >= days_to_survive)
+	if (day_number >= days_to_survive)
 	{
 		this.SetCurrentState(GAME_WON);
-		string[] inputs = {dayNumber+""};
+		string[] inputs = {day_number+""};
 		getEndGameStatistics(this, @inputs);
 		server_SendGlobalMessage(this, 2, nextmap_seconds, inputs);
 	}
 	else if (new_record && !hitRecord)
 	{
 		hitRecord = true;
-		const string[] inputs = {dayNumber+""};
+		const string[] inputs = {day_number+""};
 		server_SendGlobalMessage(this, 7, 10, inputs);
 	}
 	else 
 	{
-		const string[] inputs = {dayNumber+""};
+		const string[] inputs = {day_number+""};
 		server_SendGlobalMessage(this, 0, 10, inputs);
 	}
 }

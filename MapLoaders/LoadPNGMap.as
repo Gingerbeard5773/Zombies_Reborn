@@ -2,8 +2,10 @@
 
 #include "BasePNGLoader.as";
 #include "ProceduralGeneration.as";
+#include "MapSaver.as";
 #include "MinimapHook.as";
 #include "CustomTiles.as";
+#include "Zombie_Scrolls.as";
 
 namespace custom_colors
 {
@@ -38,10 +40,24 @@ class ZombiePNGLoader : PNGLoader
 
 bool LoadMap(CMap@ map, const string& in fileName)
 {
-	ZombiePNGLoader loader();
-
 	map.legacyTileMinimap = false;
-	
+
+	CRules@ rules = getRules();
+	SetupScrolls(rules);
+
+	if (!isServer())
+	{
+		map.CreateTileMap(0, 0, 8.0f, "Sprites/world.png");
+	}
+
+	SetupBackground(map);
+
+	if (LoadSavedMap(rules, map))
+	{
+		print("LOADING SAVED MAP", 0xff66C6FF);
+		return true;
+	}
+
 	bool procedural_map_gen = true;
 	ConfigFile cfg;
 	if (cfg.loadFile("Zombie_Vars.cfg"))
@@ -50,7 +66,6 @@ bool LoadMap(CMap@ map, const string& in fileName)
 	}
 
 	int map_seed = Time();
-	CRules@ rules = getRules();
 	if (rules.exists("new map seed"))
 	{
 		const int new_map_seed = rules.get_s32("new map seed");
@@ -69,7 +84,24 @@ bool LoadMap(CMap@ map, const string& in fileName)
 	}
 
 	print("LOADING ZOMBIES MAP " + fileName, 0xff66C6FF);
+	ZombiePNGLoader loader();
 	return loader.loadMap(map, fileName);
+}
+
+void SetupBackground(CMap@ map)
+{
+	// sky
+	map.CreateSky(color_black, Vec2f(1.0f, 1.0f), 200, "Sprites/Back/cloud", 0);
+	map.CreateSkyGradient("Sprites/skygradient.png");   // override sky color with gradient
+
+	// plains
+	map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -50.0f), Vec2f(0.06f, 20.0f), color_white);
+	map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -220.0f), Vec2f(0.18f, 70.0f), color_white);
+	//map.AddBackground( "Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, 50.0f), Vec2f(0.5f, 0.5f), color_white ); 
+	map.AddBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, -580.0f), Vec2f(0.3f, 180.0f), color_white);
+
+	// fade in
+	SetScreenFlash(255, 0, 0, 0);
 }
 
 bool onMapTileCollapse(CMap@ map, u32 offset)

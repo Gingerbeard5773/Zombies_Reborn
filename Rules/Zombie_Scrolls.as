@@ -10,6 +10,8 @@
 
 void SetupScrolls(CRules@ this)
 {
+	if (this.exists("all scrolls")) return;
+
 	ScrollSet _all;
 	this.set("all scrolls", _all);
 	

@@ -1,5 +1,9 @@
 //Gingerbeard @ October 1st, 2024
 
+funcdef void SetFactoryDataHandle(CBlob@, Production@);
+
+void addSetFactoryData(CBlob@ this, SetFactoryDataHandle@ handle) { this.set("SetFactoryData handle", @handle); }
+
 namespace Product
 {
 	enum type

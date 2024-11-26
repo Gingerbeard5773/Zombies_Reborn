@@ -35,3 +35,43 @@ void LoadOldHead(CBlob@ this)
 	this.set_u8("override head", head);
 	this.getSprite().RemoveSpriteLayer("head");
 }
+
+void EquipBlob(CBlob@ this, CBlob@ equippedblob)
+{
+	equippedblob.server_DetachFromAll();
+	equippedblob.setPosition(Vec2f(0,0));
+	equippedblob.setVelocity(Vec2f(0,0));
+	equippedblob.setAngularVelocity(0.0f);
+	equippedblob.SetVisible(false);
+
+	SetBlobActive(equippedblob, false);
+
+	onEquipHandle@ onEquip;
+	if (equippedblob.get("onEquip handle", @onEquip)) 
+		onEquip(equippedblob, this);
+}
+
+void UnequipBlob(CBlob@ this, CBlob@ equippedblob, const bool&in put_in_inventory = true)
+{
+	equippedblob.SetVisible(true);
+	equippedblob.setPosition(this.getPosition());
+	if (put_in_inventory)
+		this.server_PutInInventory(equippedblob);
+
+	SetBlobActive(equippedblob, true);
+
+	onUnequipHandle@ onUnequip;
+	if (equippedblob.get("onUnequip handle", @onUnequip)) 
+		onUnequip(equippedblob, this);
+}
+
+void SetBlobActive(CBlob@ equippedblob, const bool&in active)
+{
+	CShape@ shape = equippedblob.getShape();
+	shape.server_SetActive(active);
+	shape.doTickScripts = active;
+	shape.SetGravityScale(active ? 1.0f : 0.0f);
+	ShapeConsts@ consts = shape.getConsts();
+	consts.collidable = active;
+	consts.mapCollisions = active;
+}

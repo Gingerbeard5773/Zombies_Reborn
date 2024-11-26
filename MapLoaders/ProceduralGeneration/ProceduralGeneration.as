@@ -15,15 +15,10 @@ enum BiomeType
 
 bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 {
-	if (!isServer())
-	{
-		SetupProceduralMap(map, 0, 0);
-		SetupProceduralBackgrounds(map);
-		return true;
-	}
+	if (!isServer()) return true;
 
 	Random r(map_seed);
-	
+
 	map.set_s32("map seed", map_seed);
 
 	Noise@ map_noise = Noise(r.Next());
@@ -54,9 +49,8 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 	}
 	
 	MinFloorHeight = height - MinFloorHeight;
-	
-	SetupProceduralMap(map, width, height);
-	SetupProceduralBackgrounds(map);
+
+	map.CreateTileMap(width, height, 8.0f, "Sprites/world.png");
 
 	const int SeaLevel = height/5*4;
 
