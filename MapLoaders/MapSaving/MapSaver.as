@@ -47,12 +47,12 @@ string SerializeDirtData(CMap@ map)
 {
 	string mapData = "";
 
-	bool was_dirt = map.getTile(0).dirt >= 80;
+	bool was_dirt = map.getTile(0).dirt == 80;
 	u32 tile_count = 1;
 	const u32 tilemapsize = map.tilemapheight * map.tilemapwidth;
 	for (u32 i = 1; i < tilemapsize; i++)
 	{
-		const bool is_dirt = map.getTile(i).dirt >= 80;
+		const bool is_dirt = map.getTile(i).dirt == 80;
 		if (is_dirt == was_dirt)
 		{
 			tile_count++;
