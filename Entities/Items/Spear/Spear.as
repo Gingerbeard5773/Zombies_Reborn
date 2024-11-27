@@ -52,35 +52,55 @@ void server_SpearAttack(CBlob@ this, CBlob@ holder, const f32&in aimAngle)
 	CMap@ map = getMap();
 	Vec2f pos = this.getPosition();
 	const f32 angle = aimAngle + (holder.isFacingLeft() ? 180 : 0);
-	Vec2f ray = Vec2f(8, 0).RotateBy(angle);
-	pos += ray;
+	Vec2f direction = Vec2f(4, 0).RotateBy(angle);
+	pos += direction;
 
-	//attack blobs
+	Vec2f ray1 = pos + Vec2f(0, 2).RotateBy(angle);
+	Vec2f ray2 = pos - Vec2f(0, 2).RotateBy(angle);
+
 	HitInfo@[] hitInfos;
-	if (map.getHitInfosFromArc(pos, angle, spear_arc_degrees, spear_range, this, @hitInfos))
+	u16[] alreadyHit;
+
+	//three seperate rays, with slight offsets- this is done so we can attack around corners
+	map.getHitInfosFromRay(ray1, angle, spear_range, this, @hitInfos);
+	map.getHitInfosFromRay(ray2, angle, spear_range, this, @hitInfos);
+	map.getHitInfosFromRay(pos,  angle, spear_range, this, @hitInfos);
+
+	for (int i = 0; i < hitInfos.length; i++)
 	{
-		for (int i = 0; i < hitInfos.size(); i++)
+		HitInfo@ hi = hitInfos[i];
+		CBlob@ b = hi.blob;
+		if (b is null) continue;
+
+		if (alreadyHit.find(b.getNetworkID()) != -1) continue;
+
+		bool hit = false;
+		if (b.getShape().isStatic() && b.isCollidable() && b.getShape().getConsts().support > 0)
 		{
-			HitInfo@ hi = hitInfos[i];
-			CBlob@ b = hi.blob;
-			if (b is null) continue;
-			
 			if (b.isPlatform())
 			{
 				ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
 				Vec2f dir = plat.direction;
 				if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
 
-				if (Maths::Abs(dir.AngleWith(ray)) < plat.angleLimit)
+				if (Maths::Abs(dir.AngleWith(direction)) < plat.angleLimit)
 				{
 					continue;
 				}
 			}
 
-			if (b.getTeamNum() != holder.getTeamNum())
-			{
-				this.server_Hit(b, b.getPosition(), Vec2f_zero, 1.3f, Hitters::sword, true);
-			}
+			hit = true;
+		}
+
+		if (b.getTeamNum() != holder.getTeamNum())
+		{
+			this.server_Hit(b, b.getPosition(), Vec2f_zero, 1.3f, Hitters::sword, true);
+			alreadyHit.push_back(b.getNetworkID());
+		}
+
+		if (hit)
+		{
+			break;
 		}
 	}
 }
