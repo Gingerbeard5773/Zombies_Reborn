@@ -361,7 +361,6 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 	this.set_u16("last_day_hour", Maths::Roundf(dayTime*10));
 
 	//overwrite technology
-	CBitStream stream;
 	Technology@[]@ techTree = getTechTree();
 	int data_index = 0;
 	for (u8 i = 0; i < techTree.length; i++)
@@ -373,13 +372,7 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 		tech.available = parseBool(techData[data_index++]);
 		tech.paused = parseBool(techData[data_index++]);
 		tech.completed = parseBool(techData[data_index++]);
-
-		stream.write_u32(tech.time);
-		stream.write_bool(tech.available);
-		stream.write_bool(tech.paused);
-		stream.write_bool(tech.completed);
 	}
-	this.SendCommand(this.getCommandID("client_synchronize_technology"), stream);
 
 	//recalculate targets
 	u16[] netids;
