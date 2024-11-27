@@ -110,7 +110,6 @@ void WakeupSleeper(CBlob@ sleeper, CPlayer@ player)
 	if (sleeper.exists("sleeper_coins"))
 	{
 		const u16 coins = sleeper.get_u16("sleeper_coins");
-		print(coins+"");
 		if (coins > player.getCoins())
 		{
 			player.server_setCoins(coins);

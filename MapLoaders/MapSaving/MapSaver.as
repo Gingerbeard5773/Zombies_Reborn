@@ -300,7 +300,7 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 	const u8 SaveSlot = this.get_u8("mapsaver_save_slot");
 
 	ConfigFile config = ConfigFile();
-	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) { warn("Failed to load saved map; SaveSlot nonexistant?"); return false; }
+	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) return false;
 
 	if (!config.exists("map_dimensions")) return false;
 

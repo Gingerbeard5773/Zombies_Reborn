@@ -17,7 +17,9 @@ void onInit(CBlob@ this)
 	
 	if (!this.exists("skelepede_segment_amount"))
 		this.set_u8("skelepede_segment_amount", 34);
-		
+
+	this.server_setTeamNum(3);
+
 	this.set_f32("gib health", 0.0f);
 	this.set_u16("coins on death", COINS_ON_DEATH);
 
