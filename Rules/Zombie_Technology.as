@@ -51,10 +51,10 @@ void SetupTechTree(CRules@ this)
 	Technology CoinageIII(Translate::CoinageIII, Tech::CoinageIII, Vec2f(6, 11), 1100);
 	AddRequirement(CoinageIII.requirements, "coin", "", "Coins", 2500);
 
-	Technology HardyWheat(Translate::HardyWheat, Tech::HardyWheat, Vec2f(12, 11), 140);
+	Technology HardyWheat(Translate::HardyWheat, Tech::HardyWheat, Vec2f(12, 11), 60);
 	AddRequirement(HardyWheat.requirements, "coin", "", "Coins", 150);
 
-	Technology HardyTrees(Translate::HardyTrees, Tech::HardyTrees, Vec2f(18, 11), 140);
+	Technology HardyTrees(Translate::HardyTrees, Tech::HardyTrees, Vec2f(18, 11), 60);
 	AddRequirement(HardyTrees.requirements, "coin", "", "Coins", 150);
 
 	Technology PlentifulWheat(Translate::PlentifulWheat, Tech::PlentifulWheat, Vec2f(24, 11), 240);
