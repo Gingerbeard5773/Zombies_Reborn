@@ -56,7 +56,10 @@ void onTick(CBlob@ this)
 			string sound = "ZombieSpawn";
 			if (name == "zombieknight") sound = "ZombieKnightGrowl";
 
-			Sound::Play(sound, this.getPosition());
+			if (name != "horror")
+			{
+				Sound::Play(sound, this.getPosition());
+			}
 		}
 
 		this.Untag("dead");
