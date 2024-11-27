@@ -61,7 +61,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		CAttachment@ a = this.getAttachments();
 		if (a !is null)
 		{
-			AttachmentPoint@ ap = a.AddAttachmentPoint("PICKUP", false);
+			AttachmentPoint@ pickup = a.getAttachmentPoint("PICKUP", false);
+			if (pickup is null)
+				@pickup = a.AddAttachmentPoint("PICKUP", false);
+			if (pickup !is null)
+				pickup.offset = Vec2f(-4, 0);
 		}
 
 		// sound

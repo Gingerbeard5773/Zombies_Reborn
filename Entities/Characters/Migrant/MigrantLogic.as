@@ -36,15 +36,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 		this.set_u8("strategy", Strategy::idle);
 	}
 
-	if (!this.hasTag("dead"))
-	{
-		this.getSprite().SetRelativeZ(-10.0f);
-	}
-	else
-	{
-		attachedPoint.offset = Vec2f(-4, 0);
-	}
-	
 	server_UpdateAssignment(this, attached);
 }
 

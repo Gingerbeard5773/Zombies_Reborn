@@ -34,6 +34,7 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 	blob.set_string("sleeper_name", player.getUsername());
 	blob.set_u32("sleeper_time", getGameTime());
 	blob.Tag("sleeper");
+	blob.Sync("sleeper", true);
 	
 	if (isKnockable(blob))
 		setKnocked(blob, 255, true);
@@ -106,6 +107,13 @@ void WakeupSleeper(CBlob@ sleeper, CPlayer@ player)
 	sleeper.server_SetPlayer(player);
 	sleeper.set_string("sleeper_name", "");
 	sleeper.Untag("sleeper");
+	sleeper.Sync("sleeper", true);
+	
+	AttachmentPoint@ pickup = sleeper.getAttachments().getAttachmentPoint("PICKUP", false);
+	if (pickup !is null && pickup.getOccupied() !is null)
+	{
+		sleeper.server_DetachFrom(pickup.getOccupied());
+	}
 
 	if (sleeper.exists("sleeper_coins"))
 	{

@@ -42,7 +42,7 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 	this.getSprite().PlaySound("/PutInInventory.ogg");
 }
 
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
 	this.getSprite().PlaySound("/Pickup.ogg");
 
@@ -56,9 +56,11 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 			SetHelp(this, "help throw", "", getTranslatedString("${ATTACHED}$Throw    $KEY_C$").replace("{ATTACHED}", getTranslatedString(attached.getName())), "", 2);
 	}
 
-	// check if we picked a player - don't just take him out of the box
-	/*if (attached.hasTag("player"))
-	this.server_DetachFrom( attached ); CRASHES*/
+	if (!attachedPoint.socket && attachedPoint.name == "PICKUP")
+	{
+		attachedPoint.offsetZ = -10.0f;
+		this.getSprite().SetRelativeZ(-10.0f);
+	}
 }
 
 // set the Z back
@@ -66,11 +68,17 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	this.getSprite().SetZ(0.0f);
+	
+	if (!attachedPoint.socket && attachedPoint.name == "PICKUP")
+	{
+		attachedPoint.offsetZ = 0.0f;
+		this.getSprite().SetRelativeZ(0.0f);
+	}
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return this.hasTag("migrant") || this.hasTag("dead");
+	return this.hasTag("migrant") || this.hasTag("dead") || this.hasTag("sleeper");
 }
 
 // make Suicide ignore invincibility
