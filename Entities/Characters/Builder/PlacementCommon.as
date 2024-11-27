@@ -42,6 +42,12 @@ bool canPlaceNextTo(CMap@ map, const Tile &in tile)
 
 bool canPlaceOnTile(CMap@ map, Vec2f p, CBlob@ blob, TileType buildTile, Tile backTile)
 {
+	if (buildTile == CMap::tile_ground) //dirt can only be placed on existing dirt areas
+	{
+		const bool damaged_dirt = isTileBetween(backTile.type, CMap::tile_ground_d1, CMap::tile_ground_d0);
+		return map.isTileGroundBack(backTile.type) || damaged_dirt;
+	}
+
 	const bool solidbacktile = map.isTileSolid(backTile);
 	const bool solidbuildtile = isTileSolid(map, buildTile);
 	if (!solidbuildtile && solidbacktile)

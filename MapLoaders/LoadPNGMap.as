@@ -240,11 +240,11 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 		}
 	}
 
-	//if (tile_new == CMap::tile_ground)
-	//{
-		//if (isClient()) Sound::Play("dig_dirt" + (1 + XORRandom(3)) + ".ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
-	//}
-	
+	if (tile_new == CMap::tile_ground)
+	{
+		if (isClient()) Sound::Play("dig_dirt" + (1 + XORRandom(3)) + ".ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+	}
+
 	//check if tile was destroyed
 	if (tile_new == CMap::tile_empty || tile_new == CMap::tile_ground_back)
 	{

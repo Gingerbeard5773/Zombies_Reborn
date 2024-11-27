@@ -48,6 +48,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	AddIconToken("$iron_platform_ZF$", "IronPlatform.png", Vec2f(8, 8), 0);
 	AddIconToken("$iron_spikes_ZF$", "IronSpikes.png", Vec2f(8, 8), 0);
 	AddIconToken("$obstructor_ZF$", "Obstructor.png", Vec2f(8, 8), 8);
+	AddIconToken("$ground_block$", "World.png", Vec2f(8, 8), CMap::tile_ground);
 
 	BuildBlock[] page_0;
 	blocks.push_back(page_0);
@@ -136,6 +137,11 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	{
 		BuildBlock b(0, "iron_spikes", "$iron_spikes_ZF$", Translate::IronSpikes);
 		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
+		blocks[0].push_back(b);
+	}
+	{
+		BuildBlock b(CMap::tile_ground, "ground_block", "$ground_block$", Translate::Dirt);
+		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 5);
 		blocks[0].push_back(b);
 	}
 	//lantern is useful enough. no real reason to add the fireplace
