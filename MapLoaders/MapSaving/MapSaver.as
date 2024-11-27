@@ -42,6 +42,33 @@ string SerializeTileData(CMap@ map)
 	return mapData;
 }
 
+// store dirt background using run line encoding
+string SerializeDirtData(CMap@ map)
+{
+	string mapData = "";
+
+	bool was_dirt = map.getTile(0).dirt >= 80;
+	u32 tile_count = 1;
+	const u32 tilemapsize = map.tilemapheight * map.tilemapwidth;
+	for (u32 i = 1; i < tilemapsize; i++)
+	{
+		const bool is_dirt = map.getTile(i).dirt >= 80;
+		if (is_dirt == was_dirt)
+		{
+			tile_count++;
+		}
+		else
+		{
+			mapData += (was_dirt ? "1" : "0") + " " + tile_count + ";";
+			was_dirt = is_dirt;
+			tile_count = 1;
+		}
+	}
+	mapData += (was_dirt ? "1" : "0") + " " + tile_count + ";";
+
+	return mapData;
+}
+
 // store water using run line encoding
 string SerializeWaterData(CMap@ map)
 {
@@ -224,6 +251,7 @@ void SaveMap(CMap@ map, const u8&in SaveSlot = 0)
 	// collect all map data
 	const string map_dimensions = map.tilemapwidth + ";" + map.tilemapheight;
 	const string mapData = SerializeTileData(map);
+	const string dirtData = SerializeDirtData(map);
 	const string waterData = SerializeWaterData(map);
 
 	// collect all blob data
@@ -243,6 +271,7 @@ void SaveMap(CMap@ map, const u8&in SaveSlot = 0)
 	// save data to config file
 	config.add_string("map_dimensions", map_dimensions);
 	config.add_string("map_data", mapData);
+	config.add_string("dirt_data", dirtData);
 	config.add_string("water_data", waterData);
 	config.add_string("blob_data", blobData);
 	config.add_string("inventory_data", inventoryData);
@@ -317,9 +346,13 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 	ConfigFile config = ConfigFile();
 	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) return false;
 
+	const string dirtData = config.read_string("dirt_data");
 	const u16 dayNumber = config.read_u16("day_number");
 	const f32 dayTime = config.read_f32("day_time");
 	const string[]@ techData = config.read_string("tech_data").split(";");
+
+	//dirt data has to be loaded late because of an engine issue..
+	LoadDirt(map, dirtData.split(";"));
 
 	this.set_u16("day_number", dayNumber);
 	this.Sync("day_number", true);
@@ -384,6 +417,28 @@ void LoadTiles(CMap@ map, const string[]&in mapTiles)
 		for (int j = 0; j < tile_count; j++)
 		{
 			map.SetTile(current_index++, tile_type);
+		}
+	}
+}
+
+void LoadDirt(CMap@ map, const string[]&in mapTiles)
+{
+	u32 current_index = 0;
+	for (int i = 0; i < mapTiles.length; i++)
+	{
+		string[]@ data = mapTiles[i].split(" ");
+		if (data.length != 2) continue;
+
+		const bool is_dirt = parseBool(data[0]);
+		const int tile_count = parseInt(data[1]);
+
+		for (int j = 0; j < tile_count; j++)
+		{
+			if (is_dirt)
+			{
+				map.SetTileDirt(current_index, 80);
+			}
+			current_index++;
 		}
 	}
 }

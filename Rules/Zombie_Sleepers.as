@@ -106,7 +106,18 @@ void WakeupSleeper(CBlob@ sleeper, CPlayer@ player)
 	sleeper.server_SetPlayer(player);
 	sleeper.set_string("sleeper_name", "");
 	sleeper.Untag("sleeper");
-	
+
+	if (sleeper.exists("sleeper_coins"))
+	{
+		const u16 coins = sleeper.get_u16("sleeper_coins");
+		print(coins+"");
+		if (coins > player.getCoins())
+		{
+			player.server_setCoins(coins);
+		}
+		sleeper.set_u16("sleeper_coins", 0);
+	}
+
 	//remove knocked
 	if (isKnockable(sleeper))
 	{

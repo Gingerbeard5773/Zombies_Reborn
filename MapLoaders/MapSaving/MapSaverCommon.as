@@ -267,15 +267,20 @@ class PlayerBlobHandler : BlobDataHandler
 		string data = basicHandler.Serialize(blob);
 
 		string username = "";
+		u16 coins = 0;
 		CPlayer@ player = blob.getPlayer();
 		if (player !is null)
+		{
 			username = player.getUsername();
+			coins = player.getCoins();
+		}
 		else if (blob.exists("sleeper_name"))
 			username = blob.get_string("sleeper_name");
 
 		if (!username.isEmpty())
 		{
 			data += username + ";";
+			data += coins + ";";
 		}
 
 		return data;
@@ -285,9 +290,11 @@ class PlayerBlobHandler : BlobDataHandler
 	{
 		basicHandler.LoadBlobData(blob, data);
 		const string username = data.length > 9 ? data[9] : "";
+		const u16 coins = data.length > 10 ? parseInt(data[10]) : 0;
 		if (!username.isEmpty())
 		{
 			blob.set_string("sleeper_name", username);
+			blob.set_u16("sleeper_coins", coins);
 			blob.Tag("sleeper");
 		}
 	}
