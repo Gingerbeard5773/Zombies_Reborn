@@ -43,6 +43,8 @@ void Reset(CRules@ this)
 	this.set_u16("day_number", 0);
 	this.Sync("day_number", true);
 
+	this.set_u16("last_day_hour", 0);
+
 	seconds_till_nextmap = nextmap_seconds;
 	hitRecord = false;
 	this.SetCurrentState(GAME);
