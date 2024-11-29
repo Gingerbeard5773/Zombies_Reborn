@@ -17,7 +17,7 @@ const string SaveFile = "Zombie_Save";
 dictionary blobHandlers;
 void InitializeBlobHandlers()
 {
-	if (!blobHandlers.empty()) return;
+	if (blobHandlers.getSize() != 0) return;
 
 	blobHandlers.set("default",    BlobDataHandler());
 	blobHandlers.set("seed",       SeedBlobHandler());
