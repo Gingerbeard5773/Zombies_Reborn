@@ -81,18 +81,18 @@ namespace Translate
 	ScrollMidas    = Translate("Scroll of Midas",                                                                                      "Свиток Мидаса"),
 
 	//builder
-	IronBlock      = Translate("Iron Block\nResistant to explosions.",                  "Железный блок\nВзрывоустойчивый Блок."),
-	IronBlockBack  = Translate("Back Iron Wall\nDurable Support.",                      "Железная стена\nПрочная опора."),
-	IronDoor       = Translate("Iron Door\nPlace next to walls.",                       "Железная дверь\nСтавьте возле стены."),
-	IronPlatform   = Translate("Iron Platform\nOne way platform",                       "Железная платформа\nОдносторонняя платформа."),
-	IronSpikes     = Translate("Iron Spikes\nDurable spikes",                           "Железные шипы\nПрочные шипы."),
-	Dirt           = Translate("Dirt\nPlace on existing dirt",                          "Грязь\nПоместить на существующую грязь"),
-	Windmill       = Translate("Wind Mill\nA grain mill for producing flour.",          "Мельница\nЗерновая мельница для производства муки."),
-	Kitchen        = Translate("Kitchen\nCreate various foods for healing.",            "Кухня\nГотовьте различную еду для восстановления здоровья и сил."),
-	Forge          = Translate("Forge\nSmelt raw ore into ingots.",                     "Плавильня\nПереплавляет сырую руду в слитки."),
-	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes.",   "Рассадник\nРассадник для сельскохозяйственных культур."),
-	Armory         = Translate("Armory\nBuild weapons and change your class.",          "Оружейная\nСлужит для создания оружия из слитков, позволяет сменить класс."),
-	Library        = Translate("Library\nA place of study to obtain new technologies.", "Библиотека\nМесто хранения знаний и открытий, здесь можно освоить новые технологии."),
+	IronBlock      = Translate("Iron Block\nResistant to explosions",                  "Железный блок\nВзрывоустойчивый Блок"),
+	IronBlockBack  = Translate("Back Iron Wall\nDurable Support",                      "Железная стена\nПрочная опора"),
+	IronDoor       = Translate("Iron Door\nPlace next to walls",                       "Железная дверь\nСтавьте возле стены"),
+	IronPlatform   = Translate("Iron Platform\nOne way platform\nBlocks water",        "Железная платформа\nОдносторонняя платформа\nБлокирует воду"),
+	IronSpikes     = Translate("Iron Spikes\nDurable spikes",                          "Железные шипы\nПрочные шипы"),
+	Dirt           = Translate("Dirt\nPlace on existing dirt",                         "Грязь\nПоместить на существующую грязь"),
+	Windmill       = Translate("Wind Mill\nA grain mill for producing flour",          "Мельница\nЗерновая мельница для производства муки"),
+	Kitchen        = Translate("Kitchen\nCreate various foods for healing",            "Кухня\nГотовьте различную еду для восстановления здоровья и сил"),
+	Forge          = Translate("Forge\nSmelt raw ore into ingots",                     "Плавильня\nПереплавляет сырую руду в слитки"),
+	Nursery        = Translate("Nursery\nA plant nursery for agricultural purposes",   "Рассадник\nРассадник для сельскохозяйственных культур"),
+	Armory         = Translate("Armory\nBuild weapons and change your class",          "Оружейная\nСлужит для создания оружия из слитков, позволяет сменить класс"),
+	Library        = Translate("Library\nA place of study to obtain new technologies", "Библиотека\nМесто хранения знаний и открытий, здесь можно освоить новые технологии"),
 	
 	//workers
 	Worker         = Translate("Worker",                           "Работник"),
@@ -256,7 +256,13 @@ namespace Translate
 	SeigeCrank      = Translate("Seige Crank\nSeige vehicles fire 25% faster",                       "Рукоять для осадного орудия\nОсадные орудия стреляют на 25% быстрее."),
 	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              "Регенерация I\nВыжившие исцеляют половину сердца каждый день."),
 	RegenerationII  = Translate("Regeneration II\nSurvivors heal one heart every day.",              "Регенерация II\nВыжившие исцеляют по одному сердцу каждый день."),
-	RegenerationIII = Translate("Regeneration III\nSurvivors heal two hearts every day.",            "Регенерация III\nВыжившие исцеляют два сердца каждый день.");
+	RegenerationIII = Translate("Regeneration III\nSurvivors heal two hearts every day.",            "Регенерация III\nВыжившие исцеляют два сердца каждый день."),
+	Chainmail       = Translate("Chainmail\nKnights take -25% damage",                               ""),
+	ThermalHull     = Translate("Thermal Plating\nVehicles are immune to fire damage",               ""),
+	ThermalArmor    = Translate("Thermal Armor\nWearing a full set of armor nullifies fire damage.", ""),
+	LightSwords     = Translate("Light Swords\nUsing a sword is faster",                             ""),
+	Production      = Translate("Production\nFactories +25% production speed",                       ""),
+	ProductionII    = Translate("Production II\nFactories +25% production speed",                    "");
 }
 
 string name(const string&in translated)

@@ -178,7 +178,7 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 			case CMap::tile_iron_v13:
 			case CMap::tile_iron_v14:
 				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE);
+				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE);
 				return CMap::tile_iron_d0;
 
 			case CMap::tile_iron_d0:
@@ -202,8 +202,9 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 			case CMap::tile_biron_v0:
 			case CMap::tile_biron_v1:
 			case CMap::tile_biron_v2:
-				map.AddTileFlag(index, Tile::BACKGROUND | Tile::WATER_PASSES | Tile::LIGHT_PASSES);
+				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
 				map.RemoveTileFlag(index, Tile::LIGHT_SOURCE | Tile::SOLID | Tile::COLLISION);
+				SetWaterPassable(map, index);
 				return CMap::tile_biron_d0;
 
 			case CMap::tile_biron_d0:
@@ -351,15 +352,17 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 			// IRON BACKGROUND //
 			case CMap::tile_biron:
 				SetTileFaces(map, map.getTileWorldPosition(index), CMap::tile_biron, CMap::tile_biron_v2, directions_up_down);
-				map.AddTileFlag(index, Tile::BACKGROUND | Tile::WATER_PASSES | Tile::LIGHT_PASSES);
+				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
 				map.RemoveTileFlag(index, Tile::LIGHT_SOURCE | Tile::SOLID | Tile::COLLISION);
+				SetWaterPassable(map, index);
 				if (isClient()) Sound::Play("build_wall.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 				break;
 
 			case CMap::tile_biron_v0:
 			case CMap::tile_biron_v1:
 			case CMap::tile_biron_v2:
-				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
+				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
+				SetWaterPassable(map, index);
 				if (isClient()) Sound::Play("build_wall.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 				break;
 
@@ -433,7 +436,8 @@ void OnIronTileDestroyed(CMap@ map, const u32&in index)
 
 void OnBIronTileHit(CMap@ map, const u32&in index)
 {
-	map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES | Tile::WATER_PASSES);
+	map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
+	SetWaterPassable(map, index);
 
 	if (isClient()) Sound::Play("dig_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 }
@@ -442,7 +446,6 @@ void OnBIronTileDestroyed(CMap@ map, const u32&in index)
 {
 	if (isClient()) Sound::Play("destroy_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 }
-
 
 ///GENERIC
 
@@ -474,4 +477,29 @@ void UpdateTileFaces(CMap@ map, Vec2f pos, const u16&in min, const u16&in max, c
 		if (isTileBetween(map.getTile(tilepos).type, min, max))
 			map.SetTile(map.getTileOffset(tilepos), min + getTileFaces(map, tilepos, min, max, directions));
 	}
+}
+
+//the engine does not correctly set water passable tile flags for custom background tiles
+//so we have to add in our own functionality
+
+void SetWaterPassable(CMap@ map, const u32&in index)
+{
+	if (canWaterPass(map, index))
+		map.AddTileFlag(index, Tile::WATER_PASSES);
+	else
+		map.RemoveTileFlag(index, Tile::WATER_PASSES);
+}
+
+bool canWaterPass(CMap@ map, const u32&in index)
+{
+	CBlob@[] blobs;
+	if (map.getBlobsAtPosition(map.getTileWorldPosition(index) + Vec2f(4, 4), @blobs))
+	{
+		for (u16 i = 0; i < blobs.length; i++)
+		{
+			if (!blobs[i].getShape().getConsts().waterPasses)
+				return false;
+		}
+	}
+	return true;
 }

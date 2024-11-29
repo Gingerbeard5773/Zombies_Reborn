@@ -83,7 +83,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob@ blob, boo
 	Tile up = map.getTile(offset - map.tilemapwidth);
 	Tile down = map.getTile(offset + map.tilemapwidth);
 
-	if (buildTile > 0 && blob is null && buildTile == map.getTile(offset).type)
+	if (buildTile > 0 && blob is null && buildTile == backtile.type)
 	{
 		sameTile = true;
 		return false;

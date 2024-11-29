@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 {
 	this.SetFacingLeft(XORRandom(128) > 64);
 
-	this.getShape().getConsts().waterPasses = true;
+	this.getShape().getConsts().waterPasses = false;
 
 	CShape@ shape = this.getShape();
 	shape.AddPlatformDirection(Vec2f(0, -1), 89, false);
