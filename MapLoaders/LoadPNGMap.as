@@ -79,7 +79,8 @@ bool LoadMap(CMap@ map, const string& in fileName)
 	
 	if (procedural_map_gen)
 	{
-		print("LOADING PROCEDURALLY GENERATED MAP - MAP SEED: "+map_seed, 0xff66C6FF);
+		const string seed = isServer() ? " - MAP SEED: "+map_seed : "";
+		print("LOADING PROCEDURALLY GENERATED MAP"+seed, 0xff66C6FF);
 		return loadProceduralGenMap(map, map_seed);
 	}
 

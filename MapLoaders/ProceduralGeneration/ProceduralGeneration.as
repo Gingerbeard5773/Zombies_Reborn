@@ -2,6 +2,7 @@
 // Uses Pirate-Rob's generation as a base
 
 #include "CustomTiles.as";
+#include "Zombie_StructuresCommon.as";
 
 enum BiomeType
 {
@@ -12,6 +13,8 @@ enum BiomeType
 	Caves,      //caves (Big overhead cave/cliff)
 	Count
 };
+
+const f32 tileSize = 8.0f;
 
 bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 {
@@ -28,6 +31,9 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 	s32 height = m_height;
 	s32 MaxLandHeight = 20;
 	s32 MinFloorHeight = 10;
+	s32 StructureMinCount = 3;
+	s32 StructureExtraCount = 1;
+	s32 StructureChainCount = 0;
 
 	//LOAD PRESETS FROM CONFIG
 	ConfigFile cfg;
@@ -35,10 +41,10 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 	{
 		string[] presets;
 		cfg.readIntoArray_string(presets, "PRESETS");
-		
+
 		const string preset = presets[r.NextRanged(presets.length)];
 		print("PROCEDURAL GENERATION TYPE: "+preset, 0xff66C6FF);
-		
+
 		s32[] vars;
 		cfg.readIntoArray_s32(vars, preset);
 
@@ -46,11 +52,14 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		height = vars[1];
 		MaxLandHeight = vars[2];
 		MinFloorHeight = vars[3];
+		StructureMinCount = vars[4];
+		StructureExtraCount = vars[5];
+		StructureChainCount = vars[6];
 	}
 	
 	MinFloorHeight = height - MinFloorHeight;
 
-	map.CreateTileMap(width, height, 8.0f, "Sprites/world.png");
+	map.CreateTileMap(width, height, tileSize, "Sprites/world.png");
 
 	const int SeaLevel = height/5*4;
 
@@ -60,7 +69,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 	const int BiomeTypes = 4;
 	int[] biome(width);
 	
-	for (int dbl = 0; dbl < 2; dbl += 1)
+	for (int dbl = 0; dbl < 2; dbl++)
 	{
 		int LastHeight = height*3/5;
 		int Straight = 4;
@@ -201,21 +210,18 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 	
 	s16[][] World;
 	
-	for (int i = 0; i < width; i += 1) //Init world grid
+	for (int i = 0; i < width; i++) //Init world grid
 	{
 		s16[] temp;
-		for (int j = 0; j < height; j += 1)
-		{
-			temp.push_back(0);
-		}
+		temp.set_length(height);
 		World.push_back(temp);
 	}
 	
 	int CaveHeight = 4 + r.NextRanged(12);
 	
-	for (int i = 0; i < width; i += 1) //Dirty stones!
+	for (int i = 0; i < width; i++) //Dirty stones!
 	{
-		for (int j = 0; j < height; j += 1)
+		for (int j = 0; j < height; j++)
 		{ 
 			int FakeCaveHeightMap = heightmap[i];
 			
@@ -328,10 +334,11 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 			}
 		}
 	}
-	
-	for (int i = 1; i < width-1; i += 1) //Set up the world for some corrosion, to remove dirt points
+
+	//erosion of dirt (so that we dont have dirt points)
+	for (int i = 1; i < width-1; i++)
 	{
-		for (int j = 1; j < height-1; j += 1)
+		for (int j = 1; j < height-1; j++)
 		{
 			if (World[i][j] != CMap::tile_ground) continue;
 
@@ -344,18 +351,19 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 
-	for (int i = 1; i < width-1; i += 1) //Corrode dirt points
+	for (int i = 1; i < width-1; i++) //erode dirt points
 	{
-		for (int j = 1; j < height-1; j += 1)
+		for (int j = 1; j < height-1; j++)
 		{ 
 			if (World[i][j] == -1) World[i][j] = 0;
 		}
 	}
-	
+	//end of erosion
+
 	int FakeCaveTile = 137;
 	int FakeCaveTile2 = 138;
 	
-	for (int i = 0; i < width; i += 1)
+	for (int i = 0; i < width; i++)
 	{
 		if (r.NextRanged(3) == 0)
 		{
@@ -370,7 +378,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		Vec2f WormDir = Vec2f(1,0);
 		WormDir.RotateBy(45+r.NextRanged(45));
 		
-		for (int j = 0; j < 200+r.NextRanged(200); j += 1)
+		for (int j = 0; j < 200+r.NextRanged(200); j++)
 		{
 			WormDir.RotateBy(int(r.NextRanged(41))-20);
 			WormPos = WormPos + WormDir;
@@ -381,28 +389,28 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
-	for (int i = 2; i < width-2; i += 1) //Expand caves a bit
+	for (int i = 2; i < width-2; i++) //Expand caves a bit
 	{
-		for (int j = 2; j < height-2; j += 1)
+		for (int j = 2; j < height-2; j++)
 		{
 			if (World[i][j] != FakeCaveTile) continue;
 
-			for (int k = 0;k < 10; k += 1)
+			for (int k = 0;k < 10; k++)
 			{
 				int plusX = int(r.NextRanged(5))-2;
 				int plusY = int(r.NextRanged(5))-2;
-				if (World[i+plusX][j+plusY] != CMap::tile_empty)World[i+plusX][j+plusY] = FakeCaveTile2;
+				if (World[i+plusX][j+plusY] != CMap::tile_empty) World[i+plusX][j+plusY] = FakeCaveTile2;
 			}
 		}
 	}
 	
-	for (int i = 2; i < width-2; i += 1) //Expand caves a bit Mooore
+	for (int i = 2; i < width-2; i++) //Expand caves a bit Mooore
 	{
-		for (int j = 2; j < height-2; j += 1)
+		for (int j = 2; j < height-2; j++)
 		{
 			if (World[i][j] != FakeCaveTile2) continue;
 
-			for (int k = 0; k < 10; k += 1)
+			for (int k = 0; k < 10; k++)
 			{
 				const int plusX = int(r.NextRanged(5))-2;
 				const int plusY = int(r.NextRanged(5))-2;
@@ -414,9 +422,9 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
-	for (int i = 0; i < width; i += 1) //Replace caves with thier actual backgrounds
+	for (int i = 0; i < width; i++) //Replace caves with thier actual backgrounds
 	{
-		for (int j = 0; j < height; j += 1)
+		for (int j = 0; j < height; j++)
 		{
 			if (World[i][j] == FakeCaveTile || World[i][j] == FakeCaveTile2)
 			{
@@ -429,12 +437,12 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 	const int bed_start = 4;
 	const float midpoint = width / 2;
 	const int bed_end = 16;
-	for (int i = 0; i < width; i += 1) //Set bedrock at bottom
+	for (int i = 0; i < width; i++) //Set bedrock at bottom
 	{
 		const float mid_dist = Maths::Abs(i - midpoint) / width * 2;
-		for (int j = 0; j < height; j += 1)
+		for (int j = 0; j < height; j++)
 		{
-			const f32 frac = map_noise.Fractal(i / 8.0f, 0) * 8 * (1 - mid_dist);
+			const f32 frac = map_noise.Fractal(i / tileSize, 0) * tileSize * (1 - mid_dist);
 			const int curve = Maths::Min(bed_end, Maths::Pow(mid_dist * 1.2f, 5.0f) * 9);
 			if (height - j < bed_start + curve + frac || ((1 - mid_dist) * width <= 3 && height - j <= 9))
 			{
@@ -443,29 +451,20 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 
-	/// Unnatural structures ///
+	/// STRUCTURES ///
 	
 	const int NodeOffset = -2 - int(r.NextRanged(3));
 	const int NodeSize = 7;
 
-	/*const int SewerLine = (Maths::Floor(height/NodeSize)-1)*NodeSize+5+NodeOffset;
-	for (int i = 0; i < width; i += 1)
-	{
-		if (World[i][SewerLine] != 0)
-		{
-			World[i][SewerLine] = GetRandomTunnelBackground(r);
-		}
-	}*/
-	
 	bool[][] Nodes(width / NodeSize);
-	for (int i = 0; i < Nodes.length; i += 1)
+	for (int i = 0; i < Nodes.length; i++)
 	{
 		Nodes[i].resize(height/NodeSize);
 	}
 	
-	for (int i = 1; i < width/NodeSize-1; i += 1) //Find random suitable nodes
+	for (int i = 1; i < width/NodeSize-1; i++) //Find random suitable nodes
 	{
-		for (int j = 1; j < height/NodeSize; j += 1)
+		for (int j = 1; j < height/NodeSize; j++)
 		{
 			Nodes[i][j] = false;
 			
@@ -478,9 +477,9 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
-	for (int i = 2; i < width/NodeSize-2; i += 1) //Extend nodes left or right
+	for (int i = 2; i < width/NodeSize-2; i++) //Extend nodes left or right
 	{
-		for (int j = 1; j < height/NodeSize; j += 1)
+		for (int j = 1; j < height/NodeSize; j++)
 		{
 			if(!Nodes[i][j]) continue;
 
@@ -503,9 +502,9 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
-	for (int i = 1; i < width/NodeSize-1; i += 1) //Kill any singleton nodes with no connectors :(
+	for (int i = 1; i < width/NodeSize-1; i++) //Kill any singleton nodes with no connectors :(
 	{
-		for (int j = 1; j < height/NodeSize; j += 1)
+		for (int j = 1; j < height/NodeSize; j++)
 		{
 			if(!Nodes[i][j]) continue;
 
@@ -527,9 +526,9 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 
-	for (int i = 1; i < width/NodeSize-1; i += 1) //Build tunnels from nodes.
+	for (int i = 1; i < width/NodeSize-1; i++) //Build tunnels from nodes.
 	{
-		for (int j = 1; j < height/NodeSize; j += 1)
+		for (int j = 1; j < height/NodeSize; j++)
 		{
 			if(!Nodes[i][j]) continue;
 
@@ -549,15 +548,15 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 		
-	for (int i = 1; i < width/NodeSize-1; i += 1) //Build tunnels from nodes.
+	for (int i = 1; i < width/NodeSize-1; i++) //Build tunnels from nodes.
 	{
-		for (int j = 1; j < height/NodeSize; j += 1)
+		for (int j = 1; j < height/NodeSize; j++)
 		{
 			if(!Nodes[i][j]) continue;
 
 			if (Nodes[i+1][j])
 			{
-				for (int k = 0; k < NodeSize-2; k += 1)
+				for (int k = 0; k < NodeSize-2; k++)
 				{
 					World[i*NodeSize+k+2][j*NodeSize+NodeOffset] = GetRandomTunnelBackground(r);
 					World[i*NodeSize+k+2][j*NodeSize+1+NodeOffset] = GetRandomTunnelBackground(r);
@@ -571,217 +570,200 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 			{
 				if (Nodes[i][j+1])
 				{
-					for (int k = 0; k < NodeSize-2; k += 1)
+					for (int k = 0; k < NodeSize-2; k++)
 					{
 						World[i*NodeSize][j*NodeSize+k+2+NodeOffset] = GetRandomTunnelBackground(r);
 						World[i*NodeSize+1][j*NodeSize+k+2+NodeOffset] = GetRandomTunnelBackground(r);
 						
-						if (r.NextRanged(3) != 0)World[i*NodeSize-1][j*NodeSize+k+2+NodeOffset] = GetRandomCastleTile(r);
-						if (r.NextRanged(3) != 0)World[i*NodeSize+2][j*NodeSize+k+2+NodeOffset] = GetRandomCastleTile(r);
+						if (r.NextRanged(3) != 0) World[i*NodeSize-1][j*NodeSize+k+2+NodeOffset] = GetRandomCastleTile(r);
+						if (r.NextRanged(3) != 0) World[i*NodeSize+2][j*NodeSize+k+2+NodeOffset] = GetRandomCastleTile(r);
 					}
 				}
 			}
-			/*else if (r.NextRanged(5) == 0) //Drain thing that leads to sewers, only spawns on the lowest tunnels.
-			{
-				World[i*NodeSize-1][j*NodeSize+NodeOffset+2] = CMap::tile_castle;
-				World[i*NodeSize+1][j*NodeSize+NodeOffset+2] = CMap::tile_castle;
-				World[i*NodeSize-2][j*NodeSize+NodeOffset+2] = CMap::tile_castle;
-				World[i*NodeSize+2][j*NodeSize+NodeOffset+2] = CMap::tile_castle;
-				World[i*NodeSize-1][j*NodeSize+NodeOffset+3] = CMap::tile_castle_moss;
-				World[i*NodeSize+1][j*NodeSize+NodeOffset+3] = CMap::tile_castle_moss;
-				
-				for (int k = j*NodeSize+NodeOffset+2; k < SewerLine; k += 1)
-				{
-					World[i*NodeSize][k] = CMap::tile_castle_back_moss;
-				}
-			}*/
 		}
 	}
 
 	bool[] SurfacePlanner(width); //The surface planner
 	//Basically, if a building is generated, it sets the area in surface planner to false, so other buildings won't build there.
 	//Almost all buildings won't build on/in cave biomes, cause that will heavily screw things up.
-	for (int i = 1; i < width; i += 1)
+	for (int i = 1; i < width; i++)
 	{
 		SurfacePlanner[i] = true;
 	}
 
-	/// Piers ///
 
-	/*for (int i = 10; i < width-10; i += 1)
-	{
-		if (r.NextRanged(10) != 0 || World[i][SeaLevel] != 0) continue;
-
-		if (World[i-1][SeaLevel] == CMap::tile_ground || World[i+1][SeaLevel] == CMap::tile_ground)
-		{
-			for (int j = -5; j <= 5; j += 1)
-			{
-				if (World[i+j][SeaLevel] != 0) continue;
-
-				World[i+j][SeaLevel] = CMap::tile_wood;
-				if (j == 4 || j == -4)
-				{
-					if (World[i+j][SeaLevel-1] == 0)
-						World[i+j][SeaLevel-1] = CMap::tile_wood_back;
-					if (r.NextRanged(2) == 0 && World[i+j][SeaLevel-2] == 0)
-						World[i+j][SeaLevel-2] = CMap::tile_wood_back;
-				}
-				
-				if (Maths::Abs(j) % 2 == 0)
-				{
-					for (int k = 1; k < 5+r.NextRanged(10); k += 1)
-					{
-						if (World[i+j][SeaLevel+k] == 0) World[i+j][SeaLevel+k] = CMap::tile_wood_back;
-					}
-				}
-			}
-		}
-	}*/
+	/// PLAYER STRUCTURES
 	
-	/// WELLS ///
-
-	for (int times = 0; times < 3 + r.NextRanged(2); times += 1)
+	const int SurfaceNodes = width / NodeSize - 1;
+	for (int times = 0; times < StructureMinCount + r.NextRanged(1 + StructureExtraCount); times++)
 	{
-		for (int i = 1; i < width/NodeSize-1; i += 1)
+		const int i = 1 + r.NextRanged(SurfaceNodes);
+		bool CanBuild = true;
+
+		for (int j = -2; j < 4; j++)
 		{
-			bool CanBuild = r.NextRanged(20) == 0; //I know this is bad code, don't judge me;
-			
-			for (int j = -2; j < 4; j += 1)
-			{
-				if (!SurfacePlanner[i*NodeSize+j] || biome[i*NodeSize+j] == BiomeType::Caves) CanBuild = false;
-			}
-			
-			if (!CanBuild) continue;
+			if (!SurfacePlanner[i*NodeSize+j]) CanBuild = false;
+		}
 
-			int Highest = height;
+		if (!CanBuild) continue;
 
-			for (int j = -2; j < 4; j += 1)
-			{
-				if (Highest > heightmap[i*NodeSize+j]) Highest = heightmap[i*NodeSize+j];
-			}
+		int Highest = height;
+		for (int j = -2; j < 4; j++)
+		{
+			if (Highest > heightmap[i*NodeSize+j]) Highest = heightmap[i*NodeSize+j];
+		}
 
-			if (Highest >= SeaLevel) continue;
-			
-			for (int j = 0; j < 5; j += 1)
-			{
-				World[i*NodeSize-1][Highest+j-1] = CMap::tile_castle;
-				World[i*NodeSize+2][Highest+j-1] = CMap::tile_castle;
-				World[i*NodeSize][Highest+j-1] = CMap::tile_castle_back;
-				World[i*NodeSize+1][Highest+j-1] = CMap::tile_castle_back;
-			}
-			
-			for (int j = Highest+2; j < height; j += 1)
-			{
-				if (World[i*NodeSize][j] == CMap::tile_bedrock || World[i*NodeSize+1][j] == CMap::tile_bedrock) break;
+		Vec2f pos(i * NodeSize, Highest);
+		LoadChainedStructureToWorld(map, pos, Vec2f(width, height), @World, 1 + StructureChainCount);
 
-				if (j < Highest+((height-Highest)/2) || r.NextRanged(3) > 0) World[i*NodeSize][j] = GetRandomTunnelBackground(r);
-				if (j < Highest+((height-Highest)/2) || r.NextRanged(3) > 0) World[i*NodeSize+1][j] = GetRandomTunnelBackground(r);
-				if (r.NextRanged(3) == 0) World[i*NodeSize-1][j] = GetRandomCastleTile(r);
-				if (r.NextRanged(3) == 0) World[i*NodeSize+2][j] = GetRandomCastleTile(r);
-				
-				if (j >= SeaLevel)
-				{
-					map.server_setFloodWaterWorldspace(Vec2f((i*NodeSize)*8,j*8),true);
-					map.server_setFloodWaterWorldspace(Vec2f((i*NodeSize+1)*8,j*8),true);
-				}
-			}
-			
-			if (r.NextRanged(2) == 0) //Do we have a lid? As in, has the well been decommisioned?
-			{
-				World[i*NodeSize][Highest-1] = CMap::tile_wood;
-				World[i*NodeSize+1][Highest-1] = CMap::tile_wood;
-				
-				if (r.NextRanged(2) == 0) server_CreateBlob("bucket",-1,Vec2f((i*NodeSize+1)*8,(Highest-2)*8)); //Place bucket on lid or it's lost :(
-			}
-			else //Other wise, make a pretty roof!
-			{
-				const int RoofType = r.NextRanged(2) == 0 ? CMap::tile_wood : CMap::tile_castle;
-				const int PillarType = r.NextRanged(2) == 0 ? CMap::tile_wood_back : CMap::tile_castle_back;
-				
-				World[i*NodeSize-1][Highest-2] = PillarType;
-				World[i*NodeSize-1][Highest-3] = PillarType;
-				World[i*NodeSize+2][Highest-2] = PillarType;
-				World[i*NodeSize+2][Highest-3] = PillarType;
-				
-				for (int j = 0; j < 4; j += 1)
-				{
-					World[i*NodeSize-1+j][Highest-4] = RoofType;
-				}
-				
-				int bucketPos = -2;
-				if (r.NextRanged(2) == 0)bucketPos = 4;
-				
-				server_CreateBlob("bucket", -1, Vec2f((i*NodeSize+bucketPos)*8,(Highest-1)*8));
-			}
-		
-			for (int j = -2; j < 4; j += 1)
-			{
-				SurfacePlanner[i*NodeSize+j] = false;
-			}
-			
-			break;
+		for (int j = -2; j < 4; j++)
+		{
+			SurfacePlanner[i*NodeSize+j] = false;
 		}
 	}
+
+
+	/// WELLS ///
+
+	for (int times = 0; times < 1 + r.NextRanged(4); times++)
+	{
+		const int i = 1 + r.NextRanged(SurfaceNodes);
+		bool CanBuild = true;
+
+		for (int j = -2; j < 4; j++)
+		{
+			if (!SurfacePlanner[i*NodeSize+j] || biome[i*NodeSize+j] == BiomeType::Caves) CanBuild = false;
+		}
+
+		if (!CanBuild) continue;
+
+		int Highest = height;
+
+		for (int j = -2; j < 4; j++)
+		{
+			if (Highest > heightmap[i*NodeSize+j]) Highest = heightmap[i*NodeSize+j];
+		}
+
+		if (Highest >= SeaLevel) continue;
+		
+		for (int j = 0; j < 5; j++)
+		{
+			World[i*NodeSize-1][Highest+j-1] = CMap::tile_castle;
+			World[i*NodeSize+2][Highest+j-1] = CMap::tile_castle;
+			World[i*NodeSize][Highest+j-1] = CMap::tile_castle_back;
+			World[i*NodeSize+1][Highest+j-1] = CMap::tile_castle_back;
+		}
+		
+		for (int j = Highest+2; j < height; j++)
+		{
+			if (World[i*NodeSize][j] == CMap::tile_bedrock || World[i*NodeSize+1][j] == CMap::tile_bedrock) break;
+
+			if (j < Highest+((height-Highest)/2) || r.NextRanged(3) > 0) World[i*NodeSize][j] = GetRandomTunnelBackground(r);
+			if (j < Highest+((height-Highest)/2) || r.NextRanged(3) > 0) World[i*NodeSize+1][j] = GetRandomTunnelBackground(r);
+			if (r.NextRanged(3) == 0) World[i*NodeSize-1][j] = GetRandomCastleTile(r);
+			if (r.NextRanged(3) == 0) World[i*NodeSize+2][j] = GetRandomCastleTile(r);
+			
+			if (j >= SeaLevel)
+			{
+				map.server_setFloodWaterWorldspace(Vec2f((i*NodeSize)*tileSize,j*tileSize),true);
+				map.server_setFloodWaterWorldspace(Vec2f((i*NodeSize+1)*tileSize,j*tileSize),true);
+			}
+		}
+		
+		if (r.NextRanged(2) == 0) //Do we have a lid? As in, has the well been decommisioned?
+		{
+			World[i*NodeSize][Highest-1] = CMap::tile_wood;
+			World[i*NodeSize+1][Highest-1] = CMap::tile_wood;
+			
+			if (r.NextRanged(2) == 0) server_CreateBlob("bucket",-1,Vec2f((i*NodeSize+1)*tileSize,(Highest-2)*tileSize)); //Place bucket on lid or it's lost :(
+		}
+		else //Other wise, make a pretty roof!
+		{
+			const int RoofType = r.NextRanged(2) == 0 ? CMap::tile_wood : CMap::tile_castle;
+			const int PillarType = r.NextRanged(2) == 0 ? CMap::tile_wood_back : CMap::tile_castle_back;
+			
+			World[i*NodeSize-1][Highest-2] = PillarType;
+			World[i*NodeSize-1][Highest-3] = PillarType;
+			World[i*NodeSize+2][Highest-2] = PillarType;
+			World[i*NodeSize+2][Highest-3] = PillarType;
+			
+			for (int j = 0; j < 4; j++)
+			{
+				World[i*NodeSize-1+j][Highest-4] = RoofType;
+			}
+			
+			int bucketPos = -2;
+			if (r.NextRanged(2) == 0) bucketPos = 4;
+			
+			server_CreateBlob("bucket", -1, Vec2f((i * NodeSize + bucketPos) * tileSize, (Highest - 1) * tileSize));
+		}
 	
+		for (int j = -2; j < 4; j++)
+		{
+			SurfacePlanner[i*NodeSize+j] = false;
+		}
+	}
+
 
 	/// NATURE ///
 	
-	for (int i = 0; i < width; i += 1) //Plants \o/
+	for (int i = 0; i < width; i++) //Plants \o/
 	{
-		for (int j = 0; j < height-1; j += 1)
+		for (int j = 0; j < height-1; j++)
 		{
-			getNet().server_KeepConnectionsAlive();
 			if (World[i][j] == 0 && World[i][j+1] == CMap::tile_ground)
 			{
+				Vec2f pos(i*tileSize, j*tileSize);
 				if (biome[i] == BiomeType::Swamp)
 				{
 					if (r.NextRanged(10) == 0)
 					{
 						const string tree_name = r.NextRanged(2) == 0 ? "tree_pine" : "tree_bushy";
-						SpawnTree(tree_name, Vec2f(i*8, j*8));
+						SpawnTree(tree_name, pos);
 					}
 					if (r.NextRanged(2) == 0)
 					{
-						server_CreateBlob("bush", -1, Vec2f(i*8, j*8));
+						server_CreateBlob("bush", -1, pos);
 					}
 				}
 				
 				if (j < SeaLevel)
 				{
-					if((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(2) == 0) //Grass
+					if ((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(2) == 0) //Grass
 					{
 						World[i][j] = CMap::tile_grass + r.NextRanged(4);
 					}
+
 					if (biome[i] == BiomeType::Meadow || biome[i] == BiomeType::Swamp) //Grass
 					{
 						World[i][j] = CMap::tile_grass + r.NextRanged(4);
 					}
-					
-					if((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(10) == 0) //Trees
+
+					if ((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(10) == 0) //Trees
 					{
 						const string tree_name = j < height/3 ? "tree_pine" : "tree_bushy";
-						SpawnTree(tree_name, Vec2f(i*8, j*8));
+						SpawnTree(tree_name, pos);
 					}
-					
+
 					//Rare chance for trees in meadows. This is incase world gen screws up and decides only meadows.
 					if (biome[i] == BiomeType::Meadow && r.NextRanged(30) == 0)
 					{
 						const string tree_name = j < height/3 ? "tree_pine" : "tree_bushy";
-						SpawnTree(tree_name, Vec2f(i*8, j*8));
+						SpawnTree(tree_name, pos);
 					}
-					
-					if((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(20) == 0) //Flowers
+
+					if ((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(20) == 0) //Flowers
 					{
-						SpawnPlant("flowers", Vec2f(i*8, j*8));
+						SpawnPlant("flowers", pos);
 					}
-					
-					if((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(3) == 0) //Bushes
+
+					if ((biome[i] == BiomeType::Forest || biome[i] == BiomeType::Caves) && r.NextRanged(3) == 0) //Bushes
 					{
-						server_CreateBlob("bush", -1, Vec2f(i*8, j*8));
+						server_CreateBlob("bush", -1, pos);
 						
 						if (r.NextRanged(10) == 0)
 						{
-							SpawnPlant("flowers", Vec2f(i*8, j*8));
+							SpawnPlant("flowers", pos);
 						}
 					}
 					
@@ -789,17 +771,17 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 					{
 						if (r.NextRanged(10) == 0)
 						{
-							SpawnPlant("grain_plant", Vec2f(i*8, j*8));
+							SpawnPlant("grain_plant", pos);
 						}
 					}
 					
 					if (biome[i] == BiomeType::Meadow && r.NextRanged(3) == 0) //LOTSA FLOWERS!! @.@
 					{
-						SpawnPlant("flowers", Vec2f(i*8, j*8));
+						SpawnPlant("flowers", pos);
 						
 						if (r.NextRanged(5) == 0)
 						{
-							server_CreateBlob("bush", -1, Vec2f(i*8, j*8));
+							server_CreateBlob("bush", -1, pos);
 						}
 					}
 				}
@@ -808,7 +790,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 					if (biome[i] == BiomeType::Swamp)
 					{
 						World[i][j] = CMap::tile_grass + r.NextRanged(4); //Grass
-						map.server_setFloodWaterWorldspace(Vec2f(i*8, j*8), true);
+						map.server_setFloodWaterWorldspace(pos, true);
 					}
 				}
 				
@@ -817,9 +799,9 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
-	for (int i = 0; i < width; i += 1) //Start water dirt
+	for (int i = 0; i < width; i++) //Start water dirt
 	{
-		for (int j = 0; j < height; j += 1)
+		for (int j = 0; j < height; j++)
 		{
 			if (World[i][j] == 0 && j >= SeaLevel)
 			{
@@ -833,11 +815,11 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 	}
 	
-	for (int k = 0; k < 8; k += 1)
+	for (int k = 0; k < 8; k++)
 	{
-		for (int i = 1; i < width-1; i += 1) //Grow dirt in water
+		for (int i = 1; i < width-1; i++) //Grow dirt in water
 		{
-			for (int j = SeaLevel+1; j < height-1; j += 1)
+			for (int j = SeaLevel+1; j < height-1; j++)
 			{
 				if (World[i][j] == CMap::tile_ground_back && r.NextRanged(4) == 0)
 				{
@@ -850,43 +832,46 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 					if (World[i][j-1] == 0 || World[i][j-2] == 0 || World[i][j-3] == 0 || World[i][j-4] == 0 || World[i][j-5] == 0)
 					if (r.NextRanged(7) == 0)
 					{
+						Vec2f pos(i*tileSize, j*tileSize);
 						//Small chance for bushes "seaweed"
-						server_CreateBlob("bush", -1, Vec2f(i*8, j*8));
+						server_CreateBlob("bush", -1, pos);
 
 						if (r.NextRanged(10) == 0) //Small chance for shark, otherwise, fishies!
 						{
-							server_CreateBlob("shark", -1, Vec2f(i*8,j*8));
+							server_CreateBlob("shark", -1, pos);
 						}
 						else
 						{
-							server_CreateBlob("fishy", -1, Vec2f(i*8, j*8));
+							server_CreateBlob("fishy", -1, pos);
 						}
-						map.server_setFloodWaterWorldspace(Vec2f(i*8, j*8), true);
+						map.server_setFloodWaterWorldspace(pos, true);
 					}
 				}
 			}
 		}
 	}
 
-	for (int i = 0; i < width; i += 1) //Finally, set the tiles
+	for (int j = 0; j < height; j++) //finally set the tiles
 	{
-		for (int j = 0; j < height; j += 1)
+		const bool belowSea = (j >= SeaLevel);
+		for (int i = 0; i < width; i++)
 		{
-			//getNet().server_KeepConnectionsAlive();
-			map.server_SetTile(Vec2f(i*8, j*8), World[i][j]);
-			if (World[i][j] == 0 && j >= SeaLevel)
-			{
-				map.server_setFloodWaterWorldspace(Vec2f(i*8, j*8), true);
-				if (i > 0 && World[i-1][j] != 0 && World[i-1][j] != CMap::tile_ground_back && r.NextRanged(2) == 0)
-					map.server_SetTile(Vec2f(i*8, j*8), CMap::tile_ground_back);
-				if (j < height-2 && World[i][j+1] != 0 && World[i][j+1] != CMap::tile_ground_back && r.NextRanged(2) == 0)
-					map.server_SetTile(Vec2f(i*8, j*8), CMap::tile_ground_back);
-				if (i < width-2 && World[i+1][j] != 0 && World[i+1][j] != CMap::tile_ground_back && r.NextRanged(2) == 0)
-					map.server_SetTile(Vec2f(i*8, j*8), CMap::tile_ground_back);
-			}
+			Vec2f pos(i * tileSize, j * tileSize);
+			const u16 tile = World[i][j];
+			map.server_SetTile(pos, tile);
+
+			if (tile != 0 || !belowSea) continue;
+
+			map.server_setFloodWaterWorldspace(pos, true);
+			if (i > 0 && World[i - 1][j] != 0 && World[i - 1][j] != CMap::tile_ground_back && r.NextRanged(2) == 0)
+				map.server_SetTile(pos, CMap::tile_ground_back);
+			if (j < height - 1 && World[i][j + 1] != 0 && World[i][j + 1] != CMap::tile_ground_back && r.NextRanged(2) == 0)
+				map.server_SetTile(pos, CMap::tile_ground_back);
+			if (i < width - 1 && World[i + 1][j] != 0 && World[i + 1][j] != CMap::tile_ground_back && r.NextRanged(2) == 0)
+				map.server_SetTile(pos, CMap::tile_ground_back);
 		}
 	}
-	
+
 	return true;
 }
 
@@ -934,25 +919,4 @@ int GetRandomCastleTile(Random@ r)
 		case 1: return CMap::tile_castle_moss;
 	}
 	return CMap::tile_castle;
-}
-
-void SetupProceduralMap(CMap@ map, const int&in width, const int&in height)
-{
-	map.CreateTileMap(width, height, 8.0f, "Sprites/world.png");
-}
-
-void SetupProceduralBackgrounds(CMap@ map)
-{
-	// sky
-	map.CreateSky(color_black, Vec2f(1.0f, 1.0f), 200, "Sprites/Back/cloud", 0);
-	map.CreateSkyGradient("Sprites/skygradient.png");   // override sky color with gradient
-
-	// plains
-	map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -50.0f), Vec2f(0.06f, 20.0f), color_white);
-	map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -220.0f), Vec2f(0.18f, 70.0f), color_white);
-	//map.AddBackground( "Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, 50.0f), Vec2f(0.5f, 0.5f), color_white ); 
-	map.AddBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, -580.0f), Vec2f(0.3f, 180.0f), color_white);
-
-	// fade in
-	SetScreenFlash(255, 0, 0, 0);
 }
