@@ -162,7 +162,7 @@ void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 
 		}
 	}
 
-	if (blob.getShape().isStatic())
+	if (blob.getShape().isStatic() && blob.getName() != "skelepedebody")
 	{
 		SetStatic(this);
 	}
