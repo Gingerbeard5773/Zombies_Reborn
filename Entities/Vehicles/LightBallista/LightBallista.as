@@ -160,7 +160,6 @@ void onTick(CBlob@ this)
 		}
 
 		Vehicle_LightBallistaControls(this, v);
-		
 	}
 	this.set_bool("facing", this.isFacingLeft());
 }
@@ -202,6 +201,9 @@ void Vehicle_LightBallistaControls(CBlob@ this, VehicleInfo@ v)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
+
+	CBlob@ occupied = this.getAttachments().getAttachmentPoint("GUNNER").getOccupied();
+	if (occupied !is null && !occupied.hasTag("migrant")) return;
 
 	if (!AssignWorkerButton(this, caller))
 	{

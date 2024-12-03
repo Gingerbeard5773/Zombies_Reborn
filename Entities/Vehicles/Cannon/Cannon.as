@@ -199,6 +199,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
+	CBlob@ occupied = this.getAttachments().getAttachmentPoint("GUNNER").getOccupied();
+	if (occupied !is null && !occupied.hasTag("migrant")) return;
+
 	if (!AssignWorkerButton(this, caller))
 	{
 		UnassignWorkerButton(this, caller, Vec2f(0, -8));
