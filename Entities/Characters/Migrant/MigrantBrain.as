@@ -187,7 +187,7 @@ CBlob@ getAttacker(CBrain@ this, CBlob@ blob)
 
 		if (canSeeUndead(blob, pos, b, map))
 		{
-			if (b.getName() == "wraith") return b; //prioritize wraiths
+			if (b.getName() == "wraith" || b.getName() == "darkwraith") return b; //prioritize wraiths
 
 			if (closest is null || blob.getDistanceTo(b) < blob.getDistanceTo(closest))
 			{
@@ -200,20 +200,19 @@ CBlob@ getAttacker(CBrain@ this, CBlob@ blob)
 
 bool canSeeUndead(CBlob@ this, Vec2f pos, CBlob@ target, CMap@ map)
 {
-	if (!this.isAttachedToPoint("GUNNER")) //cheap raycast
-		return !map.rayCastSolid(pos, target.getPosition());
-
 	Vec2f aimvec = target.getPosition() - pos;
 	HitInfo@[] hitinfos;
 	map.getHitInfosFromRay(pos, -aimvec.Angle(), aimvec.Length(), null, hitinfos);
 	for (u16 i = 0; i < hitinfos.length; i++)
 	{
-		HitInfo@ hit = hitinfos[i];
-		if (hit.blob is null) return false; //hit solid tile
+		CBlob@ blob = hitinfos[i].blob;
+		if (blob is null) return false; //hit solid tile
 
-		if (hit.blob.getShape().isStatic() && hit.blob.isCollidable() && !hit.blob.isPlatform()) return false;
+		if (this.isAttachedTo(blob)) continue;
 
-		if (hit.blob is target) return true;
+		if (blob.getShape().isStatic() && blob.isCollidable() && !blob.isPlatform()) return false;
+
+		if (blob is target) return true;
 	}
 	return false;
 }
