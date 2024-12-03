@@ -313,6 +313,9 @@ void onTick(CBlob@ this)
 				if (map.getSectorAtPosition(hi.hitpos, "no build") !is null)
 					continue;
 
+				if (hi.hitpos.x < 0 || hi.hitpos.x > map.tilemapwidth * map.tilesize)
+					continue;
+
 				TileType tile = hi.tile;
 
 				if (isServer())
