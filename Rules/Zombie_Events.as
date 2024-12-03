@@ -47,7 +47,7 @@ void Reset(CRules@ this)
 
 u16 getTimInterval()
 {
-	return 20 + XORRandom(11);
+	return 15 + XORRandom(11);
 }
 
 void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
