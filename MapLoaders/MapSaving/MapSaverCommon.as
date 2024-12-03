@@ -41,7 +41,7 @@ void InitializeBlobHandlers()
 bool canSaveBlob(CBlob@ blob)
 {
 	const string name = blob.getName();
-	if (name == "skelepedebody") return false;
+	if (name == "skelepedebody" || name == "spike") return false;
 
 	if (blob.hasTag("temp blob") || blob.hasTag("projectile")) return false;
 
