@@ -39,19 +39,19 @@ void SetupProductionSet()
 	Production@[] production_set;
 	{
 		Production tech("Bomb", FactoryFrame::military_basics);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 35);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 20);
 		tech.addProductionItem("mat_bombs", "Bomb", "", 10, 5);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Catapult", FactoryFrame::catapult);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 30);
 		tech.addProductionItem("catapult", "Catapult", "", 60, 1, Product::crate);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Ballista", FactoryFrame::ballista);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 100);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 70);
 		tech.addProductionItem("lightballista", "Ballista", "", 60, 1, Product::crate);
 		tech.addProductionItem("mat_bolts", "Ballista Bolts", "", 60, 1);
 		tech.addProductionItem("mat_bomb_bolts", "Ballista Shells", "", 60, 1);
@@ -59,57 +59,57 @@ void SetupProductionSet()
 	}
 	{
 		Production tech("Bomber", 7);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 150);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
 		tech.addProductionItem("bomber", "Bomber", "", 80, 1, Product::crate);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech(name(Translate::Tank), 11);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 150);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 90);
 		tech.addProductionItem("tank", name(Translate::Tank), "", 80, 1, Product::crate);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Mounted Bow", FactoryFrame::mounted_bow);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 30);
 		tech.addProductionItem("mounted_bow", "Mounted Bow", "", 40, 2, Product::crate);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Keg", FactoryFrame::explosives);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
-		tech.addProductionItem("keg", "Keg", "", 40, 1);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("keg", "Keg", "", 40, 2);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech(Translate::Bigbomb, 19);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
-		tech.addProductionItem("bigbomb", Translate::Bigbomb, "", 30, 3);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("bigbomb", Translate::Bigbomb, "", 30, 4);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Mine", 18);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 30);
 		tech.addProductionItem("mine", "Mine", "", 20, 4);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Pyrotechnics", FactoryFrame::pyro);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 40);
 		tech.addProductionItem("molotov", name(Translate::Molotov), "", 25, 2);
 		tech.addProductionItem("mat_molotovarrows", name(Translate::MolotovArrows), "", 35, 2);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Water Ammo", FactoryFrame::water_ammo);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 25);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 10);
 		tech.addProductionItem("mat_waterarrows", "Water Arrows", "", 15, 3);
 		tech.addProductionItem("mat_waterbombs", "Water Bombs", "", 15, 3);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech("Bomb Arrow", FactoryFrame::expl_ammo);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 35);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 25);
 		tech.addProductionItem("mat_bombarrows", "Bomb Arrow", "", 35, 4);
 		production_set.push_back(tech);
 	}
