@@ -73,7 +73,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Transport Tunnel", getTeamIcon("tunnel", "Tunnel.png", team_num, Vec2f(40, 24)), "tunnel", Descriptions::tunnel);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::tunnel_stone);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::tunnel_wood);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::tunnel_gold);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Stone Quarry", "$stonequarry$", "quarry", Descriptions::quarry);
