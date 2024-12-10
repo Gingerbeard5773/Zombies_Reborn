@@ -259,7 +259,7 @@ namespace Translate
 	RegenerationIII = Translate("Regeneration III\nSurvivors heal two hearts every day.",            "Регенерация III\nВыжившие исцеляют два сердца каждый день."),
 	Chainmail       = Translate("Chainmail\nKnights take -25% damage",                               "Кольчуга\nРыцари получают на 25% меньше урона"),
 	ThermalHull     = Translate("Thermal Plating\nVehicles are immune to fire damage",               "Огнестойкое Покрытие\nТранспор становится невосприимчив к повреждениям от огня"),
-	ThermalArmor    = Translate("Thermal Armor\nWearing a full set of armor nullifies fire damage.", "Огнестойкая Броня\nНошение полного комплекта брони делает вас огнеупорным"),
+	ThermalArmor    = Translate("Thermal Armor\nWearing a full set of armor nullifies fire damage.", "Огнестойкая Броня\nНошение полного комплекта брони делает вас огнеупорным."),
 	LightSwords     = Translate("Light Swords\nUsing a sword is faster",                             "Легкие Мечи\nИспользование меча быстрее"),
 	Production      = Translate("Production\nFactories +25% production speed",                       "Производство\nФабрики на 25% быстрее в производстве"),
 	ProductionII    = Translate("Production II\nFactories +25% production speed",                    "Производство II\nФабрики на 25% быстрее в производстве"),
