@@ -7,7 +7,7 @@
 const f32 buttonsize = 50.0f;
 const f32 halfbuttonsize = buttonsize*0.5f;
 const f32 quarterbuttonsize = halfbuttonsize*0.5f;
-Vec2f size(850, 600);
+Vec2f size(850, 650);
 Vec2f icon_size(22, 22);
 
 SColor color_grey(0xff42484b);
@@ -212,7 +212,7 @@ void getOrigin(Vec2f&out pos2d, Vec2f&out origin)
 	pos2d = getDriver().getScreenCenterPos();
 	pos2d.y += 20.0f;
 	origin = pos2d;
-	origin.y -= size.y*0.5f - 60.0f;
+	origin.y -= size.y*0.5f - 80.0f;
 }
 
 void getButtonFromTech(Technology@ tech, Vec2f center, Vec2f &out ul, Vec2f &out lr)

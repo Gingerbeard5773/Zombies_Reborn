@@ -5,6 +5,7 @@
 #include "Help.as"
 #include "MiniIconsInc.as"
 #include "AssignWorkerCommon.as"
+#include "Zombie_TechnologyCommon.as"
 
 Vec2f menu_size(3, 4);
 
@@ -30,6 +31,8 @@ void onInit(CBlob@ this)
 	SetupProductionSet();
 
 	addSetFactoryData(this, @SetFactoryData);
+	
+	this.getCurrentScript().tickFrequency = 120;
 }
 
 void SetupProductionSet()
@@ -114,6 +117,23 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	getRules().set("factory_production_set", production_set);
+}
+
+void onTick(CBlob@ this)
+{
+	Production@ production;
+	if (!this.get("production", @production)) return;
+	
+	production.modifier = getProductionModifier();
+}
+
+f32 getProductionModifier()
+{
+	f32 modifier = 0.5f;
+	Technology@[]@ TechTree = getTechTree();
+	if (hasTech(TechTree, Tech::Production))   modifier -= 0.25f;
+	if (hasTech(TechTree, Tech::ProductionII)) modifier -= 0.25f;
+	return modifier;
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

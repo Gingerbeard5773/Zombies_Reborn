@@ -58,6 +58,7 @@ shared class Production
 {
 	string name;
 	u8 frame;
+	f32 modifier;    //percent to speed up or slow down the production
 	CBitStream reqs;
 
 	ProductionItem@[] production_items;
@@ -66,6 +67,7 @@ shared class Production
 	{
 		this.name = name;
 		this.frame = frame;
+		this.modifier = 1.0f;
 	}
 
 	Production(Production@ other)

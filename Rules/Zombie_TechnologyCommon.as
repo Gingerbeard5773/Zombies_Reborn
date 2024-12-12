@@ -7,9 +7,6 @@
 	Iron Saws        : Saws are 25% more durable
 	Steel Saws       : Saws are 50% more durable
 	Auto Saws        : Saws auto chop trees they are overlapping
-	Swift Bearings   : Ground vehicle speed +25%
-	Streamlined Hull : Boats are 25% faster
-	Fireproof Hull   : Vehicles are fireproof
 */
 
 //funcdef void onTechnologyHandle(CBlob@, u8);
@@ -73,7 +70,14 @@ namespace Tech
 		Regeneration,
 		RegenerationII,
 		RegenerationIII,
-		Count                //50
+		ThermalArmor,        //50
+		ThermalHull,
+		SwiftBearings,
+		Chainmail,
+		LightSwords,
+		Production,
+		ProductionII,
+		Count
 	}
 }
 

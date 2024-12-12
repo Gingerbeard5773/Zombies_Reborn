@@ -60,8 +60,8 @@ void SetupTechTree(CRules@ this)
 	Technology PlentifulWheat(Translate::PlentifulWheat, Tech::PlentifulWheat, Vec2f(24, 11), 240);
 	AddRequirement(PlentifulWheat.requirements, "coin", "", "Coins", 250);
 
-	Technology Metallurgy(Translate::Metallurgy, Tech::Metallurgy, Vec2f(0, 7), 240);
-	AddRequirement(Metallurgy.requirements, "coin", "", "Coins", 500);
+	Technology Metallurgy(Translate::Metallurgy, Tech::Metallurgy, Vec2f(0, 9), 240);
+	AddRequirement(Metallurgy.requirements, "coin", "", "Coins", 450);
 	AddRequirement(Metallurgy.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 10);
 
 	Technology MetallurgyII(Translate::MetallurgyII, Tech::MetallurgyII, Vec2f(0, 17), 380);
@@ -78,23 +78,23 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(MetallurgyIV.requirements, "blob", "mat_gold", "Gold", 25);
 
 	Technology Refinement(Translate::Refinement, Tech::Refinement, Vec2f(6, 30), 240);
-	AddRequirement(Refinement.requirements, "coin", "", "Coins", 1000);
+	AddRequirement(Refinement.requirements, "coin", "", "Coins", 500);
 	AddRequirement(Refinement.requirements, "blob", "mat_coal", name(Translate::Coal), 100);
 	AddRequirement(Refinement.requirements, "blob", "mat_gold", "Gold", 25);
 
 	Technology RefinementII(Translate::RefinementII, Tech::RefinementII, Vec2f(12, 30), 380);
-	AddRequirement(RefinementII.requirements, "coin", "", "Coins", 750);
-	AddRequirement(RefinementII.requirements, "blob", "mat_coal", name(Translate::Coal), 100);
+	AddRequirement(RefinementII.requirements, "coin", "", "Coins", 500);
+	AddRequirement(RefinementII.requirements, "blob", "mat_coal", name(Translate::Coal), 150);
 	AddRequirement(RefinementII.requirements, "blob", "mat_gold", "Gold", 50);
 
 	Technology RefinementIII(Translate::RefinementIII, Tech::RefinementIII, Vec2f(18, 30), 760);
-	AddRequirement(RefinementIII.requirements, "coin", "", "Coins", 750);
-	AddRequirement(RefinementIII.requirements, "blob", "mat_coal", name(Translate::Coal), 150);
+	AddRequirement(RefinementIII.requirements, "coin", "", "Coins", 500);
+	AddRequirement(RefinementIII.requirements, "blob", "mat_coal", name(Translate::Coal), 200);
 	AddRequirement(RefinementIII.requirements, "blob", "mat_gold", "Gold", 75);
 
 	Technology RefinementIV(Translate::RefinementIV, Tech::RefinementIV, Vec2f(24, 30), 900);
-	AddRequirement(RefinementIV.requirements, "coin", "", "Coins", 750);
-	AddRequirement(RefinementIV.requirements, "blob", "mat_coal", name(Translate::Coal), 200);
+	AddRequirement(RefinementIV.requirements, "coin", "", "Coins", 500);
+	AddRequirement(RefinementIV.requirements, "blob", "mat_coal", name(Translate::Coal), 250);
 	AddRequirement(RefinementIV.requirements, "blob", "mat_gold", "Gold", 100);
 
 	Technology Extraction(Translate::Extraction, Tech::Extraction, Vec2f(-6, 37), 760);
@@ -129,17 +129,17 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(LightArmor.requirements, "coin", "", "Coins", 400);
 	AddRequirement(LightArmor.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 16);
 
-	Technology CombatPickaxes(Translate::CombatPickaxes, Tech::CombatPickaxes, Vec2f(-6, 10), 240);
+	Technology CombatPickaxes(Translate::CombatPickaxes, Tech::CombatPickaxes, Vec2f(-12, -1), 190);
 	AddRequirement(CombatPickaxes.requirements, "coin", "", "Coins", 400);
 	AddRequirement(CombatPickaxes.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 8);
 
-	Technology LightPickaxes(Translate::LightPickaxes, Tech::LightPickaxes, Vec2f(-6, 16), 240);
+	Technology LightPickaxes(Translate::LightPickaxes, Tech::LightPickaxes, Vec2f(-18, -1), 190);
 	AddRequirement(LightPickaxes.requirements, "coin", "", "Coins", 500);
 	AddRequirement(LightPickaxes.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 16);
 
-	Technology PrecisionDrills(Translate::PrecisionDrills, Tech::PrecisionDrills, Vec2f(-6, 22), 240);
-	AddRequirement(PrecisionDrills.requirements, "coin", "", "Coins", 600);
-	AddRequirement(PrecisionDrills.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
+	Technology PrecisionDrills(Translate::PrecisionDrills, Tech::PrecisionDrills, Vec2f(-6, 12), 170);
+	AddRequirement(PrecisionDrills.requirements, "coin", "", "Coins", 400);
+	AddRequirement(PrecisionDrills.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 6);
 
 	Technology Architecture(Translate::Architecture, Tech::Architecture, Vec2f(-27, 11), 240);
 	AddRequirement(Architecture.requirements, "coin", "", "Coins", 300);
@@ -164,11 +164,11 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(Repeaters.requirements, "coin", "", "Coins", 250);
 	AddRequirement(Repeaters.requirements, "blob", "mat_gold", "Gold", 25);
 
-	Technology LightBows(Translate::LightBows, Tech::LightBows, Vec2f(-12, 11), 280);
+	Technology LightBows(Translate::LightBows, Tech::LightBows, Vec2f(-12, 11), 200);
 	AddRequirement(LightBows.requirements, "coin", "", "Coins", 250);
 	AddRequirement(LightBows.requirements, "blob", "mat_gold", "Gold", 25);
 
-	Technology DeepQuiver(Translate::DeepQuiver, Tech::DeepQuiver, Vec2f(-12, 23), 480);
+	Technology DeepQuiver(Translate::DeepQuiver, Tech::DeepQuiver, Vec2f(-12, 23), 380);
 	AddRequirement(DeepQuiver.requirements, "coin", "", "Coins", 250);
 	AddRequirement(DeepQuiver.requirements, "blob", "mat_gold", "Gold", 50);
 
@@ -208,40 +208,68 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(HolyWater.requirements, "coin", "", "Coins", 250);
 	AddRequirement(HolyWater.requirements, "blob", "mat_gold", "Gold", 25);
 
-	Technology BlastShields(Translate::BlastShields, Tech::BlastShields, Vec2f(12, 37), 960);
-	AddRequirement(BlastShields.requirements, "coin", "", "Coins", 1000);
-	AddRequirement(BlastShields.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 6);
+	Technology BlastShields(Translate::BlastShields, Tech::BlastShields, Vec2f(-6, 6), 240);
+	AddRequirement(BlastShields.requirements, "coin", "", "Coins", 350);
+	AddRequirement(BlastShields.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 6);
+	AddRequirement(BlastShields.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 2);
 
-	Technology FlightTuning(Translate::FlightTuning, Tech::FlightTuning, Vec2f(18, 23), 240);
+	Technology FlightTuning(Translate::FlightTuning, Tech::FlightTuning, Vec2f(18, 23), 140);
 	AddRequirement(FlightTuning.requirements, "coin", "", "Coins", 250);
 
-	Technology IronChassis(Translate::IronChassis, Tech::IronChassis, Vec2f(18, 17), 380);
+	Technology IronChassis(Translate::IronChassis, Tech::IronChassis, Vec2f(18, 17), 280);
 	AddRequirement(IronChassis.requirements, "coin", "", "Coins", 250);
 	AddRequirement(IronChassis.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 8);
 
-	Technology SteelChassis(Translate::SteelChassis, Tech::SteelChassis, Vec2f(24, 17), 480);
+	Technology SteelChassis(Translate::SteelChassis, Tech::SteelChassis, Vec2f(24, 17), 380);
 	AddRequirement(SteelChassis.requirements, "coin", "", "Coins", 350);
-	AddRequirement(SteelChassis.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 4);
+	AddRequirement(SteelChassis.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
 
-	Technology TorsionWinch(Translate::TorsionWinch, Tech::TorsionWinch, Vec2f(12, 17), 280);
+	Technology TorsionWinch(Translate::TorsionWinch, Tech::TorsionWinch, Vec2f(12, 17), 200);
 	AddRequirement(TorsionWinch.requirements, "coin", "", "Coins", 350);
 	AddRequirement(TorsionWinch.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 2);
 
-	Technology SeigeCrank(Translate::SeigeCrank, Tech::SeigeCrank, Vec2f(6, 17), 240);
+	Technology SeigeCrank(Translate::SeigeCrank, Tech::SeigeCrank, Vec2f(6, 17), 180);
 	AddRequirement(SeigeCrank.requirements, "coin", "", "Coins", 250);
 	AddRequirement(SeigeCrank.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 4);
 
-	Technology Regeneration(Translate::Regeneration, Tech::Regeneration, Vec2f(30, 5), 480);
+	Technology Regeneration(Translate::Regeneration, Tech::Regeneration, Vec2f(30, 5), 380);
 	AddRequirement(Regeneration.requirements, "coin", "", "Coins", 250);
 
-	Technology RegenerationII(Translate::RegenerationII, Tech::RegenerationII, Vec2f(30, 11), 560);
+	Technology RegenerationII(Translate::RegenerationII, Tech::RegenerationII, Vec2f(30, 11), 460);
 	AddRequirement(RegenerationII.requirements, "coin", "", "Coins", 750);
 	AddRequirement(RegenerationII.requirements, "blob", "mat_gold", "Gold", 30);
 
-	Technology RegenerationIII(Translate::RegenerationIII, Tech::RegenerationIII, Vec2f(30, 17), 960);
+	Technology RegenerationIII(Translate::RegenerationIII, Tech::RegenerationIII, Vec2f(30, 17), 560);
 	AddRequirement(RegenerationIII.requirements, "coin", "", "Coins", 1000);
 	AddRequirement(RegenerationIII.requirements, "blob", "mat_gold", "Gold", 50);
-	
+
+	Technology ThermalArmor(Translate::ThermalArmor, Tech::ThermalArmor, Vec2f(12, 37), 240);
+	AddRequirement(ThermalArmor.requirements, "coin", "", "Coins", 500);
+	AddRequirement(ThermalArmor.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
+
+	Technology ThermalHull(Translate::ThermalHull, Tech::ThermalHull, Vec2f(24, 23), 240);
+	AddRequirement(ThermalHull.requirements, "coin", "", "Coins", 500);
+	AddRequirement(ThermalHull.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 2);
+
+	Technology SwiftBearings(Translate::SwiftBearings, Tech::SwiftBearings, Vec2f(-6, 17), 240);
+	AddRequirement(SwiftBearings.requirements, "coin", "", "Coins", 350);
+
+	Technology Chainmail(Translate::Chainmail, Tech::Chainmail, Vec2f(-6, 30), 300);
+	AddRequirement(Chainmail.requirements, "coin", "", "Coins", 500);
+	AddRequirement(Chainmail.requirements, "blob", "mat_ironingot", name(Translate::IronIngot), 10);
+
+	Technology LightSwords(Translate::LightSwords, Tech::LightSwords, Vec2f(-6, 24), 230);
+	AddRequirement(LightSwords.requirements, "coin", "", "Coins", 400);
+	AddRequirement(LightSwords.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 2);
+
+	Technology Production(Translate::Production, Tech::Production, Vec2f(18, -1), 240);
+	AddRequirement(Production.requirements, "coin", "", "Coins", 250);
+	AddRequirement(Production.requirements, "blob", "mat_gold", "Gold", 25);
+
+	Technology ProductionII(Translate::ProductionII, Tech::ProductionII, Vec2f(24, -1), 300);
+	AddRequirement(ProductionII.requirements, "coin", "", "Coins", 500);
+	AddRequirement(ProductionII.requirements, "blob", "mat_gold", "Gold", 25);
+
 	// setup connections
 	
 	Coinage.connections.push_back(@CoinageII);
@@ -254,12 +282,16 @@ void SetupTechTree(CRules@ this)
 	//HardyTrees.connections;
 	//PlentifulWheat.connections;
 	Metallurgy.connections.push_back(@MetallurgyII);
-	Metallurgy.connections.push_back(@CombatPickaxes);
+	Metallurgy.connections.push_back(@BlastShields);
+	Metallurgy.connections.push_back(@PrecisionDrills);
 	MetallurgyII.connections.push_back(@MetallurgyIII);
 	MetallurgyII.connections.push_back(@SeigeCrank);
+	MetallurgyII.connections.push_back(@SwiftBearings);
 	MetallurgyIII.connections.push_back(@MetallurgyIV);
 	MetallurgyIII.connections.push_back(@Refinement);
 	MetallurgyIII.connections.push_back(@Swords);
+	MetallurgyIII.connections.push_back(@LightSwords);
+	MetallurgyIII.connections.push_back(@Chainmail);
 	MetallurgyIV.connections.push_back(@Extraction);
 	MetallurgyIV.connections.push_back(@LightArmor);
 	Refinement.connections.push_back(@RefinementII);
@@ -271,19 +303,22 @@ void SetupTechTree(CRules@ this)
 	Milling.connections.push_back(@MillingII);
 	Milling.connections.push_back(@HardyWheat);
 	MillingII.connections.push_back(@MillingIII);
+	MillingII.connections.push_back(@Production);
 	MillingII.connections.push_back(@HardyTrees);
 	MillingIII.connections.push_back(@PlentifulWheat);
 	MillingIII.connections.push_back(@Regeneration);
 	Swords.connections.push_back(@SwordsII);
 	//SwordsII.connections;
-	LightArmor.connections.push_back(@BlastShields);
-	CombatPickaxes.connections.push_back(@LightPickaxes);
-	LightPickaxes.connections.push_back(@PrecisionDrills);
+	LightArmor.connections.push_back(@ThermalArmor);
+	//CombatPickaxes.connections;
+	//LightPickaxes.connections;
 	//PrecisionDrills.connections;
 	//Architecture.connections;
 	Supplies.connections.push_back(@SuppliesII);
 	Supplies.connections.push_back(@Shrapnel);
 	Supplies.connections.push_back(@LightBows);
+	Supplies.connections.push_back(@CombatPickaxes);
+	Supplies.connections.push_back(@LightPickaxes);
 	SuppliesII.connections.push_back(@SuppliesIII);
 	SuppliesIII.connections.push_back(@Architecture);
 	Repeaters.connections.push_back(@DeepQuiver);
@@ -306,13 +341,19 @@ void SetupTechTree(CRules@ this)
 	//FlightTuning.connections;
 	IronChassis.connections.push_back(@SteelChassis);
 	IronChassis.connections.push_back(@FlightTuning);
-	//SteelChassis.connections;
+	SteelChassis.connections.push_back(@ThermalHull);
 	TorsionWinch.connections.push_back(@IronChassis);
 	SeigeCrank.connections.push_back(@TorsionWinch);
 	Regeneration.connections.push_back(@RegenerationII);
 	RegenerationII.connections.push_back(@RegenerationIII);
 	//RegenerationIII.connections;
-	
+	//ThermalArmor.connections;
+	//ThermalHull.connections;
+	//SwiftBearings.connections;
+	//Chainmail.connections;
+	//LightSwords.connections;
+	Production.connections.push_back(@ProductionII);
+	//ProductionII.connections;
 	
 	//replace the code above with the below when staging comes
 
@@ -338,9 +379,9 @@ void SetupTechTree(CRules@ this)
 	MillingIII.connections =      { @PlentifulWheat, @Regeneration };
 	Swords.connections =          { @SwordsII };
 	SwordsII.connections =        { };
-	LightArmor.connections =      { @BlastShields };
-	CombatPickaxes.connections =  { @LightPickaxes };
-	LightPickaxes.connections =   { @PrecisionDrills };
+	LightArmor.connections =      { @ThermalArmor };
+	CombatPickaxes.connections =  { };
+	LightPickaxes.connections =   { };
 	PrecisionDrills.connections = { };
 	Architecture.connections =    { };
 	Supplies.connections =        { @SuppliesII, @Shrapnel, @LightBows };
@@ -368,6 +409,13 @@ void SetupTechTree(CRules@ this)
 	Regeneration.connections =    { @RegenerationII };
 	RegenerationII.connections =  { @RegenerationIII };
 	RegenerationIII.connections = { };
+	ThermalArmor.connections =    { };
+	ThermalHull.connections =     { };
+	SwiftBearings.connections =   { };
+	Chainmail.connections =       { };
+	LightSwords.connections =     { };
+	Production.connections =      { @ProductionII };
+	ProductionII.connections =    { };
 	*/
 }
 
@@ -403,9 +451,9 @@ void onTechnology(CRules@ this, u8 tech)
 	regeneration_frequency = 0;
 
 	Technology@[]@ TechTree = getTechTree();
-	if (hasTech(TechTree, Tech::Regeneration))    regeneration_frequency += 2;
-	if (hasTech(TechTree, Tech::RegenerationII))  regeneration_frequency += 2;
-	if (hasTech(TechTree, Tech::RegenerationIII)) regeneration_frequency += 4;
+	if (hasTech(TechTree, Tech::Regeneration))    regeneration_frequency += 8;
+	if (hasTech(TechTree, Tech::RegenerationII))  regeneration_frequency += 8;
+	if (hasTech(TechTree, Tech::RegenerationIII)) regeneration_frequency += 8;
 }
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)

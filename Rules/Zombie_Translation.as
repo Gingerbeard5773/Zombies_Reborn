@@ -250,19 +250,20 @@ namespace Translate
 	HolyWater       = Translate("Holy Water\nWater bomb radius and stun time 2x.",                   "Святая вода\nРадиус действия водяной бомбы и время оглушения увеличиваются в 2 раза."),
 	BlastShields    = Translate("Blast Shields\nShields negate all explosion damage.",               "Взрывоустойчивые щиты\nЩиты устойчивы к сильным взрывам."),
 	FlightTuning    = Translate("Flight Tuning\nAerial vehicles fly 25% faster.",                    "Регулировка полёта\nЛетательные машины летают на 25% быстрее."),
-	IronChassis     = Translate("Iron Chassis\Vehicles are 25% more durable.",                       "Железное шасси\nТранспортные средства на 25% прочнее."),
+	IronChassis     = Translate("Iron Chassis\nVehicles are 25% more durable.",                      "Железное шасси\nТранспортные средства на 25% прочнее."),
 	SteelChassis    = Translate("Steel Chassis\nVehicles are 35% more durable.",                     "Стальное шасси\nТранспортные средства на 35% прочнее."),
 	TorsionWinch    = Translate("Torsion Winch\nSeige vehicles fire projectiles 35% farther.",       "Закрученная лебедка\nОсадные орудия стреляют снарядами на 35% дальше."),
 	SeigeCrank      = Translate("Seige Crank\nSeige vehicles fire 25% faster",                       "Рукоять для осадного орудия\nОсадные орудия стреляют на 25% быстрее."),
-	Regeneration    = Translate("Regeneration\nSurvivors heal half a heart every day.",              "Регенерация I\nВыжившие исцеляют половину сердца каждый день."),
-	RegenerationII  = Translate("Regeneration II\nSurvivors heal one heart every day.",              "Регенерация II\nВыжившие исцеляют по одному сердцу каждый день."),
-	RegenerationIII = Translate("Regeneration III\nSurvivors heal two hearts every day.",            "Регенерация III\nВыжившие исцеляют два сердца каждый день."),
-	Chainmail       = Translate("Chainmail\nKnights take -25% damage",                               ""),
-	ThermalHull     = Translate("Thermal Plating\nVehicles are immune to fire damage",               ""),
-	ThermalArmor    = Translate("Thermal Armor\nWearing a full set of armor nullifies fire damage.", ""),
-	LightSwords     = Translate("Light Swords\nUsing a sword is faster",                             ""),
-	Production      = Translate("Production\nFactories +25% production speed",                       ""),
-	ProductionII    = Translate("Production II\nFactories +25% production speed",                    "");
+	Regeneration    = Translate("Regeneration\nSurvivors heal two hearts every day.",                "Регенерация I\nВыжившие исцеляют два сердца каждый день."),
+	RegenerationII  = Translate("Regeneration II\nSurvivors heal four hearts every day.",            "Регенерация II\nВыжившие исцеляют четыре сердца каждый день"),
+	RegenerationIII = Translate("Regeneration III\nSurvivors heal six hearts every day.",            "Регенерация III\nВыжившие исцеляют шесть сердца каждый день."),
+	ThermalArmor    = Translate("Thermal Armor\nWearing a full set of armor nullifies fire damage.", "Термическая броня\nНошение полного комплекта брони сводит на нет урон от огня."),
+	ThermalHull     = Translate("Thermal Plating\nVehicles are immune to fire damage.",              "Термическое покрытие\nТранспортные средства невосприимчивы к повреждениям от огня."),
+	SwiftBearings   = Translate("Swift Bearings\nGround vehicles move 30% faster.",                  "Подшипники\nНаземный транспорт движется на 30% быстрее.""),
+	Chainmail       = Translate("Chainmail\nKnights take 25% less damage.",                          "Кольчуга\nРыцари получают на 25% меньше урона."),
+	LightSwords     = Translate("Light Swords\nUsing a sword is faster.",                            "Световые мечи\nИспользовать меч быстрее."),
+	Production      = Translate("Production\nFactories +25% production speed.",                      "Производство I\nЗаводы +25% скорости производства."),
+	ProductionII    = Translate("Production II\nFactories +25% production speed.",                   "Производство II\nЗаводы +25% скорости производства.");
 }
 
 string name(const string&in translated)

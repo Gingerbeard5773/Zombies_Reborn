@@ -8,6 +8,7 @@
 const u8 cooldown_time_ammo = 45;
 const u8 cooldown_time_player = 91;
 const u8 startStone = 100;
+const f32 move_speed = 30.0f;
 
 class CatapultInfo : VehicleInfo
 {
@@ -133,7 +134,7 @@ class CatapultInfo : VehicleInfo
 void onInit(CBlob@ this)
 {
 	Vehicle_Setup(this,
-	              30.0f, // move speed
+	              move_speed, // move speed
 	              0.31f,  // turn speed
 	              Vec2f(0.0f, 0.0f), // jump out velocity
 	              false,  // inventory access
@@ -194,6 +195,11 @@ void onTick(CBlob@ this)
 	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), ammo.fire_delay));
 	if (this.hasAttached() || this.get_bool("hadattached") || this.get_bool("facing") != this.isFacingLeft() || time_til_fire > 0)
 	{
+		if (hasTech(Tech::SwiftBearings))
+		{
+			v.move_speed = move_speed * 1.3f;
+		}
+
 		Vehicle_StandardControls(this, v);
 
 		if (v.cooldown_time > 0)

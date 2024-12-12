@@ -39,6 +39,8 @@ void OnEquip(CBlob@ this, CBlob@ equipper)
 void OnUnequip(CBlob@ this, CBlob@ equipper)
 {
 	equipper.Untag("steel armor");
+	
+	equipper.getShape().getConsts().isFlammable = true;
 
 	string spritename = "";
 	const bool female = this.getSexNum() == 1;
@@ -55,9 +57,18 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 	RunnerMoveVars@ moveVars;
 	if (!equipper.get("moveVars", @moveVars)) return;
 
-	//slow down player
+	Technology@[]@ TechTree = getTechTree();
 
-	if (hasTech(Tech::LightArmor))
+	//full set gives us fire resistance if we have thermal armor tech
+	if (equipper.hasTag("steel helmet") && hasTech(TechTree, Tech::ThermalArmor))
+	{
+		CShape@ shape = equipper.getShape();
+		shape.getVars().infire = false;
+		shape.getConsts().isFlammable = false;
+	}
+
+	//slow down player
+	if (hasTech(TechTree, Tech::LightArmor))
 	{
 		moveVars.walkFactor *= 0.90f;
 		moveVars.jumpFactor *= 0.95f;
@@ -70,13 +81,19 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 
 f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (equipper.hasTag("steel helmet")) //full set gives us resistance against shit enemies
+	if (equipper.hasTag("steel helmet"))
 	{
+		//full set gives us resistance against shit enemies
 		if (hitterBlob.getName() == "skeleton")
 		{
 			DoMetalHitEffects(equipper, damage, worldPoint, velocity);
 			return 0.0f;
 		}
+
+		/*if ((customData == Hitters::fire || customData == Hitters::burn))
+		{
+			return 0.0f;
+		}*/
 	}
 
 	switch(customData)

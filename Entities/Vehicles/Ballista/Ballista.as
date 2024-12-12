@@ -7,6 +7,7 @@
 //naming here is kinda counter intuitive, but 0 == up, 90 == sideways
 const f32 high_angle = 20.0f;
 const f32 low_angle = 75.0f;
+const f32 move_speed = 30.0f;
 
 class BallistaInfo : VehicleInfo
 {
@@ -76,7 +77,7 @@ void onInit(CBlob@ this)
 	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);
 
 	Vehicle_Setup(this,
-	              30.0f, // move speed
+	              move_speed, // move speed
 	              0.31f,  // turn speed
 	              Vec2f(0.0f, 0.0f), // jump out velocity
 	              false,  // inventory access
@@ -214,6 +215,11 @@ void onTick(CBlob@ this)
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v)) return;
+
+		if (hasTech(Tech::SwiftBearings))
+		{
+			v.move_speed = move_speed * 1.3f;
+		}
 
 		Vehicle_StandardControls(this, v);
 

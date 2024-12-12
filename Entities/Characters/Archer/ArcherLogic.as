@@ -528,7 +528,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			}
 			else
 			{
-				charge_time += hasTech(Tech::LightBows) ? 2 : 1;
+				charge_time += hasTech(Tech::LightBows) ? 3 : 1;
 			}
 
 			if (charge_time >= TRIPLESHOT_CHARGE)

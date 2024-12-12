@@ -1,11 +1,14 @@
-#include "VehicleCommon.as"
+#include "VehicleCommon.as";
+#include "Zombie_TechnologyCommon.as";
 
 // Tank logic 
+
+const f32 move_speed = 35.0f;
 
 void onInit(CBlob@ this)
 {
 	Vehicle_Setup(this,
-				  30.0f, // move speed
+				  move_speed, // move speed
 				  0.31f,  // turn speed
 				  Vec2f(0.0f, 0.0f), // jump out velocity
 				  true  // inventory access
@@ -54,6 +57,11 @@ void onTick(CBlob@ this)
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v)) return;
+		
+		if (hasTech(Tech::SwiftBearings))
+		{
+			v.move_speed = move_speed * 1.3f;
+		}
 
 		Vehicle_StandardControls(this, v);
 	}

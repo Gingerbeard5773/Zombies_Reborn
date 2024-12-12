@@ -44,7 +44,7 @@ void onTick(CBlob@ this)
 		for (u16 i = 0; i < blobs.length; i++)
 		{
 			CBlob@ b = blobs[i];
-			if (!b.hasTag("flesh") && !b.getShape().getConsts().isFlammable) continue;
+			if (!b.getShape().getConsts().isFlammable) continue;
 
 			if (map.rayCastSolidNoBlobs(pos, b.getPosition())) continue;
 
@@ -91,7 +91,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 	else if (blob !is null && blob.isCollidable())
 	{
-		if (this.getTeamNum() != blob.getTeamNum()) this.server_Hit(blob, this.getPosition(), Vec2f(), 0.0f, Hitters::fire, true);
+		if (this.getTeamNum() != blob.getTeamNum() && blob.getShape().getConsts().isFlammable)
+		{
+			this.server_Hit(blob, this.getPosition(), Vec2f(), 0.0f, Hitters::fire, true);
+		}
 	}
 }
 

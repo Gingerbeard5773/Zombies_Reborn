@@ -41,12 +41,12 @@ void onTick(CBlob@ this)
 	{
 		for (u8 i = 0; i < production.production_items.length; i++)
 		{
-			server_ProcessItem(this, production.production_items[i], i);
+			server_ProcessItem(this, production, production.production_items[i], i);
 		}
 	}
 }
 
-void server_ProcessItem(CBlob@ this, ProductionItem@ item, const u8&in index)
+void server_ProcessItem(CBlob@ this, Production@ production, ProductionItem@ item, const u8&in index)
 {
 	//check up on our produced blobs
 	const u8 old_produced_amount = item.produced.length;
@@ -66,7 +66,7 @@ void server_ProcessItem(CBlob@ this, ProductionItem@ item, const u8&in index)
 	//start up again
 	if (new_produced_amount < old_produced_amount && old_produced_amount >= item.maximum_produced)
 	{
-		item.next_time_to_produce = getGameTime() + item.seconds_to_produce*30;
+		item.next_time_to_produce = getGameTime() + (item.seconds_to_produce*30) * production.modifier;
 		
 		CBitStream stream;
 		stream.write_u8(index);
@@ -85,7 +85,7 @@ void server_ProcessItem(CBlob@ this, ProductionItem@ item, const u8&in index)
 			item.produced.push_back(produced_item.getNetworkID());
 			
 			const bool hit_maximum = new_produced_amount+1 >= item.maximum_produced;
-			item.next_time_to_produce = hit_maximum ? getGameTime() : getGameTime() + item.seconds_to_produce*30;
+			item.next_time_to_produce = hit_maximum ? getGameTime() : getGameTime() + (item.seconds_to_produce*30) * production.modifier;
 			
 			CBitStream stream;
 			stream.write_u8(index);
