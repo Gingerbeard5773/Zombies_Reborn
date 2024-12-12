@@ -526,6 +526,10 @@ void drawStagingPopup(Vec2f&in pos)
 const string[] lag =
 {
 	"lag",
+	"lags",
+	"lag?",
+	"lag!",
+	"lag.",
 	"lagging",
 	"lagg",
 	"laggy"
