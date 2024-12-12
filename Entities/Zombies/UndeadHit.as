@@ -46,7 +46,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::saw:
 		{
 			//damage saw if we were killed by one
-			this.server_Hit(hitterBlob, hitterBlob.getPosition(), -velocity, Maths::Clamp(this.getHealth() / 3, 0.25f, 0.5f), Hitters::muscles, true);
+			this.server_Hit(hitterBlob, hitterBlob.getPosition(), -velocity, Maths::Clamp(this.getHealth() / 3, 0.25f, 0.65f), Hitters::muscles, true);
 			ParticleBloodSplat(worldPoint, true);
 			break;
 		}
