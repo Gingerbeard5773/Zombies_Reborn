@@ -213,6 +213,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 	if (state == falling)
 	{
+		const u8 pierce = this.get_u8("spike_pierce");
+		if (pierce >= 4)
+		{
+			this.server_Die();
+			return;
+		}
+		this.set_u8("spike_pierce", pierce + 1);
+
 		const f32 vellen = this.getVelocity().Length();
 		f32 damage = 4.0f;
 		if (vellen < 4.0f) damage = 1.0f;
