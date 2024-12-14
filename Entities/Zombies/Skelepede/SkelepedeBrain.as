@@ -1,6 +1,5 @@
 #define SERVER_ONLY
 
-#include "UndeadTargeting.as";
 #include "PressOldKeys.as";
 
 const f32 brain_target_radius = 220.0f;
@@ -25,7 +24,7 @@ void onTick(CBrain@ this)
 	else
 	{
 		if (XORRandom(10) == 0)
-			SetBestTarget(this, blob, brain_target_radius);
+			SetBestTargetNoMigrants(this, blob, brain_target_radius);
 
 		destination = blob.get_Vec2f("brain_destination");
 		if (destination == Vec2f_zero || (destination - blob.getPosition()).Length() < 60 || XORRandom(70) == 0)
@@ -65,4 +64,34 @@ const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
 		return true;
 	
 	return false;
+}
+
+void SetBestTargetNoMigrants(CBrain@ this, CBlob@ blob, const f32&in radius)
+{
+	u16[]@ targetBlobs;
+	if (!getRules().get("target netids", @targetBlobs)) return;
+
+	const Vec2f pos = blob.getPosition();
+
+	CBlob@ target;
+	f32 closest_dist = 999999.9f;
+	
+	const u16 blobsLength = targetBlobs.length;
+	for (u16 i = 0; i < blobsLength; ++i)
+	{
+		CBlob@ candidate = getBlobByNetworkID(targetBlobs[i]);
+		if (candidate is null || candidate.hasTag("dead") || candidate.hasTag("migrant")) continue;
+
+		const f32 dist = (candidate.getPosition() - pos).Length();
+		if (dist < radius && dist < closest_dist)
+		{
+			@target = candidate;
+			closest_dist = dist;
+		}
+	}
+	
+	if (target !is null)
+	{
+		this.SetTarget(target);
+	}
 }

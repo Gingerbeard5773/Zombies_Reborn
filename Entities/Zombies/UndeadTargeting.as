@@ -33,10 +33,5 @@ shared void SetBestTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
 
 shared const bool isTargetVisible(CBlob@ this, CBlob@ target)
 {
-	Vec2f end;
-	if (getMap().rayCastSolid(this.getPosition(), target.getPosition(), end))
-	{
-		return false;
-	}
-	return true;
+	return !getMap().rayCastSolid(this.getPosition(), target.getPosition());
 }
