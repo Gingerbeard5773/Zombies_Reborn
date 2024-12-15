@@ -3,6 +3,8 @@
 #define SERVER_ONLY
 
 #include "ZombieSpawnPos.as";
+#include "GetSurvivors.as";
+#include "CustomTiles.as";
 
 shared class Spawn
 {
@@ -128,11 +130,9 @@ void SpawnZombie(CMap@ map, const u16&in dayNumber, const f32&in difficulty)
 
 	if (spawn.name == "skelepede")
 	{
-		//skelepedes spawn far underground
-		CBlob@[] skelepedes;
-		getBlobsByName("skelepede", @skelepedes);
-		if (skelepedes.length < maximum_skelepedes)
+		if (CanSpawnSkelepede(map))
 		{
+			//skelepedes spawn far underground
 			Vec2f dim = map.getMapDimensions();
 			Vec2f spawnpos(XORRandom(dim.x), dim.y + 50 + XORRandom(600));
 			server_CreateBlob(spawn.name, -1, spawnpos);
@@ -179,6 +179,36 @@ Spawn@ GetRandomSpawn()
 	return null;
 }
 
+bool CanSpawnSkelepede(CMap@ map)
+{
+	CBlob@[] skelepedes;
+	getBlobsByName("skelepede", @skelepedes);
+	if (skelepedes.length >= maximum_skelepedes) return false;
+
+	CBlob@[] survivors = getSurvivors();
+	if (survivors.length <= 0) return true;
+	
+	//identify random player
+	//if said player is underground, the skelepede has a 1/10 chance of spawning
+	CBlob@ survivor = survivors[XORRandom(survivors.length)];
+	Vec2f survivor_pos = survivor.getPosition();
+	if (!map.isBelowLand(survivor_pos)) return true;
+
+	//player must have at least 5 ground tiles over their head to be 'underground'
+	u8 ground_count = 0;
+	for (u8 i = 0; i < 50; i++)
+	{
+		survivor_pos -= Vec2f(0, 8);
+		Tile tile = map.getTile(survivor_pos);
+		if (tile.dirt != 80) return true;
+		
+		if (isTileGroundStuff(map, tile.type) && map.isTileSolid(tile))
+		{
+			if (ground_count++ >= 5) return XORRandom(10) == 0;
+		}
+	}
+	return true;
+}
 
 ///DEBUGGING
 
