@@ -39,10 +39,10 @@ void onTick(CBlob@ this)
 	CControls@ controls = getControls();
 
 	// drop / pickup / throw
-	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER))
+	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER) && this.isKeyPressed(key_pickup))
 	{
 		WheelMenu@ menu = get_wheel_menu("pickup");
-		if (this.isKeyPressed(key_pickup) && menu !is get_active_wheel_menu())
+		if (menu !is get_active_wheel_menu())
 		{
 			set_active_wheel_menu(@menu);
 		}
