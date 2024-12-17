@@ -12,7 +12,6 @@ void onInit(CBlob@ this)
 	addOnUnequip(this, @OnUnequip);
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
-	addOnClientJoin(this, @onClientJoin);
 
 	AddIconToken("$backpack$", "Backpack.png", Vec2f(16, 16), 1, 0);
 	
@@ -65,11 +64,6 @@ void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
 		headoffset += Vec2f(4, 2);
 		backpack.SetOffset(headoffset);
 	}
-}
-
-void onClientJoin(CBlob@ this, CBlob@ equipper)
-{
-	OnEquip(this, equipper);
 }
 
 void onAddToInventory(CBlob@ this, CBlob@ blob)

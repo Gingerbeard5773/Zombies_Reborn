@@ -17,7 +17,6 @@ void onInit(CBlob@ this)
 	addOnUnequip(this, @OnUnequip);
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
-	addOnClientJoin(this, @onClientJoin);
 	
 	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
 	AddIconToken("$parachutepack$", "Parachutepack.png", Vec2f(16, 16), 1, 0);
@@ -87,18 +86,13 @@ void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
 	{
 		Vec2f headoffset(equipper_sprite.getFrameWidth() / 2, -equipper_sprite.getFrameHeight() / 2);
 		Vec2f head_offset = getHeadOffset(equipper_sprite.getBlob(), -1, 0);
-       
+
 		headoffset += equipper_sprite.getOffset();
 		headoffset += Vec2f(-head_offset.x, head_offset.y);
 		headoffset += Vec2f(4, 2);
 		backpack.SetOffset(headoffset);
 		backpack.SetVisible(!this.hasTag("parachute"));
 	}
-}
-
-void onClientJoin(CBlob@ this, CBlob@ equipper)
-{
-	OnEquip(this, equipper);
 }
 
 void OpenParachute(CBlob@ this, CBlob@ equipper)

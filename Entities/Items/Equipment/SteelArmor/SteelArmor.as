@@ -16,7 +16,6 @@ void onInit(CBlob@ this)
 	addOnUnequip(this, @OnUnequip);
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnHitOwner(this, @onHitOwner);
-	addOnClientJoin(this, @onClientJoin);
 
 	AddIconToken("$steelarmor$", "SteelArmor.png", Vec2f(16, 16), 1, 0);
 
@@ -128,9 +127,4 @@ void DoMetalHitEffects(CBlob@ this, const f32&in damage, Vec2f position, Vec2f v
 	const f32 vol = Maths::Min(damage * 0.5f, 0.5f);
 	this.getSprite().PlaySound("ShieldHit.ogg", 0.5f + vol, 0.85f + (XORRandom(100) / 1000.0f));
 	sparks(position, velocity.Angle(), 1);
-}
-
-void onClientJoin(CBlob@ this, CBlob@ equipper)
-{
-	OnEquip(this, equipper);
 }

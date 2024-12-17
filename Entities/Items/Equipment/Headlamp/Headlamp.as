@@ -25,7 +25,6 @@ void onInit(CBlob@ this)
 	addOnUnequip(this, @OnUnequip);
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
-	addOnClientJoin(this, @onClientJoin);
 	
 	this.setInventoryName(name(Translate::HeadLamp));
 }
@@ -84,9 +83,4 @@ void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
 		headoffset += Vec2f(1, -6);
 		headlamp.SetOffset(headoffset);
 	}
-}
-
-void onClientJoin(CBlob@ this, CBlob@ equipper)
-{
-	OnEquip(this, equipper);
 }

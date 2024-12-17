@@ -298,9 +298,7 @@ bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 			CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
 			if (equippedblob is null) continue;
 
-			onClientJoinHandle@ onClientJoin;
-			if (equippedblob.get("onClientJoin handle", @onClientJoin)) 
-				onClientJoin(equippedblob, this);
+			EquipBlob(this, equippedblob);
 		}
 	}
 
