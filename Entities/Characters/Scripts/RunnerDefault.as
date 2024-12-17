@@ -79,7 +79,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	if (this.hasTag("sleeper") && this.getTeamNum() == byBlob.getTeamNum() && this.getDistanceTo(byBlob) < 16.0f)
-		return true;
+		return !this.isMyPlayer();
 
 	return this.hasTag("migrant") || this.hasTag("dead");
 }
