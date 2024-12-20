@@ -43,8 +43,6 @@ const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in team
 	bottomright.x -= stepheight;
 	topleft.y += stepheight;
 
-	GUI::SetFont("menu");
-
 	//draw team info
 	GUI::DrawText(teamName, Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + playersLength), Vec2f(bottomright.x - 470, topleft.y), SColor(0xffffffff));
@@ -178,6 +176,8 @@ void onRenderScoreboard(CRules@ this)
 	yFallDown = Maths::Max(0, yFallDown - getRenderApproximateCorrectionFactor()*fallSpeed);
 	
 	CPlayer@[] survivors;
+	CPlayer@[] spectators;
+	const u8 spectator_team = this.getSpectatorTeamNum();
 	const u8 playerCount = getPlayerCount();
 	for (u8 i = 0; i < playerCount; i++)
 	{
@@ -188,6 +188,10 @@ void onRenderScoreboard(CRules@ this)
 		if (teamNum == 0)
 		{
 			survivors.push_back(player);
+		}
+		else if (teamNum == spectator_team)
+		{
+			spectators.push_back(player);
 		}
 	}
 
@@ -209,9 +213,47 @@ void onRenderScoreboard(CRules@ this)
 	topleft.y -= scrollOffset;
 
 	//draw the scoreboard
-	
+	GUI::SetFont("menu");
+
 	topleft.y = drawScoreboard(survivors, topleft, 0, screenMidX, Translate::Survivors);
 	topleft.y += 45;
+	
+	if (spectators.length > 0)
+	{
+		//draw spectators
+		f32 stepheight = 16;
+		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, getScreenWidth()/2 + maxMenuWidth), topleft.y + stepheight * 2);
+		f32 specy = topleft.y + stepheight * 0.5;
+		GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
+
+		Vec2f textdim;
+		string s = getTranslatedString("Spectators:");
+		GUI::GetTextDimensions(s, textdim);
+
+		GUI::DrawText(s, Vec2f(topleft.x + 5, specy), SColor(0xffaaaaaa));
+
+		f32 specx = topleft.x + textdim.x + 15;
+		for (u32 i = 0; i < spectators.length; i++)
+		{
+			CPlayer@ p = spectators[i];
+			if (specx < bottomright.x - 100)
+			{
+				string name = p.getCharacterName();
+				if (i != spectators.length - 1)
+					name += ",";
+				GUI::GetTextDimensions(name, textdim);
+				GUI::DrawText(name, Vec2f(specx, specy), color_white);
+				specx += textdim.x + 10;
+			}
+			else
+			{
+				GUI::DrawText(getTranslatedString("and more ..."), Vec2f(specx, specy), SColor(0xffaaaaaa));
+				break;
+			}
+		}
+	}
+
+	topleft.y += 52;
 	
 	drawManualPointer(screenMidX, topleft.y);
 

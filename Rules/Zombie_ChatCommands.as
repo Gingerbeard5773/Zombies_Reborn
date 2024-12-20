@@ -58,9 +58,12 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		if (isDev && !DeveloperCommands(this, tokens, player, blob))
 			return false;
+			
+		if (isMod)
+			return true;
 	}
 
-	return true;
+	return !isSoftBanned(player);
 }
 
 bool PlayerCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ blob)

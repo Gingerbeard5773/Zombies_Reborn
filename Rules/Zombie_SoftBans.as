@@ -43,15 +43,7 @@ void onRestart(CRules@ this)
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;
 
-		string playerKey;
-		int time;
-		if (isSoftBanned(player, playerKey, time))
-		{
-			if (!RemoveSoftBan(this, player, playerKey, time))
-			{
-				SetUndead(this, player);
-			}
-		}
+		onPlayerRequestSpawn(this, player);
 	}
 }
 
@@ -96,22 +88,17 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	}
 }
 
-bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
+void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
 {
-	if (player is null) return true;
-	
-	if (sv_test || player.isMod() || player.getUsername() == "MrHobo")
-	{
-		return true;
-	}
-	
-	//soft banned players are muted
+	if (player.getTeamNum() != 3) return;
+
 	string playerKey;
 	int time;
 	if (isSoftBanned(player, playerKey, time))
 	{
-		return false;
+		if (RemoveSoftBan(this, player, playerKey, time))
+		{
+			player.server_setTeamNum(newteam);
+		}
 	}
-	
-	return true;
 }

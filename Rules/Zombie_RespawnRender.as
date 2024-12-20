@@ -8,7 +8,9 @@ void onRender(CRules@ this)
 	
 	CPlayer@ player = getLocalPlayer();
 	if (player is null) return;
-	
+
+	if (player.getTeamNum() == this.getSpectatorTeamNum()) return;
+
 	CBlob@ localBlob = getLocalPlayerBlob();
 	if (localBlob !is null) return;
 

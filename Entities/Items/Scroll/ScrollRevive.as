@@ -51,7 +51,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			if (!b.hasTag("dead") || b.hasTag("undead") || !b.exists("player_username")) continue;		
 
 			CPlayer@ dead_player = getPlayerByUsername(b.get_string("player_username")); //RunnerDeath.as
-			if (dead_player is null || dead_player.getBlob() !is null || dead_player.getTeamNum() == 3) continue;
+			if (dead_player is null || dead_player.getBlob() !is null || dead_player.getTeamNum() != 0) continue;
 
 			RevivePlayer(dead_player, b);
 			revived_positions.push_back(b.getPosition());

@@ -16,6 +16,13 @@ ConfigFile@ openBansConfig()
 	return cfg;
 }
 
+const bool isSoftBanned(CPlayer@ player)
+{
+	string playerKey;
+	int time;
+	return isSoftBanned(player, playerKey, time);
+}
+
 const bool isSoftBanned(CPlayer@ player, string&out playerKey, int&out time)
 {
 	ConfigFile@ cfg = openBansConfig();

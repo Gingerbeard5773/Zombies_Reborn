@@ -33,7 +33,7 @@ void Reset(CRules@ this)
 	for (u8 i = 0; i < playerCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
-		if (player is null || player.getTeamNum() == 3) continue;
+		if (player is null || player.getTeamNum() != 0) continue;
 
 		respawns.set(player.getUsername(), 0);
 	}
@@ -60,12 +60,12 @@ void onTick(CRules@ this)
 	for (u8 i = 0; i < playerCount; i++)
 	{
 		CPlayer@ player = getPlayer(i);
-		if (player is null || player.getBlob() !is null || player.getTeamNum() == 3) continue;
+		if (player is null || player.getBlob() !is null || player.getTeamNum() != 0) continue;
 
 		const string username = player.getUsername();
 		if (!respawns.exists(username))
 		{
-			SetPlayerRespawn(this, player, respawns);
+			SetPlayerRespawn(this, player);
 			continue;
 		}
 
@@ -88,9 +88,9 @@ void onTick(CRules@ this)
 	}
 }
 
-void SetPlayerRespawn(CRules@ this, CPlayer@ player, dictionary@ respawns)
+void SetPlayerRespawn(CRules@ this, CPlayer@ player)
 {
-	if (player.getTeamNum() == 3) return;
+	if (player.getTeamNum() != 0) return;
 
 	const u32 gameTime = getGameTime();
 	const u32 day_cycle = this.daycycle_speed * 60;
@@ -100,6 +100,8 @@ void SetPlayerRespawn(CRules@ this, CPlayer@ player, dictionary@ respawns)
 	u32 respawn_time = canRespawnQuick(this, timeElapsed, getMap()) ? spawn_seconds*30 : timeTillDawn;
 	respawn_time += gameTime;
 
+	dictionary@ respawns;
+	this.get("respawns", @respawns);
 	respawns.set(player.getUsername(), respawn_time);
 
 	this.set_u32("client respawn time", respawn_time);
@@ -108,10 +110,12 @@ void SetPlayerRespawn(CRules@ this, CPlayer@ player, dictionary@ respawns)
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
-	dictionary@ respawns;
-	this.get("respawns", @respawns);
+	SetPlayerRespawn(this, victim);
+}
 
-	SetPlayerRespawn(this, victim, respawns);
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	SetPlayerRespawn(this, player);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
@@ -124,6 +128,13 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 	{
 		respawns.delete(username);
 	}
+}
+
+void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
+{
+	if (player.getTeamNum() == 3) return;
+
+	player.server_setTeamNum(newteam);
 }
 
 bool canRespawnQuick(CRules@ this, const u32&in timeElapsed, CMap@ map)

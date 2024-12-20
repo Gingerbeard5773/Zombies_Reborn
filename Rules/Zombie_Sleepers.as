@@ -40,6 +40,18 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 		setKnocked(blob, 255, true);
 }
 
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	if (newteam == 0)
+	{
+		onNewPlayerJoin(this, player);
+	}
+	else
+	{
+		onPlayerLeave(this, player);
+	}
+}
+
 void onInit(CRules@ this)
 {
 	Reset(this);
@@ -165,7 +177,7 @@ void UseSleepersAsRespawn(CRules@ this)
 			for (u8 p = 0; p < playerCount; p++)
 			{
 				CPlayer@ player = getPlayer(p);
-				if (player is null || player.getBlob() !is null || player.getTeamNum() == 3) continue;
+				if (player is null || player.getBlob() !is null || player.getTeamNum() != 0) continue;
 				
 				const string[] inputs = { sleeper.get_string("sleeper_name") };
 				server_SendGlobalMessage(this, 8, 8, inputs, color_white.color, player);
