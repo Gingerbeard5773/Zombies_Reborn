@@ -157,7 +157,8 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 
 			case CMap::tile_coal_f:
 				return CMap::tile_empty;
-			
+
+
 			// IRON //
 			case CMap::tile_iron:
 				return CMap::tile_iron_d0;
@@ -193,8 +194,8 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 
 			case CMap::tile_iron_f:
 				return CMap::tile_empty;
-			
-			
+
+
 			// IRON BACKGROUND //
 			case CMap::tile_biron:
 				return CMap::tile_biron_d0;
@@ -271,10 +272,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 			case CMap::tile_ironore_v1:
 			case CMap::tile_ironore_v2:
 			case CMap::tile_ironore_v3:
-				map.SetTileSupport(index, 255); //do not allow this block to collapse
-				map.SetTileDirt(index, 80); //put dirt background underneath the block
-				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+				OnIronOreTileHit(map, index, false);
 				break;
 
 			case CMap::tile_ironore_d0:
@@ -290,10 +288,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 			// COAL //
 			case CMap::tile_coal:
 			case CMap::tile_coal_v0:
-				map.SetTileSupport(index, 255); //do not allow this block to collapse
-				map.SetTileDirt(index, 80); //put dirt background underneath the block
-				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+				OnCoalTileHit(map, index, false);
 				break;
 
 			case CMap::tile_coal_d0:
@@ -304,7 +299,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 				OnCoalTileHit(map, index);
 				break;
 
-			
+
 			// IRON //
 			case CMap::tile_iron:
 			{
@@ -331,8 +326,7 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 			case CMap::tile_iron_v12:
 			case CMap::tile_iron_v13:
 			case CMap::tile_iron_v14:
-				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+				OnIronTileHit(map, index, false);
 				break;
 
 			case CMap::tile_iron_d0:
@@ -347,8 +341,8 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 				UpdateTileFaces(map, map.getTileWorldPosition(index), CMap::tile_iron, CMap::tile_iron_v14, directions_all);
 				OnIronTileHit(map, index);
 				break;
-				
-			
+
+
 			// IRON BACKGROUND //
 			case CMap::tile_biron:
 				SetTileFaces(map, map.getTileWorldPosition(index), CMap::tile_biron, CMap::tile_biron_v2, directions_up_down);
@@ -385,12 +379,15 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 
 ///IRON ORE
 
-void OnIronOreTileHit(CMap@ map, const u32&in index)
+void OnIronOreTileHit(CMap@ map, const u32&in index, const bool&in sound = true)
 {
+	map.SetTileSupport(index, 255); //do not allow this block to collapse
+	map.SetTileDirt(index, 80); //put dirt background underneath the block
 	map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-	map.RemoveTileFlag(index, Tile::LIGHT_PASSES);
+	map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
 
-	if (isClient()) Sound::Play("dig_stone" + (1 + XORRandom(3)) + ".ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+	if (isClient() && sound)
+		Sound::Play("dig_stone" + (1 + XORRandom(3)) + ".ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 }
 
 void OnIronOreTileDestroyed(CMap@ map, const u32&in index)
@@ -401,12 +398,15 @@ void OnIronOreTileDestroyed(CMap@ map, const u32&in index)
 
 ///COAL
 
-void OnCoalTileHit(CMap@ map, const u32&in index)
+void OnCoalTileHit(CMap@ map, const u32&in index, const bool&in sound = true)
 {
+	map.SetTileSupport(index, 255); //do not allow this block to collapse
+	map.SetTileDirt(index, 80); //put dirt background underneath the block
 	map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-	map.RemoveTileFlag(index, Tile::LIGHT_PASSES);
+	map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
 
-	if (isClient()) Sound::Play("dig_stone" + (1 + XORRandom(3)) + ".ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+	if (isClient() && sound)
+		Sound::Play("dig_stone" + (1 + XORRandom(3)) + ".ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 }
 
 void OnCoalTileDestroyed(CMap@ map, const u32&in index)
@@ -418,12 +418,13 @@ void OnCoalTileDestroyed(CMap@ map, const u32&in index)
 
 /// IRON
 
-void OnIronTileHit(CMap@ map, const u32&in index)
+void OnIronTileHit(CMap@ map, const u32&in index, const bool&in sound = true)
 {
 	map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
-	map.RemoveTileFlag(index, Tile::LIGHT_PASSES);
+	map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
 
-	if (isClient()) Sound::Play("dig_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+	if (isClient() && sound)
+		Sound::Play("dig_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 }
 
 void OnIronTileDestroyed(CMap@ map, const u32&in index)

@@ -429,6 +429,7 @@ void LoadDirt(CMap@ map, const string[]&in mapTiles)
 		{
 			if (is_dirt)
 			{
+				map.RemoveTileFlag(current_index, Tile::LIGHT_SOURCE);
 				map.SetTileDirt(current_index, 80);
 			}
 			current_index++;
