@@ -132,7 +132,7 @@ bool canRespawnQuick(CRules@ this, const u32&in timeElapsed, CMap@ map)
 		return true;
 	if (timeElapsed <= spawn_leniency)
 		return true;
-	if (this.get_u16("undead count") <= undead_leniency && map.getDayTime() > 0.2f && map.getDayTime() < 0.7f)
+	if (this.get_u16("undead count") <= undead_leniency && map.getDayTime() > 0.2f && map.getDayTime() < 0.75f)
 		return true;
 
 	return false;
