@@ -72,12 +72,14 @@ void onTick(CRules@ this)
 class VoteKickFunctor : VoteFunctor
 {
 	VoteKickFunctor() {} //dont use this
-	VoteKickFunctor(CPlayer@ _kickplayer)
+	VoteKickFunctor(CPlayer@ _kickplayer, u8 _reasonid)
 	{
 		@kickplayer = _kickplayer;
+		reasonid = _reasonid;
 	}
 
 	CPlayer@ kickplayer;
+	u8 reasonid;
 
 	void Pass(bool outcome)
 	{
@@ -88,9 +90,17 @@ class VoteKickFunctor : VoteFunctor
 
 			if (isServer())
 			{
-				//do soft ban
-				SoftBan(kickplayer.getUsername(), "vote kicked", VoteKickTime*60);
-				SetUndead(getRules(), kickplayer);
+				if (reasonid == kick_reason_non_participation)
+				{
+					//kick to spectator
+					kickplayer.server_setTeamNum(getRules().getSpectatorTeamNum());
+				}
+				else
+				{
+					//do soft ban
+					SoftBan(kickplayer.getUsername(), "vote kicked", VoteKickTime*60);
+					SetUndead(getRules(), kickplayer);
+				}
 
 				//getSecurity().ban(kickplayer, VoteKickTime, "Voted off"); //30 minutes ban
 			}
@@ -153,7 +163,7 @@ VoteObject@ Create_Votekick(CPlayer@ player, CPlayer@ byplayer, u8 reasonid)
 {
 	VoteObject vote;
 
-	@vote.onvotepassed = VoteKickFunctor(player);
+	@vote.onvotepassed = VoteKickFunctor(player, reasonid);
 	@vote.canvote = VoteKickCheckFunctor(player, reasonid);
 	@vote.playerleave = VoteKickLeaveFunctor(player);
 
@@ -243,7 +253,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 				if (player is null) continue;
 
 				const int player_team = player.getTeamNum();
-				if (player_team != me.getTeamNum() && !getSecurity().checkAccess_Feature(me, "mark_any_team")) continue;
+				if (player_team == 3 && !getSecurity().checkAccess_Feature(me, "mark_any_team")) continue;
 
 				if (getSecurity().checkAccess_Feature(player, "kick_immunity")) continue;
 
