@@ -194,7 +194,7 @@ bool CanSpawnSkelepede(CMap@ map)
 	Vec2f survivor_pos = survivor.getPosition();
 	if (!map.isBelowLand(survivor_pos)) return true;
 
-	//player must have at least 5 ground tiles over their head to be 'underground'
+	//player must have at least 4 ground tiles over their head to be 'underground'
 	u8 ground_count = 0;
 	for (u8 i = 0; i < 50; i++)
 	{
@@ -204,7 +204,7 @@ bool CanSpawnSkelepede(CMap@ map)
 		
 		if (isTileGroundStuff(map, tile.type) && map.isTileSolid(tile))
 		{
-			if (ground_count++ >= 5) return XORRandom(10) == 0;
+			if (ground_count++ >= 4) return XORRandom(10) == 0;
 		}
 	}
 	return true;
