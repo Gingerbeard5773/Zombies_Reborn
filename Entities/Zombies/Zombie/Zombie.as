@@ -14,7 +14,16 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -3.0f);
 	this.set_u16("coins on death", COINS_ON_DEATH);
 
-	this.getSprite().PlaySound("/ZombieSpawn");
+	CSprite@ sprite = this.getSprite();
+	sprite.PlaySound("/ZombieSpawn");
+	
+	Random rand(this.getNetworkID());
+	if (rand.NextRanged(3) == 0)
+	{
+		
+		sprite.ReloadSprite("Zombie_Variation"+rand.NextRanged(3)+".png");
+	}
+
 	this.getShape().SetRotationsAllowed(false);
 
 	this.getBrain().server_SetActive(true);
