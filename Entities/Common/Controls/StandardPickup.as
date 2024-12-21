@@ -52,18 +52,28 @@ void onTick(CBlob@ this)
 		CBlob@[] available;
 		FillAvailable(this, available);
 
-		if (menu.entries.length != available.length)
+		WheelMenuEntry@[] entries;
+		string[] names;
+		for (u16 i = 0; i < available.length; i++)
 		{
-			menu.entries.clear();
-			for (u16 i = 0; i < available.length; i++)
-			{
-				CBlob@ item = available[i];
-				Vec2f dim = item.inventoryFrameDimension;
-				const f32 offset_x = Maths::Clamp(16 - dim.x, -dim.x, dim.x);
-				const f32 offset_y = Maths::Clamp(16 - dim.y, -dim.y, dim.y);
-				PickupWheelMenuEntry entry(item.getInventoryName(), "$"+item.getName()+"$", item.getName(), Vec2f(offset_x, offset_y));
-				menu.add_entry(entry);
-			}
+			CBlob@ item = available[i];
+			Vec2f dim = item.inventoryFrameDimension;
+			const f32 offset_x = Maths::Clamp(16 - dim.x, -dim.x, dim.x);
+			const f32 offset_y = Maths::Clamp(16 - dim.y, -dim.y, dim.y);
+
+			const string name = item.getName();
+			if (names.find(name) != -1) continue;
+
+			const string inventory_name = item.getInventoryName();
+			const string icon = GUI::hasIconName("$"+inventory_name+"$") ? "$"+inventory_name+"$" : "$"+name+"$";
+			PickupWheelMenuEntry entry(inventory_name, icon, name, Vec2f(offset_x, offset_y));
+			entries.push_back(entry);
+			names.push_back(name);
+		}
+
+		if (haveEntriesChanged(entries, menu.entries))
+		{
+			menu.entries = entries;
 			menu.update();
 		}
 	}
@@ -180,6 +190,18 @@ void onTick(CBlob@ this)
 			pickup_netids.clear();
 		}
 	}
+}
+
+bool haveEntriesChanged(WheelMenuEntry@[]@ a, WheelMenuEntry@[]@ b)
+{
+	if (a.length != b.length) return true;
+
+	for (uint i = 0; i < a.length; i++)
+	{
+		if (a[i].visible_name != b[i].visible_name) return true;
+	}
+
+	return false;
 }
 
 void GatherPickupBlobs(CBlob@ this)
