@@ -4,7 +4,6 @@
 
 #include "ZombieSpawnPos.as";
 #include "GetSurvivors.as";
-#include "CustomTiles.as";
 
 shared class Spawn
 {
@@ -194,15 +193,15 @@ bool CanSpawnSkelepede(CMap@ map)
 	Vec2f survivor_pos = survivor.getPosition();
 	if (!map.isBelowLand(survivor_pos)) return true;
 
-	//player must have at least 4 ground tiles over their head to be 'underground'
+	//player must have at least 4 solid tiles over their head to be 'underground'
 	u8 ground_count = 0;
 	for (u8 i = 0; i < 50; i++)
 	{
 		survivor_pos -= Vec2f(0, 8);
 		Tile tile = map.getTile(survivor_pos);
 		if (tile.dirt != 80) return true;
-		
-		if (isTileGroundStuff(map, tile.type) && map.isTileSolid(tile))
+
+		if (map.isTileSolid(tile))
 		{
 			if (ground_count++ >= 4) return XORRandom(10) == 0;
 		}
