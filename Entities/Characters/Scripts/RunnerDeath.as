@@ -143,18 +143,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
-void onDie(CBlob@ this)
-{
-	//fix for onPlayerDie not being called
-	if (!isServer() || this.hasTag("dead")) return;
-
-	CPlayer@ player = this.getPlayer();
-	if (player is null) return;
-
-	getRules().server_PlayerDie(player);
-	this.server_SetPlayer(null);
-}
-
 bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
 	// can't be put in player inventory.

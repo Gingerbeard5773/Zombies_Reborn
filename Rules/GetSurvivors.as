@@ -1,9 +1,9 @@
 // Functions for getting survivors
 
-CBlob@[] getSurvivors()
+CBlob@[] getSurvivors(CPlayer@ excluded = null)
 {
 	CPlayer@[] survivor_players;
-	CBlob@[] survivors = getSurvivors(survivor_players);
+	CBlob@[] survivors = getSurvivors(survivor_players, excluded);
 	return survivors;
 }
 

@@ -145,7 +145,7 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 	if (dayNumber < 2) return;
 
 	//have all players died?
-	if (getSurvivors().length > 0) return;
+	if (getSurvivors(player).length > 0) return;
 
 	//make certain we only set game end once
 	if (this.getCurrentState() == GAME_OVER) return;
