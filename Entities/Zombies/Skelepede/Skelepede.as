@@ -288,7 +288,7 @@ void AttackStuff(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return !blob.hasTag("skelepede") && blob.hasTag("flesh");
+	return false;
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
