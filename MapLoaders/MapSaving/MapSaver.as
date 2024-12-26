@@ -266,6 +266,7 @@ void SaveMap(CMap@ map, const u8&in SaveSlot = 0)
 	CRules@ rules = getRules();
 	const u16 dayNumber = rules.exists("day_number") ? rules.get_u16("day_number") : 1;
 	const f32 dayTime = map.getDayTime();
+	const u16 timDay = rules.get_u16("tim_day");
 	const string techData = SerializeTechTree();
 
 	// save data to config file
@@ -280,6 +281,7 @@ void SaveMap(CMap@ map, const u8&in SaveSlot = 0)
 	config.add_string("assignment_data", assignmentData);
 	config.add_u16("day_number", dayNumber);
 	config.add_f32("day_time", dayTime);
+	config.add_u16("tim_day", timDay);
 	config.add_string("tech_data", techData);
 
 	config.saveFile(SaveFile+SaveSlot);
@@ -349,6 +351,7 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 	const string dirtData = config.read_string("dirt_data");
 	const u16 dayNumber = config.read_u16("day_number");
 	const f32 dayTime = config.read_f32("day_time");
+	const u16 timDay = config.read_u16("tim_day", 15);
 	const string[]@ techData = config.read_string("tech_data").split(";");
 
 	//dirt data has to be loaded late because of an engine issue..
@@ -356,6 +359,8 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	this.set_u16("day_number", dayNumber);
 	this.Sync("day_number", true);
+	
+	this.set_u16("tim_day", timDay);
 
 	map.SetDayTime(dayTime);
 	this.set_u16("last_day_hour", Maths::Roundf(dayTime*10));

@@ -7,7 +7,6 @@
 #include "GetSurvivors.as";
 
 const u8 GAME_WON = 5;
-u16 tim_day;
 
 void onStateChange(CRules@ this, const u8 oldState)
 {
@@ -42,7 +41,7 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	tim_day = getTimInterval();
+	this.set_u16("tim_day", getTimInterval());
 }
 
 u16 getTimInterval()
@@ -53,6 +52,8 @@ u16 getTimInterval()
 void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 {
 	CMap@ map = getMap();
+	
+	const u16 tim_day = this.get_u16("tim_day");
 
 	this.set_bool("pause_undead_spawns", day_number == tim_day);
 
@@ -62,7 +63,7 @@ void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 		{
 			if (day_number > tim_day)
 			{
-				tim_day = day_number + getTimInterval();
+				this.set_u16("tim_day", day_number + getTimInterval());
 			}
 			doMigrantEvent(this, map, day_number);
 			break;

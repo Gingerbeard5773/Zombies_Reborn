@@ -19,23 +19,26 @@ void InitializeBlobHandlers()
 {
 	if (blobHandlers.getSize() != 0) return;
 
-	blobHandlers.set("default",    BlobDataHandler());
-	blobHandlers.set("seed",       SeedBlobHandler());
-	blobHandlers.set("crate",      CrateBlobHandler());
-	blobHandlers.set("scroll",     ScrollBlobHandler());
-	blobHandlers.set("lever",      LeverBlobHandler());
-	blobHandlers.set("library",    LibraryBlobHandler());
-	blobHandlers.set("factory",    FactoryBlobHandler());
+	blobHandlers.set("default",      BlobDataHandler());
+	blobHandlers.set("seed",         SeedBlobHandler());
+	blobHandlers.set("crate",        CrateBlobHandler());
+	blobHandlers.set("scroll",       ScrollBlobHandler());
+	blobHandlers.set("lever",        LeverBlobHandler());
+	blobHandlers.set("library",      LibraryBlobHandler());
+	blobHandlers.set("factory",      FactoryBlobHandler());
 
-	blobHandlers.set("tree_bushy", TreeBlobHandler());
-	blobHandlers.set("tree_pine",  TreeBlobHandler());
+	blobHandlers.set("tree_bushy",   TreeBlobHandler());
+	blobHandlers.set("tree_pine",    TreeBlobHandler());
 
-	blobHandlers.set("forge",      ForgeBlobHandler());
-	blobHandlers.set("quarry",     ForgeBlobHandler());
+	blobHandlers.set("forge",        ForgeBlobHandler());
+	blobHandlers.set("quarry",       ForgeBlobHandler());
 
-	blobHandlers.set("builder",    PlayerBlobHandler());
-	blobHandlers.set("knight",     PlayerBlobHandler());
-	blobHandlers.set("archer",     PlayerBlobHandler());
+	blobHandlers.set("builder",      PlayerBlobHandler());
+	blobHandlers.set("knight",       PlayerBlobHandler());
+	blobHandlers.set("archer",       PlayerBlobHandler());
+	
+	blobHandlers.set("tim",          TraderBlobHandler());
+	blobHandlers.set("traderbomber", TraderBlobHandler());
 }
 
 bool canSaveBlob(CBlob@ blob)
@@ -78,7 +81,7 @@ class BlobDataHandler
 		return server_CreateBlob(name, 0, pos);
 	}
 
-	// Load in any special properties/states for the particular blob
+	// Load in any special properties/states for the particular blob *after* it is initialized.
 	// Note; all other classes will need updated if you change the amount of data that is processed in this base class
 	void LoadBlobData(CBlob@ blob, const string[]@ data)
 	{
@@ -297,6 +300,23 @@ class PlayerBlobHandler : BlobDataHandler
 			blob.set_u16("sleeper_coins", coins);
 			blob.Tag("sleeper");
 		}
+	}
+}
+
+class TraderBlobHandler : BlobDataHandler
+{
+	string Serialize(CBlob@ blob) override
+	{
+		string data = basicHandler.Serialize(blob);
+		data += (blob.get_u32("time till departure") - getGameTime()) + ";";
+		return data;
+	}
+
+	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	{
+		basicHandler.LoadBlobData(blob, data);
+		const u32 time_left = data.length > 9 ? parseInt(data[9]) : 0;
+		blob.set_u32("time till departure", time_left);
 	}
 }
 
