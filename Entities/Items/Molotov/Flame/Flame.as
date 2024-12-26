@@ -89,12 +89,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			}
 		}
 	}
-	else if (blob !is null && blob.isCollidable())
+	else if (blob !is null && blob.isCollidable() && blob.getShape().getConsts().isFlammable)
 	{
-		if (this.getTeamNum() != blob.getTeamNum() && blob.getShape().getConsts().isFlammable)
-		{
-			this.server_Hit(blob, this.getPosition(), Vec2f(), 0.0f, Hitters::fire, true);
-		}
+		this.server_Hit(blob, this.getPosition(), Vec2f(), 0.0f, Hitters::fire, true);
 	}
 }
 
