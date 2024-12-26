@@ -155,3 +155,20 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 	getEndGameStatistics(this, @inputs);
 	server_SendGlobalMessage(this, 1, nextmap_seconds, inputs);
 }
+
+void onPlayerLeave(CRules@ this, CPlayer@ player)
+{
+	antiSpectatorCamping(player);
+}
+
+void antiSpectatorCamping(CPlayer@ excluded = null)
+{
+	CPlayer@[] players; getSurvivors(@players, excluded);
+	if (players.length > 0) return;
+	
+	CPlayer@[] spectators = getSpectators(excluded);
+	if (spectators.length <= 0) return;
+	
+	CPlayer@ random_player = spectators[XORRandom(spectators.length)];
+	random_player.server_setTeamNum(0);
+}

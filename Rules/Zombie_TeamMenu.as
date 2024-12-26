@@ -1,6 +1,8 @@
 // Zombie Fortress team menu
 
-#include "Zombie_Translation.as"
+#include "Zombie_Translation.as";
+#include "Zombie_GlobalMessagesCommon.as";
+#include "GetSurvivors.as";
 
 const Vec2f BUTTON_SIZE(4, 4);
 
@@ -32,6 +34,13 @@ void ShowTeamMenu(CRules@ this)
 	if (player is null) return;
 
 	getHUD().ClearMenus(true);
+	
+	const u8 team = player.getTeamNum();
+
+	//dont switch teams if we are the last survivor
+	CPlayer@[] players;
+	getSurvivors(@players, player);
+	if (team == 0 && players.length == 0) return;
 
 	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), null, BUTTON_SIZE, "Change team");
 	if (menu is null) return;
@@ -42,7 +51,7 @@ void ShowTeamMenu(CRules@ this)
 
 	CBitStream params;
 	
-	if (player.getTeamNum() == 0)
+	if (team == 0)
 	{
 		params.write_u8(this.getSpectatorTeamNum());
 		CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), "TeamMenu.as", "Callback_PickTeams", BUTTON_SIZE, params);
