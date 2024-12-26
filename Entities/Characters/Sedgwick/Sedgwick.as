@@ -209,7 +209,7 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 		
 		const u16 undeadPerPlayer = blobs.length/survivorsLength;
 		u16 undeadIndex = 0;
-		for (u16 i = 0; i < survivorsLength; ++i)
+		for (u16 i = 0; i < survivorsLength; i++)
 		{
 			CBlob@ survivor = survivors[i];
 			
@@ -221,9 +221,10 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 			Vec2f deliveryPos = Vec2f(pos.x, end.y - 250.0f);
 
 			//share zombies to players equally
-			for (u16 q = 0; q < undeadPerPlayer; ++q)
+			for (u16 q = 0; q < undeadPerPlayer; q++)
 			{
-				CBlob@ undead = blobs[undeadIndex];
+				CBlob@ undead = blobs[undeadIndex++];
+
 				if (undead.getName() == "skelepede") continue;
 
 				if (isClient() && q % 2 == 0)
@@ -234,14 +235,11 @@ void SpellDelivery(CBlob@ this, const u8&in countdown)
 				}
 				if (isServer())
 				{
-					
 					Vec2f rand(XORRandom(undeadPerPlayer)*2 - undeadPerPlayer, 0);
 					Vec2f randomPos = deliveryPos + rand;
 					undead.setPosition(randomPos);
 					undead.set_Vec2f("brain_destination", pos); //tell the zombie where to look
 				}
-				
-				undeadIndex++;
 			}
 		}
 		
