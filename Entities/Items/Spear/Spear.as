@@ -58,49 +58,53 @@ void server_SpearAttack(CBlob@ this, CBlob@ holder, const f32&in aimAngle)
 	Vec2f ray1 = pos + Vec2f(0, 2).RotateBy(angle);
 	Vec2f ray2 = pos - Vec2f(0, 2).RotateBy(angle);
 
-	HitInfo@[] hitInfos;
+	HitInfo@[][] rays(3);
 	u16[] alreadyHit;
 
 	//three seperate rays, with slight offsets- this is done so we can attack around corners
-	map.getHitInfosFromRay(ray1, angle, spear_range, this, @hitInfos);
-	map.getHitInfosFromRay(ray2, angle, spear_range, this, @hitInfos);
-	map.getHitInfosFromRay(pos,  angle, spear_range, this, @hitInfos);
+	map.getHitInfosFromRay(ray1, angle, spear_range, this, @rays[0]);
+	map.getHitInfosFromRay(ray2, angle, spear_range, this, @rays[1]);
+	map.getHitInfosFromRay(pos,  angle, spear_range, this, @rays[2]);
 
-	for (int i = 0; i < hitInfos.length; i++)
+	for (int r = 0; r < rays.length; r++)
 	{
-		HitInfo@ hi = hitInfos[i];
-		CBlob@ b = hi.blob;
-		if (b is null) continue;
-
-		if (alreadyHit.find(b.getNetworkID()) != -1) continue;
-
 		bool hit = false;
-		if (b.getShape().isStatic() && b.isCollidable() && b.getShape().getConsts().support > 0)
-		{
-			if (b.isPlatform())
-			{
-				ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
-				Vec2f dir = plat.direction;
-				if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
 
-				if (Maths::Abs(dir.AngleWith(direction)) < plat.angleLimit)
+		HitInfo@[] ray = rays[r];
+		for (int i = 0; i < ray.length; i++)
+		{
+			CBlob@ b = ray[i].blob;
+			if (b is null) continue;
+
+			if (alreadyHit.find(b.getNetworkID()) != -1) continue;
+
+			if (b.getShape().isStatic() && b.isCollidable() && b.getShape().getConsts().support > 0)
+			{
+				if (b.isPlatform())
 				{
-					continue;
+					ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+					Vec2f dir = plat.direction;
+					if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
+
+					if (Maths::Abs(dir.AngleWith(direction)) < plat.angleLimit)
+					{
+						continue;
+					}
 				}
+
+				hit = true;
 			}
 
-			hit = true;
-		}
+			if (b.getTeamNum() != holder.getTeamNum())
+			{
+				this.server_Hit(b, b.getPosition(), Vec2f_zero, 1.3f, Hitters::sword, true);
+				alreadyHit.push_back(b.getNetworkID());
+			}
 
-		if (b.getTeamNum() != holder.getTeamNum())
-		{
-			this.server_Hit(b, b.getPosition(), Vec2f_zero, 1.3f, Hitters::sword, true);
-			alreadyHit.push_back(b.getNetworkID());
-		}
-
-		if (hit)
-		{
-			break;
+			if (hit)
+			{
+				break;
+			}
 		}
 	}
 }
