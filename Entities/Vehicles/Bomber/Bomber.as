@@ -18,6 +18,8 @@ void onInit(CBlob@ this)
 	this.SetLight(true);
 	this.SetLightRadius(48.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
+	
+	this.Tag("invincible attachments");
 
 	this.set_f32("map dmg modifier", 35.0f);
 
