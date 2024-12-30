@@ -86,9 +86,9 @@ f32 getMillingPercent()
 {
 	f32 percent = 1.0f;
 	Technology@[]@ TechTree = getTechTree();
-	if (hasTech(TechTree, Tech::Milling))    percent += 0.10f;
-	if (hasTech(TechTree, Tech::MillingII))  percent += 0.10f;
-	if (hasTech(TechTree, Tech::MillingIII)) percent += 0.15f;
+	if (hasTech(TechTree, Tech::Milling))    percent += 0.15f;
+	if (hasTech(TechTree, Tech::MillingII))  percent += 0.15f;
+	if (hasTech(TechTree, Tech::MillingIII)) percent += 0.20f;
 	
 	return percent;
 }
