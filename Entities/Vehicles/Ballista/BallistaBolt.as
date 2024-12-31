@@ -4,6 +4,7 @@
 #include "ShieldCommon.as";
 #include "LimitedAttacks.as";
 #include "Explosion.as";
+#include "CustomTiles.as";
 
 const f32 MEDIUM_SPEED = 9.0f;
 const f32 FAST_SPEED = 16.0f;
@@ -186,7 +187,7 @@ void BallistaHitMap(CBlob@ this, const u32 offset, Vec2f hit_position, Vec2f vel
 		return;
 	}
 
-	if (map.isTileGroundStuff(tile.type) && map.isTileSolid(tile))
+	if ((map.isTileGroundStuff(tile.type) || isTileIron(tile.type)) && map.isTileSolid(tile))
 	{
 		SetStatic(this);
 		return;
