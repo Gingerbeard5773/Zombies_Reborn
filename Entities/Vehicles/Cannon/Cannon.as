@@ -182,16 +182,19 @@ void Vehicle_CannonControls(CBlob@ this, VehicleInfo@ v)
 	//allow non-players to shoot vehicle weapons
 	const bool isBot = blob.getPlayer() is null;
 	const bool press_action1 = isBot ? blob.isKeyPressed(key_action1) : ap.isKeyPressed(key_action1);
-	if (isServer() && press_action1 && v.canFire())
+	if (press_action1 && v.canFire())
 	{
 		v.getCurrentAmmo().fire_delay = hasTech(Tech::SeigeCrank) ? 85 : 120;
 
-		CBitStream bt;
-		bt.write_u16(blob.getNetworkID());
-		bt.write_u16(v.charge);
-		this.SendCommand(this.getCommandID("fire client"), bt);
+		if (isServer())
+		{
+			CBitStream bt;
+			bt.write_u16(blob.getNetworkID());
+			bt.write_u16(v.charge);
+			this.SendCommand(this.getCommandID("fire client"), bt);
 
-		Fire(this, v, blob, v.charge);
+			Fire(this, v, blob, v.charge);
+		}
 	}
 }
 
