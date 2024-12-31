@@ -8,7 +8,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	Technology@[]@ TechTree = getTechTree();
 	if (customData == Hitters::fire || customData == Hitters::burn)
 	{
-		if (hasTech(TechTree, Tech::ThermalHull))
+		if (hasTech(TechTree, Tech::SteelChassis))
 		{
 			return 0.0f;
 		}

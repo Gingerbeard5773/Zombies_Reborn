@@ -247,10 +247,6 @@ void SetupTechTree(CRules@ this)
 	AddRequirement(ThermalArmor.requirements, "coin", "", "Coins", 500);
 	AddRequirement(ThermalArmor.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 3);
 
-	Technology ThermalHull(Translate::ThermalHull, Tech::ThermalHull, Vec2f(24, 23), 240);
-	AddRequirement(ThermalHull.requirements, "coin", "", "Coins", 500);
-	AddRequirement(ThermalHull.requirements, "blob", "mat_steelingot", name(Translate::SteelIngot), 2);
-
 	Technology SwiftBearings(Translate::SwiftBearings, Tech::SwiftBearings, Vec2f(-6, 17), 240);
 	AddRequirement(SwiftBearings.requirements, "coin", "", "Coins", 350);
 
@@ -341,14 +337,13 @@ void SetupTechTree(CRules@ this)
 	//FlightTuning.connections;
 	IronChassis.connections.push_back(@SteelChassis);
 	IronChassis.connections.push_back(@FlightTuning);
-	SteelChassis.connections.push_back(@ThermalHull);
+	//SteelChassis.connections;
 	TorsionWinch.connections.push_back(@IronChassis);
 	SeigeCrank.connections.push_back(@TorsionWinch);
 	Regeneration.connections.push_back(@RegenerationII);
 	RegenerationII.connections.push_back(@RegenerationIII);
 	//RegenerationIII.connections;
 	//ThermalArmor.connections;
-	//ThermalHull.connections;
 	//SwiftBearings.connections;
 	//Chainmail.connections;
 	//LightSwords.connections;
@@ -410,7 +405,7 @@ void SetupTechTree(CRules@ this)
 	RegenerationII.connections =  { @RegenerationIII };
 	RegenerationIII.connections = { };
 	ThermalArmor.connections =    { };
-	ThermalHull.connections =     { };
+	
 	SwiftBearings.connections =   { };
 	Chainmail.connections =       { };
 	LightSwords.connections =     { };

@@ -258,7 +258,6 @@ namespace Translate
 	RegenerationII  = Translate("Regeneration II\nSurvivors heal four hearts every day.",            "Регенерация II\nВыжившие исцеляют четыре сердца каждый день"),
 	RegenerationIII = Translate("Regeneration III\nSurvivors heal six hearts every day.",            "Регенерация III\nВыжившие исцеляют шесть сердца каждый день."),
 	ThermalArmor    = Translate("Thermal Armor\nWearing a full set of armor nullifies fire damage.", "Огнеупорная броня\nНошение полного комплекта брони сводит на нет урон от огня."),
-	ThermalHull     = Translate("Thermal Plating\nVehicles are immune to fire damage.",              "Огнеупорный корпус\nТранспортные средства невосприимчивы к повреждениям от огня."),
 	SwiftBearings   = Translate("Swift Bearings\nGround vehicles move 30% faster.",                  "Подшипники\nНаземный транспорт движется на 30% быстрее."),
 	Chainmail       = Translate("Chainmail\nKnights take 25% less damage.",                          "Кольчуга\nРыцари получают на 25% меньше урона."),
 	LightSwords     = Translate("Light Swords\nUsing a sword is faster.",                            "Легкие мечи\nВзмах меча становится быстрее."),

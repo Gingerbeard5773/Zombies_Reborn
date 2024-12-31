@@ -71,7 +71,7 @@ namespace Tech
 		RegenerationII,
 		RegenerationIII,
 		ThermalArmor,        //50
-		ThermalHull,
+		UNUSED,
 		SwiftBearings,
 		Chainmail,
 		LightSwords,
