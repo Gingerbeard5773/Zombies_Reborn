@@ -37,5 +37,5 @@ void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 	if (day_hour != 4 || !isServer()) return;
 
 	print("AUTOSAVING MAP; DAY "+day_number, 0xff66C6FF);
-	SaveMap(getMap());
+	SaveMap(this, getMap());
 }

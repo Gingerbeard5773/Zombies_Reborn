@@ -242,7 +242,7 @@ string SerializeTechTree()
 	return techData;
 }
 
-void SaveMap(CMap@ map, const u8&in SaveSlot = 0)
+void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 {
 	InitializeBlobHandlers();
 
@@ -263,10 +263,9 @@ void SaveMap(CMap@ map, const u8&in SaveSlot = 0)
 	const string assignmentData = SerializeAssignmentData(@saved_netids);
 
 	// collect rules data
-	CRules@ rules = getRules();
-	const u16 dayNumber = rules.exists("day_number") ? rules.get_u16("day_number") : 1;
+	const u16 dayNumber = this.exists("day_number") ? this.get_u16("day_number") : 1;
 	const f32 dayTime = map.getDayTime();
-	const u16 timDay = rules.get_u16("tim_day");
+	const u16 timDay = this.get_u16("tim_day");
 	const string techData = SerializeTechTree();
 
 	// save data to config file
@@ -299,7 +298,7 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 
 	if (!isServer()) return true;
 
-	const u8 SaveSlot = this.get_u8("mapsaver_save_slot");
+	const string SaveSlot = this.exists("mapsaver_save_slot") ? this.get_string("mapsaver_save_slot") : "AutoSave";
 
 	ConfigFile config = ConfigFile();
 	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) return false;
@@ -343,7 +342,7 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	if (!isServer()) return true;
 
-	const u8 SaveSlot = this.get_u8("mapsaver_save_slot");
+	const string SaveSlot = this.exists("mapsaver_save_slot") ? this.get_string("mapsaver_save_slot") : "AutoSave";
 
 	ConfigFile config = ConfigFile();
 	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) return false;

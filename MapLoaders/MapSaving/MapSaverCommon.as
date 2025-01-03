@@ -12,7 +12,7 @@
  3) Delete the save file every time you modify blob handlers- doing this will avoid crashes caused by faulty data reading
 */
 
-const string SaveFile = "Zombie_Save";
+const string SaveFile = "Zombie_Save_";
 
 dictionary blobHandlers;
 void InitializeBlobHandlers()

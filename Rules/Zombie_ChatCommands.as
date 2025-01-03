@@ -28,8 +28,8 @@ string CommandsList()
 	"!debugprop [hash] : finds a string that pairs with the hash input\n" +
 	"!structure [index] : loads a structure from cfg. no index = random\n" +
 	"!savestructure : saves a structure at the player's position\n" +
-	"!savemap [save slot] : saves the current map to your save slot\n" +
-	"!loadsave [save slot] : loads a saved map from config";
+	"!savemap [save name] : saves the current map to your save slot\n" +
+	"!loadsave [save name] : loads a saved map from config";
 }
 
 const string[] isCool = { "MrHobo" };
@@ -275,8 +275,8 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 	}
 	else if (tokens[0] == "!loadsave")
 	{
-		const u8 SaveSlot = tokens.length > 1 ? parseInt(tokens[1]) : 0; 
-		this.set_u8("mapsaver_save_slot", SaveSlot);
+		const string SaveSlot = tokens.length > 1 ? tokens[1] : "AutoSave"; 
+		this.set_string("mapsaver_save_slot", SaveSlot);
 		this.set_bool("loaded_saved_map", false);
 		LoadNextMap();
 		return false;
@@ -298,11 +298,11 @@ bool onClientProcessChat(CRules@ this, const string &in text_in, string &out tex
 		const string[]@ tokens = text_in.split(" ");
 		if (tokens[0] == "!savemap")
 		{
-			const u8 SaveSlot = tokens.length > 1 ? parseInt(tokens[1]) : 0;
-			const string message = "Map saved to your cache: Slot [ "+SaveSlot+" ]";
+			const string SaveSlot = tokens.length > 1 ? tokens[1] : "AutoSave";
+			const string message = "Map saved to your cache: "+SaveSlot;
 			print(message, 0xff66C6FF);
 			client_SendGlobalMessage(this, message, 5, 0xff66C6FF);
-			SaveMap(getMap(), SaveSlot);
+			SaveMap(this, getMap(), SaveSlot);
 			return false;
 		}
 	}
