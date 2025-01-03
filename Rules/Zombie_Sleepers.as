@@ -146,6 +146,9 @@ void WakeupSleeper(CBlob@ sleeper, CPlayer@ player)
 		params.write_u8(1);
 		sleeper.SendCommand(sleeper.getCommandID(knockedProp), params);
 	}
+	
+	if (isClient()) //hack fix for emote hotkey error
+		getRules().Tag("reload emotes");
 }
 
 void KnockSleepers()
