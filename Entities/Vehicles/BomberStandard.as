@@ -17,6 +17,8 @@ void onTick(CBlob@ this)
 		sprite.SetEmitSoundPaused(false);
 
 		Vehicle_BomberControls(this, v);
+		
+		KeepWithinMap(this);
 	}
 	else
 	{
@@ -175,6 +177,24 @@ void HandleBombing(CBlob@ this)
 			}
 		}
 		break;
+	}
+}
+
+void KeepWithinMap(CBlob@ this)
+{
+	//make a map boundary because the engine fails to do it.
+	Vec2f pos = this.getPosition();
+	Vec2f dim = getMap().getMapDimensions();
+	const f32 radius = this.getRadius();
+	Vec2f corrected_pos = pos;
+
+	if (pos.y < radius)          corrected_pos.y = radius;
+	if (pos.x < radius)          corrected_pos.x = radius;
+	if (pos.x > dim.x - radius)  corrected_pos.x = dim.x - radius;
+
+	if (corrected_pos != pos)
+	{
+		this.setPosition(corrected_pos);
 	}
 }
 
