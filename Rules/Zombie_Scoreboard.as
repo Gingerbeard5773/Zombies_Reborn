@@ -530,26 +530,26 @@ void drawStagingPopup(Vec2f&in pos)
 
 	GUI::SetFont("menu");
 	string info = "Staging\n\n"+
-	              "Lagging? Zombie Fortress is best\nsuited to be played\n"+
+	              "Zombie Fortress is best\nsuited to be played\n"+
 	              "with a staging client.\n\n"+
 	              "What is Staging?\n"+
 	              "Staging is a version of KAG\nwith incredible optimization.\n"+
 	              "Switch to staging for\nmajor performance improvement!\n\n"+
 	              "How to get staging on steam:\n"+
-	              "\nKAG properties -> Betas ->\nEnter transhumandesign ->\nChoose staging-test\n\n"+
+	              "\nKAG properties -> Betas ->\nEnter transhumandesign in form ->\nChoose staging-test branch\n\n"+
 	              "Visit the discord\nfor additional information\nor if you are a non-steam player.";
 	
 	if (g_locale == "ru")
 	{
 		info = "Staging\n\n"+
-		       "Игра медленная? Зомби Крепости лучше всего\nподходит для того чтобы сыграть\n"+
-		       "Используя 'staging client'.\n\n"+
-		       "Что такое 'Staging'?\n"+
-		       "Staging это версия оригинальной игры KAG\nс потрясающей оптимизацией.\n"+
-		       "Попробуйте 'staging' для\nувеличения производительности!\n\n"+
-		       "Как получить 'staging' в стиме:\n"+
-		       "\nKAG свойства -> Бета-версии ->\nВведите transhumandesign ->\nВыберите 'staging-test'\n\n"+
-		       "Приходите в discord\nдля дополнительной информации\n если же вы не являетесь игроком steam.";
+		       "Zombie Fortress лучше всего работает на\n"+
+		       "клиенте Staging.\n\n"+
+		       "Что такое Staging?\n"+
+		       "Staging - это версия оригинальной игры KAG\nс улучшенной оптимизацией.\n"+
+		       "Попробуйте Staging для\nувеличения производительности!\n\n"+
+		       "Как получить Staging-клиент в Steam:\n"+
+		       "\nСвойства KAG -> Бета-версии ->\nВведите transhumandesign в поле ->\nВыберите ветку 'staging-test'\n\n"+
+		       "Заходите на Discord-сервер\nдля получения дополнительной информации,\nесли же вы не играете через Steam.";
 	}
 	Vec2f dim;
 	GUI::GetTextDimensions(info, dim);
@@ -564,6 +564,7 @@ void drawStagingPopup(Vec2f&in pos)
 	pos.y += 10.0f;
 	GUI::DrawText(info, pos - dim, SColor(0xffffffff));
 }
+
 
 const string[] lag =
 {
