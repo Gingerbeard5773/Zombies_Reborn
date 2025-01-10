@@ -570,12 +570,15 @@ const string[] lag =
 {
 	"lag",
 	"lags",
+	"laggs",
 	"lag?",
 	"lag!",
 	"lag.",
 	"lagging",
 	"lagg",
-	"laggy"
+	"laggy",
+	"lagy",
+	"fps"
 };
 
 const bool SaidLag(const string&in textIn)
