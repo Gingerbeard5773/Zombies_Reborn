@@ -169,6 +169,9 @@ namespace Translate
 	Sell2               = Translate("Sell {QUANTITY} {ITEM} for {COINS} $COIN$",                "Продать {QUANTITY} {ITEM} за {COINS} $COIN$"),
 	InStock             = Translate("{QUANTITY} In stock",                                      "{QUANTITY} в наличии"),
 	OutOfStock          = Translate("Out of stock",                                             "Нет в наличии"),
+	TraderLeave0        = Translate("My time here is closing.",                                 "Моё время на исходе."),
+	TraderLeave1        = Translate("I am leaving soon.",                                       "Я скоро покину вас."),
+	TraderLeave2        = Translate("I’ll be departing shortly.",                               "Я быстро покину это место." ),
 
 	// scrolls description
 	TradeScrollCarnage  = Translate("Sedgwick really doesn't want me to have this.",            "Седжвик действительно не хочет, чтобы это было у меня."),

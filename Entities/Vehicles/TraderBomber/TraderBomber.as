@@ -273,18 +273,27 @@ void onShopMadeItem(CBlob@ this, CBlob@ caller, CBlob@ blob, SaleItem@ item)
 
 void onTick(CBlob@ this)
 {
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v)) return;
-
 	const u32 gameTime = getGameTime();
 	const u32 timeTillLeave = this.get_u32("time till departure");
+	
+	if (gameTime == timeTillLeave - 30 * 25)
+	{
+		const string[] messages = { Translate::TraderLeave0, Translate::TraderLeave1, Translate::TraderLeave2 };
+		const string message = messages[XORRandom(messages.length)];
+		this.Chat(message);
+		Sound::Play("MigrantSayFriend.ogg", this.getPosition());
+	}
+
 	if (timeTillLeave+30*15 < gameTime)
 	{
 		this.server_Die();
 	}
-	
+
+	VehicleInfo@ v;
+	if (!this.get("VehicleInfo", @v)) return;
+
 	v.fly_amount = timeTillLeave < gameTime ? up_speed : down_speed;
-	
+
 	this.AddForce(Vec2f(0, v.fly_speed * v.fly_amount));
 }
 
