@@ -434,7 +434,7 @@ u16[] getSpellWeight()
 		// harder spells become more common
 		else if (i == spell_transmute || i == spell_portal)
 		{
-			weights[i] += int(Maths::Max(4.0f, (day / 5) + player_scale));
+			weights[i] += int((day / 5) + player_scale);
 		}
 	}
 
