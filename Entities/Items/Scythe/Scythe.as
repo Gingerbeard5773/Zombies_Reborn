@@ -78,7 +78,7 @@ void onTick(CBlob@ this)
 		const f32 angle = aimAngle + time * 20 * (this.isFacingLeft() ? -1 : 1);
 		this.setAngleDegrees(angle);
 	}
-	else if (point.isKeyJustPressed(key_action1))
+	else if (point.isKeyPressed(key_action1))
 	{
 		this.set_u32("end attack", getGameTime() + attack_time);
 		this.getSprite().PlaySound("SwordSlash.ogg");
