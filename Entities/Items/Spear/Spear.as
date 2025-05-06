@@ -36,7 +36,7 @@ void onTick(CBlob@ this)
 		Vec2f offset(-time * 2.5f, 0);
 		sprite.SetOffset(offset);
 	}
-	else if (point.isKeyJustPressed(key_action1))
+	else if (point.isKeyPressed(key_action1))
 	{
 		this.set_u32("end attack", getGameTime() + attack_time);
 		this.getSprite().PlaySound("SwordSlash.ogg");
