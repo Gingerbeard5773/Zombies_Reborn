@@ -129,7 +129,7 @@ void onTick(CBlob@ this)
 
 f32 getProductionModifier()
 {
-	f32 modifier = 0.5f;
+	f32 modifier = 1.0f;
 	Technology@[]@ TechTree = getTechTree();
 	if (hasTech(TechTree, Tech::Production))   modifier -= 0.25f;
 	if (hasTech(TechTree, Tech::ProductionII)) modifier -= 0.25f;
