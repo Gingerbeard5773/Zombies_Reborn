@@ -7,7 +7,7 @@
 #include "AssignWorkerCommon.as"
 #include "Zombie_TechnologyCommon.as"
 
-Vec2f menu_size(3, 4);
+Vec2f menu_size(3, 5);
 
 const f32 building_gold_percent = 0.80f; //percent of the gold we get back from the building when it is destroyed
 
@@ -54,7 +54,7 @@ void SetupProductionSet()
 	}
 	{
 		Production tech("Ballista", FactoryFrame::ballista);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 70);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 60);
 		tech.addProductionItem("lightballista", "Ballista", "", 60, 1, Product::crate);
 		tech.addProductionItem("mat_bolts", "Ballista Bolts", "", 60, 1);
 		tech.addProductionItem("mat_bomb_bolts", "Ballista Shells", "", 60, 1);
@@ -62,13 +62,13 @@ void SetupProductionSet()
 	}
 	{
 		Production tech("Bomber", 7);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 70);
 		tech.addProductionItem("bomber", "Bomber", "", 80, 1, Product::crate);
 		production_set.push_back(tech);
 	}
 	{
 		Production tech(name(Translate::Tank), 11);
-		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 90);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
 		tech.addProductionItem("tank", name(Translate::Tank), "", 80, 1, Product::crate);
 		production_set.push_back(tech);
 	}
@@ -114,6 +114,24 @@ void SetupProductionSet()
 		Production tech("Bomb Arrow", FactoryFrame::expl_ammo);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 25);
 		tech.addProductionItem("mat_bombarrows", "Bomb Arrow", "", 35, 4);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech("Arrows", 20);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 5);
+		tech.addProductionItem("mat_arrows", "Arrows", "", 15, 3);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech(name(Translate::FireworkArrows), 21);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 25);
+		tech.addProductionItem("mat_fireworkarrows", name(Translate::FireworkArrows), "", 40, 2);
+		production_set.push_back(tech);
+	}
+	{
+		Production tech(name(Translate::Cannonballs), 22);
+		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
+		tech.addProductionItem("mat_cannonballs", name(Translate::Cannonballs), "", 35, 3);
 		production_set.push_back(tech);
 	}
 	getRules().set("factory_production_set", production_set);
