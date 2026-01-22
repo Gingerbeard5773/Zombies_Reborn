@@ -89,10 +89,13 @@ f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f
 			return 0.0f;
 		}
 
-		/*if ((customData == Hitters::fire || customData == Hitters::burn))
+		if ((customData == Hitters::fire || customData == Hitters::burn) && !equipper.getShape().getConsts().isFlammable)
 		{
+			this.Untag("burning");
+			this.set_s16("burn timer", 0);
+			this.set_s16("burn counter", 0);
 			return 0.0f;
-		}*/
+		}
 	}
 
 	switch(customData)
