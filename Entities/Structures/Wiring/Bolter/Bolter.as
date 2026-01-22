@@ -28,32 +28,30 @@ class Bolter : Component
 			CBlob@[] blobs;
 			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
 
-			for(uint i = 0; i < blobs.length; i++)
+			for (u16 i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
 				if (blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
 
-				// get the only blob in inventory
-				CBlob@ ammo = blob.getInventory().getItem(0);
+				// get the next blob in inventory
+				CInventory@ inventory = blob.getInventory();
+				CBlob@ ammo;
+				for (u16 i = 0; i < inventory.getItemsCount(); i++)
+				{
+					CBlob@ next_ammo = inventory.getItem(i);
+					if (next_ammo.getQuantity() > 0) @ammo = next_ammo;
+				}
+
 				if (ammo is null) break;
 
-				// set the type, if none are found then it's set to -1
-				s8 arrow_type = arrowTypeNames.find(ammo.getName());
-				if (arrow_type < 0) break;
+				const s8 arrow_type = arrowTypeNames.find(ammo.getName());
+				if (arrow_type == -1) break;
 
 				// decrement
-				u8 quantity = ammo.getQuantity() - 1;
-				if (quantity > 0)
-				{
-					ammo.server_SetQuantity(quantity);
-				}
-				else
-				{
-					ammo.server_Die();
-				}
+				ammo.server_SetQuantity(ammo.getQuantity() - 1);
 
 				// calculate deviation
-				f32 deviation = (XORRandom(100) - 50) / 20.0f;
+				const f32 deviation = (XORRandom(100) - 50) / 20.0f;
 
 				// calculate velocity based on deviation
 				Vec2f velocity = offset;
@@ -77,8 +75,7 @@ class Bolter : Component
 		
 		if (isClient())
 		{
-			CSprite@ sprite = this.getSprite();
-			sprite.PlaySound("BolterFire.ogg");
+			this.getSprite().PlaySound("BolterFire.ogg");
 			ParticleAnimated("BolterFire.png", position + (offset * 8), Vec2f_zero, angle, 1.0f, 3, 0.0f, false);
 		}
 	}
