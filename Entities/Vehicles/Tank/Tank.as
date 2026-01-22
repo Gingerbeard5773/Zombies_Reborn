@@ -51,7 +51,7 @@ void onInit(CBlob@ this)
 }
 
 void onTick(CBlob@ this)
-{	
+{
 	const int time = this.getTickSinceCreated();
 	if (this.hasAttached() || time < 30) //driver, seat or gunner, or just created
 	{
@@ -65,6 +65,12 @@ void onTick(CBlob@ this)
 
 		Vehicle_StandardControls(this, v);
 	}
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	const f32 ratio = 1.0f - (this.getHealth() / this.getInitialHealth());
+	this.getSprite().animation.setFrameFromRatio(ratio);
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
