@@ -20,8 +20,20 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		//revive this if this is holding a revival scroll
 		CBlob@ scroll = getRevivalScroll(this);
-		if (scroll !is null)
+		if (scroll !is null && this.getPlayer() !is null)
 		{
+			if (isServer())
+			{
+				//send over the inventory
+				u16[] inventory_netids;
+				CInventory@ inv = this.getInventory();
+				for (int i = 0; i < inv.getItemsCount(); i++)
+				{
+					inventory_netids.push_back(inv.getItem(i).getNetworkID());
+				}
+				this.set("revive_inventory_netids", inventory_netids);
+			}
+			
 			if (this.isMyPlayer())
 			{
 				CBitStream params;
