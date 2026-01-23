@@ -9,21 +9,21 @@ void onInit(CBlob@ this)
 	this.Tag("sawed");//hack
 
 	this.Tag("medium weight");
-	this.getShape().SetOffset(Vec2f(8, 0));
+	this.getShape().SetOffset(Vec2f(6, 0));
 
 	GunInfo gun;
-	gun.reload_ready_time = 125;
+	gun.reload_ready_time = 55;
 	gun.muzzle_offset = Vec2f(22, -2);
 	gun.ammo_name = "mat_musketballs";
-	gun.ammo_capacity = 1;
+	gun.ammo_capacity = 2;
 	gun.projectile_name = "bullet";
-	gun.shoot_sound = "MusketFire.ogg";
+	gun.shoot_sound = "Shotgun1.ogg";
 	gun.sprite_offset = this.getSprite().getOffset();
-	gun.bullet_damage = 9.0f;
-	gun.bullet_time = 0.8f;
-	gun.bullet_speed = 50.0f;
-	gun.bullet_spread = 1.0f;
-	gun.bullet_amount = 1;
+	gun.bullet_damage = 2.3f;
+	gun.bullet_time = 0.6f;
+	gun.bullet_speed = 35.0f;
+	gun.bullet_spread = 5.0f;
+	gun.bullet_amount = 4;
 	this.set("gunInfo", @gun);
 
 	onReloadHandle@ reload_handle = @onReload;
@@ -32,7 +32,7 @@ void onInit(CBlob@ this)
 	onFireHandle@ fire_handle = @onFire;
 	this.set("onFire handle", @fire_handle);
 	
-	this.setInventoryName(name(Translate::Musket));
+	this.setInventoryName(name(Translate::Shotgun));
 }
 
 void onReload(CBlob@ this, CBlob@ holder, GunInfo@ gun)

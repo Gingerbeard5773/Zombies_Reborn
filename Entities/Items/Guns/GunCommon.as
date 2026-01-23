@@ -1,6 +1,9 @@
 
 funcdef void onFireHandle(CBlob@, GunInfo@);
+funcdef void onProjectileHandle(CBlob@, CBlob@, GunInfo@);
 funcdef void onReloadHandle(CBlob@, CBlob@, GunInfo@);
+
+Random shotrandom(0x15125);
 
 shared class GunInfo
 {

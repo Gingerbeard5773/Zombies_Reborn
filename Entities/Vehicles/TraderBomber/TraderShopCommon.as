@@ -76,3 +76,47 @@ shared class SaleItem
 		items.push_back(@this);
 	}
 }
+
+void AddRandomItemsToShop(Shop@ shop, SaleItem@[]@ items, Random@ seed, const u8&in amount)
+{
+	u32 weights_sum = 0;
+	for (u8 i = 0; i < items.length; i++)
+	{
+		weights_sum += items[i].custom_data;
+	}
+	
+	for (u8 a = 0; a < amount; a++)
+	{
+		SaleItem@ add_item = GetRandomSaleItem(items, weights_sum, seed);
+		bool exists = false;
+		for (u8 i = 0; i < shop.items.length; i++)
+		{
+			SaleItem@ item = shop.items[i];
+			if (item.blob_name == add_item.blob_name)
+			{
+				exists = true;
+				a--;
+			}
+		}
+		if (!exists) shop.items.push_back(add_item);
+	}
+}
+
+SaleItem@ GetRandomSaleItem(SaleItem@[]@ items, const u32&in weights_sum, Random@ seed)
+{
+	const u32 random_weight = seed.NextRanged(weights_sum);
+	u32 current_number = 0;
+
+	for (u8 i = 0; i < items.length; i++)
+	{
+		SaleItem@ item = items[i];
+		if (random_weight <= current_number + item.custom_data)
+		{
+			return item;
+		}
+
+		current_number += item.custom_data;
+	}
+
+	return null;
+}

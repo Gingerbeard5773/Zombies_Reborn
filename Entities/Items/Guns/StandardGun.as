@@ -45,22 +45,20 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 
 	gun.sprite_recoil = Maths::Lerp(gun.sprite_recoil, 0, 0.45f);
 	
-	const bool pressed_action1 = point.isKeyPressed(key_action1);
+	const bool pressed_action1 = gun.ammo_capacity > 1 ? point.isKeyJustPressed(key_action1) : point.isKeyPressed(key_action1);
 	const bool pressed_action2 = point.isKeyPressed(key_action2);
 
 	if (pressed_action2) //reload
 	{
 		CBlob@ ammo_holder = getAmmoHolder(holder, gun);
-		if (gun.ammo_count <= 0 && ammo_holder !is null)
+		if (gun.ammo_count < gun.ammo_capacity && ammo_holder !is null)
 		{
 			gun.reload_time++;
-			
+
 			if (hasTech(Tech::Bandoliers))
 			{
 				gun.reload_time++;
 			}
-
-			this.setAngleDegrees(30 * (this.isFacingLeft() ? -1 : 1));
 
 			onReloadHandle@ onReload;
 			if (this.get("onReload handle", @onReload)) 
@@ -68,16 +66,16 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 				onReload(this, holder, gun);
 			}
 
-			if ((gun.reload_time + 50)%75 == 0)
-			{
-				sprite.PlaySound("thud.ogg");
-			}
 			if (gun.reload_time >= gun.reload_ready_time)
 			{
 				sprite.PlaySound("LoadingTick"+(XORRandom(2)+1));
-				gun.ammo_count = gun.ammo_capacity;
 				gun.reload_time = 0;
-				ammo_holder.TakeBlob(gun.ammo_name, 1);
+
+				//for (u32 i = gun.ammo_count; i < gun.ammo_capacity; i++)
+				{
+					ammo_holder.TakeBlob(gun.ammo_name, 1);
+					gun.ammo_count++;
+				}
 			}
 		}
 	}
@@ -85,7 +83,10 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 	{
 		if (gun.ammo_count > 0 && ismyplayer)
 		{
-			gun.ammo_count -= 1; //remove ammo on client to stop multi-fire commands
+			if (!isServer())
+			{
+				gun.ammo_count -= 1; //remove ammo on client to stop multi-fire commands
+			}
 			ClientFire(this, holder, gun);
 		}
 	}
@@ -159,11 +160,15 @@ void CreateBullet(CBlob@ this, CBlob@ holder, GunInfo@ gun, Vec2f&in position, V
 			velocity *= gun.bullet_speed;
 
 			projectile.setVelocity(velocity);
+			
+			onProjectileHandle@ onProjectile;
+			if (this.get("onProjectile handle", @onProjectile)) 
+			{
+				onProjectile(this, projectile, gun);
+			}
 		}
 	}
 }
-
-Random shotrandom(0x15125);
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
@@ -177,28 +182,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (!gun.shoot_sound.isEmpty())
 			this.getSprite().PlaySound(gun.shoot_sound);
 
-		gun.sprite_recoil = 5;
-
-		Vec2f pos = this.getPosition();
-		ShakeScreen(150.0f, 1.0f, pos);
-		const f32 angle = this.getAngleDegrees() + (this.isFacingLeft() ? 180 : 0);
-		pos += Vec2f(0, gun.muzzle_offset.y) + Vec2f(gun.muzzle_offset.x, 0).RotateBy(angle);
-		
-		//muzzle flash
-		ParticleAnimated("MuzzleFlash.png", pos, Vec2f(), angle, 1.0f, 3, 0.0f, true);
-		
-		for (u8 i = 0; i < 5; i++)
-		{
-			Vec2f vel = getRandomVelocity(angle, -8.0f + XORRandom(700)/100, 30);
-
-			CParticle@ p = ParticleAnimated("GenericSmoke.png", pos, vel, XORRandom(360), 1.0f, 6 + XORRandom(8), 0.0f, true);
-			if (p !is null)
-			{
-				p.scale = 0.6f + shotrandom.NextFloat()*0.5f;
-				p.damping = 0.85f;
-			}
-		}
-		
 		if (!isServer()) //dont repeat on localhost
 		{
 			onFireHandle@ onFire;

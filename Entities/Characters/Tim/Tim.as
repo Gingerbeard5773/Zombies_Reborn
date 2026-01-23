@@ -89,23 +89,18 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::Musket), "$musket$", "musket", name(Translate::Musket));
-		s.stock = 3 + seed.NextRanged(6);
-		AddRequirement(s.requirements, "coin", "", "Coins", 349);
-	}
-	{
-		SaleItem s(shop.items, name(Translate::MusketBalls), "$mat_musketballs$", "mat_musketballs", name(Translate::MusketBalls));
-		s.stock = 40 + seed.NextRanged(15);
-		AddRequirement(s.requirements, "coin", "", "Coins", 49);
+		SaleItem s(shop.items, name(Translate::Cake), "$cake$", "cake", name(Translate::Cake));
+		s.stock = 3 + seed.NextRanged(3);
+		AddRequirement(s.requirements, "coin", "", "Coins", 99);
 	}
 	{
 		SaleItem s(shop.items, name(Translate::SteelHelmet), "$steelhelmet$", "steelhelmet", name(Translate::SteelHelmet));
-		s.stock = 2 + seed.NextRanged(6);
+		s.stock = 1 + seed.NextRanged(3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 149);
 	}
 	{
 		SaleItem s(shop.items, name(Translate::SteelArmor), "$steelarmor$", "steelarmor", name(Translate::SteelArmor));
-		s.stock = 2 + seed.NextRanged(5);
+		s.stock = 1 + seed.NextRanged(3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 399);
 	}
 	{
@@ -119,25 +114,49 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", 999);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::Cake), "$cake$", "cake", name(Translate::Cake));
-		s.stock = 7 + seed.NextRanged(8);
-		AddRequirement(s.requirements, "coin", "", "Coins", 99);
+		SaleItem s(shop.items, name(Translate::Musket), "$musket$", "musket", name(Translate::Musket));
+		s.stock = 1 + seed.NextRanged(3);
+		AddRequirement(s.requirements, "coin", "", "Coins", 349);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::Chainsaw), "$chainsaw$", "chainsaw", name(Translate::Chainsaw));
-		s.stock = 2 + seed.NextRanged(3);
+		SaleItem s(shop.items, name(Translate::MusketBalls), "$mat_musketballs$", "mat_musketballs", name(Translate::MusketBalls));
+		s.stock = 5 + seed.NextRanged(11);
+		AddRequirement(s.requirements, "coin", "", "Coins", 49);
+	}
+
+	SaleItem@[] rand_items;
+	{
+		SaleItem s(rand_items, name(Translate::Chainsaw), "$chainsaw$", "chainsaw", name(Translate::Chainsaw));
+		s.stock = 1 + seed.NextRanged(3);
+		s.custom_data = 20;
 		AddRequirement(s.requirements, "coin", "", "Coins", 149);
 	}
-	{
-		SaleItem s(shop.items, name(Translate::SteelDrill), "$steeldrill$", "steeldrill", name(Translate::SteelDrill));
-		s.stock = 2 + seed.NextRanged(3);
+	/*{
+		SaleItem s(rand_items, name(Translate::SteelDrill), "$steeldrill$", "steeldrill", name(Translate::SteelDrill));
+		s.stock = 1 + seed.NextRanged(3);
+		s.custom_data = 15;
 		AddRequirement(s.requirements, "coin", "", "Coins", 199);
-	}
+	}*/
 	{
-		SaleItem s(shop.items, name(Translate::Spear), "$spear$", "spear", name(Translate::Spear));
-		s.stock = 3 + seed.NextRanged(5);
+		SaleItem s(rand_items, name(Translate::Spear), "$spear$", "spear", name(Translate::Spear));
+		s.stock = 1 + seed.NextRanged(3);
+		s.custom_data = 15;
 		AddRequirement(s.requirements, "coin", "", "Coins", 159);
 	}
+	{
+		SaleItem s(rand_items, name(Translate::Shotgun), "$shotgun$", "shotgun", desc(Translate::Shotgun));
+		s.stock = 1 + seed.NextRanged(2);
+		s.custom_data = 15;
+		AddRequirement(s.requirements, "coin", "", "Coins", 499);
+	}
+	{
+		SaleItem s(rand_items, name(Translate::Bazooka), "$bazooka$", "bazooka", desc(Translate::Bazooka));
+		s.stock = 1 + seed.NextRanged(2);
+		s.custom_data = 15;
+		AddRequirement(s.requirements, "coin", "", "Coins", 499);
+	}
+
+	AddRandomItemsToShop(shop, rand_items, seed, 3);
 
 	this.set_u32("time till departure", getGameTime() + getTicksASecond() * 60 * stay_minutes);
 
