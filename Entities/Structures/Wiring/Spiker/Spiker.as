@@ -132,7 +132,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	CSprite@ sprite = this.getSprite();
 	sprite.SetZ(500);
-	sprite.SetFrameIndex(angle / 90);
+	//sprite.SetFrameIndex(angle / 90);
 	sprite.SetFacingLeft(false);
 
 	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Spiker.png", 8, 16);
