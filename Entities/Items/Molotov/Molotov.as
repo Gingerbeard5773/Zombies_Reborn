@@ -3,13 +3,7 @@
 #include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
-{	
-	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
-	if (ap !is null)
-	{
-		ap.SetKeysToTake(key_action3);
-	}
-
+{
 	this.Tag("activatable");
 
 	Activate@ activation_handle = @onActivate;
@@ -25,21 +19,21 @@ void onInit(CBlob@ this)
 
 void onInit(CSprite@ this)
 {
-	//burning sound	    
+	//burning sound
 	this.SetEmitSound("MolotovBurning.ogg");
 	this.SetEmitSoundVolume(5.0f);
 	this.SetEmitSoundPaused(true);
 }
 
-void onTick(CBlob@ this)
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (isServer() && this.isAttached() && !this.hasTag("activated"))
+	string[]@ names;
+	if (!attached.get("names to activate", @names)) return;
+
+	const string name = this.getName();
+	if (names.find(name) == -1)
 	{
-		AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
-		if (ap !is null && ap.isKeyJustPressed(key_action3) && ap.getOccupied() !is null && !ap.getOccupied().isAttached())
-		{
-			server_Activate(this);
-		}
+		names.push_back(name);
 	}
 }
 

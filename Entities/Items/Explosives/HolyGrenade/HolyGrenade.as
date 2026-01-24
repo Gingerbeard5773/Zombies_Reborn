@@ -6,36 +6,30 @@
 #include "BombCommon.as";
 
 void onInit(CBlob@ this)
-{	
-	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
-	if (ap !is null)
-	{
-		ap.SetKeysToTake(key_action3);
-	}
-
+{
 	this.Tag("activatable");
 
 	Activate@ activation_handle = @onActivate;
 	this.set("activate handle", @activation_handle);
 
 	this.addCommandID("activate client");
-	
+
 	this.getSprite().SetEmitSound("/Sparkle.ogg");
 	this.getSprite().SetEmitSoundPaused(true);
 	this.SetLightRadius(25.0f);
-	
+
 	this.setInventoryName(name(Translate::HolyGrenade));
 }
 
-void onTick(CBlob@ this)
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (isServer() && this.isAttached() && !this.hasTag("activated"))
+	string[]@ names;
+	if (!attached.get("names to activate", @names)) return;
+
+	const string name = this.getName();
+	if (names.find(name) == -1)
 	{
-		AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
-		if (ap !is null && ap.isKeyJustPressed(key_action3) && ap.getOccupied() !is null && !ap.getOccupied().isAttached())
-		{
-			server_Activate(this);
-		}
+		names.push_back(name);
 	}
 }
 
