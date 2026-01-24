@@ -66,6 +66,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onTick(CBlob@ this)
 {
+	this.Tag("no pickup");
+
 	const f32 angle = -this.getVelocity().Angle() - 90;
 	this.setAngleDegrees(angle);
 
