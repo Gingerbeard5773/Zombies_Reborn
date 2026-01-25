@@ -140,6 +140,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	layer.animation.AddFrame(4);
 	layer.SetRelativeZ(-10);
 	layer.SetFacingLeft(false);
+
+	MakeDamageFrame(this);
 }
 
 void onDie(CBlob@ this)
@@ -150,4 +152,16 @@ void onDie(CBlob@ this)
 	if (spike is null) return;
 
 	spike.server_Die();
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	MakeDamageFrame(this);
+}
+
+void MakeDamageFrame(CBlob@ this)
+{
+	const int frame_count = this.getSprite().animation.getFramesCount();
+	const int frame = frame_count - frame_count * (this.getHealth() / this.getInitialHealth());
+	this.getSprite().animation.frame = frame;
 }
