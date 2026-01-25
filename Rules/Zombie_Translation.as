@@ -193,6 +193,8 @@ namespace Translate
 
 	//tim
 	HolyGrenade     = Translate("Holy Hand Grenade\nDo mot askj me where I got this.,..",   "Святая ручная граната\nНе спрашывайти меня, откуда я это взял..."),
+	Bazooka         = Translate("Bazooka\nBoom! Boom! Boom! uses big bombsa.",              "Базука\nБум! Бум! Бум! Использует большие бомбы."),
+	Shotgun         = Translate("Shotgun\ni tested itm on some randome guy!! works good!!", "Дробовик\nя проверял его на каком-то случайном парне!! работает хорошо!!"),
 	Tim0            = Translate("I'll be takinge my leave soonm,,..",                       "Я скора уййду..."),
 	Tim1            = Translate("Goodbye.",                                                 "Прощай."),
 	Tim2            = Translate("Be carefule withe that!!.",                                "Буть с этим остарожен."),
