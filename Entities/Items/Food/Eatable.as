@@ -1,5 +1,5 @@
-#include "EatCommon.as";
-#include "Zombie_Translation.as";
+#include "EatCommon.as"
+#include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
 {
@@ -42,7 +42,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (caller is null) return;
 
 		Heal(caller, this);
-		this.SendCommand(this.getCommandID("heal command client"));
 	}
 }
 
