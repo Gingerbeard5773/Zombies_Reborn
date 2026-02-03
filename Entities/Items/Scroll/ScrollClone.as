@@ -1,10 +1,11 @@
 // scroll script that duplicates an object completely
 
-#include "GenericButtonCommon.as";
-#include "MakeScroll.as";
-#include "MakeSeed.as";
-#include "MakeCrate.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "MakeScroll.as"
+#include "MakeSeed.as"
+#include "MakeCrate.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -36,9 +37,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		CBlob@ aimBlob = getBlobByNetworkID(netid);
 		if (aimBlob is null) return;
-		
+
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
+
+		Statistics::server_Add("scrolls_used", 1, player);
 
 		CBlob@ clone = server_CreateClone(aimBlob, this.getPosition() + Vec2f(0, (this.getHeight() - aimBlob.getHeight()) / 2 + 4));
 		copyInventory(aimBlob, clone);

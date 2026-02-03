@@ -1,8 +1,9 @@
 // scroll script that puts any item into a crate
 
-#include "GenericButtonCommon.as";
-#include "MakeCrate.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "MakeCrate.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -34,9 +35,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		CBlob@ aimBlob = getBlobByNetworkID(netid);
 		if (aimBlob is null) return;
-		
+
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
+
+		Statistics::server_Add("scrolls_used", 1, player);
 
 		string name = aimBlob.getName();
 		if (name == "skelepedebody") name = "skelepede";

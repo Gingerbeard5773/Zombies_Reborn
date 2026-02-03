@@ -1,8 +1,9 @@
 // scroll script that repairs tiles around the player
 
-#include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
-#include "CustomTiles.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
+#include "CustomTiles.as"
+#include "Zombie_StatisticsCommon.as"
 
 const int radius = 30;
 const f32 radsq = radius * 8 * radius * 8;
@@ -23,9 +24,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
-		
+
+		Statistics::server_Add("scrolls_used", 1, player);
+
 		CMap@ map = getMap();
 		Vec2f pos = this.getPosition();
 		for (int x_step = -radius; x_step < radius; ++x_step)

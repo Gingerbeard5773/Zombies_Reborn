@@ -1,6 +1,7 @@
 // scroll script that converts stone tiles into gold ore tiles
 
-#include "GenericButtonCommon.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_StatisticsCommon.as"
 
 const int radius = 5;
 
@@ -19,7 +20,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (this.hasTag("dead")) return;
+
 		bool acted = false;
 		CMap@ map = getMap();
 		Vec2f pos = this.getPosition();
@@ -48,6 +53,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (acted)
 		{
+			Statistics::server_Add("scrolls_used", 1, player);
 			this.Tag("dead");
 			this.server_Die();
 		}

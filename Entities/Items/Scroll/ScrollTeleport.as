@@ -1,8 +1,9 @@
 // scroll script that teleports the player
 
-#include "GenericButtonCommon.as";
-#include "ParticleTeleport.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "ParticleTeleport.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -33,26 +34,28 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		
 		CBlob@ caller = player.getBlob();
 		if (caller is null) return;
-		
+
+		if (this.hasTag("dead")) return;
+		this.Tag("dead");
+
 		Vec2f aim;
 		if (!params.saferead_Vec2f(aim)) return;
 		
 		Vec2f pos = this.getPosition();
 		if ((aim - pos).Length() < 100.0f) return;
-		
+
 		CMap@ map = getMap();
 		TileType t = map.getTile(aim).type;
 		if (map.isTileSolid(t)) return;
-		
-		if (this.hasTag("dead")) return;
-		this.Tag("dead");
-		
+
+		Statistics::server_Add("scrolls_used", 1, player);
+
 		caller.server_DetachFromAll();
-		
+
 		caller.setPosition(aim);
 
 		this.server_Die();
-		
+
 		CBitStream stream;
 		stream.write_netid(caller.getNetworkID());
 		stream.write_Vec2f(aim);

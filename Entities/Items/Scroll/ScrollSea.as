@@ -1,7 +1,8 @@
 // scroll script that creates water
 
-#include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
 
 const u8 required_ground_at_Y = 8; //amount of ground tiles at the scroll's Y level needed to activate
 
@@ -21,6 +22,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (this.hasTag("dead")) return;
 
 		CMap@ map = getMap();
@@ -38,6 +42,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				map.server_setFloodWaterWorldspace(pos, true);
 				this.server_Die();
 				this.Tag("dead");
+				Statistics::server_Add("scrolls_used", 1, player);
 				
 				break;
 			}

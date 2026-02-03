@@ -1,7 +1,8 @@
 // scroll script that spawns a shark
 
-#include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -19,9 +20,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
-		
+
+		Statistics::server_Add("scrolls_used", 1, player);
+
 		CMap@ map = getMap();
 		const int rand = XORRandom(300) - 150;
 		const f32 posX = this.getPosition().x + rand + 25 * (rand > 0 ? 1 : -1);

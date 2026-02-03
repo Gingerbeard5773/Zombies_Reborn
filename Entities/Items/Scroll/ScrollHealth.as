@@ -1,7 +1,8 @@
 // scroll script that over-heals players in a radius
 
-#include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -56,6 +57,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			}
 			this.SendCommand(this.getCommandID("client_execute_spell"), stream);
 			
+			Statistics::server_Add("scrolls_used", 1, player);
 			this.Tag("dead");
 			this.server_Die();
 		}

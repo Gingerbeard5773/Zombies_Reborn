@@ -1,8 +1,9 @@
 // scroll script that converts stone ore into thick stone
 
-#include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
-#include "CustomTiles.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
+#include "CustomTiles.as"
+#include "Zombie_StatisticsCommon.as"
 
 const int radius = 15;
 
@@ -23,6 +24,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
 		if (this.hasTag("dead")) return;
+
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
 
 		bool acted = false;
 		CMap@ map = getMap();
@@ -56,6 +60,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		if (acted)
 		{
+			Statistics::server_Add("scrolls_used", 1, player);
+
 			this.Tag("dead");
 			this.server_Die();
 		}

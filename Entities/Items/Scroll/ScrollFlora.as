@@ -1,7 +1,8 @@
 // scroll script that spawns plants nearby
 
-#include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
 
 const int radius = 35;
 
@@ -21,8 +22,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
+
+		Statistics::server_Add("scrolls_used", 1, player);
 
 		CreateFlora(this);
 		

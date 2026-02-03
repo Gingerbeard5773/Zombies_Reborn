@@ -1,7 +1,8 @@
 // scroll script that makes enemies insta gib within some radius
 
-#include "Hitters.as";
-#include "GenericButtonCommon.as";
+#include "Hitters.as"
+#include "GenericButtonCommon.as"
+#include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -12,22 +13,20 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
 
-	CBitStream params;
-	params.write_netid(caller.getNetworkID());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), getTranslatedString("Use this to make all visible enemies instantly turn into a pile of gibs."), params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), getTranslatedString("Use this to make all visible enemies instantly turn into a pile of gibs."));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
-		if (this.hasTag("dead")) return;
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
 
-		u16 netid;
-		if (!params.saferead_netid(netid)) return;
-
-		CBlob@ caller = getBlobByNetworkID(netid);
+		CBlob@ caller = player.getBlob();
 		if (caller is null) return;
+
+		if (this.hasTag("dead")) return;
 		
 		Vec2f pos = this.getPosition();
 		bool hit = false;
@@ -51,6 +50,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (hit)
 		{
+			Statistics::server_Add("scrolls_used", 1, player);
 			this.Tag("dead");
 			this.server_Die();
 		}
