@@ -292,7 +292,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 						const f32 frac = (material_noise.Fractal(i*0.1f,j*0.05f) - 0.5f) * 2.0f;
 						if (frac > 0.4)
 						{
-							World[i][j] = CMap::tile_ironore;
+							World[i][j] = CMap::tile_ironore + r.NextRanged(5);
 						}
 						else if (frac < -0.4)
 						{
@@ -315,7 +315,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 					else
 					{
 						const f32 frac = (material_noise.Fractal(i*0.1f,j*0.05f) - 0.5f) * 2.0f;
-						if (frac > 0.3) World[i][j] = CMap::tile_ironore;
+						if (frac > 0.3) World[i][j] = CMap::tile_ironore + r.NextRanged(5);
 						else if (frac < -0.3) World[i][j] = CMap::tile_coal;
 					}
 				}
