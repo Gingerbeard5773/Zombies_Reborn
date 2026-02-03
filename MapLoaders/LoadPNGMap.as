@@ -38,7 +38,7 @@ class ZombiePNGLoader : PNGLoader
 	}
 };
 
-bool LoadMap(CMap@ map, const string& in fileName)
+bool LoadMap(CMap@ map, const string&in fileName)
 {
 	map.legacyTileMinimap = false;
 
@@ -75,6 +75,24 @@ bool LoadMap(CMap@ map, const string& in fileName)
 			rules.set_s32("new map seed", -1);
 			procedural_map_gen = true;
 		}
+	}
+
+	if (isServer())
+	{
+		string[] name = fileName.split('/');
+		string map_name = name[name.length - 1];
+		map_name = getFilenameWithoutExtension(map_name);
+
+		if (procedural_map_gen)
+		{
+			map_name = map_seed + "";
+		}
+
+		rules.set_string("map_name", map_name);
+		rules.Sync("map_name", true);
+
+		rules.set_s32("map_seed", map_seed);
+		rules.Sync("map_seed", true);
 	}
 	
 	if (procedural_map_gen)

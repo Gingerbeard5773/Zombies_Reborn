@@ -267,6 +267,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 	const f32 dayTime = map.getDayTime();
 	const u16 timDay = this.get_u16("tim_day");
 	const string techData = SerializeTechTree();
+	const s32 map_seed = this.get_s32("map_seed");
 
 	// save data to config file
 	config.add_string("map_dimensions", map_dimensions);
@@ -282,6 +283,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 	config.add_f32("day_time", dayTime);
 	config.add_u16("tim_day", timDay);
 	config.add_string("tech_data", techData);
+	config.add_s32("map_seed", map_seed);
 
 	config.saveFile(SaveFile+SaveSlot);
 }
@@ -352,17 +354,25 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 	const f32 dayTime = config.read_f32("day_time");
 	const u16 timDay = config.read_u16("tim_day", 15);
 	const string[]@ techData = config.read_string("tech_data").split(";");
+	const s32 mapSeed = config.read_s32("map_seed", 0);
 
 	//dirt data has to be loaded late because of an engine issue..
 	LoadDirt(map, dirtData.split(";"));
 
 	this.set_u16("day_number", dayNumber);
 	this.Sync("day_number", true);
-	
+
 	this.set_u16("tim_day", timDay);
+	this.Sync("tim_day", true);
 
 	map.SetDayTime(dayTime);
 	this.set_u16("last_day_hour", Maths::Roundf(dayTime*10));
+
+	this.set_s32("map_seed", mapSeed);
+	this.Sync("map_seed", true);
+
+	this.set_string("map_name", mapSeed+"");
+	this.Sync("map_name", true);
 
 	//overwrite technology
 	Technology@[]@ techTree = getTechTree();

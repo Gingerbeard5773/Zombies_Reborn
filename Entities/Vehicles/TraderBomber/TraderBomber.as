@@ -1,10 +1,11 @@
-#include "VehicleCommon.as";
-#include "Hitters.as";
-#include "EmotesCommon.as";
-#include "ParticleTeleport.as";
-#include "Zombie_Translation.as";
-#include "TraderShopCommon.as";
-#include "Requirements.as";
+#include "VehicleCommon.as"
+#include "Hitters.as"
+#include "EmotesCommon.as"
+#include "ParticleTeleport.as"
+#include "Zombie_Translation.as"
+#include "TraderShopCommon.as"
+#include "Requirements.as"
+#include "Zombie_BestiaryCommon.as"
 
 const u8 stay_minutes = 2;
 const f32 up_speed = 1.0f;
@@ -18,6 +19,8 @@ void onInit(CBlob@ this)
 	said_hello = false;
 	this.chatBubbleOffset = Vec2f(0, 48);
 	this.SetChatBubbleFont("menu");
+	
+	Bestiary::client_Unlock("trader");
 	
 	this.SetMapEdgeFlags(u8(CBlob::map_collide_sides));
 	

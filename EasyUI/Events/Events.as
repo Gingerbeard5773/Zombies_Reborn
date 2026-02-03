@@ -20,6 +20,7 @@ enum Event
     Parent,
 
     // Miscellaneous
+    Update,
     Visibility,
     Percentage,
     Player,
@@ -31,6 +32,7 @@ enum Event
     Clickable,
     Text,
     Font,
+    Team,
     Color,
     Wrap,
     MaxLines,
@@ -39,6 +41,7 @@ enum Event
     Spacing,
     CellWrap,
     FlowDirection,
+    FillDirection,
     ScrollIndex,
 
     // Interaction
@@ -48,4 +51,9 @@ enum Event
     StartDrag,
     EndDrag,
     Scroll,
+
+    // Outside Influence
+    Statistic,
+    Achievement,
+    Bestiary,
 }

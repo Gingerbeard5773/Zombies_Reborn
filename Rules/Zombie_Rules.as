@@ -2,14 +2,11 @@
 
 #define SERVER_ONLY
 
-#include "Zombie_GlobalMessagesCommon.as";
-#include "Zombie_Statistics.as";
-#include "Zombie_DaysCommon.as";
-#include "GetSurvivors.as";
+#include "Zombie_GlobalMessagesCommon.as"
+#include "Zombie_DaysCommon.as"
+#include "Zombie_StatisticsCommon.as"
+#include "GetSurvivors.as"
 
-u16 days_to_survive = -1; //days players must survive to win, -1 to disable win condition
-
-const u8 GAME_WON = 5;
 const u8 nextmap_seconds = 15;
 u8 seconds_till_nextmap = nextmap_seconds;
 bool hitRecord = false;
@@ -31,13 +28,10 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	ConfigFile cfg;
-	if (cfg.loadFile("Zombie_Vars.cfg"))
-	{
-		days_to_survive = cfg.exists("days_to_survive") ? cfg.read_u16("days_to_survive") : -1;
-	}
-	
-	this.set_u16("day_record", server_getRecordDay());
+	ConfigFile@ cfg = Statistics::openConfig();
+	const u16 record_day = cfg.exists("record_day") ? cfg.read_u16("record_day") : 1;
+
+	this.set_u16("day_record", record_day);
 	this.Sync("day_record", true);
 
 	this.set_u16("day_number", 0);
@@ -94,18 +88,16 @@ void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 	this.set_u16("day_number", day_number);
 	this.Sync("day_number", true);
 
-	bool new_record;
-	const u16 recordDay = server_getRecordDay(day_number, new_record);
-
-	//end game if we reached the last day
-	if (day_number >= days_to_survive)
+	ConfigFile@ cfg = Statistics::openConfig();
+	const u16 record_day = cfg.exists("record_day") ? cfg.read_u16("record_day") : 1;
+	if (day_number > record_day)
 	{
-		this.SetCurrentState(GAME_WON);
-		string[] inputs = {day_number+""};
-		getEndGameStatistics(this, @inputs);
-		server_SendGlobalMessage(this, 2, nextmap_seconds, inputs);
+		cfg.add_u16("record_day", day_number);
+		cfg.add_u16("record_day_previous", record_day);
+		cfg.saveFile(Statistics::filename);
 	}
-	else if (new_record && !hitRecord)
+
+	if (day_number > record_day && !hitRecord)
 	{
 		hitRecord = true;
 		const string[] inputs = {day_number+""};
@@ -121,16 +113,12 @@ void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 // Protocols for when the game ends
 void onGameEnd(CRules@ this)
 {
-	const u8 GAME_STATE = this.getCurrentState();
-	
 	//timer till next map
-	if (GAME_STATE == GAME_OVER || GAME_STATE == GAME_WON)
+	if (this.getCurrentState() != GAME_OVER) return;
+
+	if (seconds_till_nextmap-- == 0)
 	{
-		seconds_till_nextmap--;
-		if (seconds_till_nextmap == 0)
-		{
-			LoadNextMap();
-		}
+		LoadNextMap();
 	}
 }
 
@@ -152,7 +140,6 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 	
 	this.SetCurrentState(GAME_OVER);
 	string[] inputs = {dayNumber+""};
-	getEndGameStatistics(this, @inputs);
 	server_SendGlobalMessage(this, 1, nextmap_seconds, inputs);
 }
 

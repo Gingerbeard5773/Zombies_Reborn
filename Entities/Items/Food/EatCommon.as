@@ -1,3 +1,4 @@
+#include "Zombie_StatisticsCommon.as"
 
 bool canEat(CBlob@ blob)
 {
@@ -60,6 +61,12 @@ void Heal(CBlob@ this, CBlob@ food)
 		const f32 heal = f32(heal_amount) * 0.125f;
 		const f32 healthRatio = heal / (1.5f / initialHealth); //ratio the health between classes
 		this.server_SetHealth(oldHealth + healthRatio);
+	}
+	
+	CPlayer@ player = this.getPlayer();
+	if (player !is null)
+	{
+		Statistics::server_Add("food_eaten", 1, player);
 	}
 
 	food.Tag("healed");

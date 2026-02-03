@@ -1,9 +1,10 @@
 // Zombie Fortress chat commands
 
-#include "Zombie_SoftBansCommon.as";
-#include "Zombie_GlobalMessagesCommon.as";
-#include "Zombie_WarnsCommon.as";
-#include "MapSaver.as";
+#include "Zombie_SoftBansCommon.as"
+#include "Zombie_GlobalMessagesCommon.as"
+#include "Zombie_WarnsCommon.as"
+#include "Zombie_StatisticsCommon.as"
+#include "MapSaver.as"
 
 //Use ' !list ' in game to view the commands list.
 
@@ -14,6 +15,7 @@ string CommandsList()
 	"!time [day time] : set the time of day\n" +
 	"!dayspeed [minutes] : set the speed of the day\n" +
 	"!day [day number] : set the day\n" +
+	"!dayrecord [day number] : set the day record\n" +
 	"!class [name] : set your character's blob\n" +
 	"!cursor [blobname] [amount] : spawn a blob at your cursor\n" +
 	"!respawn [username] : respawn a player\n" +
@@ -162,8 +164,25 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 	}
 	else if (tokens[0] == "!day" && tokens.length > 1)
 	{
-		this.set_u16("day_number", parseInt(tokens[1]));
+		const u16 day = parseInt(tokens[1]);
+		this.set_u16("day_number", day);
 		this.Sync("day_number", true);
+
+		const string message = "Set the day to "+day;
+		server_SendGlobalMessage(this, message, 5, color_white.color, player);
+	}
+	else if (tokens[0] == "!dayrecord" && tokens.length > 1)
+	{
+		ConfigFile@ cfg = Statistics::openConfig();
+		const u16 record_day = parseInt(tokens[1]);
+		cfg.add_u16("record_day", record_day);
+		cfg.saveFile(Statistics::filename);
+
+		this.set_u16("day_record", record_day);
+		this.Sync("day_record", true);
+
+		const string message = "Set the day record to "+record_day;
+		server_SendGlobalMessage(this, message, 5, color_white.color, player);
 	}
 	else if (tokens[0] == "!carnage") //kill all undeads
 	{
@@ -171,12 +190,14 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 		getBlobsByTag("undead", @blobs);
 		for (u16 i = 0; i < blobs.length; ++i)
 		{
-			blobs[i].server_Die();
+			CBlob@ undead = blobs[i];
+			undead.Tag("ignore kill");
+			undead.server_Die();
 		}
 	}
 	else if (tokens[0] == "!seed")
 	{
-		const int map_seed = getMap().get_s32("map seed");
+		const int map_seed = this.get_s32("map_seed");
 		const string message = "MAP SEED : "+map_seed;
 		print(message);
 		server_SendGlobalMessage(this, message, 10, color_white.color, player);
@@ -200,7 +221,7 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 	}
 	else if (tokens[0] == "!loadgen")
 	{
-		int map_seed = getMap().get_s32("map seed");
+		int map_seed = this.get_s32("map_seed");
 		if (tokens.length > 1)
 		{
 			map_seed = parseInt(tokens[1]); // direct seed input
@@ -256,7 +277,7 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 			"last_drop", "hadattached", "time till departure", "move_direction", "bowid", "greg_next_grab",
 			"brain_delay", "brain_player_target", "brain_destination", "skelepede_head_netid", "stun_time",
 			"died", "coins on death", "auto_enrage_time", "explosive_radius", "attack distance", "new map seed",
-			"colour", "version", "sleeper_name", "score_undead_killed_total", "researching",
+			"colour", "version", "sleeper_name", "undead_killed_total", "researching",
 			"buildermats_time", "archermats_time", "just hit dirt"
 		};
 		

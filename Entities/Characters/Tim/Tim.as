@@ -1,10 +1,11 @@
 //Gingerbeard @ November 17, 2024
 
-#include "EmotesCommon.as";
-#include "ParticleTeleport.as";
-#include "Zombie_Translation.as";
-#include "TraderShopCommon.as";
-#include "Requirements.as";
+#include "EmotesCommon.as"
+#include "ParticleTeleport.as"
+#include "Zombie_Translation.as"
+#include "TraderShopCommon.as"
+#include "Requirements.as"
+#include "Zombie_BestiaryCommon.as"
 
 const u8 stay_minutes = 4;
 
@@ -15,7 +16,9 @@ void onInit(CBlob@ this)
 	this.sendonlyvisible = false;
 	
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
-	
+
+	Bestiary::client_Unlock("tim");
+
 	addOnShopMadeItem(this, @onShopMadeItem);
 	
 	Random seed(this.getNetworkID());

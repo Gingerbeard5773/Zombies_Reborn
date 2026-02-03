@@ -5,8 +5,8 @@
 
 #define CLIENT_ONLY;
 
-#include "Zombie_GlobalMessagesCommon.as";
-#include "Zombie_Translation.as";
+#include "Zombie_GlobalMessagesCommon.as"
+#include "Zombie_Translation.as"
 
 GlobalMessage@[] global_messages;
 
@@ -24,13 +24,11 @@ shared class GlobalMessage
 	}
 }
 
-const string Statistics = Translate::Stat0+"\n\n"+Translate::Stat1+"\n\n"+Translate::Stat2+"\n\n"+Translate::Stat3+"\n\n"+Translate::Stat4;
-
 const string[] server_messages =
 {
 	Translate::Day,
-	Translate::GameOver+"\n\n"+Statistics,
-	Translate::GameWin+"\n\n"+Statistics,
+	Translate::GameOver,
+	Translate::GameWin,
 	Translate::Trader,
 	Translate::Sedgwick,
 	Translate::Migrant1,

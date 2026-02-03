@@ -1,13 +1,14 @@
 
-#include "Hitters.as";
-#include "ShieldCommon.as";
-#include "FireParticle.as";
-#include "ArcherCommon.as";
-#include "BombCommon.as";
-#include "SplashWater.as";
-#include "TeamStructureNear.as";
-#include "KnockedCommon.as";
-#include "Zombie_TechnologyCommon.as";
+#include "Hitters.as"
+#include "ShieldCommon.as"
+#include "FireParticle.as"
+#include "ArcherCommon.as"
+#include "BombCommon.as"
+#include "SplashWater.as"
+#include "TeamStructureNear.as"
+#include "KnockedCommon.as"
+#include "Zombie_TechnologyCommon.as"
+#include "Zombie_StatisticsCommon.as"
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -47,6 +48,24 @@ void onInit(CBlob@ this)
 	this.server_SetTimeToDie(20);
 
 	const u8 arrowType = this.get_u8("arrow type");
+
+	CPlayer@ damageOwner = this.getDamageOwnerPlayer();
+	if (damageOwner !is null && damageOwner.isMyPlayer())
+	{
+		const string[] statistic_names =
+		{
+			"arrows_shot",
+			"water_arrows_shot",
+			"fire_arrows_shot",
+			"bomb_arrows_shot",
+			"molotov_arrows_shot",
+			"fireworks_launched"
+		};
+
+		const string statistic = arrowType < statistic_names.length ? statistic_names[arrowType] : statistic_names[0];
+
+		Statistics::Add(statistic, 1);
+	}
 
 	//I CANNOT BE ASSED TO MESS WITH ARROW.AS!!!
 	//ENJOY MY ADDSCRIPT HACK

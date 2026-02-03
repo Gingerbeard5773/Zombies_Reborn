@@ -2,52 +2,105 @@
 
 #define SERVER_ONLY
 
-#include "GameplayEventsCommon.as";
-#include "CustomTiles.as";
+#include "GameplayEventsCommon.as"
+#include "CustomTiles.as"
+#include "Zombie_StatisticsCommon.as"
 
 const int coinsOnRestart = 0;
 const int coinsOnDeathLosePercent = 15;
 
-const int coinsOnBuildStoneBlock = 3;
-const int coinsOnBuildStoneDoor = 5;
-const int coinsOnBuildWood = 1;
-const int coinsOnBuildWorkshop = 10;
-const int coinsOnBuildStructure = 30;
-const int coinsOnBuildComponent = 5;
-const int coinsOnBuildIron = 5;
-const int coinsOnBuildIronDoor = 10;
-
-const string[] structures =
-{
-	"windmill",
-	"nursery",
-	"kitchen",
-	"forge",
-	"armory",
-	"library",
-	"apothecary"
-};
-
-const string[] components =
-{
-	"bolter",
-	"dispenser",
-	"obstructor",
-	"spiker"
-};
-
 string[] names;
+dictionary awards;
+
+class CoinsAward
+{
+	string name;
+	u16 coins;
+	string statistic;
+
+	CoinsAward(const string&in name, const u16&in coins, const string&in statistic = "")
+	{
+		this.name = name;
+		this.coins = coins;
+		this.statistic = statistic;
+	}
+}
+
+void AddAward(const u16&in tile, const u16&in coins, const string&in statistic = "")
+{
+	AddAward("tile_" + tile, coins, statistic);
+}
+
+void AddAward(const string&in name, const u16&in coins, const string&in statistic = "")
+{
+	CoinsAward award(name, coins, statistic);
+	awards.set(name, @award);
+}
 
 void onInit(CRules@ this)
 {
 	CGameplayEvent@ func = @awardCoins;
 	this.set("awardCoins handle", @func);
+
+	AddAward(CMap::tile_wood,    1,   "wood_blocks_placed");
+	AddAward(CMap::tile_castle,  3,   "stone_blocks_placed");
+	AddAward(CMap::tile_iron,    5,   "iron_blocks_placed");
+	AddAward(CMap::tile_ground,  5,   "dirt_blocks_placed");
+
+	AddAward("stone_door",       5,   "doors_placed");
+	AddAward("trap_block",       3,   "trap_blocks_placed");
+	AddAward("spikes",           3,   "spikes_placed");
+
+	AddAward("wooden_door",      1,   "doors_placed");
+	AddAward("wooden_platform",  1,   "platforms_placed");
+	AddAward("bridge",           1,   "platforms_placed");
+	AddAward("ladder",           1,   "ladders_placed");
+
+	AddAward("iron_door",        10,  "doors_placed");
+	AddAward("iron_platform",    10,  "platforms_placed");
+	AddAward("iron_spikes",      10,  "spikes_placed");
+
+	AddAward("building",         10,  "buildings_placed");
+	AddAward("windmill",         30,  "buildings_placed");
+	AddAward("kitchen",          30,  "buildings_placed");
+	AddAward("forge",            30,  "buildings_placed");
+	AddAward("armory",           30,  "buildings_placed");
+	AddAward("library",          50,  "buildings_placed");
+	AddAward("apothecary",       30,  "buildings_placed");
+
+	AddAward("bolter",           5,   "components_placed");
+	AddAward("dispenser",        5,   "components_placed");
+	AddAward("obstructor",       5,   "components_placed");
+	AddAward("spiker",           5,   "components_placed");
+	AddAward("magazine",         5,   "components_placed");
+	AddAward("pressure_plate",   5,   "components_placed");
+
+	AddAward("wire",             2,   "components_placed");
+	AddAward("elbow",            2,   "components_placed");
+	AddAward("tee",              2,   "components_placed");
+	AddAward("junction",         2,   "components_placed");
+	AddAward("diode",            2,   "components_placed");
+	AddAward("resistor",         2,   "components_placed");
+	AddAward("inverter",         2,   "components_placed");
+	AddAward("oscillator",       2,   "components_placed");
+	AddAward("transistor",       2,   "components_placed");
+	AddAward("toggle",           2,   "components_placed");
+	AddAward("randomizer",       2,   "components_placed");
+	AddAward("lever",            2,   "components_placed");
+	AddAward("button",           2,   "components_placed");
+	AddAward("coin_slot",        2,   "components_placed");
+	AddAward("sensor",           2,   "components_placed");
+	AddAward("lamp",             2,   "components_placed");
+	AddAward("emitter",          2,   "components_placed");
+	AddAward("receiver",         2,   "components_placed");
 }
 
 void onReload(CRules@ this)
 {
 	CGameplayEvent@ func = @awardCoins;
 	this.set("awardCoins handle", @func);
+
+	onInit(this);
 }
 
 void onRestart(CRules@ this)
@@ -112,61 +165,33 @@ void awardCoins(CBitStream@ params)
 		u16 tile;
 		if (!params.saferead_u16(tile)) return;
 
-		if (tile == CMap::tile_castle)
-		{
-			coins = coinsOnBuildStoneBlock;
-		}
-		else if (tile == CMap::tile_wood)
-		{
-			coins = coinsOnBuildWood;
-		}
-		else if (tile == CMap::tile_iron)
-		{
-			coins = coinsOnBuildIron;
-		}
-		player.setScore(player.getScore() + 1);
+		coins = getCoinsFromAward("tile_" + tile, player);
+
+		Statistics::server_Add("blocks_placed", 1, player);
 	}
 	else if (event_id == CGameplayEvent_IDs::BuildBlob)
 	{
 		string name;
 		if (!params.saferead_string(name)) return;
 
-		if (name == "trap_block" ||
-			name == "spikes")
-		{
-			coins = coinsOnBuildStoneBlock;
-		}
-		else if (name == "stone_door")
-		{
-			coins = coinsOnBuildStoneDoor;
-		}
-		else if (name == "wooden_platform" ||
-				name == "wooden_door" ||
-				name == "bridge" ||
-				name == "ladder")
-		{
-			coins = coinsOnBuildWood;
-		}
-		else if (name == "building")
-		{
-			coins = coinsOnBuildWorkshop;
-		}
-		else if (structures.find(name) > -1)
-		{
-			coins = coinsOnBuildStructure;
-		}
-		else if (components.find(name) > -1)
-		{
-			coins = coinsOnBuildComponent;
-		}
-		else if (name == "iron_door" || name == "iron_platform" || name == "iron_spikes")
-		{
-			coins = coinsOnBuildIronDoor;
-		}
+		coins = getCoinsFromAward(name, player);
 	}
 
 	if (coins > 0)
 	{
 		player.server_setCoins(player.getCoins() + coins);
 	}
+}
+
+u16 getCoinsFromAward(const string&in name, CPlayer@ player)
+{
+	CoinsAward@ award;
+	if (!awards.get(name, @award)) return 0;
+
+	if (!award.statistic.isEmpty())
+	{
+		Statistics::server_Add(award.statistic, 1, player);
+	}
+
+	return award.coins;
 }

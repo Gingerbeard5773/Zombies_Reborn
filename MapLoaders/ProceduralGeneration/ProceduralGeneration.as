@@ -23,8 +23,6 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 
 	Random r(map_seed);
 
-	map.set_s32("map seed", map_seed);
-
 	Noise@ map_noise = Noise(r.Next());
 	Noise@ material_noise = Noise(r.Next());
 	

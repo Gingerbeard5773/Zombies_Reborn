@@ -57,10 +57,7 @@ void onTick(CRules@ this)
 			server_CreateBlob("wraith", -1, skeletons[skeletons_length].getPosition());
 			for (u8 i = 0; i < skeleton_merge_amount; i++)
 			{
-				CBlob@ skeleton = skeletons[skeletons_length];
-				skeleton.SetPlayerOfRecentDamage(null, 1.0f);
-				skeleton.server_Die();
-
+				KillMerged(skeletons[skeletons_length]);
 				skeletons_length--;
 				undead_count--;
 			}
@@ -75,10 +72,7 @@ void onTick(CRules@ this)
 			server_CreateBlob("zombieknight", -1, zombies[zombies_length].getPosition());
 			for (u8 i = 0; i < zombie_merge_amount; i++)
 			{
-				CBlob@ zombie = zombies[zombies_length];
-				zombie.SetPlayerOfRecentDamage(null, 1.0f);
-				zombie.server_Die();
-
+				KillMerged(zombies[zombies_length]);
 				zombies_length--;
 				undead_count--;
 			}
@@ -93,10 +87,7 @@ void onTick(CRules@ this)
 			server_CreateBlob("horror", -1, zombieknights[zombieknights_length].getPosition());
 			for (u8 i = 0; i < zombieknight_merge_amount; i++)
 			{
-				CBlob@ zombieknight = zombieknights[zombieknights_length];
-				zombieknight.SetPlayerOfRecentDamage(null, 1.0f);
-				zombieknight.server_Die();
-
+				KillMerged(zombieknights[zombieknights_length]);
 				zombieknights_length--;
 				undead_count--;
 			}
@@ -111,10 +102,7 @@ void onTick(CRules@ this)
 			server_CreateBlob("darkwraith", -1, horrors[horrors_length].getPosition());
 			for (u8 i = 0; i < horror_merge_amount; i++)
 			{
-				CBlob@ horror = horrors[horrors_length];
-				horror.SetPlayerOfRecentDamage(null, 1.0f);
-				horror.server_Die();
-
+				KillMerged(horrors[horrors_length]);
 				horrors_length--;
 				undead_count--;
 			}
@@ -122,4 +110,11 @@ void onTick(CRules@ this)
 
 		if (undead_count < merge_zombies) return;
 	}
+}
+
+void KillMerged(CBlob@ blob)
+{
+	blob.SetPlayerOfRecentDamage(null, 1.0f);
+	blob.Tag("ignore kill");
+	blob.server_Die();
 }

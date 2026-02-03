@@ -1,7 +1,8 @@
 //Gingerbeard @ July 28, 2024
-#include "GunCommon.as";
-#include "Zombie_TechnologyCommon.as";
-#include "GetBackpack.as";
+#include "GunCommon.as"
+#include "Zombie_TechnologyCommon.as"
+#include "GetBackpack.as"
+#include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -132,6 +133,12 @@ void ClientFire(CBlob@ this, CBlob@ holder, GunInfo@ gun)
 {
 	Vec2f pos = this.getPosition();
 	Vec2f vel = holder.getAimPos() - pos;
+
+	CPlayer@ player = holder.getPlayer();
+	if (player !is null && player.isMyPlayer())
+	{
+		Statistics::Add("guns_fired", 1);
+	}
 
 	CBitStream params;
 	params.write_Vec2f(pos);

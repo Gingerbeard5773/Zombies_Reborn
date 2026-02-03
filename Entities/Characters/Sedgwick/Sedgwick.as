@@ -1,7 +1,8 @@
 // antagonist asshole
 
-#include "ParticleTeleport.as";
-#include "GetSurvivors.as";
+#include "ParticleTeleport.as"
+#include "GetSurvivors.as"
+#include "Zombie_BestiaryCommon.as"
 
 enum SpellNum
 {
@@ -375,6 +376,7 @@ void server_SetSpell(CBlob@ this, const u8&in spell_num)
 
 void SedgwickDeparture(CBlob@ this, const u8&in countdown)
 {
+	Bestiary::client_Unlock("sedgwick");
 	this.setKeyPressed(key_action1, false);
 	this.SetLight(false);
 	if (this.getTimeToDie() < 0 && isServer())
