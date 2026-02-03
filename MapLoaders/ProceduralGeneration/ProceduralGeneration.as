@@ -16,6 +16,7 @@ enum BiomeType
 
 const f32 tileSize = 8.0f;
 
+[jit::ignore_perf_warnings]
 bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 {
 	if (!isServer()) return true;

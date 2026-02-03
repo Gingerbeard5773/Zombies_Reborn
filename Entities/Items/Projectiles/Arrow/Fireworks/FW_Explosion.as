@@ -44,6 +44,7 @@ namespace Fireworks
         //bullet.growth = 0.02f;
     }*/
 
+    [jit::ignore_perf_warnings]
     void Explode(Vec2f at, Vec2f velin)
     {
         EnsureRegistered();
