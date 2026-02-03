@@ -224,5 +224,5 @@ void DrawCoinsOnHUD(CBlob@ this, Vec2f origin)
 
 	GUI::DrawIconByName("$COIN$", origin);
 	GUI::SetFont("menu");
-	GUI::DrawText("" + player.getCoins(), origin + Vec2f(4, 24), color_white);
+	GUI::DrawTextCentered("" + player.getCoins(), origin + Vec2f(15, 32), color_white);
 }
