@@ -38,6 +38,7 @@
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
 
+[jit::ignore_perf_warnings]
 void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const string&in gamemode_override = "")
 {
 	InitCosts();
@@ -345,7 +346,6 @@ ConfigFile@ openBlockBindingsConfig()
 	{
 		// write EmoteBinding.cfg to Cache
 		cfg.saveFile("BlockBindings.cfg");
-
 	}
 
 	return cfg;
