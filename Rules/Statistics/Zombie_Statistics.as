@@ -9,7 +9,7 @@
 #include "Events.as"
 
 const u32 SLIDE_TIME = 15;
-const u32 HOLD_TIME  = 120;
+const u32 HOLD_TIME  = 180;
 const u32 TOTAL_TIME = SLIDE_TIME * 2 + HOLD_TIME;
 
 u32 time = 0;
@@ -17,11 +17,17 @@ Achievement@[] unlocked_achievements;
 
 void onInit(CRules@ this)
 {
-	onUnlockAchievementHandle@ onAchievement = @onUnlockAchievement;
-	this.set("onUnlockAchievement Handle", @onAchievement);
-	
-	onUnlockBestiaryEntryHandle@ onBestiaryEntry = @onUnlockBestiaryEntry;
-	this.set("onUnlockBestiaryEntry Handle", @onBestiaryEntry);
+	if (isClient())
+	{
+		dictionary statistics_set;
+		this.set("statistics_set", @statistics_set);
+
+		onUnlockAchievementHandle@ onAchievement = @onUnlockAchievement;
+		this.set("onUnlockAchievement Handle", @onAchievement);
+
+		onUnlockBestiaryEntryHandle@ onBestiaryEntry = @onUnlockBestiaryEntry;
+		this.set("onUnlockBestiaryEntry Handle", @onBestiaryEntry);
+	}
 
 	this.addCommandID("client_unlock_achievement");
 	this.addCommandID("client_add_statistic");
@@ -32,6 +38,11 @@ void onInit(CRules@ this)
 	{
 		client_ResetCurrentStats(this);
 	}
+}
+
+void onReload(CRules@ this)
+{
+	onInit(this);
 }
 
 void onRestart(CRules@ this)
@@ -59,14 +70,22 @@ void client_ResetCurrentStats(CRules@ this)
 	ConfigFile@ cfg = Statistics::openConfig();
 	for (u8 i = 0; i < Statistics::statistic_names.length; i++)
 	{
-		cfg.add_u32(Statistics::statistic_names[i] + Statistics::current, 0);
+		const string statistic_name = Statistics::statistic_names[i];
+		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
+		string[]@ values = statistic.split(" ");
+
+		cfg.add_string(statistic_name, "0 " + values[Statistics::AllTime]);
 	}
 
 	for (u8 i = 0; i < Bestiary::entries.length; i++)
 	{
-		cfg.add_u32(Bestiary::entries[i].name + Statistics::current, 0);
+		const string statistic_name = Bestiary::entries[i].name;
+		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
+		string[]@ values = statistic.split(" ");
+
+		cfg.add_string(statistic_name, "0 " + values[Statistics::AllTime]);
 	}
-	
+
 	cfg.add_s32("map_seed", this.get_s32("map_seed"));
 
 	cfg.saveFile(Statistics::filename);
@@ -76,7 +95,7 @@ void server_ResetPlayerStats(CRules@ this)
 {
 	if (!isServer()) return;
 
-	//reset player scores
+	// Reset player scores
 	for (u8 i = 0; i < getPlayerCount(); i++)
 	{
 		CPlayer@ player = getPlayer(i);
@@ -96,11 +115,14 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 {
 	if (this.isGameOver() || blob is null) return;
 
-	CPlayer@ victim = blob.getPlayer();
-	if (victim !is null)
+	if (isServer())
 	{
-		victim.setDeaths(victim.getDeaths() + 1);
-		Statistics::server_Add("deaths", 1, victim);
+		CPlayer@ victim = blob.getPlayer();
+		if (victim !is null)
+		{
+			victim.setDeaths(victim.getDeaths() + 1);
+			Statistics::server_Add("deaths", 1, victim);
+		}
 	}
 
 	if (!blob.hasTag("undead") || blob.hasTag("ignore kill")) return;
@@ -111,12 +133,13 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 		this.Sync("undead_killed_total", true);
 	}
 
-	CPlayer@ hitterPly = blob.getPlayerOfRecentDamage();
-	if (hitterPly is null) return;
+	CPlayer@ hitter_player = blob.getPlayerOfRecentDamage();
+	if (hitter_player is null) return;
 
-	hitterPly.setKills(hitterPly.getKills() + 1);
+	const int kills = hitter_player.getKills() + 1;
+	hitter_player.setKills(kills);
 
-	if (hitterPly.isMyPlayer())
+	if (hitter_player.isMyPlayer())
 	{
 		const string name = blob.hasTag("jerry") ? "jerry" : blob.getName();
 		ConfigFile@ cfg = Statistics::openConfig();
@@ -130,13 +153,34 @@ void onTick(CRules@ this)
 {
 	if (!isClient()) return;
 
+	TickStatistics(this);
 	TickPlayTime();
 	TickAchievementPane();
 }
 
-void onRender(CRules@ this)
+void TickStatistics(CRules@ this)
 {
-	RenderAchievementPane();
+	if (getGameTime() % 30 != 0) return;
+	
+	// Statistics are batched and then processed gradually over time
+	// This is done because writing to config files is extremely expensive and can cause noticeable frame drops if done too often
+	
+	dictionary@ statistics_set;
+	if (!this.get("statistics_set", @statistics_set)) return;
+	
+	const string[]@ statistic_keys = statistics_set.getKeys();
+	if (statistic_keys.length == 0) return;
+	
+	const string statistic_name = statistic_keys[XORRandom(statistic_keys.length)];
+
+	u32 value = 0;
+	if (!statistics_set.get(statistic_name, value)) return;
+
+	Statistics::AddToConfig(statistic_name, value);
+
+	onAddStatistic(statistic_name, value);
+
+	statistics_set.delete(statistic_name);
 }
 
 void TickPlayTime()
@@ -159,6 +203,11 @@ void TickAchievementPane()
 	}
 }
 
+void onRender(CRules@ this)
+{
+	RenderAchievementPane();
+}
+
 void RenderAchievementPane()
 {
 	if (unlocked_achievements.length == 0) return;
@@ -170,12 +219,14 @@ void RenderAchievementPane()
 
 	GUI::SetFont("medium font");
 
-	const string title = Translate::AchievementCompleted;
-	const string desc  = name(current.description);
+	const string title = name(current.description);
+	const string description  = desc(current.description);
 
 	Vec2f title_dim, desc_dim;
 	GUI::GetTextDimensions(title, title_dim);
-	GUI::GetTextDimensions(desc, desc_dim);
+	
+	GUI::SetFont("menu");
+	GUI::GetTextDimensions(description, desc_dim);
 
 	const f32 text_width  = Maths::Max(title_dim.x, desc_dim.x);
 	const f32 text_height = title_dim.y + desc_dim.y + margin;
@@ -200,8 +251,11 @@ void RenderAchievementPane()
 
 	// Text
 	Vec2f text_tl = tl + Vec2f(margin * 2 + icon_pane_dim.x, margin);
-	GUI::DrawText(title, text_tl, color_black);
-	GUI::DrawText(desc, text_tl + Vec2f(0, title_dim.y + margin), current.rarity);
+	SColor color = current.rarity == color_white ? color_black : current.rarity;
+	GUI::SetFont("medium font");
+	GUI::DrawText(title, text_tl, color);
+	GUI::SetFont("menu");
+	GUI::DrawText(description, text_tl + Vec2f(0, title_dim.y + margin), color_black);
 }
 
 f32 getSlidePercent()
@@ -219,11 +273,50 @@ f32 getSlidePercent()
 	return 1.0f - f32(t) / SLIDE_TIME;
 }
 
+void onAddStatistic(string statistic_name, u32 amount)
+{
+	const u32 current_amount = Statistics::Get(statistic_name, Statistics::Current);
+
+	if (statistic_name == "undead_killed")
+	{
+		switch (current_amount)
+		{
+			case 1000:  Achievement::client_Unlock(Achievement::Butcher);         break;
+			case 5000:  Achievement::client_Unlock(Achievement::Slaughter);       break;
+			case 10000: Achievement::client_Unlock(Achievement::Bloodbath);       break;
+		}
+	}
+	if (statistic_name == "blocks_placed")
+	{
+		switch (current_amount)
+		{
+			case 1500:  Achievement::client_Unlock(Achievement::Stonemason);      break;
+			case 3000:  Achievement::client_Unlock(Achievement::Architect);       break;
+			case 6000:  Achievement::client_Unlock(Achievement::ZombieFortress);  break;
+		}
+	}
+	else if (statistic_name == "components_placed")
+	{
+		if (current_amount == 300)
+		{
+			Achievement::client_Unlock(Achievement::Mechanist);
+		}
+	}
+	else if (statistic_name == "factories_setup")
+	{
+		switch (current_amount)
+		{
+			case 1:     Achievement::client_Unlock(Achievement::Industrializing); break;
+			case 10:    Achievement::client_Unlock(Achievement::Sweatshop);       break;
+		}
+	}
+}
+
 void onUnlockAchievement(CRules@ this, int index)
 {
 	if (index >= Achievement::achievements.length)
 	{ 
-		warn("Impossible achievement index, no pair found ["+index+"]"); 
+		error("Impossible achievement index, no pair found ["+index+"]"); 
 		return; 
 	}
 
@@ -238,9 +331,11 @@ void onUnlockAchievement(CRules@ this, int index)
 	cfg.add_string("achievements", achievements_array);
 	cfg.saveFile(Achievement::filename);
 
-	Sound::Play("AchievementUnlocked.ogg");
+	Achievement@ achievement = Achievement::achievements[index];
+	const string achievement_sound = achievement.rarity == Achievement::Insane ? "AchievementGet2" : "AchievementGet1";
+	Sound::Play(achievement_sound);
 
-	unlocked_achievements.push_back(Achievement::achievements[index]);
+	unlocked_achievements.push_back(achievement);
 
 	this.push("easy_ui_events", Event::Achievement);
 }
@@ -270,6 +365,9 @@ void onUnlockBestiaryEntry(CRules@ this, string entry_name)
 	this.push("easy_ui_events", Event::Bestiary);
 }
 
+
+/// Networking
+
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client_unlock_achievement") && isClient())
@@ -290,3 +388,21 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		Statistics::Add(statistic_name, amount);
 	}
 }
+
+
+/// Testing
+
+/*
+bool onClientProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
+{
+	if (player !is null && player.isMyPlayer())
+	{
+		string[]@ tokens = textIn.split(" ");
+		if (tokens.length > 1 && tokens[0] == "!achievement")
+		{
+			Achievement::client_Unlock(parseInt(tokens[1]));
+		}
+	}
+	
+	return true;
+}*/

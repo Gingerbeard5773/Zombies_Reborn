@@ -1,5 +1,5 @@
 
-funcdef void onFireHandle(CBlob@, GunInfo@);
+funcdef void onFireHandle(CBlob@, CBlob@, GunInfo@);
 funcdef void onProjectileHandle(CBlob@, CBlob@, GunInfo@);
 funcdef void onReloadHandle(CBlob@, CBlob@, GunInfo@);
 

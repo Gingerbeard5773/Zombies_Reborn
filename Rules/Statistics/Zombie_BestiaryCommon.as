@@ -89,6 +89,8 @@ namespace Bestiary
 
 	bool isUnlocked(const string&in bestiary_entries, const int&in index)
 	{
+		if (bestiary_entries.length <= index) return false;
+
 		return bestiary_entries[index] == 49; //1 in ascii
 	}
 

@@ -1,6 +1,7 @@
-﻿#include "UndeadAttackCommon.as";
-#include "MakeDustParticle.as";
-#include "Hitters.as";
+﻿#include "UndeadAttackCommon.as"
+#include "MakeDustParticle.as"
+#include "Hitters.as"
+#include "Zombie_AchievementsCommon.as"
 
 const int COINS_ON_DEATH = 125;
 
@@ -302,11 +303,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		for (int i = 0; i < inv.getItemsCount(); i++)
 		{
 			CBlob@ item = inv.getItem(i);
-			if (item.hasTag("player"))
+			if (!item.hasTag("player")) continue;
+
+			CPlayer@ player = item.getPlayer();
+			if (player !is null)
 			{
-				blob.server_Die();
-				break;
+				Achievement::server_Unlock(Achievement::HideAndSeek, player);
 			}
+
+			blob.server_Die();
+			break;
 		}
 	}
 	else if (blob.getName() == "trampoline")
@@ -321,6 +327,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		mouth += this.getPosition();
 		if ((mouth - point1).Length() < 5.0f)
 		{
+			CPlayer@ player = blob.getPlayer();
+			if (player !is null)
+			{
+				Achievement::server_Unlock(Achievement::Snatched, player);
+			}
+
 			blob.server_DetachFromAll();
 			this.server_AttachTo(blob, "PICKUP");
 		}
@@ -361,6 +373,17 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onDie(CBlob@ this)
 {
+	CBlob@ carried = this.getCarriedBlob();
+	if (isServer() && carried !is null)
+	{
+		CPlayer@ killer = this.getPlayerOfRecentDamage();
+		CPlayer@ victim = carried.getPlayer();
+		if (killer !is null && victim !is null && killer !is victim)
+		{
+			Achievement::server_Unlock(Achievement::Hero, killer);
+		}
+	}
+
 	if (isClient())
 	{
 		this.getSprite().PlaySound("killcentipede.ogg", 1.5f, 0.8f);

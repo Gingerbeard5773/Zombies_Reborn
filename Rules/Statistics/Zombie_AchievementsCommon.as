@@ -1,6 +1,13 @@
 // Zombie Fortress Achievements
 // Gingerbeard @ Jan 27, 2026
 
+/* Potential achievement ideas
+	Fumbled : duplicate something useless (a tile blob, or forage, ladders, etc)
+	Just The Beginning : lose your first game
+	Society : have 15 surviving workers at the same time
+	Pokey : place 500 spikes in one game
+*/
+
 #include "Zombie_Translation.as"
 
 funcdef void onUnlockAchievementHandle(CRules@, int);
@@ -40,12 +47,11 @@ namespace Achievement
 		NotTodayBuddy,          // - Douse an ignited wraith in water
 		SpontaneousCombustion,  // - Instantly explode a wraith with a fire arrow
 		TheBoss,                // - Give a worker a job
-		Overworked,             // - Max out a worker's tasks
-		TheKing,                // - Assemble an army
-		Flak,                   // - Make a NPC archer shoot a firework
 		Bookworm,               // - Research an upgrade at the library
 		Librarian,              // - Research all upgrades at the library in one game
-		SmartThinking,          // - Duplicate the library
+		GreatAwakening,         // - Duplicate the library
+		WorthATry,              // - Duplicate a scroll of duplication
+		NarrowEscape,           // - Escape from a skelepede's jaws with a scroll of teleport
 		PureCarnage,            // - Vaporize 100 undead with one Scroll of Carnage
 		SecondChance,           // - Use the scroll of resurrection on yourself
 		Savior,                 // - Revive at least three players with only one scroll of resurrection
@@ -54,33 +60,29 @@ namespace Achievement
 		Sealed,                 // - Crate Sedgwick
 		Kidnapper,              // - Crate the trader
 		ThePrincess,            // - Summon Geti
+		Vandalism,              // - Scare away the trader
 		Industrializing,        // - Setup a factory
 		Sweatshop,              // - Setup 10 factories in a game
 		Piercing,               // - Kill 15 undead with one ballista bolt
-		Artillery,              // - Kill an undead with the cannon
 		UhOh,                   // - Activate a portal
 		FromBadToWorse,         // - Have multiple portals exist at the same time
-		TheNecromancer,         // - Meet Sedgwick
-		Timothy,                // - Meet Tim
-		Grabbed,                // - Get pulled to the sky
+		SkyDiving,              // - Get pulled to the sky
 		Snatched,               // - Get pulled to the void
 		HideAndSeek,            // - Have a skelepede find you inside a crate
-		Vaporized,              // - Get boomed by Jerry
 		CrowdCrush,             // - Get swarmed and die
+		Bucketeer,              // - Wear the bucket
 		IronMan,                // - Wear a full set of armor
 		Pyromaniac,             // - Scorch the world
 		RipAndTear,             // - Kill an undead with a chainsaw
-		Reaper,                 // - Kill an undead with a scythe
 		ThouMayest,             // - Thou mayest blow Thine enemies to tiny bits, in Thy mercy - Use the holy hand grenade
 		CrowdControl,           // - Use the shotgun
 		PayloadDelivered,       // - Fire the bazooka
-		Mothership,             // - Maximize an armored bomber
+		FlyingFortress,         // - Maximize an armored bomber
 		Bombardier,             // - Drop bombs from a bomber
 		Plow,                   // - Run over a swarm of zombies with a tank
 		Hero,                   // - Save another player who was snatched by a skelepede
 		SoleSurvivor,           // - Survive a night as the last player alive (8 minimum players required)
 		Juggernaut,             // - Attain a ridiculous amount of health
-		Traitor,                // - Become undead
 		Count
 	}
 
@@ -108,12 +110,11 @@ namespace Achievement
 		Achievement(NotTodayBuddy,         Normal,     false,   Translate::NotTodayBuddy),
 		Achievement(SpontaneousCombustion, Normal,     false,   Translate::SpontaneousCombustion),
 		Achievement(TheBoss,               Normal,     false,   Translate::TheBoss),
-		Achievement(Overworked,            Normal,     false,   Translate::Overworked),
-		Achievement(TheKing,               Uncommon,   false,   Translate::TheKing),
-		Achievement(Flak,                  Normal,     false,   Translate::Flak),
 		Achievement(Bookworm,              Normal,     false,   Translate::Bookworm),
 		Achievement(Librarian,             Rare,       false,   Translate::Librarian),
-		Achievement(SmartThinking,         Rare,       true,    Translate::SmartThinking),
+		Achievement(GreatAwakening,        Rare,       true,    Translate::GreatAwakening),
+		Achievement(WorthATry,             Rare,       true,    Translate::WorthATry),
+		Achievement(NarrowEscape,          Uncommon,   false,   Translate::NarrowEscape),
 		Achievement(PureCarnage,           Normal,     false,   Translate::PureCarnage),
 		Achievement(SecondChance,          Normal,     false,   Translate::SecondChance),
 		Achievement(Savior,                Rare,       false,   Translate::Savior),
@@ -122,33 +123,29 @@ namespace Achievement
 		Achievement(Sealed,                Uncommon,   true,    Translate::Sealed),
 		Achievement(Kidnapper,             Uncommon,   true,    Translate::Kidnapper),
 		Achievement(ThePrincess,           Normal,     false,   Translate::ThePrincess),
+		Achievement(Vandalism,             Normal,     true,    Translate::Vandalism),
 		Achievement(Industrializing,       Normal,     false,   Translate::Industrializing),
 		Achievement(Sweatshop,             Normal,     false,   Translate::Sweatshop),
 		Achievement(Piercing,              Uncommon,   false,   Translate::Piercing),
-		Achievement(Artillery,             Normal,     false,   Translate::Artillery),
 		Achievement(UhOh,                  Normal,     false,   Translate::UhOh),
 		Achievement(FromBadToWorse,        Rare,       false,   Translate::FromBadToWorse),
-		Achievement(TheNecromancer,        Normal,     false,   Translate::TheNecromancer),
-		Achievement(Timothy,               Uncommon,   false,   Translate::Timothy),
-		Achievement(Grabbed,               Normal,     false,   Translate::Grabbed),
+		Achievement(SkyDiving,             Normal,     false,   Translate::SkyDiving),
 		Achievement(Snatched,              Normal,     false,   Translate::Snatched),
 		Achievement(HideAndSeek,           Rare,       true,    Translate::HideAndSeek),
-		Achievement(Vaporized,             Uncommon,   true,    Translate::Vaporized),
 		Achievement(CrowdCrush,            Normal,     false,   Translate::CrowdCrush),
+		Achievement(Bucketeer,             Normal,     true,    Translate::Bucketeer),
 		Achievement(IronMan,               Normal,     false,   Translate::IronMan),
 		Achievement(Pyromaniac,            Normal,     false,   Translate::Pyromaniac),
 		Achievement(RipAndTear,            Normal,     false,   Translate::RipAndTear),
-		Achievement(Reaper,                Normal,     false,   Translate::Reaper),
 		Achievement(ThouMayest,            Uncommon,   false,   Translate::ThouMayest),
 		Achievement(CrowdControl,          Normal,     false,   Translate::CrowdControl),
 		Achievement(PayloadDelivered,      Normal,     false,   Translate::PayloadDelivered),
-		Achievement(Mothership,            Uncommon,   false,   Translate::Mothership),
+		Achievement(FlyingFortress,        Uncommon,   false,   Translate::FlyingFortress),
 		Achievement(Bombardier,            Normal,     false,   Translate::Bombardier),
 		Achievement(Plow,                  Normal,     false,   Translate::Plow),
 		Achievement(Hero,                  Uncommon,   false,   Translate::Hero),
 		Achievement(SoleSurvivor,          Uncommon,   false,   Translate::SoleSurvivor),
-		Achievement(Juggernaut,            Rare,       false,   Translate::Juggernaut),
-		Achievement(Traitor,               Rare,       true,    Translate::Traitor)
+		Achievement(Juggernaut,            Rare,       false,   Translate::Juggernaut)
 	};
 	
 	const string filename = "Zombie_Statistics.cfg";
@@ -172,6 +169,8 @@ namespace Achievement
 
 	bool isUnlocked(const string&in achievements_array, const int&in index)
 	{
+		if (achievements_array.length <= index) return false;
+
 		return achievements_array[index] == 49; //1 in ascii
 	}
 
@@ -200,6 +199,8 @@ namespace Achievement
 
 	void client_Unlock(const int&in index)
 	{
+		if (!isClient()) return;
+
 		CRules@ rules = getRules();
 		onUnlockAchievementHandle@ onUnlockAchievement;
 		if (rules.get("onUnlockAchievement Handle", @onUnlockAchievement))
@@ -210,6 +211,8 @@ namespace Achievement
 
 	void server_Unlock(const int&in index, CPlayer@ player = null)
 	{
+		if (!isServer()) return;
+
 		CRules@ rules = getRules();
 		CBitStream stream;
 		stream.write_s32(index);

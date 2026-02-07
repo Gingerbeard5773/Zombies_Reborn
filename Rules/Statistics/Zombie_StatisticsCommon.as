@@ -1,10 +1,6 @@
 //Zombie Fortress Statistics
 // Gingerbeard @ Jan 30, 2026
 
-// statistics dont clear on restart on server
-
-// fix zombies merging causing undead killed stat to increment
-
 #include "Zombie_Translation.as"
 
 namespace Statistics
@@ -26,6 +22,7 @@ namespace Statistics
 		"trap_blocks_placed",
 		"components_placed",
 		"buildings_placed",
+		"factories_setup",
 		"food_eaten",
 		"scrolls_used",
 		"technologies_researched",
@@ -57,6 +54,7 @@ namespace Statistics
 		Translate::StatTrapBlocks,
 		Translate::StatComponents,
 		Translate::StatBuildings,
+		Translate::StatFactories,
 		Translate::StatFood,
 		Translate::StatScrolls,
 		Translate::StatTechs,
@@ -71,9 +69,13 @@ namespace Statistics
 		Translate::StatCannons
 	};
 
+	enum Type
+	{
+		Current,
+		AllTime
+	}
+
 	const string filename = "Zombie_Statistics.cfg";
-	const string current = "_current";
-	const string alltime = "_alltime";
 
 	ConfigFile@ openConfig()
 	{
@@ -87,23 +89,37 @@ namespace Statistics
 		return cfg;
 	}
 
-	u32 Get(const string&in statistic_name, ConfigFile@ cfg = openConfig())
+	void AddToConfig(const string&in statistic_name, const u32&in amount, ConfigFile@ cfg = openConfig())
 	{
-		const u32 stat = cfg.exists(statistic_name) ? cfg.read_u32(statistic_name) : 0;
-		return stat;
+		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
+		string[]@ values = statistic.split(" ");
+
+		const u32 current_value = parseInt(values[Current]) + amount;
+		const u32 alltime_value = parseInt(values[AllTime]) + amount;
+
+		cfg.add_string(statistic_name, current_value + " " + alltime_value);
+
+		cfg.saveFile(filename);
 	}
 
 	void Add(const string&in statistic_name, const u32&in amount, ConfigFile@ cfg = openConfig())
 	{
-		const u32 current_stat = cfg.exists(statistic_name + current) ? cfg.read_u32(statistic_name + current) : 0;
-		const u32 alltime_stat = cfg.exists(statistic_name + alltime) ? cfg.read_u32(statistic_name + alltime) : 0;
+		dictionary@ statistics_set;
+		if (!getRules().get("statistics_set", @statistics_set)) return;
 
-		cfg.add_u32(statistic_name + current, amount + current_stat);
-		cfg.add_u32(statistic_name + alltime, amount + alltime_stat);
-
-		cfg.saveFile(filename);
+		u32 value = 0;
+		statistics_set.get(statistic_name, value);
+		statistics_set.set(statistic_name, value + amount);
 	}
-	
+
+	u32 Get(const string&in statistic_name, const Type&in statistic_type, ConfigFile@ cfg = openConfig())
+	{
+		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
+		string[]@ values = statistic.split(" ");
+
+		return parseInt(values[statistic_type]);
+	}
+
 	void server_Add(const string&in statistic_name, const u32&in amount, CPlayer@ player)
 	{
 		CBitStream stream;

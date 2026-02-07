@@ -3,6 +3,7 @@
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -30,6 +31,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		
 		Vec2f pos = this.getPosition();
 		bool hit = false;
+		u16 killed = 0;
 		const u8 team = caller.getTeamNum();
 		CBlob@[] blobsInRadius;
 		if (getMap().getBlobsInRadius(pos, 500.0f, @blobsInRadius))
@@ -38,21 +40,31 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			for (u16 i = 0; i < blobsLength; i++)
 			{
 				CBlob@ b = blobsInRadius[i];
-				if (b.getTeamNum() != team && b.hasTag("undead"))
+				if (b.getTeamNum() == team || !b.hasTag("undead")) continue;
+
+				ParticleZombieLightning(b.getPosition());
+				if (isServer())
 				{
-					ParticleZombieLightning(b.getPosition());
-					if (isServer())
-						caller.server_Hit(b, pos, Vec2f(0, 0), 10.0f, Hitters::suddengib, true);
-					hit = true;
+					caller.server_Hit(b, pos, Vec2f(0, 0), 10.0f, Hitters::suddengib, true);
+					
+					if (b.getHealth() <= b.get_f32("gib health"))
+					{
+						killed++;
+					}
 				}
+				hit = true;
 			}
 		}
 
-		if (hit)
+		if (!hit) return;
+
+		Statistics::server_Add("scrolls_used", 1, player);
+		this.Tag("dead");
+		this.server_Die();
+
+		if (killed >= 150)
 		{
-			Statistics::server_Add("scrolls_used", 1, player);
-			this.Tag("dead");
-			this.server_Die();
+			Achievement::server_Unlock(Achievement::PureCarnage, player);
 		}
 	}
 }

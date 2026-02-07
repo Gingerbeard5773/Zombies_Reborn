@@ -3,6 +3,7 @@
 #include "GenericButtonCommon.as"
 #include "Zombie_Translation.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -36,13 +37,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		for (u16 i = 0; i < blobsInRadius.length; i++)
 		{
 			CBlob@ b = blobsInRadius[i];
-			if (b.getTeamNum() != team || b.hasTag("undead")) continue;
-			
-			if (b.hasTag("player") || b.hasTag("migrant"))
+			if (b.getTeamNum() != team || b.hasTag("undead") || !b.hasTag("player")) continue;
+
+			const f32 heal = b.getHealth() + b.getInitialHealth() * 2.0f;
+			b.server_SetHealth(heal);
+			healed.push_back(b.getNetworkID());
+
+			CPlayer@ healed_player = b.getPlayer();
+			if (healed_player !is null && heal / b.getInitialHealth() > 6.0f)
 			{
-				const f32 heal = b.getHealth() + b.getInitialHealth() * 2.0f;
-				b.server_SetHealth(heal);
-				healed.push_back(b.getNetworkID());
+				Achievement::server_Unlock(Achievement::Juggernaut, healed_player);
 			}
 		}
 

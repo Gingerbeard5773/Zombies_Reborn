@@ -6,6 +6,7 @@
 #include "TraderShopCommon.as"
 #include "Requirements.as"
 #include "Zombie_BestiaryCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 const u8 stay_minutes = 2;
 const f32 up_speed = 1.0f;
@@ -267,6 +268,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		set_emote(this, "frown", getTicksASecond()*5);
 		this.set_u32("time till departure", getGameTime());
+
+		CPlayer@ player = hitterBlob.getDamageOwnerPlayer();
+		if (player !is null && player.isMyPlayer())
+		{
+			Achievement::client_Unlock(Achievement::Vandalism);
+		}
 	}
 	
 	return 0; //invincible

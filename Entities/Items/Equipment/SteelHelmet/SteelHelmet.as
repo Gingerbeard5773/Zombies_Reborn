@@ -1,9 +1,10 @@
-#include "EquipmentCommon.as";
-#include "RunnerTextures.as";
-#include "RunnerCommon.as";
-#include "Hitters.as";
-#include "Zombie_TechnologyCommon.as";
-#include "Zombie_Translation.as";
+#include "EquipmentCommon.as"
+#include "RunnerTextures.as"
+#include "RunnerCommon.as"
+#include "Hitters.as"
+#include "Zombie_TechnologyCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_AchievementsCommon.as"
 
 const u8 helmet_variations = 3;
 
@@ -32,8 +33,18 @@ void onInit(CBlob@ this)
 
 void OnEquip(CBlob@ this, CBlob@ equipper)
 {
-	LoadNewHead(equipper, 170 + this.inventoryIconFrame);
 	equipper.Tag("steel helmet");
+
+	if (equipper.hasTag("steel armor"))
+	{
+		CPlayer@ player = equipper.getPlayer();
+		if (player !is null && player.isMyPlayer())
+		{
+			Achievement::client_Unlock(Achievement::IronMan);
+		}
+	}
+
+	LoadNewHead(equipper, 170 + this.inventoryIconFrame);
 }
 
 void OnUnequip(CBlob@ this, CBlob@ equipper)

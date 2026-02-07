@@ -1,9 +1,10 @@
 //common bomber functionality
 
-#include "VehicleCommon.as";
-#include "ActivationThrowCommon.as";
-#include "Hitters.as";
-#include "Zombie_TechnologyCommon.as";
+#include "VehicleCommon.as"
+#include "ActivationThrowCommon.as"
+#include "Hitters.as"
+#include "Zombie_TechnologyCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onTick(CBlob@ this)
 {
@@ -54,7 +55,7 @@ void Vehicle_BomberControls(CBlob@ this, VehicleInfo@ v)
 	//Bombing
 	if (flyer.isKeyPressed(key_action3) && this.get_u32("last_drop") < getGameTime())
 	{
-		HandleBombing(this);
+		HandleBombing(this, blob);
 	}
 	
 	const bool up = flyer.isKeyPressed(key_action1);
@@ -128,7 +129,7 @@ void Vehicle_FlyerControlsCustom(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, 
 	}
 }
 
-void HandleBombing(CBlob@ this)
+void HandleBombing(CBlob@ this, CBlob@ pilot)
 {
 	CInventory@ inv = this.getInventory();
 	const int items_count = inv.getItemsCount();
@@ -137,14 +138,15 @@ void HandleBombing(CBlob@ this)
 	for (u16 i = 0; i < items_count; i++)
 	{
 		CBlob@ item = inv.getItem(i);
-		if (item.getName() == "mat_arrows") continue;
+		const string item_name = item.getName();
+		if (item_name == "mat_arrows") continue;
 		
 		this.getSprite().PlaySound("bridge_open", 1.0f, 1.0f);
 		this.set_u32("last_drop", getGameTime() + 30);
 
 		if (!isServer()) return;
 
-		if (item.getName() == "mat_bombs")
+		if (item_name == "mat_bombs")
 		{
 			CBlob@ blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
 			if (blob !is null)
@@ -152,7 +154,7 @@ void HandleBombing(CBlob@ this)
 				item.server_Die();
 			}
 		}
-		else if (item.getName() == "mat_waterbombs")
+		else if (item_name == "mat_waterbombs")
 		{
 			CBlob@ blob = server_CreateBlob("waterbomb", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
 			if (blob !is null)
@@ -169,6 +171,15 @@ void HandleBombing(CBlob@ this)
 		}
 		else
 		{
+			if (item_name == "bigbomb")
+			{
+				CPlayer@ player = pilot.getPlayer();
+				if (player !is null)
+				{
+					Achievement::server_Unlock(Achievement::Bombardier, player);
+				}
+			}
+
 			this.server_PutOutInventory(item);
 			item.setPosition(this.getPosition() + Vec2f(0, 12));
 			if (item.hasTag("activatable"))

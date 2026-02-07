@@ -4,6 +4,7 @@
 #include "ParticleTeleport.as"
 #include "Zombie_Translation.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -36,7 +37,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller is null) return;
 
 		if (this.hasTag("dead")) return;
-		this.Tag("dead");
 
 		Vec2f aim;
 		if (!params.saferead_Vec2f(aim)) return;
@@ -50,10 +50,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		Statistics::server_Add("scrolls_used", 1, player);
 
-		caller.server_DetachFromAll();
+		AttemptAchievement(caller, player);
 
+		caller.server_DetachFromAll();
 		caller.setPosition(aim);
 
+		this.Tag("dead");
 		this.server_Die();
 
 		CBitStream stream;
@@ -76,5 +78,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		ParticleTeleport(this.getPosition());
 		ParticleZombieLightning(aim);
+	}
+}
+
+/// Achievement
+
+void AttemptAchievement(CBlob@ caller, CPlayer@ player)
+{
+	AttachmentPoint@[] aps;
+	caller.getAttachmentPoints(@aps);
+	for (int i = 0; i < aps.length; i++)
+	{
+		CBlob@ blob = aps[i].getOccupied();
+		if (blob !is null && blob.getName() == "skelepede")
+		{
+			Achievement::server_Unlock(Achievement::NarrowEscape, player);
+			return;
+		}
 	}
 }

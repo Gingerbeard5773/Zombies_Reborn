@@ -1,5 +1,6 @@
-#include "VehicleCommon.as";
-#include "Zombie_TechnologyCommon.as";
+#include "VehicleCommon.as"
+#include "Zombie_TechnologyCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 // Tank logic 
 
@@ -65,6 +66,14 @@ void onTick(CBlob@ this)
 
 		Vehicle_StandardControls(this, v);
 	}
+
+	/// Achievement
+
+	if (isClient() && getGameTime() % 60 == 0)
+	{
+		const u16 plowed = Maths::Max(this.get_u16("undead_plowed") - 1, 0);
+		this.set_u16("undead_plowed", plowed);
+	}
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
@@ -83,5 +92,25 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	if (blob !is null)
 	{
 		TryToAttachVehicle(this, blob);
+	}
+}
+
+/// Achievement
+
+void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
+{
+	CPlayer@ player = this.getDamageOwnerPlayer();
+	if (player is null || !player.isMyPlayer()) return;
+
+	if (!hitBlob.hasTag("undead")) return;
+
+	if (hitBlob.getHealth() > hitBlob.get_f32("gib health")) return;
+
+	const u16 plowed = this.get_u16("undead_plowed") + 1;
+	this.set_u16("undead_plowed", plowed);
+
+	if (plowed == 40)
+	{
+		Achievement::client_Unlock(Achievement::Plow);
 	}
 }

@@ -1,6 +1,7 @@
 ﻿// Zombie Portal
 
-#include "MakeScroll.as";
+#include "MakeScroll.as"
+#include "Zombie_AchievementsCommon.as"
 
 const f32 activation_radius = 100;
 u16 maximum_zombies = 400;
@@ -12,32 +13,41 @@ void onInit(CBlob@ this)
 	portal.SetFrame(1);
 	portal.SetRelativeZ(1000);
 	
-	//kill overlapped buildings
-	CBlob@[] buildings;
-	if (getBlobsByTag("building", buildings))
+	if (isServer())
 	{
-		Vec2f mypos = this.getPosition();
-		Vec2f myhalfsize = Vec2f(this.getWidth(), this.getHeight()) * 0.5f;
-		for (uint i = 0; i < buildings.length; ++i)
+		//kill overlapped buildings
+		CBlob@[] buildings;
+		if (getBlobsByTag("building", buildings))
 		{
-			CBlob@ building = buildings[i];
-
-			CShape@ theirshape = building.getShape();
-			if (theirshape is null) continue;
-
-			Vec2f theirpos = building.getPosition();
-			Vec2f theirhalfsize = Vec2f(theirshape.getWidth(), theirshape.getHeight()) * 0.5f;
-
-			Vec2f dif = Vec2f(Maths::Abs(theirpos.x - mypos.x), Maths::Abs(theirpos.y - mypos.y));
-			Vec2f totalsize = theirhalfsize + myhalfsize;
-
-			Vec2f sep = totalsize - dif;
-			//aabb check
-			if (sep.x > 2 && sep.y > 2)
+			Vec2f mypos = this.getPosition();
+			Vec2f myhalfsize = Vec2f(this.getWidth(), this.getHeight()) * 0.5f;
+			for (uint i = 0; i < buildings.length; ++i)
 			{
-				building.server_Die();
-				break;
+				CBlob@ building = buildings[i];
+
+				CShape@ theirshape = building.getShape();
+				if (theirshape is null) continue;
+
+				Vec2f theirpos = building.getPosition();
+				Vec2f theirhalfsize = Vec2f(theirshape.getWidth(), theirshape.getHeight()) * 0.5f;
+
+				Vec2f dif = Vec2f(Maths::Abs(theirpos.x - mypos.x), Maths::Abs(theirpos.y - mypos.y));
+				Vec2f totalsize = theirhalfsize + myhalfsize;
+
+				Vec2f sep = totalsize - dif;
+				//aabb check
+				if (sep.x > 2 && sep.y > 2)
+				{
+					building.server_Die();
+					break;
+				}
 			}
+		}
+
+		CBlob@[] portals;
+		if (getBlobsByName("zombieportal", portals) && portals.length >= 2)
+		{
+			Achievement::server_Unlock(Achievement::FromBadToWorse);
 		}
 	}
 	
@@ -107,19 +117,24 @@ void server_ActivatePortalIfPlayerNearby(CBlob@ this)
 	const u8 player_count = getPlayerCount();
 	for (u8 i = 0; i < player_count; i++)
 	{
-		CPlayer@ ply = getPlayer(i);
-		if (ply is null) continue;
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
 		
-		CBlob@ plyBlob = ply.getBlob();
-		if (plyBlob !is null && !plyBlob.hasTag("undead") && plyBlob.getDistanceTo(this) <= activation_radius)
+		CBlob@ blob = player.getBlob();
+		if (blob !is null && !blob.hasTag("undead") && blob.getDistanceTo(this) <= activation_radius)
 		{
-			server_ActivatePortal(this);
+			server_ActivatePortal(this, player);
 		}
 	}
 }
 
-void server_ActivatePortal(CBlob@ this)
+void server_ActivatePortal(CBlob@ this, CPlayer@ player)
 {
+	if (player !is null)
+	{
+		Achievement::server_Unlock(Achievement::UhOh, player);
+	}
+
 	this.Tag("portal_activated");
 	this.SendCommand(this.getCommandID("client_activate_portal"));
 }
@@ -128,7 +143,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (isServer() && !this.hasTag("portal_activated") && damage > 0.0f)
 	{
-		server_ActivatePortal(this);
+		server_ActivatePortal(this, hitterBlob.getDamageOwnerPlayer());
 	}
 
 	if (hitterBlob !is null && hitterBlob.hasTag("undead")) return 0.0f;

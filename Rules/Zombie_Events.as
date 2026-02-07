@@ -1,29 +1,15 @@
 // Zombie Fortress game events
 
-#include "MigrantCommon.as";
-#include "ZombieSpawnPos.as";
-#include "Zombie_GlobalMessagesCommon.as";
-#include "Zombie_DaysCommon.as";
-#include "GetSurvivors.as";
-
-const u8 GAME_WON = 5;
+#include "ZombieSpawnPos.as"
+#include "Zombie_GlobalMessagesCommon.as"
+#include "Zombie_DaysCommon.as"
+#include "GetSurvivors.as"
 
 void onStateChange(CRules@ this, const u8 oldState)
 {
-	const u8 newState = this.getCurrentState();
-	
-	switch(newState)
+	if (this.getCurrentState() == GAME_OVER)
 	{
-		case GAME_OVER:
-		{
-			Sound::Play("PortalBreach.ogg");
-			break;
-		}
-		case GAME_WON:
-		{
-			Sound::Play("FanfareWin.ogg");
-			break;
-		}
+		Sound::Play("PortalBreach.ogg");
 	}
 }
 

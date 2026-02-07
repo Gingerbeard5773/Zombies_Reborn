@@ -2,6 +2,7 @@
 #include "RunnerCommon.as"
 #include "GunCommon.as"
 #include "Zombie_Translation.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -53,9 +54,14 @@ void onReload(CBlob@ this, CBlob@ holder, GunInfo@ gun)
 	moveVars.canVault = false;
 }
 
-void onFire(CBlob@ this, GunInfo@ gun)
+void onFire(CBlob@ this, CBlob@ holder, GunInfo@ gun)
 {
 	if (!isClient()) return;
+	
+	if (holder.isMyPlayer())
+	{
+		Achievement::client_Unlock(Achievement::CrowdControl);
+	}
 
 	gun.sprite_recoil = 5;
 

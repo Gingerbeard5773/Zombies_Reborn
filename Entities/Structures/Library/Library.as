@@ -1,10 +1,12 @@
 ﻿//Gingerbeard @ July 24, 2024
 
-#include "AssignWorkerCommon.as";
-#include "Requirements.as";
-#include "Zombie_TechnologyCommon.as";
-#include "Zombie_GlobalMessagesCommon.as";
-#include "Zombie_Translation.as";
+#include "AssignWorkerCommon.as"
+#include "Requirements.as"
+#include "Zombie_TechnologyCommon.as"
+#include "Zombie_GlobalMessagesCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -91,6 +93,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 				server_TakeRequirements(inventory, tech.requirements);
 			}
 
+			Statistics::server_Add("technologies_researched", 1, player);
+
+			Achievement::server_Unlock(Achievement::Bookworm, player);
+
 			SetResearching(this, tech);
 			CBitStream stream;
 			stream.write_u8(index);
@@ -159,6 +165,11 @@ void onFinishTechnology(Technology@ tech)
 	{
 		onTechnologyRules(rules, tech.index);
 	}
+	
+	if (isServer() && isTechTreeCompleted())
+	{
+		Achievement::server_Unlock(Achievement::Librarian);
+	}
 
 	/*CBlob@[] blobs;
 	getBlobs(@blobs);
@@ -172,6 +183,19 @@ void onFinishTechnology(Technology@ tech)
 			onTechnology(blob, tech.index);
 		}
 	}*/
+}
+
+bool isTechTreeCompleted()
+{
+	Technology@[]@ TechTree = getTechTree();
+	for (u8 i = 0; i < TechTree.length; i++)
+	{
+		Technology@ tech = TechTree[i];
+		if (tech is null) continue;
+		
+		if (!tech.completed) return false;
+	}
+	return true;
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

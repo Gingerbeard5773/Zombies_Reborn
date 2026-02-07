@@ -4,6 +4,7 @@
 #include "MakeCrate.as"
 #include "Zombie_Translation.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -19,7 +20,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 void Callback_Spell(CBlob@ this, CBlob@ caller)
 {
 	CBlob@ aimBlob = getMap().getBlobAtPosition(caller.getAimPos());
-	if (aimBlob is null || !canCrate(aimBlob)) return;
+	if (aimBlob is null || !canCrate(caller, aimBlob)) return;
 	
 	CBitStream params;
 	params.write_netid(aimBlob.getNetworkID());
@@ -46,6 +47,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		string name = aimBlob.getName();
 		if (name == "skelepedebody") name = "skelepede";
+		
+		if (name == "sedgwick")
+		{
+			Achievement::server_Unlock(Achievement::Sealed, player);
+		}
+		else if (name == "traderbomber")
+		{
+			Achievement::server_Unlock(Achievement::Kidnapper, player);
+		}
 
 		CBlob@ crate = server_MakeCrate(name, aimBlob.getInventoryName(), 0, aimBlob.getTeamNum(), aimBlob.getPosition());
 		CShape@ shape = aimBlob.getShape();
@@ -55,10 +65,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-const bool canCrate(CBlob@ blob)
+const bool canCrate(CBlob@ caller, CBlob@ blob)
 {
 	const string name = blob.getName();
-	return name != "scroll" && name != "crate" && name != "library" && blob.getPlayer() is null;
+	if (name == "library")
+	{
+		CPlayer@ player = caller.getPlayer();
+		if (player !is null && player.isMyPlayer())
+		{
+			Achievement::client_Unlock(Achievement::NiceTry);
+		}
+		return false;
+	}
+
+	return name != "scroll" && name != "crate" && blob.getPlayer() is null;
 }
 
 void onDie(CBlob@ this)

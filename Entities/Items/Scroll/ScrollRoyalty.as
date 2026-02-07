@@ -3,6 +3,7 @@
 #include "GenericButtonCommon.as"
 #include "Zombie_Translation.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -25,6 +26,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
 
+		Achievement::server_Unlock(Achievement::ThePrincess, player);
 		Statistics::server_Add("scrolls_used", 1, player);
 
 		server_CreateBlob("princess", XORRandom(7), this.getPosition());

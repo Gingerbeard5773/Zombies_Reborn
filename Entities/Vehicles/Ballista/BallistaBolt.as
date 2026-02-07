@@ -1,10 +1,11 @@
 // Blame Fuzzle.
 
-#include "Hitters.as";
-#include "ShieldCommon.as";
-#include "LimitedAttacks.as";
-#include "Explosion.as";
-#include "CustomTiles.as";
+#include "Hitters.as"
+#include "LimitedAttacks.as"
+#include "Explosion.as"
+#include "CustomTiles.as"
+#include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 const f32 MEDIUM_SPEED = 9.0f;
 const f32 FAST_SPEED = 16.0f;
@@ -32,12 +33,16 @@ void onInit(CBlob@ this)
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
 	this.getSprite().SetFrame(this.hasTag("bomb ammo") ? 1 : 0);
+
+	CPlayer@ player = this.getDamageOwnerPlayer();
+	if (player !is null && player.isMyPlayer())
+	{
+		Statistics::Add("bolts_fired", 1);
+	}
 }
 
 void onTick(CBlob@ this)
 {
-	if (this.getShape().isStatic()) return;
-
 	Vec2f velocity = this.getVelocity();
 	const f32 angle = velocity.Angle();
 
@@ -56,16 +61,15 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onDie(CBlob@ this)
 {
-	if (this.hasTag("bomb ammo"))
-	{
-		this.set_bool("map_damage_raycast", false);
-		this.set_f32("map_damage_radius", 24.0f);
+	if (!this.hasTag("bomb ammo")) return;
 
-		Explode(this, 16.0f, 2.0f);
-		LinearExplosion(this, this.getOldVelocity(), 64.0f, 8.0f, 2, 4.0f, Hitters::bomb);
+	this.set_bool("map_damage_raycast", false);
+	this.set_f32("map_damage_radius", 24.0f);
 
-		this.getSprite().Gib();
-	}
+	Explode(this, 16.0f, 2.0f);
+	LinearExplosion(this, this.getOldVelocity(), 64.0f, 8.0f, 2, 4.0f, Hitters::bomb);
+
+	this.getSprite().Gib();
 }
 
 void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
@@ -87,17 +91,16 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 
 	for (uint i = 0; i < positions.length; i ++)
 	{
-		Vec2f temp_position = positions[i];
-		if (map.isTileSolid(map.getTile(temp_position)))
-		{
-			u32[]@ offsets;
-			this.get("offsets", @offsets);
-			const u32 offset = map.getTileOffset(temp_position);
-			if (offsets.find(offset) != -1) continue;
+		Vec2f tile_pos = positions[i];
+		if (!map.isTileSolid(map.getTile(tile_pos))) continue;
 
-			BallistaHitMap(this, offset, temp_position, velocity, damage, Hitters::ballista);
-			this.server_HitMap(temp_position, velocity, damage, Hitters::ballista);
-		}
+		u32[]@ offsets;
+		this.get("offsets", @offsets);
+		const u32 offset = map.getTileOffset(tile_pos);
+		if (offsets.find(offset) != -1) continue;
+
+		BallistaHitMap(this, offset, tile_pos, velocity, damage, Hitters::ballista);
+		this.server_HitMap(tile_pos, velocity, damage, Hitters::ballista);
 	}
 
 	HitInfo@[] infos;
@@ -107,7 +110,7 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 		for (uint i = 0; i < infos.length; i ++)
 		{
 			CBlob@ blob = infos[i].blob;
-			Vec2f hit_position = infos[i].hitpos;
+			Vec2f hit_pos = infos[i].hitpos;
 			if (blob is null) continue;
 
 			if (blob.isPlatform())
@@ -121,8 +124,8 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 
 			if (!doesCollideWithBlob(this, blob) || LimitedAttack_has_hit_actor(this, blob)) continue;
 
-			this.server_Hit(blob, hit_position, velocity, damage, Hitters::ballista, true);
-			BallistaHitBlob(this, hit_position, velocity, damage, blob, Hitters::ballista);
+			this.server_Hit(blob, hit_pos, velocity, damage, Hitters::ballista, true);
+			BallistaHitBlob(this, hit_pos, velocity, damage, blob, Hitters::ballista);
 			LimitedAttack_add_actor(this, blob);
 		}
 	}
@@ -146,6 +149,18 @@ void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 
 
 	const string sound = blob.hasTag("flesh") ? "ArrowHitFleshFast.ogg" : "ArrowHitGroundFast.ogg";
 	this.getSprite().PlaySound(sound);
+	
+	CPlayer@ player = this.getDamageOwnerPlayer();
+	if (isServer() && blob.hasTag("undead") && player !is null)
+	{
+		const u16 undead_pierced = this.get_u16("undead_pierced") + 1;
+		this.set_u16("undead_pierced", undead_pierced);
+
+		if (undead_pierced == 20)
+		{
+			Achievement::server_Unlock(Achievement::Piercing, player);
+		}
+	}
 
 	if (blob.getHealth() <= 0.0f) return;
 
@@ -187,21 +202,19 @@ void BallistaHitMap(CBlob@ this, const u32 offset, Vec2f hit_position, Vec2f vel
 		return;
 	}
 
-	if ((map.isTileGroundStuff(tile.type) || isTileIron(tile.type)) && map.isTileSolid(tile))
+	if (map.isTileGroundStuff(tile.type) && map.isTileSolid(tile))
 	{
 		SetStatic(this);
 		return;
 	}
 
-	if (map.getSectorAtPosition(hit_position, "no build") is null)
-		map.server_DestroyTile(hit_position, 1.0f, this);
-
-	const f32 speed = velocity.getLength();
+	map.server_DestroyTile(hit_position, 1.0f, this);
 
 	this.setVelocity(velocity * 0.5f);
 	this.push("offsets", offset);
 
-	u8 blocks_pierced = this.get_u8("blocks_pierced");
+	const f32 speed = velocity.getLength();
+	const u8 blocks_pierced = this.get_u8("blocks_pierced");
 	if (blocks_pierced < BOLT_PIERCE && speed > FAST_SPEED && map.isTileWood(tile.type))
 	{
 		this.set_u8("blocks_pierced", blocks_pierced + 1);

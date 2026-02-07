@@ -53,7 +53,7 @@ void onReload(CBlob@ this, CBlob@ holder, GunInfo@ gun)
 	moveVars.canVault = false;
 }
 
-void onFire(CBlob@ this, GunInfo@ gun)
+void onFire(CBlob@ this, CBlob@ holder, GunInfo@ gun)
 {
 	if (!isClient()) return;
 

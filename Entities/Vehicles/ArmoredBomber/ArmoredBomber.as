@@ -1,5 +1,6 @@
 #include "VehicleCommon.as"
 #include "Hitters.as"
+#include "Zombie_AchievementsCommon.as"
 
 // Bomber logic
 
@@ -152,4 +153,37 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return dmg;
+}
+
+/// Achievement
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
+{
+	if (!isServer()) return;
+	
+	CPlayer@ player = attached.getPlayer();
+	if (player is null) return;
+
+	AttachmentPoint@[] aps;
+	if (!this.getAttachmentPoints(@aps)) return;
+
+	bool maxxed = true;
+
+	for (u8 i = 0; i < aps.length; i++)
+	{
+		AttachmentPoint@ ap = aps[i];
+		if (ap.socket && ap.name == "PASSENGER")
+		{
+			CBlob@ occBlob = ap.getOccupied();
+			if (occBlob is null || !occBlob.hasTag("vehicle"))
+			{
+				maxxed = false;
+			}
+		}
+	}
+
+	if (maxxed)
+	{
+		Achievement::server_Unlock(Achievement::FlyingFortress, player);
+	}
 }

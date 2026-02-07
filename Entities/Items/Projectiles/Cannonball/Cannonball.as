@@ -1,6 +1,7 @@
 #include "Hitters.as"
 #include "Explosion.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {

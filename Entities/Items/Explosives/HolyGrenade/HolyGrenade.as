@@ -3,7 +3,8 @@
 #include "Hitters.as";
 #include "ActivationThrowCommon.as"
 #include "Zombie_Translation.as"
-#include "BombCommon.as";
+#include "Zombie_AchievementsCommon.as"
+#include "BombCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -42,7 +43,7 @@ void onActivate(CBitStream@ params)
 
 	CBlob@ this = getBlobByNetworkID(this_id);
 	if (this is null) return;
-	
+
 	this.SetLight(true);
 	this.server_SetTimeToDie(5);
 	this.SendCommand(this.getCommandID("activate client"));
@@ -98,9 +99,24 @@ void DoExplosion(CBlob@ this)
 		blob.set_u8("nuke_explosions_max", 10);
 		blob.set_f32("nuke_explosion_radius", 2.0f);
 	}
-	
-	this.getSprite().PlaySound("HolyGrenadeExplosion.ogg", 13.0f, 1.f);
-	Sound::Play2D("HolyGrenadeExplosion.ogg", 0.4f, 0.0f);
+
+	if (isClient())
+	{
+		//Holy grenade achievement
+		CPlayer@ damageOwner = this.getDamageOwnerPlayer();
+		if (damageOwner !is null && damageOwner.isMyPlayer())
+		{
+			Achievement::client_Unlock(Achievement::ThouMayest);
+		}
+
+		if (this.isOnScreen())
+		{
+			SetScreenFlash(255, 255, 255, 255);
+		}
+
+		this.getSprite().PlaySound("HolyGrenadeExplosion.ogg", 13.0f, 1.f);
+		Sound::Play2D("HolyGrenadeExplosion.ogg", 0.4f, 0.0f);
+	}
 
 	this.Tag("dead");
 }

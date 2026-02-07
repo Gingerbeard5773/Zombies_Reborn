@@ -1,4 +1,5 @@
-#include "Hitters.as";
+#include "Hitters.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -10,6 +11,8 @@ void onInit(CBlob@ this)
 	this.SetLight(true);
 	this.SetLightRadius(48.0f);
 	this.SetLightColor(SColor(255, 255, 200, 50));
+
+	AttemptAchievement();
 }
 
 void onInit(CSprite@ this)
@@ -103,4 +106,27 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return damage;
+}
+
+/// Achievement
+
+void AttemptAchievement()
+{
+	CPlayer@ localPlayer = getLocalPlayer();
+	if (localPlayer is null || !localPlayer.isMyPlayer()) return;
+
+	CBlob@[] flames;
+	if (getBlobsByName("flame", @flames) && flames.length >= 50)
+	{
+		u16 owned_count = 0;
+		for (int i = 0; i < flames.length; i++)
+		{
+			if (flames[i].getDamageOwnerPlayer() is localPlayer) owned_count++;
+		}
+
+		if (owned_count == 50)
+		{
+			Achievement::client_Unlock(Achievement::Pyromaniac);
+		}
+	}
 }

@@ -6,6 +6,7 @@
 #include "MiniIconsInc.as"
 #include "AssignWorkerCommon.as"
 #include "Zombie_TechnologyCommon.as"
+#include "Zombie_StatisticsCommon.as"
 
 Vec2f menu_size(3, 5);
 
@@ -257,6 +258,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (!hasRequirements(inv, production.reqs, missing)) return;
 		
 		server_TakeRequirements(inv, production.reqs);
+		
+		Statistics::server_Add("factories_setup", 1, player);
 
 		this.Tag("auto_assign_worker");
 

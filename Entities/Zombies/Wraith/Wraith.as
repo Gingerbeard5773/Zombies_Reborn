@@ -1,5 +1,6 @@
-﻿#include "Hitters.as";
-#include "WraithCommon.as";
+﻿#include "Hitters.as"
+#include "WraithCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 const int COINS_ON_DEATH = 10;
 
@@ -64,12 +65,27 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.getSprite().PlaySound("/ZombieHit");
 	}
 	
-	if (customData == Hitters::fire)
+	if (customData == Hitters::fire && !this.hasTag("exploding"))
 	{
+		if (hitterBlob.getName() == "arrow" && this.getHealth() <= 0.0f)
+		{
+			CPlayer@ damagePlayer = hitterBlob.getDamageOwnerPlayer();
+			if (damagePlayer !is null && damagePlayer.isMyPlayer())
+			{
+				Achievement::client_Unlock(Achievement::SpontaneousCombustion);
+			}
+		}
+
 		server_SetEnraged(this);
 	}
 	else if (isWaterHitter(customData) && this.hasTag("exploding"))
 	{
+		CPlayer@ damagePlayer = hitterBlob.getDamageOwnerPlayer();
+		if (damagePlayer !is null && damagePlayer.isMyPlayer())
+		{
+			Achievement::client_Unlock(Achievement::NotTodayBuddy);
+		}
+
 		server_SetEnraged(this, false, true);
 	}
 

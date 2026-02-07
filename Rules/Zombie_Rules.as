@@ -5,6 +5,7 @@
 #include "Zombie_GlobalMessagesCommon.as"
 #include "Zombie_DaysCommon.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 #include "GetSurvivors.as"
 
 const u8 nextmap_seconds = 15;
@@ -18,6 +19,11 @@ void onInit(CRules@ this)
 	onNewDayHourHandle@[] handles;
 	this.set("onNewDayHour handles", @handles);
 
+	addOnNewDayHour(this, @onNewDayHour);
+}
+
+void onReload(CRules@ this)
+{
 	addOnNewDayHour(this, @onNewDayHour);
 }
 
@@ -97,8 +103,30 @@ void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 		cfg.saveFile(Statistics::filename);
 	}
 
+	if (day_number == 10)
+	{
+		Achievement::server_Unlock(Achievement::Surviving);
+	}
+	else if (day_number == 25)
+	{
+		Achievement::server_Unlock(Achievement::Thriving);
+	}
+	else if (day_number == 50)
+	{
+		Achievement::server_Unlock(Achievement::GettingDangerous);
+	}
+	else if (day_number == 75)
+	{
+		Achievement::server_Unlock(Achievement::Extreme);
+	}
+	else if (day_number == 100)
+	{
+		Achievement::server_Unlock(Achievement::Impossible);
+	}
+
 	if (day_number > record_day && !hitRecord)
 	{
+		Achievement::server_Unlock(Achievement::WorldRecord);
 		hitRecord = true;
 		const string[] inputs = {day_number+""};
 		server_SendGlobalMessage(this, 7, 10, inputs);
@@ -107,6 +135,19 @@ void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 	{
 		const string[] inputs = {day_number+""};
 		server_SendGlobalMessage(this, 0, 10, inputs);
+	}
+	
+	if (this.get_u8("survivor player count") >= 6 && day_number > 5)
+	{
+		CBlob@[]@ survivors = getSurvivors();
+		if (survivors.length == 1)
+		{
+			CPlayer@ player = survivors[0].getPlayer();
+			if (player !is null)
+			{
+				Achievement::server_Unlock(Achievement::SoleSurvivor, player);
+			}
+		}
 	}
 }
 

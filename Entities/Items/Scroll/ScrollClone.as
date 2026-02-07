@@ -6,6 +6,7 @@
 #include "MakeCrate.as"
 #include "Zombie_Translation.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -46,13 +47,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		Statistics::server_Add("scrolls_used", 1, player);
 
-		CBlob@ clone = server_CreateClone(aimBlob, this.getPosition() + Vec2f(0, (this.getHeight() - aimBlob.getHeight()) / 2 + 4));
-		copyInventory(aimBlob, clone);
+		Vec2f pos = this.getPosition() + Vec2f(0, (this.getHeight() - aimBlob.getHeight()) / 2 + 4);
+		CBlob@ clone = server_CreateClone(aimBlob, pos, player);
+		copyInventory(aimBlob, clone, player);
+
+		if (clone.getName() == "library")
+		{
+			Achievement::server_Unlock(Achievement::GreatAwakening, player);
+		}
+
 		this.server_Die();
 	}
 }
 
-void copyInventory(CBlob@ blob, CBlob@ clone)
+void copyInventory(CBlob@ blob, CBlob@ clone, CPlayer@ player)
 {
 	CInventory@ inv = blob.getInventory();
 	if (inv is null) return;
@@ -63,19 +71,23 @@ void copyInventory(CBlob@ blob, CBlob@ clone)
 		CBlob@ item = inv.getItem(i);
 		if (item is null) continue;
 		
-		CBlob@ cloneItem = server_CreateClone(item, clone.getPosition());
+		CBlob@ cloneItem = server_CreateClone(item, clone.getPosition(), player);
 		clone.server_PutInInventory(cloneItem);
 	}
 }
 
-CBlob@ server_CreateClone(CBlob@ blob, Vec2f pos)
+CBlob@ server_CreateClone(CBlob@ blob, Vec2f pos, CPlayer@ player)
 {
 	//special cases
 	const string name = blob.getName();
 	if (name == "scroll")
 	{
 		string scrollType = blob.get_string("scroll defname0");
-		if (scrollType == "clone") scrollType = "royalty"; //no infinite dupes!
+		if (scrollType == "clone")
+		{
+			Achievement::server_Unlock(Achievement::WorthATry, player);
+			scrollType = "royalty"; //no infinite dupes!
+		}
 		
 		CBlob@ scroll = server_MakePredefinedScroll(pos, scrollType);
 		return scroll;

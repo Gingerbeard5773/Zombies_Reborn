@@ -1,8 +1,9 @@
 #define SERVER_ONLY
 
-#include "UndeadTargeting.as";
-#include "PressOldKeys.as";
-#include "GetSurvivors.as";
+#include "UndeadTargeting.as"
+#include "PressOldKeys.as"
+#include "GetSurvivors.as"
+#include "Zombie_AchievementsCommon.as"
 
 const f32 brain_target_radius = 512.0f;
 
@@ -16,99 +17,66 @@ void onTick(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 
-	u8 delay = blob.get_u8("brain_delay");
-	delay--;
+	u8 delay = blob.get_u8("brain_delay") - 1;
 
-	if (delay == 0)
+	if (delay > 0)
 	{
-		delay = 5 + XORRandom(10);
+		PressOldKeys(blob);
+		blob.set_u8("brain_delay", delay);
+		return;
+	}
 
-		// do we have a target?
-		CBlob@ target = this.getTarget();
-		if (target !is null)
+	delay = 5 + XORRandom(10);
+	blob.set_u8("brain_delay", delay);
+
+	// do we have a target?
+	CBlob@ target = this.getTarget();
+	if (target is null)
+	{
+		FlyAround(this, blob); // just fly around looking for a target
+		return;
+	}
+
+	// need to pick the target up
+	CBlob@ carried = blob.getCarriedBlob();
+	if (carried is null || carried !is target)
+	{
+		// check if the target needs to be abandoned
+		if (ShouldLoseTarget(blob, target))
 		{
-			CBlob@ carriedBlob = blob.getCarriedBlob();
-			if (carriedBlob !is null && carriedBlob is target)
-			{
-				const Vec2f pos = blob.getPosition();
-				
-				if (carriedBlob.hasTag("undead"))
-				{
-					// take 'em where they need to go
-					CBlob@ taxiTarget = getBlobByNetworkID(blob.get_netid("brain_player_target"));
-					if (taxiTarget !is null)
-					{
-						const Vec2f targetPos = taxiTarget.getPosition();
-
-						if (getXBetween(targetPos, pos) < 50.0f)
-						{
-							carriedBlob.set_Vec2f("brain_destination", targetPos); //tell the zombie where to look
-							DetachTarget(this, blob);
-						}
-						else
-						{
-							CMap@ map = getMap();
-							
-							// aim at the destination
-							blob.setAimPos(targetPos);
-
-							// fly to our destination
-							FlyTo(blob, Vec2f(targetPos.x, getFlyHeight(targetPos.x, map)));
-
-							// stay away from anything any nearby obstructions such as a tower
-							DetectForwardObstructions(blob, map);
-
-							// stay above the ground
-							StayAboveGroundLevel(blob, map);
-						}
-					}
-					else
-					{
-						DetachTarget(this, blob);
-					}
-				}
-				else
-				{
-					if (pos.y < 30)
-					{
-						// bye bye!
-						DetachTarget(this, blob);
-					}
-					else
-					{
-						FlyTo(blob, Vec2f(pos.x, 10));
-					}
-				}
-			}
-
-			// need to pick the target up
-			else
-			{
-				// check if the target needs to be abandoned
-				if (ShouldLoseTarget(blob, target))
-				{
-					DetachTarget(this, blob);
-					return;
-				}
-				
-				// chase target
-				FlyTo(blob, target.getPosition());
-
-				// aim at the target
-				blob.setAimPos(target.getPosition());
-			}
+			DetachTarget(this, blob, carried);
+			return;
 		}
-		else
+		
+		// chase target
+		FlyTo(blob, target.getPosition());
+
+		// aim at the target
+		blob.setAimPos(target.getPosition());
+
+		return;
+	}
+
+	const Vec2f pos = blob.getPosition();
+
+	if (carried.hasTag("undead"))
+	{
+		TaxiUndead(this, blob, carried);
+	}
+	else if (pos.y < 30)
+	{
+		// bye bye!
+		CPlayer@ player = carried.getPlayer();
+		if (player !is null)
 		{
-			FlyAround(this, blob); // just fly around looking for a target
+			Achievement::server_Unlock(Achievement::SkyDiving, player);
 		}
+		DetachTarget(this, blob, carried);
 	}
 	else
 	{
-		PressOldKeys(blob);
+		FlyTo(blob, Vec2f(pos.x, 10));
 	}
-
-	blob.set_u8("brain_delay", delay);
 }
 
 const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)
@@ -148,6 +116,40 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 
 	// stay above the ground
 	StayAboveGroundLevel(blob, map);
+}
+
+void TaxiUndead(CBrain@ this, CBlob@ blob, CBlob@ carried)
+{
+	CBlob@ taxiTarget = getBlobByNetworkID(blob.get_netid("brain_player_target"));
+	if (taxiTarget is null)
+	{
+		DetachTarget(this, blob, carried);
+		return;
+	}
+
+	const Vec2f targetPos = taxiTarget.getPosition();
+
+	if (getXBetween(targetPos, blob.getPosition()) < 50.0f)
+	{
+		carried.set_Vec2f("brain_destination", targetPos); //tell the zombie where to look
+		DetachTarget(this, blob, carried);
+	}
+	else
+	{
+		CMap@ map = getMap();
+		
+		// aim at the destination
+		blob.setAimPos(targetPos);
+
+		// fly to our destination
+		FlyTo(blob, Vec2f(targetPos.x, getFlyHeight(targetPos.x, map)));
+
+		// stay away from anything any nearby obstructions such as a tower
+		DetectForwardObstructions(blob, map);
+
+		// stay above the ground
+		StayAboveGroundLevel(blob, map);
+	}
 }
 
 void FindTarget(CBrain@ this, CBlob@ blob, CMap@ map)
@@ -263,11 +265,12 @@ const f32 getXBetween(Vec2f&in point1, Vec2f&in point2)
 	return Maths::Abs(point1.x - point2.x);
 }
 
-void DetachTarget(CBrain@ this, CBlob@ blob)
+void DetachTarget(CBrain@ this, CBlob@ blob, CBlob@ carried)
 {
-	CBlob@ carried = blob.getCarriedBlob();
-	if (carried !is null && carried is this.getTarget())
+	if (carried !is null)
+	{
 		carried.server_DetachFrom(blob);
+	}
 
 	// remove target
 	this.SetTarget(null);

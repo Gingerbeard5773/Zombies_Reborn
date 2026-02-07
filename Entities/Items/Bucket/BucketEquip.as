@@ -1,6 +1,7 @@
 #include "EquipmentCommon.as"
 #include "RunnerTextures.as"
 #include "Hitters.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -21,6 +22,11 @@ void OnEquip(CBlob@ this, CBlob@ equipper)
 		buckethead.SetVisible(true);
 		buckethead.SetRelativeZ(1.0f);
 		buckethead.SetFacingLeft(sprite.isFacingLeft());
+	}
+	
+	if (equipper.isMyPlayer())
+	{
+		Achievement::client_Unlock(Achievement::Bucketeer);
 	}
 }
 

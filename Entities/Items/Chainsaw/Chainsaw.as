@@ -1,10 +1,11 @@
-#include "Hitters.as";
-#include "BuilderHittable.as";
-#include "ParticleSparks.as";
-#include "MaterialCommon.as";
-#include "ShieldCommon.as";
-#include "KnockedCommon.as";
-#include "Zombie_Translation.as";
+#include "Hitters.as"
+#include "BuilderHittable.as"
+#include "ParticleSparks.as"
+#include "MaterialCommon.as"
+#include "ShieldCommon.as"
+#include "KnockedCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_AchievementsCommon.as"
 
 const f32 speed_thresh = 2.4f;
 const f32 speed_hard_thresh = 2.6f;
@@ -391,4 +392,16 @@ void AimAtMouse(CBlob@ this, CBlob@ holder)
 	if (!this.isFacingLeft()) mouseAngle += 180;
 
 	this.setAngleDegrees(-mouseAngle); // set aim pos
+}
+
+void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
+{
+	if (!hitBlob.hasTag("undead")) return;
+
+	CPlayer@ player = this.getDamageOwnerPlayer();
+	if (player is null || !player.isMyPlayer()) return;
+
+	if (hitBlob.getHealth() > hitBlob.get_f32("gib health")) return;
+
+	Achievement::client_Unlock(Achievement::RipAndTear);
 }

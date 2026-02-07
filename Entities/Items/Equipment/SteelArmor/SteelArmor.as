@@ -1,10 +1,11 @@
-#include "EquipmentCommon.as";
-#include "RunnerTextures.as";
-#include "RunnerCommon.as";
-#include "Hitters.as";
-#include "ParticleSparks.as";
-#include "Zombie_TechnologyCommon.as";
-#include "Zombie_Translation.as";
+#include "EquipmentCommon.as"
+#include "RunnerTextures.as"
+#include "RunnerCommon.as"
+#include "Hitters.as"
+#include "ParticleSparks.as"
+#include "Zombie_TechnologyCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -25,6 +26,15 @@ void onInit(CBlob@ this)
 void OnEquip(CBlob@ this, CBlob@ equipper)
 {
 	equipper.Tag("steel armor");
+
+	if (equipper.hasTag("steel helmet"))
+	{
+		CPlayer@ player = equipper.getPlayer();
+		if (player !is null && player.isMyPlayer())
+		{
+			Achievement::client_Unlock(Achievement::IronMan);
+		}
+	}
 
 	string spritename = "";
 	if (equipper.getName() == "knight")        spritename = "KnightSteelArmor";

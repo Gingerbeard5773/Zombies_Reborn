@@ -1,7 +1,9 @@
 // scroll script that revives a player within a radius
 
-#include "GenericButtonCommon.as";
-#include "Zombie_Translation.as";
+#include "GenericButtonCommon.as"
+#include "Zombie_Translation.as"
+#include "Zombie_StatisticsCommon.as"
+#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -32,15 +34,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (caller is null) return;
 		
 		if (this.hasTag("dead")) return;
-		
-		Vec2f[] revived_positions;
-		
+
 		bool self_revive;
 		if (!params.saferead_bool(self_revive)) return;
+		
+		u16 revived_player_count = 0;
+		Vec2f[] revived_positions;
 		
 		if (self_revive) //reviving self
 		{
 			RevivePlayer(player, caller, revived_positions);
+			Achievement::server_Unlock(Achievement::SecondChance, player);
+			revived_player_count++;
 		}
 
 		CBlob@[] blobsInRadius;
@@ -67,6 +72,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			if (dead_player is null || dead_player.getBlob() !is null || dead_player.getTeamNum() != 0) continue;
 
 			RevivePlayer(dead_player, b, revived_positions);
+			revived_player_count++;
+		}
+		
+		if (revived_player_count >= 3)
+		{
+			Achievement::server_Unlock(Achievement::Savior, player);
 		}
 
 		const u8 revived_count = revived_positions.length;
@@ -79,7 +90,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 				stream.write_Vec2f(revived_positions[i]);
 			}
 			this.SendCommand(this.getCommandID("client_revive"), stream);
-			
+
+			Statistics::server_Add("scrolls_used", 1, player);
+
 			this.Tag("dead");
 			this.server_Die();
 		}
@@ -112,7 +125,7 @@ void RevivePlayer(CPlayer@ player, CBlob@ b, Vec2f[]@ revived_positions)
 	CBlob@ newBlob = server_CreateBlobNoInit(b.getName());
 	newBlob.server_setTeamNum(b.getTeamNum());
 
-	Vec2f respawnPos = getRespawnLocation(b);
+	Vec2f respawnPos = getRespawnLocation(b, player);
 	newBlob.setPosition(respawnPos);
 	revived_positions.push_back(respawnPos);
 
@@ -142,7 +155,7 @@ void RevivePlayer(CPlayer@ player, CBlob@ b, Vec2f[]@ revived_positions)
 	b.server_Die();
 }
 
-Vec2f getRespawnLocation(CBlob@ b)
+Vec2f getRespawnLocation(CBlob@ b, CPlayer@ player)
 {
 	CMap@ map = getMap();
 	Vec2f bpos = b.getPosition();
@@ -153,6 +166,11 @@ Vec2f getRespawnLocation(CBlob@ b)
 		CBlob@[] dorms;
 		if (getBlobsByName("dorm", @dorms))
 		{
+			if (player !is null)
+			{
+				Achievement::server_Unlock(Achievement::ReturningFromHell, player);
+			}
+
 			return dorms[XORRandom(dorms.length)].getPosition();
 		}
 	}

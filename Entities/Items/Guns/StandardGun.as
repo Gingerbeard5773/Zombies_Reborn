@@ -184,7 +184,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 	if (cmd == this.getCommandID("shoot client") && isClient())
 	{
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+
 		if (!params.saferead_u16(gun.ammo_count)) return;
+		
+		CBlob@ holder = getBlobByNetworkID(netid);
+		if (holder is null) return;
 
 		if (!gun.shoot_sound.isEmpty())
 			this.getSprite().PlaySound(gun.shoot_sound);
@@ -194,7 +200,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			onFireHandle@ onFire;
 			if (this.get("onFire handle", @onFire)) 
 			{
-				onFire(this, gun);
+				onFire(this, holder, gun);
 			}
 		}
 	}
@@ -217,10 +223,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		onFireHandle@ onFire;
 		if (this.get("onFire handle", @onFire)) 
 		{
-			onFire(this, gun);
+			onFire(this, holder, gun);
 		}
 		
 		CBitStream stream;
+		stream.write_netid(holder.getNetworkID());
 		stream.write_u16(gun.ammo_count); //sync ammo
 		this.SendCommand(this.getCommandID("shoot client"), stream);
 	}
