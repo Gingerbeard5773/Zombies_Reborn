@@ -9,6 +9,12 @@ interface Icon : Stack
     void SetFrameDim(uint width, uint height);
     Vec2f getFrameDim();
 
+    void SetTeam(uint team);
+    uint getTeam();
+
+    void SetColor(SColor color);
+    SColor getColor();
+
     void SetCrop(float top, float right, float bottom, float left);
 
     void SetFixedAspectRatio(bool fixed);
@@ -22,12 +28,23 @@ class StandardIcon : Icon, StandardStack
     private string texture = "";
     private uint frameIndex = 0;
     private Vec2f frameDim = Vec2f_zero;
+    private uint team = 0;
+    private SColor color = color_white;
     private float cropTop = 0.0f;
     private float cropRight = 0.0f;
     private float cropBottom = 0.0f;
     private float cropLeft = 0.0f;
     private bool fixedAspectRatio = true;
     private bool clickable = false;
+
+    StandardIcon(string texture, uint frameIndex, Vec2f frameDim, uint team = 0, SColor color = color_white)
+    {
+        this.texture = texture;
+        this.frameIndex = frameIndex;
+        this.frameDim = frameDim;
+        this.team = team;
+        this.color = color;
+    }
 
     void SetTexture(string texture)
     {
@@ -70,6 +87,34 @@ class StandardIcon : Icon, StandardStack
     Vec2f getFrameDim()
     {
         return frameDim;
+    }
+
+    void SetTeam(uint team)
+    {
+        if (this.team == team) return;
+
+        this.team = team;
+
+        DispatchEvent(Event::Team);
+    }
+
+    uint getTeam()
+    {
+        return team;
+    }
+
+    void SetColor(SColor color)
+    {
+        if (this.color == color) return;
+
+        this.color = color;
+
+        DispatchEvent(Event::Color);
+    }
+
+    SColor getColor()
+    {
+        return color;
     }
 
     void SetCrop(float top, float right, float bottom, float left)
@@ -176,9 +221,39 @@ class StandardIcon : Icon, StandardStack
             Vec2f scale = getScale() * 0.5f;
             Vec2f offset = getOffset();
 
-            GUI::DrawIcon(texture, frameIndex, frameDim, position + offset, scale.x, scale.y, color_white);
+            GUI::DrawIcon(texture, frameIndex, frameDim, position + offset, scale.x, scale.y, team, color);
         }
 
         StandardStack::Render();
+    }
+}
+
+class AnimatedIcon : StandardIcon
+{
+    private u8[] animation_frames;
+    private u8 animation_speed = 5;
+
+    AnimatedIcon(string texture, uint frameIndex, Vec2f frameDim, uint team = 0, SColor color = color_white)
+    {
+        super(texture, frameIndex, frameDim, team, color);
+    }
+
+    void SetFrames(u8[] animation_frames)
+    {
+        this.animation_frames = animation_frames;
+    }
+
+    void SetSpeed(u8 animation_speed)
+    {
+        this.animation_speed = animation_speed;
+    }
+
+    void Render()
+    {
+        const u32 time = getGameTime() / animation_speed;
+        const u8 frame = time % animation_frames.length;
+        frameIndex = animation_frames[frame];
+
+        StandardIcon::Render();
     }
 }

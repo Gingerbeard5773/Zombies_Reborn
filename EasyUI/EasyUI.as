@@ -65,6 +65,11 @@ class EasyUI
         this.components = components;
     }
 
+    Component@[]@ GetComponents()
+    {
+        return components;
+    }
+
     bool isHovering()
     {
         return hovering !is null;

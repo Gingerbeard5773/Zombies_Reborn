@@ -1,6 +1,7 @@
 interface Button : List
 {
     bool isPressed();
+    bool isDisabled();
 }
 
 class StandardButton : Button, StandardList
@@ -25,9 +26,14 @@ class StandardButton : Button, StandardList
         return ui.isInteractingWith(this);
     }
 
+    bool isDisabled()
+    {
+        return false;
+    }
+
     bool canClick()
     {
-        return true;
+        return !isDisabled();
     }
 
     void Render()
@@ -37,9 +43,9 @@ class StandardButton : Button, StandardList
         Vec2f min = getTruePosition();
         Vec2f max = min + getTrueBounds();
 
-        if (ui.canClick(this))
+        if (ui.canClick(this) || isDisabled())
         {
-            if (isPressed())
+            if (isPressed() || isDisabled())
             {
                 GUI::DrawButtonPressed(min, max);
             }

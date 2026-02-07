@@ -55,6 +55,12 @@ class StandardList : List, StandardStack
     private float[] stretchWidths;
     private float[] stretchHeights;
 
+    StandardList()
+    {
+        error("Initialized StandardList using the default constructor. Use StandardList(EasyUI@ ui) instead.");
+        printTrace();
+    }
+
     StandardList(EasyUI@ ui)
     {
         super();
@@ -478,6 +484,11 @@ class StandardList : List, StandardStack
         return hiddenLines > 0 && scrollIndex > 0;
     }
 
+    Component@[] getAllComponents()
+    {
+        return components;
+    }
+
     Component@[] getComponents()
     {
         if (canScroll())
@@ -505,6 +516,8 @@ class StandardList : List, StandardStack
     void Update()
     {
         if (!isVisible()) return;
+
+        DispatchEvent(Event::Update);
 
         CControls@ controls = getControls();
 

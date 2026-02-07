@@ -393,6 +393,8 @@ class StandardStack : Stack
     {
         if (!isVisible()) return;
 
+        DispatchEvent(Event::Update);
+
         for (int i = components.size() - 1; i >= 0; i--)
         {
             components[i].Update();

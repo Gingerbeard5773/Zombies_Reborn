@@ -158,6 +158,14 @@ class StandardHorizontalSlider : Slider, StandardList
     private bool pressed = false;
     private float clickOffsetX;
 
+    StandardHorizontalSlider()
+    {
+        error("Initialized StandardHorizontalSlider using the default constructor. Use StandardHorizontalSlider(EasyUI@ ui) instead.");
+        printTrace();
+
+        super(EasyUI());
+    }
+
     StandardHorizontalSlider(EasyUI@ ui)
     {
         super(ui);
