@@ -189,6 +189,7 @@ namespace Translate
 	Bread          = Translate("Bread\nDelicious crunchy whole-wheat bread.", "Хлеб\nВкусный хрустящий хлеб из цельнозерновой муки."),
 	Cake           = Translate("Cake\nFluffy cake made from egg and wheat.",  "Пирог\nПышный пирог из яиц и пшеницы."),
 	Cookedfish     = Translate("Cooked Fish\nA cooked fish on a stick.",      "Жареная рыба\nПриготовленная рыба на палочке."),
+	Cookedchicken  = Translate("Cooked Chicken\nJuicy chicken roast!",        "Приготовленная курица/nСочная жареная курица!"),
 	Cookedsteak    = Translate("Cooked Steak\nA meat chop with sauce.",       "Жареный стейк\nОтбивная с соусом."),
 	Burger         = Translate("Burger\nSeared meat in a bun!",               "Бургер\nОбжареное мясо в булочке!"),
 

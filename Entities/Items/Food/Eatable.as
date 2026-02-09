@@ -19,10 +19,11 @@ void onInit(CBlob@ this)
 string getTranslatedInventoryName(CBlob@ this)
 {
 	const string blob_name = this.getName();
-	if (blob_name == "bread")       return name(Translate::Bread);
-	if (blob_name == "cake")        return name(Translate::Cake);
-	if (blob_name == "cookedfish")  return name(Translate::Cookedfish);
-	if (blob_name == "cookedsteak") return name(Translate::Cookedsteak);
+	if (blob_name == "bread")         return name(Translate::Bread);
+	if (blob_name == "cake")          return name(Translate::Cake);
+	if (blob_name == "cookedchicken") return name(Translate::Cookedchicken);
+	if (blob_name == "cookedfish")    return name(Translate::Cookedfish);
+	if (blob_name == "cookedsteak")   return name(Translate::Cookedsteak);
 	
 	return this.getInventoryName();
 }

@@ -39,7 +39,7 @@ void onInit(CBlob@ this)
 	}*/
 	
 	Craft craft();
-	craft.menu_size = Vec2f(5, 1);
+	craft.menu_size = Vec2f(6, 1);
 	craft.button_offset = Vec2f(4, 0);
 	craft.produce_sound = "Cooked.ogg";
 	craft.icon_image = "Food.png";
@@ -54,6 +54,11 @@ void onInit(CBlob@ this)
 		CraftItem i("cake", Translate::Cake+"\n$heart_full$$heart_full$$heart_full$", 5, 30);
 		AddRequirement(i.reqs, "blob", "mat_flour", Translate::Flour, 15);
 		AddRequirement(i.reqs, "blob", "egg", "Egg", 1);
+		craft.addItem(this, i);
+	}
+	{
+		CraftItem i("cookedchicken", Translate::Cookedchicken+"\n$heart_full$$heart_full$$heart_full$", 7, 30);
+		AddRequirement(i.reqs, "blob", "chicken", "Chicken", 1);
 		craft.addItem(this, i);
 	}
 	{
