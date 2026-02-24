@@ -1,6 +1,5 @@
 #include "VehicleCommon.as"
 #include "GenericButtonCommon.as"
-#include "AssignWorkerCommon.as"
 #include "Zombie_TechnologyCommon.as"
 
 // Mounted Bow logic
@@ -86,7 +85,10 @@ void onInit(CBlob@ this)
 	
 	this.Tag("medium weight");
 	this.Tag("ignore_arrow");
+	this.Tag("turret");
 	this.Tag("place norotate");  //dont rotate when we press spacebar
+
+	this.set_u8("maximum_worker_count", 1);
 
 	// auto-load on creation
 	if (isServer())
@@ -97,9 +99,6 @@ void onInit(CBlob@ this)
 			ammo.server_Die();
 		}
 	}
-	
-	addOnAssignWorker(this, @onAssignWorker);
-	addOnUnassignWorker(this, @onUnassignWorker);
 }
 
 f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
@@ -213,19 +212,6 @@ void UpdateFrame(CBlob@ this)
 	}
 }
 
-void GetButtonsFor(CBlob@ this, CBlob@ caller)
-{
-	if (!canSeeButtons(this, caller)) return;
-
-	CBlob@ occupied = this.getAttachments().getAttachmentPoint("GUNNER").getOccupied();
-	if (occupied !is null && !occupied.hasTag("migrant")) return;
-
-	if (!AssignWorkerButton(this, caller))
-	{
-		UnassignWorkerButton(this, caller, Vec2f(0, -8));
-	}
-}
-
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	if (!attachedPoint.socket) return;
@@ -244,18 +230,4 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.isCollidable() && blob.getShape().isStatic();
-}
-
-void onAssignWorker(CBlob@ this, CBlob@ worker)
-{
-	AttachmentPoint@ gun = this.getAttachments().getAttachmentPointByName("GUNNER");
-	if (gun !is null && gun.getOccupied() is null)
-	{
-		this.server_AttachTo(worker, @gun);
-	}
-}
-
-void onUnassignWorker(CBlob@ this, CBlob@ worker)
-{
-	this.server_DetachFrom(worker);
 }

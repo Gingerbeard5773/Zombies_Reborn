@@ -3,9 +3,8 @@
 
 /* Potential achievement ideas
 	Fumbled : duplicate something useless (a tile blob, or forage, ladders, etc)
-	Just The Beginning : lose your first game
 	Society : have 15 surviving workers at the same time
-	Pokey : place 500 spikes in one game
+	Pokey Fort : place 500 spikes in one game
 */
 
 #include "Zombie_Translation.as"
@@ -78,7 +77,7 @@ namespace Achievement
 		CrowdControl,           // - Use the shotgun
 		PayloadDelivered,       // - Fire the bazooka
 		FlyingFortress,         // - Maximize an armored bomber
-		Bombardier,             // - Drop bombs from a bomber
+		Bombardier,             // - Drop big bombs from a bomber
 		Plow,                   // - Run over a swarm of zombies with a tank
 		Hero,                   // - Save another player who was snatched by a skelepede
 		SoleSurvivor,           // - Survive a night as the last player alive (8 minimum players required)

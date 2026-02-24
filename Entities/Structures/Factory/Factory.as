@@ -4,7 +4,7 @@
 #include "Requirements.as"
 #include "Help.as"
 #include "MiniIconsInc.as"
-#include "AssignWorkerCommon.as"
+#include "Zombie_Translation.as"
 #include "Zombie_TechnologyCommon.as"
 #include "Zombie_StatisticsCommon.as"
 
@@ -25,9 +25,8 @@ void onInit(CBlob@ this)
 
 	this.set_Vec2f("production offset", Vec2f(-8.0f, 0.0f));
 	this.set_s32("gold building amount", 0);
-
-	addOnAssignWorker(this, @onAssignWorker);
-	addOnUnassignWorker(this, @onUnassignWorker);
+	
+	this.set_u8("maximum_worker_count", 0);
 
 	SetupProductionSet();
 
@@ -163,9 +162,18 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		caller.CreateGenericButton(12, Vec2f(0, 0), this, BuildUpgradeMenu, getTranslatedString("Convert Workshop"));
 	}
-	else if (!AssignWorkerButton(this, caller) && !UnassignWorkerButton(this, caller, Vec2f(0, -14)))
+	else if (!this.get_bool("can produce"))
 	{
 		RequiresWorkerButton(this, caller);
+	}
+}
+
+void RequiresWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
+{
+	CButton@ button = caller.CreateGenericButton("$worker_migrant$", offset, this, 0, Translate::WorkerRequired);
+	if (button !is null)
+	{
+		button.SetEnabled(false);
 	}
 }
 
@@ -261,7 +269,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		
 		Statistics::server_Add("factories_setup", 1, player);
 
-		this.Tag("auto_assign_worker");
+		this.set_u8("maximum_worker_count", 1);
 
 		SetFactoryData(this, production);
 
@@ -279,6 +287,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			error("Production Set length does not match index! :: Factory.as, client_upgrade_factory");
 			return;
 		}
+
+		this.set_u8("maximum_worker_count", 1);
 
 		Production factory_production(production_set[index]);
 		factory_production.ResetProduction();
@@ -311,13 +321,13 @@ void SetFactoryData(CBlob@ this, Production@ production)
 	}
 }
 
-void onAssignWorker(CBlob@ this, CBlob@ worker)
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
-	SetStandardWorkerPosition(this, worker);
+	SetStandardWorkerPosition(this, attached, attachedPoint);
 
 	this.getSprite().PlaySound("/PowerUp.ogg");
 	this.set_bool("can produce", true);
-	
+
 	if (isServer())
 	{
 		Production@ production;
@@ -338,10 +348,20 @@ void onAssignWorker(CBlob@ this, CBlob@ worker)
 	}
 }
 
-void onUnassignWorker(CBlob@ this, CBlob@ worker)
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	worker.server_DetachFrom(this);
-
 	this.getSprite().PlaySound("/PowerDown.ogg");
 	this.set_bool("can produce", false);
+}
+
+void SetStandardWorkerPosition(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
+{
+	if (attachedPoint.name != "WORKER") return;
+
+	Random rand(this.getNetworkID() + attached.getNetworkID());
+	const f32 width = int(rand.NextRanged(this.getWidth()*0.5f)) - (this.getWidth() * 0.25f);
+	Vec2f offset = Vec2f(width, (this.getHeight() - attached.getHeight()) * 0.5f);
+
+	attachedPoint.offsetZ = 25.0f;
+	attachedPoint.offset = offset;
 }

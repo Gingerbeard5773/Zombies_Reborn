@@ -1,9 +1,8 @@
 #include "VehicleCommon.as"
-#include "ClassSelectMenu.as";
-#include "StandardRespawnCommand.as";
-#include "GenericButtonCommon.as";
-#include "Costs.as";
-#include "AssignWorkerCommon.as";
+#include "ClassSelectMenu.as"
+#include "StandardRespawnCommand.as"
+#include "GenericButtonCommon.as"
+#include "Costs.as"
 
 // Boat logic
 
@@ -121,8 +120,6 @@ void onInit(CBlob@ this)
 	}
 	
 	this.set_u8("maximum_worker_count", 5);
-	addOnAssignWorker(this, @onAssignWorker);
-	addOnUnassignWorker(this, @onUnassignWorker);
 }
 
 void onTick(CBlob@ this)
@@ -146,7 +143,21 @@ void Vehicle_WarboatControls(CBlob@ this, VehicleInfo@ v)
 	AttachmentPoint@[] aps;
 	if (!this.getAttachmentPoints(@aps)) return;
 	
+	AttachmentPoint@ player_controller = null;
 	AttachmentPoint@ controller = null;
+	
+	for (u8 i = 0; i < aps.length; i++)
+	{
+		AttachmentPoint@ ap = aps[i];
+		CBlob@ blob = ap.getOccupied();
+		if (blob is null || !ap.socket) continue;
+		
+		if (blob.getPlayer() !is null)
+		{
+			@player_controller = ap;
+			break;
+		}
+	}
 
 	for (u8 i = 0; i < aps.length; i++)
 	{
@@ -160,13 +171,10 @@ void Vehicle_WarboatControls(CBlob@ this, VehicleInfo@ v)
 			this.server_DetachFrom(blob);
 			return;
 		}
-		
-		if (blob.getPlayer() !is null || controller is null)
-		{
-			@controller = ap;
-		}
 
-		if (ap.name == "ROWER" && this.isInWater())
+		@controller = player_controller is null ? ap : player_controller;
+
+		if ((ap.name == "ROWER" && this.isInWater()) || (ap.name == "SAIL" && !this.hasTag("no sail")))
 		{
 			Vehicle_RowerControlsCustom(this, blob, controller, v);
 		}
@@ -234,11 +242,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, buildSpawnMenu, getTranslatedString("Change class"));
 	}
-	
-	if (!AssignWorkerButton(this, caller, Vec2f(8, 0)))
-	{
-		UnassignWorkerButton(this, caller, Vec2f(0, -8));
-	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -256,25 +259,4 @@ void onDie(CBlob@ this)
 			bow.server_Die();
 		}
 	}
-}
-
-void onAssignWorker(CBlob@ this, CBlob@ worker)
-{
-	AttachmentPoint@[] aps;
-	if (!this.getAttachmentPoints(@aps)) return;
-
-	for (u8 i = 1; i < aps.length; i++)
-	{
-		AttachmentPoint@ ap = aps[i];
-		CBlob@ blob = ap.getOccupied();
-		if (blob !is null || ap.name != "ROWER") continue;
-
-		this.server_AttachTo(worker, @ap);
-		break;
-	}
-}
-
-void onUnassignWorker(CBlob@ this, CBlob@ worker)
-{
-	this.server_DetachFrom(worker);
 }

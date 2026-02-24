@@ -67,6 +67,9 @@ CBlob@ CreateArrow(CBlob@ this, CBlob@ holder, Vec2f&in arrowPos, Vec2f&in arrow
 	CBlob@ arrow = server_CreateBlobNoInit("arrow");
 	if (arrow !is null)
 	{
+		if (arrowType == ArrowType::firework)
+			arrow.set_Vec2f("firework aim pos", holder.getAimPos());
+
 		arrow.set_u8("arrow type", arrowType);
 		arrow.SetDamageOwnerPlayer(holder.getPlayer());
 		arrow.Init();

@@ -92,8 +92,8 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	const u16 equipper_id = this.get_netid("equipper_id");
-	if (equipper_id == 0) return true;
+	CBlob@ equipper = getBlobByNetworkID(this.get_netid("equipper_id"));
+	if (equipper is null || equipper.getPlayer() is null) return true;
 
-	return forBlob.getNetworkID() == equipper_id;
+	return forBlob is equipper;
 }

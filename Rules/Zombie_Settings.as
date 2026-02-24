@@ -4,7 +4,7 @@
 
 void onInit(CRules@ this)
 {
-	this.set_string("version", "1.6.2");
+	this.set_string("version", "1.7.0");
 	sv_contact_info = "github.com/Gingerbeard5773/Zombies_Reborn";
 	
 	sv_visiblity_scale = 1.25f;
@@ -12,9 +12,13 @@ void onInit(CRules@ this)
 	SColor printColor = 0xff66C6FF;
 	
 	print("");
-	print("---- INITIALIZING ZOMBIE FORTRESS ---- ",  printColor);
-	print("  Version: " + this.get_string("version"), printColor);
-	print("  Mod page: "+sv_contact_info,             printColor);
+	print("---- INITIALIZING ZOMBIE FORTRESS ---- ",                            printColor);
+	print("  Version: " + this.get_string("version"),                           printColor);
+	print("  Mod page: "+sv_contact_info,                                       printColor);
+	print("  Creator: GingerBeard",                                             printColor);
+	print("");
+	print("  Please ask for permission to host the mod for the public domain.", printColor);
+	print("  This also applies for hosting a modified version of the mod.",     printColor);
 	print("-------------------------------------- ",  printColor);
 	print("");
 	
@@ -31,7 +35,7 @@ void AddIcons()
 	AddIconToken("$change_class$", "/GUI/InteractionIcons.png", Vec2f(32, 32), 12, 2);
 	AddIconToken("$heart_full$", "/GUI/HeartNBubble.png", Vec2f(12, 12), 1);
 	AddIconToken("$heart_half$", "/GUI/HeartNBubble.png", Vec2f(12, 12), 3);
-	AddIconToken("$worker_migrant$", "MigrantMale.png", Vec2f(32, 32), 3, 0);
+	AddIconToken("$worker_migrant$", "WorkerIcon.png", Vec2f(32, 32), 0, 0);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4, 0);
 	AddIconToken("$MolotovArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 4, 0);
 	AddIconToken("$mat_molotovarrows_icon$", "MaterialMolotovArrow.png", Vec2f(16, 16), 1, 0);
@@ -46,12 +50,14 @@ void AddFonts()
 	const bool isRussian = g_locale == "ru";
 	if (!GUI::isFontLoaded("big font"))
 	{
-		GUI::LoadFont("big font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Bold.ttf", isRussian ? 25 : 50, true);
+		const string font = isRussian ? CFileMatcher("VinqueRg.ttf").getFirst() : "GUI/Fonts/AveriaSerif-Bold.ttf";
+		GUI::LoadFont("big font", font, isRussian ? 40 : 50, true);
 	}
 	
 	if (!GUI::isFontLoaded("medium font"))
 	{
-		GUI::LoadFont("medium font", isRussian ? "GUI/Fonts/Arial.ttf" : "GUI/Fonts/AveriaSerif-Regular.ttf", isRussian ? 10 : 20, true);
+		const string font = isRussian ? CFileMatcher("Anticva.ttf").getFirst() : "GUI/Fonts/AveriaSerif-Regular.ttf";
+		GUI::LoadFont("medium font", font, isRussian ? 17 : 20, true);
 	}
 
 	if (!GUI::isFontLoaded("anticva"))

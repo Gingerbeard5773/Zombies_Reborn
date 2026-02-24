@@ -36,7 +36,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu@ gridmenu)
 	u16[] ids;
 	if (!this.get("equipment_ids", ids)) return;
 
-	CBlob@ carried = this.getCarriedBlob();
+	CBlob@ carried = forBlob !is null ? forBlob.getCarriedBlob() : this.getCarriedBlob();
 
 	for (u8 i = 0; i < equipment.length; i++)
 	{
@@ -56,6 +56,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu@ gridmenu)
 
 		CBitStream params;
 		params.write_netid(this.getNetworkID());
+		params.write_netid(carried !is null ? carried.getNetworkID() : 0);
 		params.write_u8(i);
 		CGridButton@ button = equipment_menu.AddButton(icon, "", "Equipment.as", "Callback_Equip", Vec2f(1, 1), params);
 		if (button !is null)
@@ -78,13 +79,17 @@ void Callback_Equip(CBitStream@ params)
 	CBlob@ this = getBlobByNetworkID(netid);
 	if (this is null) return;
 	
+	u16 item_netid;
+	if (!params.saferead_netid(item_netid)) return;
+
 	getHUD().ClearMenus();
-	
+
 	u8 index;
 	if (!params.saferead_u8(index)) return;
-	
+
 	CBitStream stream;
 	stream.write_u8(index);
+	stream.write_netid(item_netid);
 	this.SendCommand(this.getCommandID("server_equip"), stream);
 }
 
@@ -99,7 +104,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		u8 index;
 		if (!params.saferead_u8(index)) { error("Failed to access equipment index : "+this.getNetworkID()); return; }
-		
+
+		u16 item_netid;
+		if (!params.saferead_netid(item_netid)) { error("Failed to access item netid : "+this.getNetworkID()); return; }
+
 		//unequip
 		CBlob@ equippedblob = getBlobByNetworkID(ids[index]);
 		if (equippedblob !is null)
@@ -110,7 +118,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		}
 
 		//equip
-		CBlob@ carried = this.getCarriedBlob();
+		CBlob@ carried = getBlobByNetworkID(item_netid);
 		if (carried !is null && canEquip(carried, index))
 		{
 			const bool isSameEquipment = equippedblob !is null && equippedblob.getName() == carried.getName();
@@ -231,13 +239,48 @@ void EquipToNewPlayerBlob(CBlob@ this, u16[]@ ids)
 
 	for (u8 i = 0; i < ids.length; i++)
 	{
-		CBlob@ equipment = getBlobByNetworkID(ids[i]);
-		if (equipment is null) continue;
+		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
+		if (equippedblob is null) continue;
 		
 		new_ids[i] = ids[i];
 
-		EquipBlob(newPlayerBlob, equipment);
+		EquipBlob(newPlayerBlob, equippedblob);
 	}
+}
+
+/// BOTS
+
+void GetButtonsFor(CBlob@ this, CBlob@ caller)
+{
+	const u16 inv_access = getRules().get_u16("inventory access");
+	if (this.getNetworkID() != inv_access) return;
+	
+	u16[] ids;
+	if (!this.get("equipment_ids", ids)) return;
+
+	CBlob@ carried = caller.getCarriedBlob();
+	if (carried is null || !carried.exists("equipment_slot")) return;
+
+	const string icon = carried.exists("equipment_icon") ? carried.get_string("equipment_icon") : "$"+carried.getName()+"$";
+	const string hover = Translate::Equip.replace("{ITEM}", carried.getInventoryName());
+	caller.CreateGenericButton(icon, Vec2f(0, -8), this, Callback_EquipBot, hover);
+}
+
+void Callback_EquipBot(CBlob@ this, CBlob@ caller)
+{
+	CBlob@ carried = caller.getCarriedBlob();
+	if (carried is null || !carried.exists("equipment_slot")) return;
+
+	getHUD().ClearMenus();
+	
+	const u8 index = equipment.find(carried.get_string("equipment_slot"));
+	if (index == -1) return;
+
+	CBitStream stream;
+	stream.write_u8(index);
+	stream.write_netid(carried.getNetworkID());
+
+	this.SendCommand(this.getCommandID("server_equip"), stream);
 }
 
 ///NETWORK

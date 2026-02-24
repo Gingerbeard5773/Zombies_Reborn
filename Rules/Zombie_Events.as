@@ -4,6 +4,7 @@
 #include "Zombie_GlobalMessagesCommon.as"
 #include "Zombie_DaysCommon.as"
 #include "GetSurvivors.as"
+#include "BrainTask.as"
 
 void onStateChange(CRules@ this, const u8 oldState)
 {
@@ -27,7 +28,10 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
+	if (!isServer()) return;
+
 	this.set_u16("tim_day", getTimInterval());
+	this.Sync("tim_day", true);
 }
 
 u16 getTimInterval()
@@ -50,6 +54,7 @@ void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
 			if (day_number > tim_day)
 			{
 				this.set_u16("tim_day", day_number + getTimInterval());
+				this.Sync("tim_day", true);
 			}
 			doMigrantEvent(this, map, day_number);
 			break;
@@ -78,17 +83,31 @@ void doMigrantEvent(CRules@ this, CMap@ map, const u16&in day_number)
 	if (day_number % 2 != 0) return; //every other day
 
 	if (this.get_u16("undead count") > 15) return; //don't if too many zombies
-	
+
 	CBlob@[] migrants;
 	getBlobsByTag("migrant", @migrants);
-	if (migrants.length > 15) return; //don't if we already have enough migrants
+	if (migrants.length > 10) return; //don't if we already have enough migrants
 
 	Vec2f spawn = getZombieSpawnPos(map);
 	const u8 amount = 1 + XORRandom(3);
+	const u32 seed = XORRandom(500);
 	for (u8 i = 0; i < amount; ++i)
 	{
 		Vec2f offset(XORRandom(64) - 32, 0);
-		CreateMigant(spawn + offset, 0);
+		const string[] migrant_class = { "builder", "builder", "knight", "archer" };
+		CBlob@ blob = server_CreateBlobNoInit(migrant_class[XORRandom(migrant_class.length)]);
+		if (blob is null) continue;
+
+		blob.setSexNum(XORRandom(2));
+		blob.server_setTeamNum(0);
+		blob.setPosition(spawn + offset);
+		blob.Init();
+		
+		TaskManager@ manager = getTaskManager(blob);
+		if (manager is null) continue;
+
+		BrainTask@ task = SafetyTask(blob, seed);
+		manager.AddTask(task, true);
 	}
 
 	server_SendGlobalMessage(this, amount == 1 ? 5 : 6, 6);

@@ -213,7 +213,8 @@ bool hasArrows(CBlob@ this)
 
 	if (archer.arrow_type < arrowTypeNames.length)
 	{
-		if (archer.arrow_type == ArrowType::normal && hasTech(Tech::DeepQuiver))
+		const bool isBot = this.getPlayer() is null;
+		if (archer.arrow_type == ArrowType::normal && (hasTech(Tech::DeepQuiver) || isBot))
 			return true;
 
 		return this.getBlobCount(arrowTypeNames[archer.arrow_type]) > 0;
@@ -225,7 +226,8 @@ bool hasArrows(CBlob@ this, u8 arrowType)
 {
 	if (this is null) return false;
 	
-	if (arrowType == ArrowType::normal && hasTech(Tech::DeepQuiver))
+	const bool isBot = this.getPlayer() is null;
+	if (arrowType == ArrowType::normal && (hasTech(Tech::DeepQuiver) || isBot))
 		return true;
 	
 	return arrowType < arrowTypeNames.length && this.hasBlob(arrowTypeNames[arrowType], 1);

@@ -53,8 +53,16 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 	//special heads logic for default heads pack
 	if (default_pack && (headIndex == 255 || headIndex < NUM_UNIQUEHEADS))
 	{
-		string config = blob.getConfig();
-		if (config == "builder")
+		const string config = blob.getConfig();
+
+		CPlayer@ p = blob.getPlayer();
+		if (p is null || p.isBot())
+		{
+			const u32 seed = blob.exists("previous blob netid") ? blob.get_u32("previous blob netid") : blob.getNetworkID();
+			Random _r(seed);
+			headIndex = 30 + _r.NextRanged(40);
+		}
+		else if (config == "builder")
 		{
 			headIndex = NUM_UNIQUEHEADS;
 		}
@@ -65,15 +73,6 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 		else if (config == "archer")
 		{
 			headIndex = NUM_UNIQUEHEADS + 2;
-		}
-		else if (config == "bandit")
-		{
-			headIndex = NUM_UNIQUEHEADS - 1;
-		}
-		else if (config == "migrant")
-		{
-			Random _r(blob.getNetworkID());
-			headIndex = 69 + _r.NextRanged(2); //head scarf or old
 		}
 		else
 		{
@@ -191,10 +190,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 void onGib(CSprite@ this)
 {
-	if (g_kidssafe)
-	{
-		return;
-	}
+	if (g_kidssafe) return;
 
 	CBlob@ blob = this.getBlob();
 	if (blob !is null && blob.getName() != "bed")
@@ -219,19 +215,7 @@ void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
-	ScriptData@ script = this.getCurrentScript();
-	if (script is null)
-		return;
-
-	if (blob.getShape().isStatic())
-	{
-		script.tickFrequency = 60;
-	}
-	else
-	{
-		script.tickFrequency = 1;
-	}
-
+	this.getCurrentScript().tickFrequency = blob.getShape().isStatic() ? 60 : 1;
 
 	// head animations
 	CSpriteLayer@ head = this.getSpriteLayer("head");

@@ -1,5 +1,4 @@
 #include "VehicleCommon.as"
-#include "AssignWorkerCommon.as"
 
 // Boat logic
 
@@ -105,8 +104,6 @@ void onInit(CBlob@ this)
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 6, Vec2f(16, 8));
 	
 	this.set_u8("maximum_worker_count", 5);
-	addOnAssignWorker(this, @onAssignWorker);
-	addOnUnassignWorker(this, @onUnassignWorker);
 }
 
 void onTick(CBlob@ this)
@@ -130,7 +127,21 @@ void Vehicle_LongboatControls(CBlob@ this, VehicleInfo@ v)
 	AttachmentPoint@[] aps;
 	if (!this.getAttachmentPoints(@aps)) return;
 	
+	AttachmentPoint@ player_controller = null;
 	AttachmentPoint@ controller = null;
+	
+	for (u8 i = 0; i < aps.length; i++)
+	{
+		AttachmentPoint@ ap = aps[i];
+		CBlob@ blob = ap.getOccupied();
+		if (blob is null || !ap.socket) continue;
+		
+		if (blob.getPlayer() !is null)
+		{
+			@player_controller = ap;
+			break;
+		}
+	}
 
 	for (u8 i = 0; i < aps.length; i++)
 	{
@@ -144,11 +155,8 @@ void Vehicle_LongboatControls(CBlob@ this, VehicleInfo@ v)
 			this.server_DetachFrom(blob);
 			return;
 		}
-		
-		if (blob.getPlayer() !is null || controller is null)
-		{
-			@controller = ap;
-		}
+
+		@controller = player_controller is null ? ap : player_controller;
 
 		if ((ap.name == "ROWER" && this.isInWater()) || (ap.name == "SAIL" && !this.hasTag("no sail")))
 		{
@@ -222,34 +230,4 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 		if (sail !is null)
 			sail.SetVisible(false);
 	}
-}
-
-
-void GetButtonsFor(CBlob@ this, CBlob@ caller)
-{
-	if (!AssignWorkerButton(this, caller, Vec2f(8, 0)))
-	{
-		UnassignWorkerButton(this, caller, Vec2f(0, -8));
-	}
-}
-
-void onAssignWorker(CBlob@ this, CBlob@ worker)
-{
-	AttachmentPoint@[] aps;
-	if (!this.getAttachmentPoints(@aps)) return;
-
-	for (u8 i = 1; i < aps.length; i++)
-	{
-		AttachmentPoint@ ap = aps[i];
-		CBlob@ blob = ap.getOccupied();
-		if (blob !is null || ap.name != "ROWER") continue;
-
-		this.server_AttachTo(worker, @ap);
-		break;
-	}
-}
-
-void onUnassignWorker(CBlob@ this, CBlob@ worker)
-{
-	this.server_DetachFrom(worker);
 }

@@ -1,6 +1,5 @@
 ﻿//Gingerbeard @ July 24, 2024
 
-#include "AssignWorkerCommon.as"
 #include "Requirements.as"
 #include "Zombie_TechnologyCommon.as"
 #include "Zombie_GlobalMessagesCommon.as"
@@ -27,9 +26,6 @@ void onInit(CBlob@ this)
 	this.set_s32("researching", -1);
 	
 	this.set_u8("maximum_worker_count", 3);
-	this.Tag("auto_assign_worker");
-	addOnAssignWorker(this, @onAssignWorker);
-	addOnUnassignWorker(this, @onUnassignWorker);
 }
 
 void onTick(CBlob@ this)
@@ -39,7 +35,7 @@ void onTick(CBlob@ this)
 	
 	//each worker decreases tickFrequency by 1 tick.
 	//1 tick is about 3.33% of a second, so 3 workers is 10% reduction.
-	this.getCurrentScript().tickFrequency = 30 - getWorkers(this).length;
+	this.getCurrentScript().tickFrequency = 30 - this.get_u8("current_worker_count");
 
 	researched.time++;
 	researched.paused = false;
@@ -202,10 +198,8 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (caller.getTeamNum() != this.getTeamNum()) return;
 
-	if (!AssignWorkerButton(this, caller) && this.getDistanceTo(caller) <= this.getRadius())
+	if (this.getDistanceTo(caller) <= this.getRadius())
 	{
-		UnassignWorkerButton(this, caller, Vec2f(0, -14));
-
 		caller.CreateGenericButton(27, Vec2f_zero, this, Callback_Research, getTranslatedString("Research"));
 	}
 }
@@ -215,12 +209,19 @@ void Callback_Research(CBlob@ this, CBlob@ caller)
 	this.Tag("show research");
 }
 
-void onAssignWorker(CBlob@ this, CBlob@ worker)
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
-	SetStandardWorkerPosition(this, worker);
+	SetStandardWorkerPosition(this, attached, attachedPoint);
 }
 
-void onUnassignWorker(CBlob@ this, CBlob@ worker)
+void SetStandardWorkerPosition(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
-	worker.server_DetachFrom(this);
+	if (attachedPoint.name != "WORKER") return;
+
+	Random rand(this.getNetworkID() + attached.getNetworkID());
+	const f32 width = int(rand.NextRanged(this.getWidth()*0.5f)) - (this.getWidth() * 0.25f);
+	Vec2f offset = Vec2f(width, (this.getHeight() - attached.getHeight()) * 0.5f);
+
+	attachedPoint.offsetZ = 25.0f;
+	attachedPoint.offset = offset;
 }

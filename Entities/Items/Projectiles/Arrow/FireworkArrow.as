@@ -54,7 +54,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("server_set_explosion_time");
 
 	this.server_SetTimeToDie(1.0f);
-	SetExplosionTime(this);
+	SetExplosionTime(this, this.get_Vec2f("firework aim pos"));
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
@@ -81,20 +81,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
-void SetExplosionTime(CBlob@ this, Vec2f aimpos = Vec2f_zero)
+void SetExplosionTime(CBlob@ this, Vec2f aimpos)
 {
 	if (!isServer()) return;
 
-	CPlayer@ player = this.getDamageOwnerPlayer();
-	if (player is null) return;
-
-	CBlob@ caller = player.getBlob();
-	if (caller is null) return;
-
-	if (aimpos == Vec2f_zero)
-		aimpos = caller.getAimPos();
-
-	Vec2f aimVec = aimpos - caller.getPosition();
+	Vec2f aimVec = aimpos - this.getPosition();
 	const f32 aimdist = Maths::Min(aimVec.Normalize(), ARROW_RANGE);
 	const f32 lifetime = Maths::Max(0.1f + aimdist / ARROW_SPEED / 32.0f, 0.5f);
 	this.server_SetTimeToDie(lifetime);

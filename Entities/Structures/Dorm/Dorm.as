@@ -30,7 +30,7 @@ void onInit(CBlob@ this)
 	this.Tag(SHOP_AUTOCLOSE);
 
 	{
-		ShopItem@ s = addShopItem(this, Translate::Worker, "$worker_migrant$", "migrant", Translate::RecruitWorker);
+		ShopItem@ s = addShopItem(this, Translate::Worker, "$worker_migrant$", "builder", Translate::RecruitWorker);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 35);
 	}
 

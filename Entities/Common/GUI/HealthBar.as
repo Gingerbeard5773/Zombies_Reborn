@@ -7,6 +7,8 @@ void onRender(CSprite@ this)
 	CBlob@ blob = this.getBlob();
 	if (blob.isInInventory()) return;
 	
+	if (blob.hasTag("player") && !blob.hasTag("migrant")) return;
+	
 	Vec2f center = blob.getPosition();
 	Vec2f mouseWorld = getControls().getMouseWorldPos();
 	const f32 renderRadius = (blob.getRadius()) * 0.95f;

@@ -10,10 +10,10 @@
  If the server dies, the autosave will automatically load on the next startup.
 */
 
-#include "MapSaverCommon.as";
-#include "Zombie_TechnologyCommon.as";
-#include "EquipmentCommon.as";
-#include "AssignWorkerCommon.as";
+#include "MapSaverCommon.as"
+#include "Zombie_TechnologyCommon.as"
+#include "EquipmentCommon.as"
+#include "BrainTask.as"
 
 // store tiles using run line encoding
 string SerializeTileData(CMap@ map)
@@ -196,31 +196,33 @@ string SerializeEquipmentData(u16[]@ saved_netids)
 	return equipmentData;
 }
 
-string SerializeAssignmentData(u16[]@ saved_netids)
+string SerializeTaskData(u16[]@ saved_netids)
 {
-	string assignmentData;
+	string taskData;
 
 	for (u16 i = 0; i < saved_netids.length; i++)
 	{
 		CBlob@ blob = getBlobByNetworkID(saved_netids[i]);
 		if (blob is null) continue;
 
-		u16[]@ netids;
-		if (!blob.get("assigned netids", @netids)) continue;
+		TaskManager@ manager = getTaskManager(blob);
+		if (manager is null || manager.tasks.length <= 0) continue;
+		
+		taskData += i + ";";
+		taskData += manager.index + ";";
+		taskData += "{";
 
-		for (u16 w = 0; w < netids.length; w++)
+		for (int t = 0; t < manager.tasks.length; t++)
 		{
-			CBlob@ worker = getBlobByNetworkID(netids[w]);
-			if (worker is null) continue;
+			taskData += manager.tasks[t].SerializeString(saved_netids);
 
-			const int worker_index = saved_netids.find(worker.getNetworkID());
-			if (worker_index == -1) continue;
-
-			assignmentData += i + " " + worker_index + ";";
+			if (t < manager.tasks.length - 1) taskData += "|";
 		}
+
+		taskData += "}";
 	}
 
-	return assignmentData;
+	return taskData;
 }
 
 string SerializeTechTree()
@@ -260,7 +262,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 	const string inventoryData = SerializeInventoryData(@saved_netids);
 	const string attachmentData = SerializeAttachmentData(@saved_netids);
 	const string equipmentData = SerializeEquipmentData(@saved_netids);
-	const string assignmentData = SerializeAssignmentData(@saved_netids);
+	const string taskData = SerializeTaskData(@saved_netids);
 
 	// collect rules data
 	const u16 dayNumber = this.exists("day_number") ? this.get_u16("day_number") : 1;
@@ -278,7 +280,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 	config.add_string("inventory_data", inventoryData);
 	config.add_string("attachment_data", attachmentData);
 	config.add_string("equipment_data", equipmentData);
-	config.add_string("assignment_data", assignmentData);
+	config.add_string("task_data", taskData);
 	config.add_u16("day_number", dayNumber);
 	config.add_f32("day_time", dayTime);
 	config.add_u16("tim_day", timDay);
@@ -319,7 +321,7 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 	const string inventoryData = config.read_string("inventory_data");
 	const string attachmentData = config.read_string("attachment_data");
 	const string equipmentData = config.read_string("equipment_data");
-	const string assignmentData = config.read_string("assignment_data");
+	const string taskData = config.read_string("task_data", "");
 
 	map.CreateTileMap(width, height, 8.0f, "Sprites/world.png");
 
@@ -333,7 +335,7 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 	LoadInventories(map, inventoryData, @loaded_blobs);
 	LoadAttachments(map, attachmentData, @loaded_blobs);
 	LoadEquipment(map, equipmentData, @loaded_blobs);
-	LoadAssignments(map, assignmentData, @loaded_blobs);
+	LoadTasks(map, taskData, @loaded_blobs);
 
 	return true;
 }
@@ -551,18 +553,37 @@ void LoadEquipment(CMap@ map, const string&in equipmentData, CBlob@[]@ loaded_bl
 	}
 }
 
-void LoadAssignments(CMap@ map, const string&in assignmentData, CBlob@[]@ loaded_blobs)
+void LoadTasks(CMap@ map, const string&in taskData, CBlob@[]@ loaded_blobs)
 {
-	const string[]@ pairs = assignmentData.split(";");
-	for (int i = 0; i < pairs.length; i++)
+	if (taskData.isEmpty()) return;
+
+	SetupTasksArray();
+
+	const string[]@ managers = taskData.split("}");
+	for (int m = 0; m < managers.length - 1; m++)
 	{
-		const string[]@ indices = pairs[i].split(" ");
-		if (indices.length != 2) return;
+		const string[]@ manager_compartments = managers[m].split("{");
+		const string[]@ manager_info = manager_compartments[0].split(";");
+		const string[]@ manager_tasks = manager_compartments[1].split("|");
+		
+		CBlob@ blob = loaded_blobs[parseInt(manager_info[0])];
+		TaskManager@ manager = getTaskManager(blob);
+		if (manager is null) { error("Failed to load tasks for blob : "+blob.getNetworkID()); continue; }
+		
+		manager.index = parseInt(manager_info[1]);
 
-		CBlob@ blob = loaded_blobs[parseInt(indices[0])];
-		CBlob@ worker = loaded_blobs[parseInt(indices[1])];
-		if (blob is null || worker is null) continue;
+		manager.tasks.clear();
+	
+		for (int i = 0; i < manager_tasks.length; i++)
+		{
+			const string[]@ data = manager_tasks[i].split(";");
 
-		AssignWorker(blob, worker.getNetworkID());
+			const int type = parseInt(data[0]);
+			BrainTask@ task = all_tasks[type].Copy(blob);
+			task.LoadFromString(data, @loaded_blobs);
+			manager.tasks.push_back(task);
+		}
 	}
+	
+	all_tasks.clear();
 }

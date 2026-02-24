@@ -4,10 +4,7 @@
 #include "GenericButtonCommon.as"
 #include "Zombie_Translation.as"
 #include "Zombie_TechnologyCommon.as"
-
-const string[] fuel_names = {"mat_wood", "mat_coal"};
-const string[] fuel_icons = {"mat_wood", "mat_coal_icon"};
-const int[] fuel_strength = { 1, 4 };
+#include "FuelCommon.as"
 
 //balance
 const int input = 100;					// input cost in fuel
@@ -17,12 +14,8 @@ const int conversion_frequency = 30;	// how often to convert, in seconds
 const int min_input = Maths::Ceil(input / initial_output);
 
 //fuel levels for animation
-const int max_fuel = 1000;
 const int mid_fuel = 600;
 const int low_fuel = 250;
-
-//property names
-const string fuel_prop = "fuel_level";
 
 void onInit(CSprite@ this)
 {
@@ -72,7 +65,7 @@ void onInit(CBlob@ this)
 	this.set_s16(fuel_prop, 0);
 
 	//commands
-	this.addCommandID("add fuel");
+	this.addCommandID("server_add_fuel");
 }
 
 void onTick(CBlob@ this)
@@ -143,51 +136,27 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (this.get_s16(fuel_prop) >= max_fuel) return;
 
-	for (u8 i = 0; i < fuel_names.length; i++)
+	const int index = getFuelIndex(caller);
+	if (index == -1) return;
+
+	CButton@ button = caller.CreateGenericButton("$"+fuel_icons[index]+"$", Vec2f_zero, this, this.getCommandID("server_add_fuel"), Translate::AddFuel);
+	if (button !is null)
 	{
-		const string name = fuel_names[i];
-		if (caller.hasBlob(name, 1))
-		{
-			CBitStream params;
-			params.write_u8(i);
-			CButton@ button = caller.CreateGenericButton("$"+fuel_icons[i]+"$", Vec2f(), this, this.getCommandID("add fuel"), Translate::AddFuel, params);
-			if (button !is null)
-			{
-				button.deleteAfterClick = false;
-			}
-			return;
-		}
+		button.deleteAfterClick = false;
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("add fuel") && isServer())
+	if (cmd == this.getCommandID("server_add_fuel") && isServer())
 	{
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
-		
+
 		CBlob@ caller = player.getBlob();
 		if (caller is null) return;
 
-		const int requestedAmount = Maths::Min(250, max_fuel - this.get_s16(fuel_prop));
-		if (requestedAmount <= 0) return;
-		
-		u8 index;
-		if (!params.saferead_u8(index)) return;
-
-		const string fuel_name = fuel_names[index];
-		const int fuel_amount = fuel_strength[index];
-
-		CBlob@ carried = caller.getCarriedBlob();
-		const int callerQuantity = caller.getInventory().getCount(fuel_name) + (carried !is null && carried.getName() == fuel_name ? carried.getQuantity() : 0);
-		const int amountToStore = Maths::Min(requestedAmount, callerQuantity);
-		if (amountToStore > 0)
-		{
-			caller.TakeBlob(fuel_name, amountToStore);
-			this.add_s16(fuel_prop, amountToStore * fuel_amount);
-			this.Sync(fuel_prop, true);
-		}
+		server_addFuel(this, caller);
 	}
 }
 

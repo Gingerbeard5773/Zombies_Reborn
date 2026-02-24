@@ -321,15 +321,13 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 {
 	//are we responsible for this actor?
+	CPlayer@ p = this.getPlayer();
 	bool ismyplayer = this.isMyPlayer();
 	bool responsible = ismyplayer;
+	bool bot = p is null || p.isBot();
 	if (isServer() && !ismyplayer)
 	{
-		CPlayer@ p = this.getPlayer();
-		if (p !is null)
-		{
-			responsible = p.isBot();
-		}
+		responsible = bot;
 	}
 	//
 	CSprite@ sprite = this.getSprite();
@@ -405,7 +403,10 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		          !this.isKeyPressed(key_action1) &&
 		          this.wasKeyPressed(key_action1)))
 		{
-			ClientFire(this, charge_time, charge_state);
+			if (responsible)
+			{
+				ClientFire(this, charge_time, charge_state);
+			}
 
 			charge_state = ArcherParams::legolas_charging;
 			charge_time = ArcherParams::shoot_period - ArcherParams::legolas_charge_time;
@@ -455,6 +456,20 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 				if (ismyplayer)
 				{
 					Sound::Play("/CycleInventory.ogg");
+				}
+			}
+			
+			// Bot archers auto select unique arrows
+			if (bot)
+			{
+				archer.arrow_type = ArrowType::normal;
+				for (uint i = ArrowType::normal + 1; i < ArrowType::count; i++)
+				{
+					if (hasArrows(this, i))
+					{
+						archer.arrow_type = i;
+						break;
+					}
 				}
 			}
 
@@ -559,65 +574,71 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	}
 	else
 	{
-		if (charge_state > ArcherParams::readying)
+		if (bot ? !this.isKeyPressed(key_action2) : true)
 		{
-			if (charge_state < ArcherParams::fired)
+			if (charge_state > ArcherParams::readying)
 			{
-				ClientFire(this, charge_time, charge_state);
-				charge_time = ArcherParams::fired_time;
-				charge_state = ArcherParams::fired;
-			}
-			else if(charge_state == ArcherParams::stabbing)
-			{
-				archer.stab_delay++;
-				if (archer.stab_delay == STAB_DELAY)
+				if (charge_state < ArcherParams::fired)
 				{
-					// hit tree and get an arrow
-					CBlob@ stabTarget = getBlobByNetworkID(this.get_u16("stabHitID"));
-					if (stabTarget !is null)
+					if (responsible)
 					{
-						if (stabTarget.getName() == "mat_wood")
+						ClientFire(this, charge_time, charge_state);
+					}
+					charge_time = ArcherParams::fired_time;
+					charge_state = ArcherParams::fired;
+				}
+				else if(charge_state == ArcherParams::stabbing)
+				{
+					archer.stab_delay++;
+					if (archer.stab_delay == STAB_DELAY)
+					{
+						// hit tree and get an arrow
+						CBlob@ stabTarget = getBlobByNetworkID(this.get_u16("stabHitID"));
+						if (stabTarget !is null)
 						{
-							u16 quantity = stabTarget.getQuantity();
-							if (quantity > 4)
+							if (stabTarget.getName() == "mat_wood")
 							{
-								stabTarget.server_SetQuantity(quantity-4);
+								u16 quantity = stabTarget.getQuantity();
+								if (quantity > 4)
+								{
+									stabTarget.server_SetQuantity(quantity-4);
+								}
+								else
+								{
+									stabTarget.server_Die();
+
+								}
+								fletchArrow(this);
 							}
 							else
 							{
-								stabTarget.server_Die();
+								this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, 0.25f,  Hitters::stab);
 
 							}
-							fletchArrow(this);
-						}
-						else
-						{
-							this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, 0.25f,  Hitters::stab);
 
 						}
-
+					}
+					else if(archer.stab_delay >= STAB_TIME)
+					{
+						charge_state = ArcherParams::not_aiming;
 					}
 				}
-				else if(archer.stab_delay >= STAB_TIME)
+				else //fired..
 				{
-					charge_state = ArcherParams::not_aiming;
-				}
-			}
-			else //fired..
-			{
-				charge_time--;
+					charge_time--;
 
-				if (charge_time <= 0)
-				{
-					charge_state = ArcherParams::not_aiming;
-					charge_time = 0;
+					if (charge_time <= 0)
+					{
+						charge_state = ArcherParams::not_aiming;
+						charge_time = 0;
+					}
 				}
 			}
-		}
-		else
-		{
-			charge_state = ArcherParams::not_aiming;    //set to not aiming either way
-			charge_time = 0;
+			else
+			{
+				charge_state = ArcherParams::not_aiming;    //set to not aiming either way
+				charge_time = 0;
+			}
 		}
 
 		sprite.SetEmitSoundPaused(true);
@@ -834,13 +855,18 @@ bool canSend(CBlob@ this)
 void ClientFire(CBlob@ this, s8 charge_time, u8 charge_state)
 {
 	//time to fire!
-	if (canSend(this))  // client-logic
+	if (!isServer())  // client-logic
 	{
 		CBitStream params;
 		params.write_s8(charge_time);
 		params.write_u8(charge_state);
 
 		this.SendCommand(this.getCommandID("request shoot"), params);
+	}
+	
+	if (isServer())
+	{
+		ShootArrow(this, charge_time, charge_state);
 	}
 }
 
@@ -852,7 +878,7 @@ CBlob@ getPickupArrow(CBlob@ this)
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
 			CBlob @b = blobsInRadius[i];
-			if (b.getName() == "arrow")
+			if (b.getName() == "arrow" && b.getShape().isStatic())
 			{
 				return b;
 			}
@@ -883,12 +909,14 @@ bool canPickSpriteArrow(CBlob@ this, bool takeout)
 	return false;
 }
 
-CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
+CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType, Vec2f aimPos)
 {
 	CBlob@ arrow = server_CreateBlobNoInit("arrow");
 	if (arrow !is null)
 	{
-		// fire arrow?
+		if (arrowType == ArrowType::firework)
+			arrow.set_Vec2f("firework aim pos", aimPos);
+
 		arrow.set_u8("arrow type", arrowType);
 		arrow.SetDamageOwnerPlayer(this.getPlayer());
 		arrow.Init();
@@ -962,7 +990,7 @@ void onSwitch(CBitStream@ params)
 	}
 }
 
-void ShootArrow(CBlob@ this)
+void ShootArrow(CBlob@ this, s8 charge_time, u8 charge_state)
 {
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer))
@@ -970,14 +998,14 @@ void ShootArrow(CBlob@ this)
 		return;
 	}
 
+	archer.charge_time = charge_time;
+	archer.charge_state = charge_state;
+
 	u8 arrow_type = archer.arrow_type;
 
 	if (arrow_type >= arrowTypeNames.length) return;
 
 	if (!hasArrows(this, arrow_type)) return; 
-	
-	s8 charge_time = archer.charge_time;
-	u8 charge_state = archer.charge_state;
 
 	f32 arrowspeed;
 
@@ -1010,7 +1038,7 @@ void ShootArrow(CBlob@ this)
 		int r = 0;
 		for (int i = 0; i < ArcherParams::legolas_arrows_volley; i++)
 		{
-			CBlob@ arrow = CreateArrow(this, arrowPos, arrowVel, arrow_type);
+			CBlob@ arrow = CreateArrow(this, arrowPos, arrowVel, arrow_type, aimpos);
 			if (i > 0 && arrow !is null)
 			{
 				arrow.Tag("shotgunned");
@@ -1036,7 +1064,7 @@ void ShootArrow(CBlob@ this)
 	}
 	else
 	{
-		CreateArrow(this, arrowPos, arrowVel, arrow_type);
+		CreateArrow(this, arrowPos, arrowVel, arrow_type, aimpos);
 
 		this.SendCommand(this.getCommandID("play fire sound"));
 		this.TakeBlob(arrowTypeNames[ arrow_type ], 1);
@@ -1044,6 +1072,61 @@ void ShootArrow(CBlob@ this)
 		archer.fletch_cooldown = FLETCH_COOLDOWN; // just don't allow shoot + make arrow
 	}
 }
+
+/*bool isArrowTrajectoryValid(CBlob@ blob, Vec2f aimPos)
+{
+	CMap@ map = getMap();
+	const f32 interval = 25.0f;
+	Vec2f offset(blob.isFacingLeft() ? 2 : -2, -2);
+	Vec2f arrowPos = blob.getPosition() + offset;
+	Vec2f vel = (aimPos - arrowPos);
+	vel.Normalize();
+	vel *= ArcherParams::shoot_max_vel;
+
+	const int steps = 30; // how many steps ahead to simulate
+
+	Vec2f pos = arrowPos;
+	for (int i = 0; i < steps; i++)
+	{
+		const f32 gravity = i > 14 ? 7 * 0.2f : 0.1f;
+		const f32 t = interval / 30.0f; // seconds per step (assuming 30 ticks/sec)
+		pos += vel * t + Vec2f(0, gravity * 0.5f * t * t);
+		vel.y += gravity * t;
+
+		if (map.isTileSolid(pos)) return false;
+
+		CParticle@ p = ParticlePixel(pos, Vec2f_zero, SColor(255, 255, 200, 50), true, 50);
+		p.gravity = Vec2f_zero;
+	}
+	return false;
+}
+
+void isTrajectoryValid(CBlob@ blob, Vec2f aimPos)
+{
+	CMap@ map = getMap();
+	const f32 interval = 25.0f;
+	Vec2f offset(blob.isFacingLeft() ? 2 : -2, -2);
+	Vec2f arrowPos = blob.getPosition() + offset;
+	Vec2f vel = (aimPos - arrowPos);
+	vel.Normalize();
+	vel *= ArcherParams::shoot_max_vel;
+
+	const int steps = 30; // how many steps ahead to simulate
+
+	Vec2f pos = arrowPos;
+	for (int i = 0; i < steps; i++)
+	{
+		const f32 gravity = sv_gravity * 0.2f;
+		const f32 t = interval / 30.0f; // seconds per step (assuming 30 ticks/sec)
+		pos += vel * t + Vec2f(0, gravity * 0.5f * t * t);
+		vel.y += gravity * t;
+
+		if (map.isTileSolid(pos)) return;
+
+		CParticle@ p = ParticlePixel(pos, Vec2f_zero, SColor(255, 255, 200, 50), true, 50);
+		p.gravity = Vec2f_zero;
+	}
+}*/
 
 void onSendCreateData(CBlob@ this, CBitStream@ params)
 {
@@ -1072,13 +1155,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		u8 charge_state;
 		if (!params.saferead_u8(charge_state)) { return; }
 
-		ArcherInfo@ archer;
-		if (!this.get("archerInfo", @archer)) { return; }
-
-		archer.charge_time = charge_time;
-		archer.charge_state = charge_state;
-
-		ShootArrow(this);
+		ShootArrow(this, charge_time, charge_state);
 	}
 	else if (cmd == this.getCommandID("arrow sync") && isServer())
 	{
