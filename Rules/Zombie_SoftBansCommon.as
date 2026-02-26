@@ -144,7 +144,7 @@ void SetUndead(CRules@ this, CPlayer@ player)
 			if (undead.getPlayer() !is null) continue;
 			
 			const string name = undead.getName();
-			if (name == "greg" || name == "skelepede" || name == "wraith") continue;
+			if (name == "greg" || undead.hasTag("skelepede") || undead.hasTag("wraith")) continue;
 
 			available_undeads.push_back(undead);
 		}

@@ -141,7 +141,7 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 
 	if (hitter_player.isMyPlayer())
 	{
-		const string name = blob.hasTag("jerry") ? "jerry" : blob.getName();
+		const string name = blob.getName();
 		ConfigFile@ cfg = Statistics::openConfig();
 		Statistics::Add(name, 1, cfg);
 		Statistics::Add("undead_killed", 1, cfg);

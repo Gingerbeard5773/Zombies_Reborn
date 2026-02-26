@@ -1,5 +1,5 @@
-﻿#include "Hitters.as";
-#include "WraithCommon.as";
+﻿#include "Hitters.as"
+#include "WraithCommon.as"
 
 const int COINS_ON_DEATH = 20;
 
@@ -11,10 +11,10 @@ void onInit(CBlob@ this)
 
 	CSprite@ sprite = this.getSprite();
 	sprite.PlaySound("WraithSpawn.ogg");
-	sprite.SetEmitSound("DarkWraithChatter.ogg");
+	sprite.SetEmitSound("JerryChatter.ogg");
 	sprite.SetEmitSoundPaused(false);
-	this.getShape().SetRotationsAllowed(false);
 
+	this.getShape().SetRotationsAllowed(false);
 	this.getBrain().server_SetActive(true);
 	
 	this.set_f32("gib health", 0.0f);
@@ -22,9 +22,6 @@ void onInit(CBlob@ this)
 	this.Tag("see_through_walls");
 	this.Tag("wraith");
 
-	// explosiveness
-	this.Tag("bomberman_style");
-	this.set_f32("map_bomberman_width", 32.0f);
 	this.set_f32("explosive_radius", 64.0f);
 	this.set_f32("explosive_damage", 10.0f);
 	this.set_u8("custom_hitter", 26); //keg
@@ -32,14 +29,29 @@ void onInit(CBlob@ this)
 	this.set_f32("map_damage_radius", 72.0f);
 	this.set_f32("map_damage_ratio", 0.7f);
 	this.set_bool("map_damage_raycast", true);
+
 	this.set_s32("auto_enrage_time", getGameTime() + TIME_TO_ENRAGE_DARK + XORRandom(TIME_TO_ENRAGE_DARK / 2));
-	//
-	
+
+	this.SetLight(true);
+	this.SetLightRadius(this.get_f32("explosive_radius"));
+	this.SetLightColor(SColor(255, 138, 3, 3));
+
 	this.addCommandID("enrage_client");
 }
 
 void onTick(CBlob@ this)
 {
+	if (isClient())
+	{
+		const f32 time_to_die = this.getTimeToDie();
+		if (time_to_die > 0.0f)
+		{
+			CSprite@ sprite = this.getSprite();
+			const f32 currentSpeed = sprite.getEmitSoundSpeed() + 0.01f;
+			sprite.SetEmitSoundSpeed(currentSpeed);
+		}
+	}
+
 	if (isServer())
 	{
 		const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
@@ -57,9 +69,14 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.getSprite().PlaySound("ZombieHit");
 	}
 
-	if (customData == Hitters::fire)
+	switch(customData)
 	{
-		server_SetEnraged(this);
+		case Hitters::spikes:
+			damage *= 0.25f;
+			break;
+		case Hitters::arrow:
+			damage *= 0.5f;
+			break;
 	}
 
 	return damage;
@@ -77,32 +94,42 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		if (enrage)
 		{
-			this.getSprite().PlaySound("WraithDie", 1.0f, 0.8f);
+			this.getSprite().PlaySound("JerryIgnite", 2.5f , 0.8f);
 
 			this.SetLight(true);
-			this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
-			this.SetLightColor(SColor(255, 211, 121, 224));
+			this.SetLightRadius(this.get_f32("explosive_radius"));
+			this.SetLightColor(SColor(255, 200, 20, 20));
 		}
 	}
 }
 
 void onDie(CBlob@ this)
 {
-	this.getSprite().PlaySound("DarkWraithDie");
-	
-	if (!this.hasTag("exploding")) return;
+	if (!this.hasTag("exploding"))
+	{
+		this.getSprite().PlaySound("DarkWraithDie");
+		return;
+	}
 
-	this.getSprite().PlaySound("DarkWraithExplode", 1.0f, 0.9f);
+	if (isClient())
+	{
+		this.getSprite().PlaySound("DarkWraithExplode", 1.0f, 0.9f);
+		this.getSprite().PlaySound("JerryExplode.ogg", 1.3f, 1.0f);
+		Sound::Play("JerryExplodeDistant.ogg");
+	}
 
 	if (isServer())
 	{
 		Vec2f pos = this.getPosition();
-		for (u8 i = 0; i < 6; i++)
+
+		server_CreateBlob("nukeexplosion", -1, pos);
+
+		for (u8 i = 0; i < 10; i++)
 		{
 			CBlob@ blob = server_CreateBlob("flame", -1, pos);
 			if (blob is null) continue;
-
-			Vec2f vel = getRandomVelocity(XORRandom(360), 10, 0.0f);
+			
+			Vec2f vel = getRandomVelocity(XORRandom(360), 15.0f, 0.0f);
 			blob.setVelocity(vel);
 			blob.server_SetTimeToDie(8 + XORRandom(4));
 		}

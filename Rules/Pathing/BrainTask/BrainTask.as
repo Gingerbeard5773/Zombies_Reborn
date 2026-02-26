@@ -19,40 +19,6 @@
 #include "TaskPatrol.as"
 #include "TaskDorm.as"
 
-/* TODO
-	~~FIX WEIRD PATHING NODES WHEN ZOMBIES ARE TECHNICALLY LADDERS LOL
-	--Rifle task?
-	--Spear task?
-
-	optimize tasks that use canPath (VERY EXPENSIVE) (perhaps inverted pathing?)
-
-	knights run from wraiths or use shields if blast shields are in
-
-	~~archers need to run even farther from wraiths
-
-	--automatic runaway from any wraiths nearby even if not visible
-
-	get achievement icons sprited
-	
-	NEXT IN ORDER:
-	complete task system 
-	redo spawning logic and allow for new jerry code
-	add new zombies
-	add raiders
-	
-	migrants get dropped off from a balloon
-
-	test every task
-
-	nerf quarry (if not done already)
-	
-	allow factory button to assign bots to the factory
-
-	parachute auto open for bots
-	
-	add dialogue potential
-*/
-
 enum Task
 {
 	Basic = 0,
@@ -466,7 +432,7 @@ class BrainTask
 
 	u8 getPriority(CBlob@ b)
 	{
-		if (b.getName() == "wraith" || b.getName() == "darkwraith") return 255;
+		if (b.hasTag("wraith")) return 255;
 		if (b.hasTag("skelepede")) return 254;
 		return 0;
 	}
