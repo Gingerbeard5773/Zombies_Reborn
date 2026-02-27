@@ -1,5 +1,9 @@
 #include "Zombie_StatisticsCommon.as"
 
+funcdef void onEatHandle(CBlob@, CBlob@);
+
+void addOnEatHandle(CBlob@ this, onEatHandle@ handle)   { this.set("onEat handle", @handle); }
+
 bool canEat(CBlob@ blob)
 {
 	return blob.exists("eat sound");
@@ -69,7 +73,16 @@ void Heal(CBlob@ this, CBlob@ food)
 		Statistics::server_Add("food_eaten", 1, player);
 	}
 
+	onEatHandle@ onEat;
+	if (food.get("onEat handle", @onEat))
+	{
+		onEat(food, this);
+	}
+
+	CBitStream stream;
+	stream.write_netid(this.getNetworkID());
+	food.SendCommand(food.getCommandID("heal command client"), stream);
+
 	food.Tag("healed");
-	food.SendCommand(food.getCommandID("heal command client"));
 	food.server_Die();
 }

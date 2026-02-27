@@ -24,6 +24,7 @@ string getTranslatedInventoryName(CBlob@ this)
 	if (blob_name == "cookedchicken") return name(Translate::Cookedchicken);
 	if (blob_name == "cookedfish")    return name(Translate::Cookedfish);
 	if (blob_name == "cookedsteak")   return name(Translate::Cookedsteak);
+	if (blob_name == "beer")          return name(Translate::Beer);
 	
 	return this.getInventoryName();
 }
@@ -33,6 +34,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("heal command client") && isClient())
 	{
 		this.getSprite().PlaySound(this.get_string("eat sound"));
+		
+		u16 netid;
+		if (!params.saferead_netid(netid)) return;
+		
+		CBlob@ caller = getBlobByNetworkID(netid);
+		if (caller is null) return;
+		
+		onEatHandle@ onEat;
+		if (this.get("onEat handle", @onEat))
+		{
+			onEat(this, caller);
+		}
 	}
 	else if (cmd == this.getCommandID("heal command server") && isServer())
 	{
@@ -71,5 +84,5 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (getHealingAmount(this) <= 0) return;
 	
-	caller.CreateGenericButton("$" + this.getName() + "$", Vec2f_zero, this, this.getCommandID("heal command server"), "Eat "+this.getInventoryName());
+	caller.CreateGenericButton("$" + this.getName() + "$", Vec2f_zero, this, this.getCommandID("heal command server"), "Consume "+this.getInventoryName());
 }

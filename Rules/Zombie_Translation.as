@@ -190,6 +190,7 @@ namespace Translate
 	Cookedchicken  = Translate("Cooked Chicken\nJuicy chicken roast!",        "Приготовленная курица/nСочная жареная курица!"),
 	Cookedsteak    = Translate("Cooked Steak\nA meat chop with sauce.",       "Жареный стейк\nОтбивная с соусом."),
 	Burger         = Translate("Burger\nSeared meat in a bun!",               "Бургер\nОбжареное мясо в булочке!"),
+	Beer           = Translate("Beer\nA delicious mug of beer!",              "Пиво\nВкусная кружка пива!"),
 
 	//forge
 	IronOre        = Translate("Iron Ore",                                                        "Железная руда"),
