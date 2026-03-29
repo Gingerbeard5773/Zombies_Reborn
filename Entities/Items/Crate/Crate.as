@@ -39,7 +39,8 @@ Crate@[] base_presets =
 	Crate("armoredbomber", 7,  Vec2f(4, 4)),
 	Crate("lightballista", 0,  Vec2f(3, 3)),
 	Crate("cannon",        0,  Vec2f(3, 3)),
-	Crate("tank",          11, Vec2f(7, 4))
+	Crate("tank",          11, Vec2f(7, 4)),
+	Crate("caravel",       3,  Vec2f(20, 8), 0, "unpack_only_water")
 };
 
 void onInit(CBlob@ this)

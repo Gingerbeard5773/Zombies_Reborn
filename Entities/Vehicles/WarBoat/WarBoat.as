@@ -17,7 +17,7 @@ void onInit(CBlob@ this)
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 
-	Vehicle_SetupWaterSound(this, v, "BoatRowing",  // movement sound
+	Vehicle_SetupWaterSound(this, v, "BoatRowing", // movement sound
 	                        0.0f, // movement sound volume modifier   0.0f = no manipulation
 	                        0.0f // movement sound pitch modifier     0.0f = no manipulation
 	                       );
