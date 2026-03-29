@@ -24,6 +24,11 @@ void onInit(CBlob@ this)
 	this.set_f32("map dmg modifier", 35.0f);
 
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
+	
+	//set custom minimap icon
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/MiniIcons.png", 7, Vec2f(16,16));
+	this.SetMinimapRenderAlways(true);
 
 	CSprite@ sprite = this.getSprite();
 
