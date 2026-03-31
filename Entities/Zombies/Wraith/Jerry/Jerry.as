@@ -1,9 +1,9 @@
 ﻿#include "Hitters.as"
 #include "WraithCommon.as"
 
-const int COINS_ON_DEATH = 20;
+const int COINS_ON_DEATH = 100;
 
-const u32 TIME_TO_ENRAGE_DARK = TIME_TO_ENRAGE * 2.0f;
+const u32 TIME_TO_ENRAGE_DARK = TIME_TO_ENRAGE * 2.4f;
 
 void onInit(CBlob@ this)
 {

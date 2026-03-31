@@ -196,10 +196,8 @@ class DarkWraithSpawn : FlierSpawn
 
 	void CreateBlob()
 	{
-		CRules@ rules = getRules();
-		const u16 day_number = rules.get_u16("day_number");
-		const u16 player_count = rules.get_u8("survivor player count");
-		const u32 difficulty = (day_number * 5) + (player_count * 2);
+		const u16 player_count = getRules().get_u8("survivor player count");
+		const u32 difficulty = (manager.day_number * 5) + (player_count * 2);
 		const u32 probability = 450 - Maths::Min(difficulty, 450);
 		if (XORRandom(probability) == 0) name = "jerry";
 
@@ -213,6 +211,21 @@ class JerrySpawn : FlierSpawn
 	JerrySpawn(f32 weight, f32 difficulty_min, f32 growth = 0.0f, f32 weight_min = 0.0f)
 	{
 		super("jerry", weight, difficulty_min, growth, weight_min);
+	}
+}
+
+class SpectreSpawn : FlierSpawn
+{
+	SpectreSpawn(f32 weight, f32 difficulty_min, f32 growth = 0.0f, f32 weight_min = 0.0f)
+	{
+		super("spectre", weight, difficulty_min, growth, weight_min);
+	}
+	
+	bool canSpawn()
+	{
+		if (!Spawn::canSpawn()) return false;
+
+		return XORRandom(4) == 0;
 	}
 }
 

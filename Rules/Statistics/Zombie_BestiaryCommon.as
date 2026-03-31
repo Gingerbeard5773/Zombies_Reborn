@@ -38,6 +38,7 @@ namespace Bestiary
 		{0},          //skelepede
 		{0, 1, 2, 3}, //horror
 		{0, 1, 2, 3}, //jerry
+		{0, 1, 2, 3}, //spectre
 		{0},          //sedgwick
 		{0},          //trader
 		{0}           //timothy
@@ -54,9 +55,10 @@ namespace Bestiary
 		BestiaryEntry("skelepede",    Translate::BestiarySkelepede,    "SkelepedeIcon", Vec2f(96, 32), 3, animation_frames[6]),
 		BestiaryEntry("horror",       Translate::BestiaryHorror,       "Horror",        Vec2f(32, 32), 3, animation_frames[7]),
 		BestiaryEntry("jerry",        Translate::BestiaryJerry,        "Jerry",         Vec2f(32, 32), 3, animation_frames[8]),
-		BestiaryEntry("sedgwick",     Translate::BestiarySedgwick,     "Necromancer",   Vec2f(24, 24), 3, animation_frames[9]),
-		BestiaryEntry("trader",       Translate::BestiaryTrader,       "TraderMale",    Vec2f(16, 16), 0, animation_frames[10]),
-		BestiaryEntry("tim",          Translate::BestiaryTimothy,      "Tim",           Vec2f(16, 16), 0, animation_frames[11])
+		BestiaryEntry("spectre",      Translate::BestiarySpectre,      "Spectre",       Vec2f(32, 32), 3, animation_frames[9]),
+		BestiaryEntry("sedgwick",     Translate::BestiarySedgwick,     "Necromancer",   Vec2f(24, 24), 3, animation_frames[10]),
+		BestiaryEntry("trader",       Translate::BestiaryTrader,       "TraderMale",    Vec2f(16, 16), 0, animation_frames[11]),
+		BestiaryEntry("tim",          Translate::BestiaryTimothy,      "Tim",           Vec2f(16, 16), 0, animation_frames[12])
 	};
 
 	int find(const string&in name)

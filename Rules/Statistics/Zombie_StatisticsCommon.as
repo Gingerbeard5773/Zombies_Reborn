@@ -3,6 +3,12 @@
 
 #include "Zombie_Translation.as"
 
+/*
+	Statistics todo
+	bombs, water bombs, kegs, molotovs used
+	trees felled
+*/
+
 namespace Statistics
 {
 	const string[] statistic_names =

@@ -429,10 +429,11 @@ namespace Translate
 	BestiaryGreg           = Translate("Greg\nA gargoyle that sadistically enjoys dropping humans to their death.",                               ""),
 	BestiaryWraith         = Translate("Wraith\nA morphed skeleton filled with a dangerous gas prone to exploding.",                              ""),
 	BestiaryDarkWraith     = Translate("Dark Wraith\nA dangerous variant of the wraith with a stronger blast. They are capable of exploding in water.",                      ""),
-	BestiarySkelepede      = Translate("Skelepede\nThis centipede like creature snatches humans and drags them to the depths to feast on them.",  ""),
+	BestiarySkelepede      = Translate("Skelepede\nThis creature snatches humans and drags them to the depths to feast on them.",  ""),
 	BestiaryHorror         = Translate("Horror\nA morphed variant of the zombie knight with a very deadly swing.",                                     ""),
+	BestiarySpectre        = Translate("Spectre\nAn apparition capable of phasing through walls to follow its prey.",                                      ""),
 	BestiaryJerry          = Translate("Jerry\nA rare horned variant of the dark wraith with a particularly volatile body.",                             ""),
-	BestiarySedgwick       = Translate("Sedgwick\nA necromancer whom attacks every four days to attempt to break your defenses.",                                                 ""),
+	BestiarySedgwick       = Translate("Sedgwick\nA necromancer whom attempts to break your defenses with various spells.",                                                 ""),
 	BestiaryTrader         = Translate("Trader\nThe merchant whom travels by sky to every settlement to trade. They offer scrolls of varying quality.",                                  ""),
 	BestiaryTimothy        = Translate("Timothy\nA friendly undead wandering trader who shows up occasionally with rare foreign goods.",                  "");
 }

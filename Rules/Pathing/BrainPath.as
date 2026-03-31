@@ -88,6 +88,13 @@ class BrainPath
 		{
 			ProgressPath();
 		}
+		
+		onTick();
+	}
+
+	void onTick()
+	{
+		//overwrite
 	}
 
 	void ProgressPath()
@@ -190,7 +197,7 @@ class BrainPath
 		HighLevelNode@ targetNode = HighLevelNode(alignToPathGrid(target), flags);
 
 		// Connect our temporary start & target nodes to the node map web
-		SetTempNodeToMap(startNode, nodeMap);
+		if (!SetTempNodeToMap(startNode, nodeMap)) return;
 		SetTempNodeToMap(targetNode, nodeMap);
 
 		HighLevelNode@[] openList;
@@ -305,7 +312,7 @@ class BrainPath
 	}
 
 	// Connects nearby nodes from the nodemap to our node
-	void SetTempNodeToMap(HighLevelNode@ node, HighLevelNode@[]@ nodeMap)
+	bool SetTempNodeToMap(HighLevelNode@ node, HighLevelNode@[]@ nodeMap)
 	{
 		HighLevelNode@[] nodes = getNodesInRadius(node.position, node_distance * 1.7f, nodeMap, node.flags);
 		for (u32 i = 0; i < nodes.length; i++)
@@ -316,6 +323,8 @@ class BrainPath
 			node.connections.push_back(@neighbor);
 			neighbor.connections.push_back(@node);
 		}
+
+		return nodes.length > 0;
 	}
 
 	// Removes connections to our temporary node

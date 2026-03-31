@@ -25,14 +25,15 @@ void Reset(CRules@ this)
 	
 	Spawn@[] spawns =
 	{
-		SkeletonSpawn(     1000,  0.0f, -60.0f, 50),
-		ZombieSpawn(        600,  0.4f, -10.0f, 60),
-		ZombieKnightSpawn(  150,  1.0f),
-		GregSpawn(           35,  1.5f),
-		WraithSpawn(         30,  1.8f),
-		DarkWraithSpawn(      8,  2.0f),
-		HorrorSpawn(          5,  3.5f),
-		SkelepedeSpawn(       3,  3.0f)
+		SkeletonSpawn(     1000.0f,  0.0f, -60.0f, 50),
+		ZombieSpawn(        600.0f,  0.4f, -10.0f, 60),
+		ZombieKnightSpawn(  150.0f,  1.0f),
+		GregSpawn(           35.0f,  1.5f),
+		WraithSpawn(         30.0f,  1.8f),
+		DarkWraithSpawn(      8.0f,  2.5f),
+		SpectreSpawn(         0.1f,  2.7f),
+		HorrorSpawn(          5.0f,  3.5f),
+		SkelepedeSpawn(       1.0f,  3.0f)
 	};
 
 	manager.Add(spawns);
