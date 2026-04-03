@@ -10,6 +10,7 @@ const int radius = 15;
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -61,14 +62,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		if (acted)
 		{
 			Statistics::server_Add("scrolls_used", 1, player);
-
 			this.Tag("dead");
 			this.server_Die();
+
+			this.SendCommand(this.getCommandID("client_execute_spell"));
 		}
 	}
-}
-
-void onDie(CBlob@ this)
-{
-	Sound::Play("MagicWand.ogg", this.getPosition());
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		Sound::Play("MagicWand.ogg", this.getPosition());
+	}
 }

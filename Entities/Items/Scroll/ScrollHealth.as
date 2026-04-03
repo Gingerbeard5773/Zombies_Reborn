@@ -71,6 +71,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		u8 healed_count;
 		if (!params.saferead_u8(healed_count)) return;
 
+		Sound::Play("MagicWand.ogg", this.getPosition());
+
 		for (u8 i = 0; i < healed_count; i++)
 		{
 			u16 netid;
@@ -95,9 +97,4 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 			}
 		}
 	}
-}
-
-void onDie(CBlob@ this)
-{
-	Sound::Play("MagicWand.ogg", this.getPosition());
 }

@@ -8,6 +8,7 @@
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -62,15 +63,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.Tag("dead");
 		this.server_Die();
 
+		this.SendCommand(this.getCommandID("client_execute_spell"));
+
 		if (killed >= 150)
 		{
 			Achievement::server_Unlock(Achievement::PureCarnage, player);
 		}
 	}
-}
-
-void onDie(CBlob@ this)
-{
-	ParticleZombieLightning(this.getPosition());
-	Sound::Play("SuddenGib.ogg");
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		ParticleZombieLightning(this.getPosition());
+		Sound::Play("SuddenGib.ogg");
+	}
 }

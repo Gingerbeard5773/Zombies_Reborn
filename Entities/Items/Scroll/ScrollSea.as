@@ -9,6 +9,7 @@ const u8 required_ground_at_Y = 8; //amount of ground tiles at the scroll's Y le
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -42,16 +43,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				map.server_setFloodWaterWorldspace(pos, true);
 				this.server_Die();
 				this.Tag("dead");
+
+				this.SendCommand(this.getCommandID("client_execute_spell"));
+
 				Statistics::server_Add("scrolls_used", 1, player);
-				
+
 				break;
 			}
 		}
 	}
-}
-
-void onDie(CBlob@ this)
-{
-	ParticleZombieLightning(this.getPosition());
-	Sound::Play("ResearchComplete.ogg");
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		ParticleZombieLightning(this.getPosition());
+		Sound::Play("ResearchComplete.ogg");
+	}
 }
