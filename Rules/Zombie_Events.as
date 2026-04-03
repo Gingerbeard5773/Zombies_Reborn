@@ -16,20 +16,21 @@ void onStateChange(CRules@ this, const u8 oldState)
 
 void onInit(CRules@ this)
 {
-	Reset(this);
+	if (!isServer()) return;
 
+	Reset(this);
 	addOnNewDayHour(this, @onNewDayHour);
 }
 
 void onRestart(CRules@ this)
 {
+	if (!isServer()) return;
+
 	Reset(this);
 }
 
 void Reset(CRules@ this)
 {
-	if (!isServer()) return;
-
 	this.set_u16("tim_day", getTimInterval());
 	this.Sync("tim_day", true);
 }
@@ -39,13 +40,14 @@ u16 getTimInterval()
 	return 15 + XORRandom(11);
 }
 
-void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
+void onNewDayHour(CRules@ this, u16 day_hour)
 {
 	CMap@ map = getMap();
 	
 	const u16 tim_day = this.get_u16("tim_day");
 
 	this.set_bool("pause_undead_spawns", day_number == tim_day);
+	const u16 day_number = this.get_u16("day_number");
 
 	switch(day_hour)
 	{

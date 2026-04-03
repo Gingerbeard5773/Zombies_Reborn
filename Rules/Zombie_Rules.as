@@ -22,11 +22,6 @@ void onInit(CRules@ this)
 	addOnNewDayHour(this, @onNewDayHour);
 }
 
-void onReload(CRules@ this)
-{
-	addOnNewDayHour(this, @onNewDayHour);
-}
-
 void onRestart(CRules@ this)
 {
 	Reset(this);
@@ -71,14 +66,12 @@ void checkDayChange(CRules@ this)
 	const u16 day_hour = Maths::Roundf(getMap().getDayTime()*10);
 	if (day_hour == this.get_u16("last_day_hour")) return;
 
-	const u16 day_number = this.get_u16("day_number");
-
 	onNewDayHourHandle@[]@ handles;
 	if (this.get("onNewDayHour handles", @handles))
 	{
 		for (u8 i = 0; i < handles.length; ++i)
 		{
-			handles[i](this, day_number, day_hour);
+			handles[i](this, day_hour);
 		}
 	}
 
@@ -86,11 +79,11 @@ void checkDayChange(CRules@ this)
 }
 
 // Protocols when the day changes
-void onNewDayHour(CRules@ this, u16 day_number, u16 day_hour)
+void onNewDayHour(CRules@ this, u16 day_hour)
 {
 	if (day_hour != this.daycycle_start*10) return;
 
-	day_number++;
+	u16 day_number = this.get_u16("day_number") + 1;
 	this.set_u16("day_number", day_number);
 	this.Sync("day_number", true);
 
