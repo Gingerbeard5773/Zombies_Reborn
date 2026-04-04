@@ -11,6 +11,7 @@
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -57,6 +58,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 
 		this.server_Die();
+
+		this.SendCommand(this.getCommandID("client_execute_spell"));
+	}
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		Sound::Play("MagicWand.ogg", this.getPosition());
 	}
 }
 
@@ -112,9 +119,4 @@ CBlob@ server_CreateClone(CBlob@ blob, Vec2f pos, CPlayer@ player)
 const bool canClone(CBlob@ blob)
 {
 	return (!blob.hasTag("invincible") || !blob.getShape().isStatic()) && blob.getPlayer() is null;
-}
-
-void onDie(CBlob@ this)
-{
-	Sound::Play("MagicWand.ogg", this.getPosition());
 }

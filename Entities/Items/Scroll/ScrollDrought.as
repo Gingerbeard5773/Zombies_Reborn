@@ -8,6 +8,7 @@ const int radius = 30;
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -18,7 +19,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("server_execute_spell"))
+	if (cmd == this.getCommandID("server_execute_spell") && isServer())
 	{
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
@@ -51,11 +52,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Statistics::server_Add("scrolls_used", 1, player);
 			this.Tag("dead");
 			this.server_Die();
+			
+			this.SendCommand(this.getCommandID("client_execute_spell"));
 		}
 	}
-}
-
-void onDie(CBlob@ this)
-{
-	Sound::Play("MagicWand.ogg", this.getPosition(), 1.0f, 0.75f);
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		Sound::Play("MagicWand.ogg", this.getPosition(), 1.0f, 0.75f);
+	}
 }

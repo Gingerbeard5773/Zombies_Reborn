@@ -9,6 +9,7 @@
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -62,6 +63,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		crate.set_Vec2f("required space", Vec2f(Maths::Ceil(shape.getWidth()/8), Maths::Ceil(shape.getHeight()/8)));
 		aimBlob.server_Die();
 		this.server_Die();
+		
+		this.SendCommand(this.getCommandID("client_execute_spell"));
+	}
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		Sound::Play("MagicWand.ogg", this.getPosition());
 	}
 }
 
@@ -79,9 +86,4 @@ const bool canCrate(CBlob@ caller, CBlob@ blob)
 	}
 
 	return name != "scroll" && name != "crate" && blob.getPlayer() is null;
-}
-
-void onDie(CBlob@ this)
-{
-	Sound::Play("MagicWand.ogg", this.getPosition());
 }
