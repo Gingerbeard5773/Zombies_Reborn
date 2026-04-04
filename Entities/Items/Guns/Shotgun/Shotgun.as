@@ -14,7 +14,7 @@ void onInit(CBlob@ this)
 
 	GunInfo gun;
 	gun.reload_ready_time = 55;
-	gun.muzzle_offset = Vec2f(22, -2);
+	gun.muzzle_offset = Vec2f(22, 2);
 	gun.ammo_name = "mat_musketballs";
 	gun.ammo_capacity = 2;
 	gun.projectile_name = "bullet";
@@ -68,8 +68,9 @@ void onFire(CBlob@ this, CBlob@ holder, GunInfo@ gun)
 	Vec2f pos = this.getPosition();
 	ShakeScreen(150.0f, 1.0f, pos);
 	const f32 angle = this.getAngleDegrees() + (this.isFacingLeft() ? 180 : 0);
-	pos += Vec2f(0, gun.muzzle_offset.y) + Vec2f(gun.muzzle_offset.x, 0).RotateBy(angle);
-	
+	Vec2f muzzle = Vec2f(gun.muzzle_offset.x, gun.muzzle_offset.y * (this.isFacingLeft() ? 1 : -1));
+	pos += muzzle.RotateBy(angle);
+
 	//muzzle flash
 	ParticleAnimated("MuzzleFlash.png", pos, Vec2f(), angle, 1.0f, 3, 0.0f, true);
 	
