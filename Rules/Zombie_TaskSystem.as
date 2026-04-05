@@ -520,7 +520,10 @@ void DrawMigrantStats(CBlob@ blob, Vec2f menu_tl, Vec2f menu_br)
 
 	// Head
 	CSpriteLayer@ head = blob.getSprite().getSpriteLayer("head");
-	GUI::DrawIcon(head.getFilename(), head.getFrame(), Vec2f(16, 16), info_tl - Vec2f(5.0f, 15.0f), 2.0f, blob.getTeamNum());
+	if (head !is null)
+	{
+		GUI::DrawIcon(head.getFilename(), head.getFrame(), Vec2f(16, 16), info_tl - Vec2f(5.0f, 15.0f), 2.0f, blob.getTeamNum());
+	}
 
 	GUI::SetFont("hud");
 	GUI::DrawTextCentered(blob.getInventoryName(), Vec2f(info_tl.x + task_buttonsize*0.5f, info_br.y + 20.0f), color_white);
