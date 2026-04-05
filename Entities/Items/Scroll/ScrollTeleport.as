@@ -76,8 +76,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		caller.setPosition(aim);
 
-		ParticleTeleport(this.getPosition());
-		ParticleZombieLightning(aim);
+		Vec2f pos = this.getPosition();
+
+		ParticleTeleport(pos);
+		ParticleTeleportSparks(pos, aim);
+		ParticleTeleport(aim);
 	}
 }
 
