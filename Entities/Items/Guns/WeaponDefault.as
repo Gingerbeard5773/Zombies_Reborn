@@ -8,11 +8,18 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 		attached.Tag("weapon cursor");
 	}
 
+	this.getShape().getConsts().isFlammable = false;
+
 	this.Tag("invincible");
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
+	if (this.exists("burn timer"))
+	{
+		this.getShape().getConsts().isFlammable = true;
+	}
+
 	this.Untag("invincible");
 }
 
