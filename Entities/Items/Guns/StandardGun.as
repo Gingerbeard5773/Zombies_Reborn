@@ -1,7 +1,6 @@
 //Gingerbeard @ July 28, 2024
 #include "GunCommon.as"
 #include "Zombie_TechnologyCommon.as"
-#include "GetBackpack.as"
 #include "Zombie_StatisticsCommon.as"
 
 void onInit(CBlob@ this)
@@ -113,22 +112,6 @@ void ManageGun(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, GunInfo@ gun)
 	}
 }
 
-CBlob@ getAmmoHolder(CBlob@ holder, GunInfo@ gun)
-{
-	CInventory@ inv = holder.getInventory();
-	if (inv !is null && inv.getItem(gun.ammo_name) !is null)
-		return holder;
-
-	CBlob@ backpack = getBackpack(holder);
-	if (backpack is null) return null;
-
-	@inv = backpack.getInventory();
-	if (inv !is null && inv.getItem(gun.ammo_name) !is null)
-		return backpack;
-
-	return null;
-}
-
 void ClientFire(CBlob@ this, CBlob@ holder, GunInfo@ gun)
 {
 	Vec2f pos = this.getPosition();
@@ -231,28 +214,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		stream.write_u16(gun.ammo_count); //sync ammo
 		this.SendCommand(this.getCommandID("shoot client"), stream);
 	}
-}
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
-{
-	if (!attached.hasTag("weapon cursor") && attached.hasTag("player"))
-	{
-		attached.getSprite().AddScript("WeaponCursor.as");
-		attached.Tag("weapon cursor");
-	}
-	this.Tag("invincible");
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{
-	this.Untag("invincible");
-}
-
-f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
-{
-	if (this.hasTag("invincible")) return 0.0f;
-
-	return damage;
 }
 
 void onSendCreateData(CBlob@ this, CBitStream@ stream)

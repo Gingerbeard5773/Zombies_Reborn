@@ -119,8 +119,6 @@ f32 getAimAngle(CBlob@ this, CBlob@ holder)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
-	this.Tag("invincible");
-	
 	attachedPoint.SetKeysToTake(key_action1);
 	if (attached.getName() != "archer") 
 	{
@@ -130,13 +128,5 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	this.Untag("invincible");
 	this.getSprite().SetOffset(Vec2f_zero);
-}
-
-f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
-{
-	if (this.hasTag("invincible")) return 0.0f;
-
-	return damage;
 }
