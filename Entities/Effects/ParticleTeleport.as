@@ -19,7 +19,7 @@ void ParticleTeleportSparks(Vec2f pos, const u8&in amount, Vec2f push_vel)
 		vel += push_vel;
 
 		SColor col(255, 180 + XORRandom(40), 0, 255);
-		CParticle@ p = ParticlePixel(pos, vel, col, true);
+		CParticle@ p = ParticlePixelUnlimited(pos, vel, col, true);
 		if (p is null) continue;
 
 		p.collides = false;

@@ -21,8 +21,10 @@ void onTick(CSprite@ this)
 
 void onGib(CSprite@ this)
 {
+	if (g_kidssafe) return;
+
 	CBlob@ blob = this.getBlob();
 	if (blob.hasTag("exploding")) return;
 
-	UndeadGibs(this, "WraithGibs.png");
+	UndeadGibs(this, "DarkWraithGibs.png");
 }

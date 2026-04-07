@@ -29,7 +29,7 @@ namespace Fireworks
         } 
 
 		Vec2f vel = getRandomVelocity(XORRandom(360), 1.5f + XORRandom(40)*0.1f, XORRandom(360));
-        CParticle@ bullet = ParticlePixel(at, vel, SColor(255, 0,0,0), true);
+        CParticle@ bullet = ParticlePixelUnlimited(at, vel, SColor(255, 0,0,0), true);
         if (bullet is null) return;       
 
         bullet.AddDieFunction("FW_EmissionCallbacks.as", "Explosion");
@@ -235,7 +235,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(0, 1+XORRandom(3), 180);
-                CParticle@ p1 = ParticlePixel(at, vel,  presetcolor1, true);
+                CParticle@ p1 = ParticlePixelUnlimited(at, vel,  presetcolor1, true);
                 if (p1 is null) return;
 
                 p1.timeout = 20 + XORRandom(100);
@@ -250,7 +250,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(0, 3+XORRandom(3), 180);
-                CParticle@ p2 = ParticlePixel(at, vel, presetcolor2, true);
+                CParticle@ p2 = ParticlePixelUnlimited(at, vel, presetcolor2, true);
                 if (p2 is null) return;
 
                 p2.timeout = 20 + XORRandom(100);
@@ -264,7 +264,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(0, 7+XORRandom(3), 180);
-                CParticle@ p3 = ParticlePixel(at, vel, presetcolor3, true);
+                CParticle@ p3 = ParticlePixelUnlimited(at, vel, presetcolor3, true);
                 if (p3 is null) return;
 
                 p3.timeout = 20 + XORRandom(100);
@@ -279,7 +279,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(0, 10+XORRandom(3), 180);
-                CParticle@ p4 = ParticlePixel(at, vel, presetcolor4, true);
+                CParticle@ p4 = ParticlePixelUnlimited(at, vel, presetcolor4, true);
                 if (p4 is null) return;
 
                 p4.timeout = 20 + XORRandom(100);
@@ -293,7 +293,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(0, 13+XORRandom(3), 180);
-                CParticle@ p5 = ParticlePixel(at, vel, presetcolor5, true);
+                CParticle@ p5 = ParticlePixelUnlimited(at, vel, presetcolor5, true);
                 if (p5 is null) return;
 
                 p5.timeout = 20 + XORRandom(100);
@@ -315,7 +315,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(i*15, 1+XORRandom(2), 1);
-                CParticle@ p1 = ParticlePixel(at, vel,  presetcolor1, true);
+                CParticle@ p1 = ParticlePixelUnlimited(at, vel,  presetcolor1, true);
                 if (p1 is null) return;
 
                 p1.timeout = 20 + XORRandom(100);
@@ -330,7 +330,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(i*15, 3+XORRandom(3), 10);
-                CParticle@ p2 = ParticlePixel(at, vel, presetcolor2, true);
+                CParticle@ p2 = ParticlePixelUnlimited(at, vel, presetcolor2, true);
                 if (p2 is null) return;
 
                 p2.timeout = 20 + XORRandom(100);
@@ -344,7 +344,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(i*15, 5+XORRandom(4), 1);
-                CParticle@ p3 = ParticlePixel(at, vel, presetcolor3, true);
+                CParticle@ p3 = ParticlePixelUnlimited(at, vel, presetcolor3, true);
                 if (p3 is null) return;
 
                 p3.timeout = 20 + XORRandom(100);
@@ -359,7 +359,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(i*15, 7+XORRandom(5), 1);
-                CParticle@ p4 = ParticlePixel(at, vel, presetcolor4, true);
+                CParticle@ p4 = ParticlePixelUnlimited(at, vel, presetcolor4, true);
                 if (p4 is null) return;
 
                 p4.timeout = 20 + XORRandom(100);
@@ -373,7 +373,7 @@ namespace Fireworks
             for (int i = 0; i < amount; i++)
             {
                 Vec2f vel = velin + getRandomVelocity(i*15, 9+XORRandom(6), 1);
-                CParticle@ p5 = ParticlePixel(at, vel, presetcolor5, true);
+                CParticle@ p5 = ParticlePixelUnlimited(at, vel, presetcolor5, true);
                 if (p5 is null) return;
 
                 p5.timeout = 20 + XORRandom(100);
@@ -398,11 +398,11 @@ namespace Fireworks
                 Vec2f vel_3 = getRandomVelocity(0, 2, 360);
                 vel_3.y = (XORRandom(2) == 0 ? 1.5f+i*0.5 : -1.5f-i*0.5);
 
-                CParticle@ p1 = ParticlePixel(at, vel_1,  presetcolor1, true);
-                CParticle@ p2 = ParticlePixel(at, vel_1*0.75,  presetcolor2, true);
-                CParticle@ p3 = ParticlePixel(at, vel_2,  presetcolor3, true);
-                CParticle@ p4 = ParticlePixel(at, vel_3*0.75,  presetcolor4, true);
-                CParticle@ p5 = ParticlePixel(at, vel_3,  presetcolor5, true);
+                CParticle@ p1 = ParticlePixelUnlimited(at, vel_1,  presetcolor1, true);
+                CParticle@ p2 = ParticlePixelUnlimited(at, vel_1*0.75,  presetcolor2, true);
+                CParticle@ p3 = ParticlePixelUnlimited(at, vel_2,  presetcolor3, true);
+                CParticle@ p4 = ParticlePixelUnlimited(at, vel_3*0.75,  presetcolor4, true);
+                CParticle@ p5 = ParticlePixelUnlimited(at, vel_3,  presetcolor5, true);
 
                 if (p1 is null) return;
 

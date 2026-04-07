@@ -1,5 +1,7 @@
 //Greg Animations
 
+#include "ParticleUndeadGib.as"
+
 void onInit(CSprite@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_onscreen;
@@ -18,4 +20,9 @@ void onTick(CSprite@ this)
 		if (!this.isAnimation("fly"))
 			 this.SetAnimation("fly");
 	}
+}
+
+void onGib(CSprite@ this)
+{
+	UndeadGibs(this, "GregGibs.png");
 }
