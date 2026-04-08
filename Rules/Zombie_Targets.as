@@ -36,6 +36,12 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		//add new target
 		this.push("target netids", blob.getNetworkID());
 	}
+
+	//developer crash/bug searching, may remove this later
+	if (blob.getNetworkID() == 65529)
+	{
+		error("[dev] Server reached blob netids maximum! Looping back to 0");
+	}
 }
 
 void onBlobDie(CRules@ this, CBlob@ blob)
