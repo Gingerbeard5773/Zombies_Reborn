@@ -67,7 +67,7 @@ void doBloodEffects(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, C
 		}
 	}
 
-	if (capped_damage > 0.01f)
+	if (capped_damage > 0.01f && !v_fastrender)
 	{
 		f32 angle = (velocity).Angle();
 
