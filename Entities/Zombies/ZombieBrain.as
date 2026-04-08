@@ -9,7 +9,7 @@ void onInit(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 	blob.set_u8("brain_delay", 5 + XORRandom(5));
-	
+
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
 
@@ -17,19 +17,20 @@ void onTick(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 	if (blob.hasTag("dead")) return;
-	
+
 	u8 delay = blob.get_u8("brain_delay");
 	delay--;
 	
 	if (delay == 0)
 	{
-		delay = 5 + XORRandom(10);
+		delay = 10 + XORRandom(10);
 		
 		// do we have a target?
 		CBlob@ target = this.getTarget();
 		if (target !is null)
 		{
-			Vec2f targetPos = target.getPosition();
+			Vec2f pos = blob.getPosition();
+			Vec2f target_pos = target.getPosition();
 			
 			// check if the target needs to be dropped
 			if (ShouldLoseTarget(blob, target))
@@ -37,28 +38,34 @@ void onTick(CBrain@ this)
 				this.SetTarget(null);
 				return;
 			}
-			
+
+			Vec2f aimvec = pos - target_pos;
+			const f32 distance = aimvec.Length();
+			/*aimvec.Normalize();
+			aimvec *= target.getRadius() + 2.0f;
+			if (getMap().rayCastSolid(pos, target_pos + aimvec))*/
+
 			// is the target still visible?
 			if (!isTargetVisible(blob, target))
 			{
 				this.SetTarget(null);
 				
 				// go to last seen position
-				blob.set_Vec2f("brain_destination", targetPos);
+				blob.set_Vec2f("brain_destination", target_pos);
 			}
 
 			// aim always at enemy
-			blob.setAimPos(targetPos);
+			blob.setAimPos(target_pos);
 
 			// chase target
-			if ((targetPos - blob.getPosition()).Length() > blob.getRadius())
+			if (distance > blob.getRadius() + 8.0f)
 			{
 				CMap@ map = getMap();
 				
-				PathTo(blob, targetPos, map);
+				PathTo(blob, target_pos, map);
 
 				// scale walls and jump over small blocks
-				ScaleObstacles(this, blob, targetPos, map);
+				ScaleObstacles(this, blob, target_pos, map);
 
 				// destroy any attackable obstructions such as doors
 				DestroyAttackableObstructions(this, blob, map);
@@ -116,7 +123,6 @@ void GoSomewhere(CBrain@ this, CBlob@ blob)
 	DestroyAttackableObstructions(this, blob, map);
 }
 
-
 void PathTo(CBlob@ blob, Vec2f&in destination, CMap@ map)
 {
 	Vec2f mypos = blob.getPosition();
@@ -162,15 +168,52 @@ void ScaleObstacles(CBrain@ this, CBlob@ blob, Vec2f&in destination, CMap@ map)
 
 void DestroyAttackableObstructions(CBrain@ this, CBlob@ blob, CMap@ map)
 {
-	Vec2f col;
-	if (map.rayCastSolid(blob.getPosition(), blob.getAimPos(), col))
+	CBlob@ obstruction = getObstructionBlob(blob, map);
+	if (obstruction is null) return;
+
+	this.SetTarget(obstruction);
+}
+
+CBlob@ getObstructionBlob(CBlob@ blob, CMap@ map)
+{
+	CBlob@[] blobs;
+	if (!blob.getOverlapping(@blobs)) return null;
+
+	Vec2f mypos = blob.getPosition();
+	Vec2f aimvec = blob.getAimPos() - mypos;
+	const f32 aimlength = aimvec.Length();
+	aimvec.Normalize();
+
+	for (int i = 0; i < blobs.length; i++)
 	{
-		CBlob@ obstruction = map.getBlobAtPosition(col);
-		if (obstruction is null || (obstruction.hasTag("undead") || !obstruction.isCollidable()))
-			return;
-		
-		this.SetTarget(obstruction);
+		CBlob@ b = blobs[i];
+		if (!isObstructionBlob(b)) continue;
+
+		Vec2f bpos = b.getPosition();
+		Vec2f toBlob = bpos - mypos;
+
+		const f32 proj = toBlob.x * aimvec.x + toBlob.y * aimvec.y;
+		if (proj < 0.0f || proj > aimlength) continue;
+
+		Vec2f closest = mypos + aimvec * proj;
+		const f32 dist = (bpos - closest).LengthSquared();
+		const f32 radius = b.getRadius() * 2.0f;
+
+		if (dist <= radius * radius) return b;
 	}
+
+	return null;
+}
+
+bool isObstructionBlob(CBlob@ blob)
+{
+	CShape@ shape = blob.getShape();
+	if (!shape.isStatic() || !blob.isCollidable() || shape.getConsts().support == 0) return false;
+
+	const string name = blob.getName();
+	if (name == "bridge" || name == "trap_block") return false;
+
+	return true;
 }
 
 void NewDestination(CBlob@ blob, CMap@ map)

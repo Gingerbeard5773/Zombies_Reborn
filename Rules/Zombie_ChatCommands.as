@@ -21,6 +21,7 @@ string CommandsList()
 	"!respawn [username] : respawn a player\n" +
 	"!softban [username / IP] [minutes / -1 for permanent] [reason] : soft ban a player\n" +
 	"!carnage : kill all zombies on the map\n" +
+	"!showtargets : toggle aim position debug for bots\n" +
 	"!spawnrates [days to print] [player number] : prints out a prediction of the rates\n" +
 	"!difficulty [difficulty] : sets the game difficulty\n" +
 	"!loadgen [seed] : load a procedurally generated map using a seed\n" +

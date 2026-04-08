@@ -18,7 +18,7 @@ shared void SetBestTarget(CBrain@ this, CBlob@ blob, const f32&in radius)
 		if (candidate is null || candidate.hasTag("dead")) continue;
 
 		const f32 dist = (candidate.getPosition() - pos).Length();
-		if (dist < radius && dist < closest_dist && (isTargetVisible(blob, candidate) || seeThroughWalls))
+		if (dist < radius && dist < closest_dist && (seeThroughWalls || isTargetVisible(blob, candidate)))
 		{
 			@target = candidate;
 			closest_dist = dist;
