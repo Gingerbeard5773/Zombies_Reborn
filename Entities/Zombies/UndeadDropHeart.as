@@ -4,15 +4,17 @@
 
 void onDie(CBlob@ this)
 {
-	if (this.hasTag("switch class") || this.hasTag("sawed")) //no heart if sawed
-		return;
+	//no heart if sawed
+	if (this.hasTag("switch class") || this.hasTag("sawed")) return;
 
 	CPlayer@ killer = this.getPlayerOfRecentDamage();
 	if (killer is null) return;
 
 	CBlob@ killerBlob = killer.getBlob();
-	if (killerBlob is null ||
-		killerBlob.getHealth() > killerBlob.getInitialHealth() - 0.25f) return; //no heart if killer doesn't need one
+	if (killerBlob is null) return;
+
+	//no heart if killer isnt low on health
+	if (killerBlob.getHealth() > Maths::Max(killerBlob.getInitialHealth() * 0.5f, 1.0f)) return;
 
 	CBlob@ heart = server_CreateBlob("heart", -1, this.getPosition());
 	if (heart !is null)
