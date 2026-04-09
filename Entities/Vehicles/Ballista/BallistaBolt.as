@@ -4,7 +4,6 @@
 #include "LimitedAttacks.as"
 #include "Explosion.as"
 #include "CustomTiles.as"
-#include "Zombie_StatisticsCommon.as"
 #include "Zombie_AchievementsCommon.as"
 
 const f32 MEDIUM_SPEED = 9.0f;
@@ -33,12 +32,6 @@ void onInit(CBlob@ this)
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
 	this.getSprite().SetFrame(this.hasTag("bomb ammo") ? 1 : 0);
-
-	CPlayer@ player = this.getDamageOwnerPlayer();
-	if (player !is null && player.isMyPlayer())
-	{
-		Statistics::Add("bolts_fired", 1);
-	}
 }
 
 void onTick(CBlob@ this)

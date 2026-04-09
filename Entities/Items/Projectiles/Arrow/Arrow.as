@@ -49,24 +49,6 @@ void onInit(CBlob@ this)
 
 	const u8 arrowType = this.get_u8("arrow type");
 
-	CPlayer@ damageOwner = this.getDamageOwnerPlayer();
-	if (damageOwner !is null && damageOwner.isMyPlayer())
-	{
-		const string[] statistic_names =
-		{
-			"arrows_shot",
-			"water_arrows_shot",
-			"fire_arrows_shot",
-			"bomb_arrows_shot",
-			"molotov_arrows_shot",
-			"fireworks_launched"
-		};
-
-		const string statistic = arrowType < statistic_names.length ? statistic_names[arrowType] : statistic_names[0];
-
-		Statistics::Add(statistic, 1);
-	}
-
 	//I CANNOT BE ASSED TO MESS WITH ARROW.AS!!!
 	//ENJOY MY ADDSCRIPT HACK
 	if (arrowType == ArrowType::molotov)

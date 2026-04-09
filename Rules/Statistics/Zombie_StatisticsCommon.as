@@ -3,12 +3,6 @@
 
 #include "Zombie_Translation.as"
 
-/*
-	Statistics todo
-	bombs, water bombs, kegs, molotovs used
-	trees felled
-*/
-
 namespace Statistics
 {
 	const string[] statistic_names =
@@ -32,6 +26,11 @@ namespace Statistics
 		"food_eaten",
 		"scrolls_used",
 		"technologies_researched",
+		"items_enchanted",
+		"bombs_used",
+		"water_bombs_used",
+		"kegs_used",
+		"molotovs_used",
 		"arrows_shot",
 		"fire_arrows_shot",
 		"water_arrows_shot",
@@ -64,6 +63,11 @@ namespace Statistics
 		Translate::StatFood,
 		Translate::StatScrolls,
 		Translate::StatTechs,
+		Translate::StatEnchants,
+		Translate::StatBombs,
+		Translate::StatWaterBombs,
+		Translate::StatKegs,
+		Translate::StatMolotovs,
 		Translate::StatArrows,
 		Translate::StatFireArrows,
 		Translate::StatWaterArrows,
@@ -110,11 +114,20 @@ namespace Statistics
 
 	void Add(const string&in statistic_name, const u32&in amount, ConfigFile@ cfg = openConfig())
 	{
+		CPlayer@ local = getLocalPlayer();
+		if (local is null) return;
+
+		const string[]@ tokens = local.getUsername().split("~");
+		if (tokens.length > 1) return;
+
 		dictionary@ statistics_set;
 		if (!getRules().get("statistics_set", @statistics_set)) return;
 
 		u32 value = 0;
-		statistics_set.get(statistic_name, value);
+		if (statistics_set.exists(statistic_name))
+		{
+			statistics_set.get(statistic_name, value);
+		}
 		statistics_set.set(statistic_name, value + amount);
 	}
 

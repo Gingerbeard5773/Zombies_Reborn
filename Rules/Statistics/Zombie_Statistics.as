@@ -7,6 +7,7 @@
 #include "Zombie_BestiaryCommon.as"
 #include "Zombie_Translation.as"
 #include "Events.as"
+#include "Hitters.as"
 
 const u32 SLIDE_TIME = 15;
 const u32 HOLD_TIME  = 180;
@@ -33,7 +34,7 @@ void onInit(CRules@ this)
 	this.addCommandID("client_add_statistic");
 
 	server_ResetPlayerStats(this);
-	
+
 	if (isCurrentStatsOutdated(this))
 	{
 		client_ResetCurrentStats(this);
@@ -52,6 +53,15 @@ void onRestart(CRules@ this)
 	client_ResetCurrentStats(this);
 }
 
+bool isOurAuthority()
+{
+	CPlayer@ local = getLocalPlayer();
+	if (local is null) return false;
+
+	const string[]@ tokens = local.getUsername().split("~");
+	return tokens.length <= 1;
+}
+
 bool isCurrentStatsOutdated(CRules@ this)
 {
 	if (!isClient()) return false;
@@ -66,6 +76,8 @@ bool isCurrentStatsOutdated(CRules@ this)
 void client_ResetCurrentStats(CRules@ this)
 {
 	if (!isClient()) return;
+
+	if (!isOurAuthority()) return;
 
 	ConfigFile@ cfg = Statistics::openConfig();
 	for (u8 i = 0; i < Statistics::statistic_names.length; i++)
@@ -125,7 +137,23 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 		}
 	}
 
-	if (!blob.hasTag("undead") || blob.hasTag("ignore kill")) return;
+	if (blob.hasTag("undead"))
+	{
+		onUndeadDie(this, blob);
+	}
+	else if (blob.exists("arrow type"))
+	{
+		onArrowDie(this, blob);
+	}
+	else if (blob.hasTag("activated"))
+	{
+		onBombDie(this, blob);
+	}
+}
+
+void onUndeadDie(CRules@ this, CBlob@ blob)
+{
+	if (blob.hasTag("ignore kill")) return;
 
 	if (isServer())
 	{
@@ -149,6 +177,60 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 	}
 }
 
+void onArrowDie(CRules@ this, CBlob@ blob)
+{
+	CPlayer@ damageOwner = blob.getDamageOwnerPlayer();
+	if (damageOwner is null || !damageOwner.isMyPlayer()) return;
+
+	const string[] statistic_names =
+	{
+		"arrows_shot", "water_arrows_shot", "fire_arrows_shot", "bomb_arrows_shot", "molotov_arrows_shot", "fireworks_launched"
+	};
+
+	const u8 type = blob.get_u8("arrow type");
+	const string statistic = type < statistic_names.length ? statistic_names[type] : statistic_names[0];
+	Statistics::Add(statistic, 1);
+}
+
+void onBombDie(CRules@ this, CBlob@ blob)
+{
+	CPlayer@ damageOwner = blob.getDamageOwnerPlayer();
+	if (damageOwner is null || !damageOwner.isMyPlayer()) return;
+
+	const string[] pairs =
+	{
+		"bomb",      "bombs_used",
+		"waterbomb", "water_bombs_used",
+		"keg",       "kegs_used",
+		"molotov",   "molotovs_used"
+	};
+
+	AddStatisticFromPairs(blob, pairs);
+}
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	CPlayer@ damageOwner = blob.getDamageOwnerPlayer();
+	if (damageOwner is null || !damageOwner.isMyPlayer()) return;
+
+	const string[] pairs =
+	{
+		"cannonball",    "cannons_fired",
+		"ballista_bolt", "bolts_fired"
+	};
+
+	AddStatisticFromPairs(blob, pairs);
+}
+
+void AddStatisticFromPairs(CBlob@ blob, const string[]&in pairs)
+{
+	const int index = pairs.find(blob.getName());
+	if (index != -1 && index % 2 == 0 && index + 1 < pairs.length)
+	{
+		Statistics::Add(pairs[index + 1], 1);
+	}
+}
+
 void onTick(CRules@ this)
 {
 	if (!isClient()) return;
@@ -161,16 +243,16 @@ void onTick(CRules@ this)
 void TickStatistics(CRules@ this)
 {
 	if (getGameTime() % 30 != 0) return;
-	
+
 	// Statistics are batched and then processed gradually over time
 	// This is done because writing to config files is extremely expensive and can cause noticeable frame drops if done too often
-	
+
 	dictionary@ statistics_set;
 	if (!this.get("statistics_set", @statistics_set)) return;
-	
+
 	const string[]@ statistic_keys = statistics_set.getKeys();
 	if (statistic_keys.length == 0) return;
-	
+
 	const string statistic_name = statistic_keys[XORRandom(statistic_keys.length)];
 
 	u32 value = 0;
@@ -314,6 +396,8 @@ void onAddStatistic(string statistic_name, u32 amount)
 
 void onUnlockAchievement(CRules@ this, int index)
 {
+	if (!isOurAuthority()) return;
+
 	if (index >= Achievement::achievements.length)
 	{ 
 		error("Impossible achievement index, no pair found ["+index+"]"); 
@@ -342,6 +426,8 @@ void onUnlockAchievement(CRules@ this, int index)
 
 void onUnlockBestiaryEntry(CRules@ this, string entry_name)
 {
+	if (!isOurAuthority()) return;
+
 	const int index = Bestiary::find(entry_name);
 	if (index == -1) return;
 
@@ -357,14 +443,13 @@ void onUnlockBestiaryEntry(CRules@ this, string entry_name)
 	cfg.saveFile(Bestiary::filename);
 
 	Sound::Play("snes_coin.ogg");
-	
+
 	const string zombie_name = name(Bestiary::entries[index].description);
 	const string message = Translate::BestiaryNewEntry.replace("{INPUT}", zombie_name);
 	client_SendGlobalMessage(this, message, 8, SColor(0xff66C6FF));
-	
+
 	this.push("easy_ui_events", Event::Bestiary);
 }
-
 
 /// Networking
 
@@ -406,3 +491,4 @@ bool onClientProcessChat(CRules@ this, const string &in textIn, string &out text
 	
 	return true;
 }*/
+

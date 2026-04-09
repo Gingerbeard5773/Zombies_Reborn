@@ -1,7 +1,5 @@
 #include "Hitters.as"
 #include "Explosion.as"
-#include "Zombie_StatisticsCommon.as"
-#include "Zombie_AchievementsCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -12,12 +10,6 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().net_threshold_multiplier = 4.0f;
 
 	this.Tag("projectile");
-
-	CPlayer@ damageOwner = this.getDamageOwnerPlayer();
-	if (damageOwner !is null && damageOwner.isMyPlayer())
-	{
-		Statistics::Add("cannons_fired", 1);
-	}
 
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 	this.sendonlyvisible = false;
