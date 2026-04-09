@@ -1,14 +1,13 @@
-#include "EquipmentCommon.as";
-#include "RunnerTextures.as";
-#include "Zombie_Translation.as";
+#include "EquipmentCommon.as"
+#include "RunnerTextures.as"
+#include "Zombie_Translation.as"
 
 void onInit(CBlob@ this)
 {
-	this.set_string("equipment_slot", "torso");
+	this.set_string("equipment_slot", "back");
 	this.Tag("ignore_saw");
 	this.Tag("sawed");//hack
 
-	addOnEquip(this, @OnEquip);
 	addOnUnequip(this, @OnUnequip);
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
@@ -18,23 +17,15 @@ void onInit(CBlob@ this)
 	this.setInventoryName(name(Translate::Backpack));
 }
 
-void OnEquip(CBlob@ this, CBlob@ equipper)
-{
-	this.set_netid("equipper_id", equipper.getNetworkID());
-}
-
 void OnUnequip(CBlob@ this, CBlob@ equipper)
 {
 	this.getSprite().SetVisible(true);
 	equipper.getSprite().RemoveSpriteLayer("backpack");
-	
-	this.set_netid("equipper_id", 0);
 }
 
 void onTickEquipped(CBlob@ this, CBlob@ equipper)
 {
 	this.getSprite().SetVisible(false);
-	this.setPosition(equipper.getPosition());
 }
 
 void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
@@ -58,7 +49,7 @@ void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
 	{
 		Vec2f headoffset(equipper_sprite.getFrameWidth() / 2, -equipper_sprite.getFrameHeight() / 2);
 		Vec2f head_offset = getHeadOffset(equipper_sprite.getBlob(), -1, 0);
-       
+
 		headoffset += equipper_sprite.getOffset();
 		headoffset += Vec2f(-head_offset.x, head_offset.y);
 		headoffset += Vec2f(4, 2);

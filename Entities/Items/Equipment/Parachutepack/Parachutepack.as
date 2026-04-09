@@ -1,19 +1,18 @@
-#include "EquipmentCommon.as";
-#include "RunnerTextures.as";
-#include "Zombie_Translation.as";
+#include "EquipmentCommon.as"
+#include "RunnerTextures.as"
+#include "Zombie_Translation.as"
 
 const u32 parachute_delay = 3*30; //3 secs
 
 void onInit(CBlob@ this)
 {
-	this.set_string("equipment_slot", "torso");
+	this.set_string("equipment_slot", "back");
 	this.Tag("ignore_saw");
 	this.Tag("sawed");//hack
 	
 	this.addCommandID("server_open_parachute");
 	this.addCommandID("client_open_parachute");
 
-	addOnEquip(this, @OnEquip);
 	addOnUnequip(this, @OnUnequip);
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
@@ -24,18 +23,11 @@ void onInit(CBlob@ this)
 	this.setInventoryName(name(Translate::Parachutepack));
 }
 
-void OnEquip(CBlob@ this, CBlob@ equipper)
-{
-	this.set_netid("equipper_id", equipper.getNetworkID());
-}
-
 void OnUnequip(CBlob@ this, CBlob@ equipper)
 {
 	equipper.getSprite().RemoveSpriteLayer("backpack");
 
 	RemoveParachute(this, equipper);
-	
-	this.set_netid("equipper_id", 0);
 }
 
 void onTickEquipped(CBlob@ this, CBlob@ equipper)

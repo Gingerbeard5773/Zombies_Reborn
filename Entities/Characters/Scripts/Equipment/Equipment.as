@@ -1,45 +1,49 @@
 //Gingerbeard @ August 9, 2024
 
 #include "EquipmentCommon.as"
-#include "Zombie_Translation.as";
+#include "Zombie_Translation.as"
+#include "MigrantEquipment.as"
 
-const string[] equipment =
+const Vec2f[] equipment_menu_offsets =
 {
-	"head",
-	"torso"
-	//"feet"
+	Vec2f(0, 0),
+	Vec2f(0, 48),
+	Vec2f(-48, 48)
 };
 
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_equip");
 	this.addCommandID("client_equip");
-	
+
 	for (u8 i = 0; i < equipment.length; i++)
 	{
 		AddIconToken("$"+equipment[i]+"_empty$", "Equipment.png", Vec2f(24, 24), i, 0);
 	}
-	
+
+	server_EquipHandle@ handle = @server_Equip;
+	this.set("server_Equip handle", @handle);
+
 	u16[] ids(equipment.length);
 	this.set("equipment_ids", ids);
 }
 
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu@ gridmenu)
 {
-	Vec2f MENU_POS = gridmenu.getUpperLeftPosition() + Vec2f(-25, 48);
-	CGridMenu@ equipment_menu = CreateGridMenu(MENU_POS, this, Vec2f(1, equipment.length), "equipment_menu");
-	if (equipment_menu is null) return;
-
-	equipment_menu.SetCaptionEnabled(false);
-	equipment_menu.deleteAfterClick = false;
-
 	u16[] ids;
 	if (!this.get("equipment_ids", ids)) return;
 
+	Vec2f menu_pos = gridmenu.getUpperLeftPosition() + Vec2f(-25, 24);
 	CBlob@ carried = forBlob !is null ? forBlob.getCarriedBlob() : this.getCarriedBlob();
 
 	for (u8 i = 0; i < equipment.length; i++)
 	{
+		CGridMenu@ equipment_menu = CreateGridMenu(menu_pos + equipment_menu_offsets[i], this, Vec2f(1, 1), "equipment_menu");
+		if (equipment_menu is null) continue;
+
+		equipment_menu.SetCaptionEnabled(false);
+		equipment_menu.deleteAfterClick = false;
+
 		string icon = "$"+equipment[i]+"_empty$";
 		string hover = "";
 		
@@ -78,7 +82,7 @@ void Callback_Equip(CBitStream@ params)
 
 	CBlob@ this = getBlobByNetworkID(netid);
 	if (this is null) return;
-	
+
 	u16 item_netid;
 	if (!params.saferead_netid(item_netid)) return;
 
@@ -97,64 +101,79 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("server_equip") && isServer())
 	{
-		u16[] ids;
-		this.get("equipment_ids", ids);
-		u16 equipped = 0;
-		u16 unequipped = 0;
-
-		u8 index;
-		if (!params.saferead_u8(index)) { error("Failed to access equipment index : "+this.getNetworkID()); return; }
-
-		u16 item_netid;
-		if (!params.saferead_netid(item_netid)) { error("Failed to access item netid : "+this.getNetworkID()); return; }
-
-		//unequip
-		CBlob@ equippedblob = getBlobByNetworkID(ids[index]);
-		if (equippedblob !is null)
-		{
-			unequipped = ids[index];
-			ids[index] = 0;
-			UnequipBlob(this, equippedblob);
-		}
-
-		//equip
-		CBlob@ carried = getBlobByNetworkID(item_netid);
-		if (carried !is null && canEquip(carried, index))
-		{
-			const bool isSameEquipment = equippedblob !is null && equippedblob.getName() == carried.getName();
-			if (!isSameEquipment)
-			{
-				equipped = carried.getNetworkID();
-				ids[index] = equipped;
-				EquipBlob(this, carried);
-			}
-		}
-		this.set("equipment_ids", ids);
-		
-		if (!isClient()) //no need to sync on localhost
-		{
-			CBitStream stream;
-			stream.write_netid(unequipped);
-			stream.write_netid(equipped);
-			SerializeEquipment(ids, stream);
-			this.SendCommand(this.getCommandID("client_equip"), stream);
-		}
+		server_Equip(this, params);
 	}
 	else if (cmd == this.getCommandID("client_equip") && isClient())
 	{
-		u16 unequipped_netid, equipped_netid;
-		if (!params.saferead_netid(unequipped_netid)) { error("Failed to access unequipped! : "+this.getNetworkID()); return; }
-		if (!params.saferead_netid(equipped_netid))   { error("Failed to access equipped! : "+this.getNetworkID());   return; } 
-
-		CBlob@ unequippedblob = getBlobByNetworkID(unequipped_netid);
-		if (unequippedblob !is null)
-			UnequipBlob(this, unequippedblob);
-		CBlob@ equippedblob = getBlobByNetworkID(equipped_netid);
-		if (equippedblob !is null)
-			EquipBlob(this, equippedblob);
-
-		if (!UnserializeEquipment(this, params)) { error("Failed to access equipment [3] : "+this.getName()+" : "+this.getNetworkID()); return; }
+		client_Equip(this, params);
 	}
+}
+
+void server_Equip(CBlob@ this, CBitStream@ params)
+{
+	u16[] ids;
+	this.get("equipment_ids", ids);
+	u16 equipped = 0;
+	u16 unequipped = 0;
+
+	u8 index;
+	if (!params.saferead_u8(index)) { error("Failed to access equipment index : "+this.getNetworkID()); return; }
+
+	u16 item_netid;
+	if (!params.saferead_netid(item_netid)) { error("Failed to access item netid : "+this.getNetworkID()); return; }
+
+	//unequip
+	CBlob@ equippedblob = getBlobByNetworkID(ids[index]);
+	if (equippedblob !is null)
+	{
+		unequipped = ids[index];
+		ids[index] = 0;
+		UnequipBlob(this, equippedblob);
+	}
+
+	//equip
+	CBlob@ carried = getBlobByNetworkID(item_netid);
+	if (carried !is null && canEquip(carried, index))
+	{
+		const bool isSameEquipment = equippedblob !is null && equippedblob.getName() == carried.getName();
+		if (!isSameEquipment)
+		{
+			equipped = carried.getNetworkID();
+			ids[index] = equipped;
+			EquipBlob(this, carried);
+		}
+	}
+	this.set("equipment_ids", ids);
+	
+	if (!isClient()) //no need to sync on localhost
+	{
+		CBitStream stream;
+		stream.write_netid(unequipped);
+		stream.write_netid(equipped);
+		SerializeEquipment(ids, stream);
+		this.SendCommand(this.getCommandID("client_equip"), stream);
+	}
+}
+
+void client_Equip(CBlob@ this, CBitStream@ params)
+{
+	u16 unequipped_netid, equipped_netid;
+	if (!params.saferead_netid(unequipped_netid)) { error("Failed to access unequipped! : "+this.getNetworkID()); return; }
+	if (!params.saferead_netid(equipped_netid))   { error("Failed to access equipped! : "+this.getNetworkID());   return; } 
+
+	CBlob@ unequippedblob = getBlobByNetworkID(unequipped_netid);
+	if (unequippedblob !is null)
+	{
+		UnequipBlob(this, unequippedblob);
+	}
+
+	CBlob@ equippedblob = getBlobByNetworkID(equipped_netid);
+	if (equippedblob !is null)
+	{
+		EquipBlob(this, equippedblob);
+	}
+
+	if (!UnserializeEquipment(this, params)) { error("Failed to access equipment [1] : "+this.getName()+" : "+this.getNetworkID()); return; }
 }
 
 void onTick(CBlob@ this)
@@ -166,9 +185,20 @@ void onTick(CBlob@ this)
 		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
 		if (equippedblob is null) continue;
 
+		// Synchronize clients in post
+		if (isClient() && equippedblob.getShape().doTickScripts)
+		{
+			EquipBlob(this, equippedblob);
+			continue;
+		}
+
+		equippedblob.setPosition(this.getPosition());
+
 		onTickHandle@ onTickEquipped;
-		if (equippedblob.get("onTickEquipped handle", @onTickEquipped)) 
+		if (equippedblob.get("onTickEquipped handle", @onTickEquipped))
+		{
 			onTickEquipped(equippedblob, this);
+		}
 	}
 }
 
@@ -183,8 +213,10 @@ void onTick(CSprite@ this)
 		if (equippedblob is null) continue;
 
 		onTickSpriteHandle@ onTickSpriteEquipped;
-		if (equippedblob.get("onTickSpriteEquipped handle", @onTickSpriteEquipped)) 
+		if (equippedblob.get("onTickSpriteEquipped handle", @onTickSpriteEquipped))
+		{
 			onTickSpriteEquipped(equippedblob, this);
+		}
 	}
 }
 
@@ -228,12 +260,12 @@ void EquipToNewPlayerBlob(CBlob@ this, u16[]@ ids)
 {
 	CPlayer@ owner = this.getDamageOwnerPlayer();
 	if (owner is null) return;
-	
+
 	CBlob@ newPlayerBlob = owner.getBlob();
 	if (newPlayerBlob is null) return;
-	
+
 	if (newPlayerBlob is this || newPlayerBlob.hasTag("dead")) return;
-	
+
 	u16[]@ new_ids;
 	if (!newPlayerBlob.get("equipment_ids", @new_ids)) return;
 
@@ -241,46 +273,11 @@ void EquipToNewPlayerBlob(CBlob@ this, u16[]@ ids)
 	{
 		CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
 		if (equippedblob is null) continue;
-		
+
 		new_ids[i] = ids[i];
 
 		EquipBlob(newPlayerBlob, equippedblob);
 	}
-}
-
-/// BOTS
-
-void GetButtonsFor(CBlob@ this, CBlob@ caller)
-{
-	const u16 inv_access = getRules().get_u16("inventory access");
-	if (this.getNetworkID() != inv_access) return;
-	
-	u16[] ids;
-	if (!this.get("equipment_ids", ids)) return;
-
-	CBlob@ carried = caller.getCarriedBlob();
-	if (carried is null || !carried.exists("equipment_slot")) return;
-
-	const string icon = carried.exists("equipment_icon") ? carried.get_string("equipment_icon") : "$"+carried.getName()+"$";
-	const string hover = Translate::Equip.replace("{ITEM}", carried.getInventoryName());
-	caller.CreateGenericButton(icon, Vec2f(0, -8), this, Callback_EquipBot, hover);
-}
-
-void Callback_EquipBot(CBlob@ this, CBlob@ caller)
-{
-	CBlob@ carried = caller.getCarriedBlob();
-	if (carried is null || !carried.exists("equipment_slot")) return;
-
-	getHUD().ClearMenus();
-	
-	const u8 index = equipment.find(carried.get_string("equipment_slot"));
-	if (index == -1) return;
-
-	CBitStream stream;
-	stream.write_u8(index);
-	stream.write_netid(carried.getNetworkID());
-
-	this.SendCommand(this.getCommandID("server_equip"), stream);
 }
 
 ///NETWORK
@@ -298,7 +295,7 @@ bool UnserializeEquipment(CBlob@ this, CBitStream@ stream)
 {
 	u8 ids_length;
 	if (!stream.saferead_u8(ids_length)) return false;
-	
+
 	u16[] ids(ids_length);
 	for (u8 i = 0; i < ids_length; i++)
 	{
@@ -311,38 +308,19 @@ bool UnserializeEquipment(CBlob@ this, CBitStream@ stream)
 
 void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
-	stream.write_u32(this.getTickSinceCreated());
 	u16[] ids;
 	if (this.get("equipment_ids", ids))
+	{
 		SerializeEquipment(ids, stream);
+	}
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	u32 ticks_alive;
-	if (!stream.saferead_u32(ticks_alive))
+	if (!UnserializeEquipment(this, stream))
 	{
 		error("Failed to access equipment [0] : "+this.getName()+" : "+this.getNetworkID());
 		return false;
-	}
-
-	if (!UnserializeEquipment(this, stream))
-	{
-		error("Failed to access equipment [1] : "+this.getName()+" : "+this.getNetworkID());
-		return false;
-	}
-
-	if (ticks_alive > 0)
-	{
-		u16[] ids;
-		this.get("equipment_ids", ids);
-		for (u8 i = 0; i < ids.length; i++)
-		{
-			CBlob@ equippedblob = getBlobByNetworkID(ids[i]);
-			if (equippedblob is null) continue;
-
-			EquipBlob(this, equippedblob);
-		}
 	}
 
 	return true;

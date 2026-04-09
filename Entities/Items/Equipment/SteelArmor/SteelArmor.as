@@ -2,10 +2,10 @@
 #include "RunnerTextures.as"
 #include "RunnerCommon.as"
 #include "Hitters.as"
-#include "ParticleSparks.as"
 #include "Zombie_TechnologyCommon.as"
 #include "Zombie_Translation.as"
 #include "Zombie_AchievementsCommon.as"
+#include "ParticleMetalHit.as"
 
 void onInit(CBlob@ this)
 {
@@ -36,29 +36,16 @@ void OnEquip(CBlob@ this, CBlob@ equipper)
 		}
 	}
 
-	string spritename = "";
-	if (equipper.getName() == "knight")        spritename = "KnightSteelArmor";
-	else if (equipper.getName() == "builder")  spritename = "BuilderSteelArmor";
-	else if (equipper.getName() == "archer")   spritename = "ArcherSteelArmor";
-
-	if (!spritename.isEmpty())
-		equipper.getSprite().ReloadSprite(spritename, 32, 32, equipper.getTeamNum(), equipper.getSkinNum());
+	LoadArmor(this, equipper, "Steel");
 }
 
 void OnUnequip(CBlob@ this, CBlob@ equipper)
 {
 	equipper.Untag("steel armor");
-	
+
 	equipper.getShape().getConsts().isFlammable = true;
 
-	string spritename = "";
-	const bool female = this.getSexNum() == 1;
-	if (equipper.getName() == "knight")        spritename = female ? "KnightFemale" : "KnightMale";
-	else if (equipper.getName() == "builder")  spritename = female ? "BuilderFemale" : "BuilderMale";
-	else if (equipper.getName() == "archer")   spritename = female ? "ArcherFemale" : "ArcherMale";
-	
-	if (!spritename.isEmpty())
-		equipper.getSprite().ReloadSprite(spritename, 32, 32, equipper.getTeamNum(), equipper.getSkinNum());
+	UnloadArmor(this, equipper);
 }
 
 void onTickEquipped(CBlob@ this, CBlob@ equipper)
@@ -93,9 +80,9 @@ f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f
 	if (equipper.hasTag("steel helmet"))
 	{
 		//full set gives us resistance against shit enemies
-		if (hitterBlob.getName() == "skeleton")
+		if (hitterBlob.getName() == "skeleton" && damage > 0.0f)
 		{
-			DoMetalHitEffects(equipper, damage, worldPoint, velocity);
+			ParticleMetalHit(worldPoint, damage, velocity);
 			return 0.0f;
 		}
 
@@ -108,18 +95,20 @@ f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f
 		}
 	}
 
+	if (damage <= 0.0f) return 0.0f;
+
 	switch(customData)
 	{
 		case Hitters::bite:
-			DoMetalHitEffects(equipper, damage, worldPoint, velocity);
+			ParticleMetalHit(worldPoint, damage, velocity);
 			damage *= 0.4f;
 			break;
 		case Hitters::sword:
-			DoMetalHitEffects(equipper, damage, worldPoint, velocity);
+			ParticleMetalHit(worldPoint, damage, velocity);
 			damage *= 0.5f;
 			break;
 		case Hitters::spikes:
-			DoMetalHitEffects(equipper, damage, worldPoint, velocity);
+			ParticleMetalHit(worldPoint, damage, velocity);
 			damage *= 0.5f;
 			break;
 		case Hitters::bomb:
@@ -127,17 +116,10 @@ f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f
 		case Hitters::keg:
 		case Hitters::mine:
 		case Hitters::mine_special:
-			DoMetalHitEffects(equipper, damage, worldPoint, velocity);
+			ParticleMetalHit(worldPoint, damage, velocity);
 			damage *= 0.25f;
 			break;
 	}
 
 	return damage;
-}
-
-void DoMetalHitEffects(CBlob@ this, const f32&in damage, Vec2f position, Vec2f velocity)
-{
-	const f32 vol = Maths::Min(damage * 0.5f, 0.5f);
-	this.getSprite().PlaySound("ShieldHit.ogg", 0.5f + vol, 0.85f + (XORRandom(100) / 1000.0f));
-	sparks(position, velocity.Angle(), 1);
 }

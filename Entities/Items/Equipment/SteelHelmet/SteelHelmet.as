@@ -6,8 +6,6 @@
 #include "Zombie_Translation.as"
 #include "Zombie_AchievementsCommon.as"
 
-const u8 helmet_variations = 3;
-
 void onInit(CBlob@ this)
 {
 	this.set_string("equipment_slot", "head");
@@ -18,16 +16,17 @@ void onInit(CBlob@ this)
 	addOnUnequip(this, @OnUnequip);
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnHitOwner(this, @onHitOwner);
-	
+
+	const u8 helmet_variations = 3;
 	for (u8 i = 0; i < helmet_variations; i++)
 	{
 		AddIconToken("$steelhelmet_"+i+"$", "SteelHelmet.png", Vec2f(16, 16), i, 0);
 	}
-	
+
 	this.inventoryIconFrame = this.getNetworkID() % helmet_variations;
 	this.getSprite().SetFrame(this.inventoryIconFrame);
 	this.set_string("equipment_icon", "$steelhelmet_"+this.inventoryIconFrame+"$");
-	
+
 	this.setInventoryName(name(Translate::SteelHelmet));
 }
 
@@ -67,27 +66,26 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 
 f32 onHitOwner(CBlob@ this, CBlob@ equipper, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (damage > 0.0f)
+	if (damage <= 0.0f) return 0.0f;
+
+	switch(customData)
 	{
-		switch(customData)
-		{
-			case Hitters::bite:
-				damage *= 0.7f;
-				break;
-			case Hitters::sword:
-				damage *= 0.7f;
-				break;
-			case Hitters::spikes:
-				damage *= 0.7f;
-				break;
-			case Hitters::bomb:
-			case Hitters::explosion:
-			case Hitters::keg:
-			case Hitters::mine:
-			case Hitters::mine_special:
-				damage *= 0.7f;
-				break;
-		}
+		case Hitters::bite:
+			damage *= 0.7f;
+			break;
+		case Hitters::sword:
+			damage *= 0.7f;
+			break;
+		case Hitters::spikes:
+			damage *= 0.7f;
+			break;
+		case Hitters::bomb:
+		case Hitters::explosion:
+		case Hitters::keg:
+		case Hitters::mine:
+		case Hitters::mine_special:
+			damage *= 0.7f;
+			break;
 	}
 
 	return damage;
