@@ -6,10 +6,13 @@
 #include "BrainPath.as"
 
 const f32 brain_target_radius = 512.0f;
-const u32 path_refresh_rate = 60;
 
 class SpectrePath : BrainPath 
 {
+	u32 time_last_pathed = 0;
+	u32 obstruction_ticks = 0;
+	Vec2f target_pos;
+
 	SpectrePath(CBlob@ blob_, const u8&in flags = Path::GROUND)
 	{
 		super(blob_, flags);
@@ -17,16 +20,24 @@ class SpectrePath : BrainPath
 
 	void onTick()
 	{
-		if (blob.get_u32("time last pathed") + 1 != getGameTime()) return;
+		Vec2f pos = blob.getPosition();
+		const bool obstructed = (pos - blob.getOldPosition()).Length() < 0.1f;
+		obstruction_ticks = Maths::Max(0, obstruction_ticks + (obstructed ? 1 : -1));
 
-		if (isObstructed())
+		// If obstructed for too long, start phasing
+		if (obstruction_ticks > 40)
 		{
+			obstruction_ticks = 0;
+
 			blob.getShape().SetStatic(true);
-			
-			if (waypoints.length > 0)
-			{
-				blob.setAimPos(waypoints[0]);
-			}
+
+			SetAimToNextWaypoint();
+		}
+
+		// Upon reaching destination while phasing
+		if (blob.getShape().isStatic() && (blob.getAimPos() - pos).Length() < 1.0f)
+		{
+			SetAimToNextWaypoint();
 		}
 	}
 	
@@ -45,13 +56,18 @@ class SpectrePath : BrainPath
 		return true;
 	}
 
-	bool isObstructed()
+	void SetAimToNextWaypoint()
 	{
-		if (waypoints.length == 0) return true;
+		Vec2f pos = blob.getPosition();
+		for (int i = 0; i < waypoints.length; i++)
+		{
+			if ((waypoints[i] - pos).Length() < 4.0f) continue;
 
-		if (path.length <= 1) return false;
+			blob.setAimPos(waypoints[i]);
+			return;
+		}
 
-		return !BrainPath::isPathable(path[1], blob.getPosition());
+		blob.setAimPos(target_pos);
 	}
 }
 
@@ -62,8 +78,6 @@ void onInit(CBrain@ this)
 	
 	SpectrePath pather(blob, Path::GROUND);
 	blob.set("brain_path", @pather);
-	
-	//addOnPathDestination(blob, @onPathDestination);
 }
 
 void onTick(CBrain@ this)
@@ -95,21 +109,22 @@ void onTick(CBrain@ this)
 			
 			Vec2f pos = blob.getPosition();
 			Vec2f destination = target.getPosition();
-			// aim at the target
-			if (!blob.getShape().isStatic() || (blob.getAimPos() - pos).Length() < 1.0f)
-			{
-				blob.setAimPos(destination);
-			}
-			
+
 			// chase and follow target
 			if (RaycastTarget(pather, blob, target) || blob.hasTag("exploding"))
 			{
 				//target is directly visible, go go go
+				blob.setAimPos(destination);
 				pather.EndPath();
 				FlyTo(blob, destination);
 			}
 			else
 			{
+				if (!blob.getShape().isStatic())
+				{
+					blob.setAimPos(destination);
+				}
+
 				//start pathing because we are fucking smart
 				ProcessPathing(pather, blob, pos, destination);
 			}
@@ -159,11 +174,13 @@ bool RaycastTarget(SpectrePath@ pather, CBlob@ blob, CBlob@ target)
 
 void ProcessPathing(SpectrePath@ pather, CBlob@ blob, Vec2f&in pos, Vec2f&in destination)
 {
-	if (getGameTime() < blob.get_u32("time last pathed") + path_refresh_rate) return;
+	const u32 path_refresh_rate = 60;
+	if (getGameTime() < pather.time_last_pathed + path_refresh_rate) return;
 
-	pather.SetPath(blob.getPosition(), destination);
-	
-	blob.set_u32("time last pathed", getGameTime());
+	pather.target_pos = destination;
+	pather.SetPath(pos, destination);
+
+	pather.time_last_pathed = getGameTime();
 }
 
 const bool ShouldLoseTarget(CBlob@ blob, CBlob@ target)

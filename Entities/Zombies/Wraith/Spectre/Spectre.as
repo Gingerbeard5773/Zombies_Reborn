@@ -10,8 +10,8 @@ void onInit(CBlob@ this)
 	this.set_u16("coins on death", COINS_ON_DEATH);
 
 	CSprite@ sprite = this.getSprite();
-	sprite.PlaySound("WraithSpawn.ogg");
-	sprite.SetEmitSound("SpectreDrone2.ogg");
+	sprite.PlaySound("SpectreSpawn.ogg", 2.0f);
+	sprite.SetEmitSound("SpectreDrone.ogg");
 	sprite.SetEmitSoundPaused(false);
 	sprite.SetRelativeZ(1);
 
@@ -60,6 +60,9 @@ void onTick(CBlob@ this)
 
 	if (this.getShape().isStatic())
 	{
+		CSprite@ sprite = this.getSprite();
+		sprite.SetEmitSoundVolume(Maths::Min(sprite.getEmitSoundVolume() + 0.03f, 0.9f));
+
 		Vec2f pos = this.getPosition();
 
 		if ((this.getNetworkID() + getGameTime()) % 5 == 0)
@@ -120,14 +123,16 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		this.set_u32("phase_begin_time", getGameTime());
 
 		sprite.SetEmitSound("SpectrePhase");
-		sprite.SetEmitSoundVolume(0.9f);
+		sprite.SetEmitSoundVolume(0.3f);
+		sprite.SetEmitSoundSpeed(0.8f);
 		sprite.SetEmitSoundPaused(false);
 		sprite.SetRelativeZ(750);
 	}
 	else
 	{
-		sprite.SetEmitSound("SpectreDrone2");
+		sprite.SetEmitSound("SpectreDrone");
 		sprite.SetEmitSoundVolume(1.0f);
+		sprite.SetEmitSoundSpeed(1.0f);
 		sprite.SetEmitSoundPaused(false);
 		sprite.SetRelativeZ(1);
 
@@ -175,7 +180,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		if (enrage)
 		{
-			this.getSprite().PlaySound("SpectreScreech", 4.0f, 0.7f);
+			this.getSprite().PlaySound("SpectreScream", 2.0f, 1.0f);
 
 			this.SetLight(true);
 			this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
@@ -186,7 +191,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void onDie(CBlob@ this)
 {
-	this.getSprite().PlaySound("DarkWraithDie");
+	this.getSprite().PlaySound("SpectreDie", 1.2f, 1.2f);
 	
 	if (!this.hasTag("exploding")) return;
 
