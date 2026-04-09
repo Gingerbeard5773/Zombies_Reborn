@@ -1,8 +1,8 @@
 // Procedural Generation for Zombie Fortress
 // Uses Pirate-Rob's generation as a base
 
-#include "CustomTiles.as";
-#include "Zombie_StructuresCommon.as";
+#include "CustomTiles.as"
+#include "Zombie_StructuresCommon.as"
 
 enum BiomeType
 {
@@ -15,6 +15,18 @@ enum BiomeType
 };
 
 const f32 tileSize = 8.0f;
+
+s16[][] World;
+u32[] Dirt;
+
+void onRulesRestart(CMap@ map, CRules@ rules)
+{
+	for (u32 i = 0; i < Dirt.length; i++)
+	{
+		map.SetTileDirt(Dirt[i], 80);
+	}
+	Dirt.clear();
+}
 
 [jit::ignore_perf_warnings]
 bool loadProceduralGenMap(CMap@ map, int&in map_seed)
@@ -206,8 +218,6 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 			biome[x] = CurrentBiome;
 		}
 	}
-	
-	s16[][] World;
 	
 	for (int i = 0; i < width; i++) //Init world grid
 	{
@@ -595,7 +605,7 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 		}
 
 		Vec2f pos(i * NodeSize, Highest);
-		LoadChainedStructureToWorld(map, pos, Vec2f(width, height), @World, 1 + StructureChainCount);
+		LoadChainedStructureToWorld(map, pos, Vec2f(width, height), @World, @Dirt, 1 + StructureChainCount);
 
 		for (int j = -2; j < 4; j++)
 		{
@@ -872,6 +882,8 @@ bool loadProceduralGenMap(CMap@ map, int&in map_seed)
 				map.server_SetTile(pos, CMap::tile_ground_back);
 		}
 	}
+
+	World.clear();
 
 	return true;
 }

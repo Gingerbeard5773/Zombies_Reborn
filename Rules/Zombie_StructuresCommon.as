@@ -2,7 +2,7 @@
 
 //Gingerbeard @ November 4, 2024
 
-#include "CustomTiles.as";
+#include "CustomTiles.as"
 
 Vec2f[] adjacent = { Vec2f(0, -8), Vec2f(0, 8), Vec2f(-8, 0), Vec2f(8, 0) };
 
@@ -76,7 +76,7 @@ bool LoadStructureToWorld(CMap@ map, Vec2f start_pos, const u16&in custom_index 
 	return true;
 }
 
-bool LoadStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s16[][]@ World, Vec2f&out end_pos)
+bool LoadStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s16[][]@ World, u32[]@ Dirt, Vec2f&out end_pos)
 {
 	string[] tile_offsets;
 	string[] tile_types;
@@ -96,13 +96,20 @@ bool LoadStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s1
 		u16 tile = World[tile_position.x][tile_position.y];
 		if (tile == CMap::tile_bedrock) continue;
 
+		const bool ground = isTileGroundStuff(map, tile);
+		if (ground)
+		{
+			Dirt.push_back(map.getTileOffsetFromTileSpace(tile_position));
+		}
+
 		u16 type = parseInt(tile_types[i]);
 		if (type == tile_background)
 		{
-			if (!isTileGroundStuff(map, tile) && tile != CMap::tile_ground_back) continue;
+			if (!ground && tile != CMap::tile_ground_back) continue;
 
 			type = CMap::tile_ground_back;
 		}
+
 		if (type >= CMap::tile_castle_back && type <= 79) type = CMap::tile_castle_back;
 		if (type >= CMap::tile_wood_back && type <= 207)  type = CMap::tile_wood_back;
 		World[tile_position.x][tile_position.y] = type;
@@ -111,17 +118,12 @@ bool LoadStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s1
 	return true;
 }
 
-bool LoadStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s16[][]@ World)
-{
-	return LoadStructureToWorld(map, start_pos, world_dimensions, World, start_pos);
-}
-
-void LoadChainedStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s16[][]@ World, const u16&in amount = 1)
+void LoadChainedStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s16[][]@ World, u32[]@ Dirt, const u16&in amount = 1)
 {
 	Vec2f end_pos = start_pos;
 	for (u16 i = 0; i < amount; i++)
 	{
-		LoadStructureToWorld(map, end_pos, world_dimensions, @World, end_pos);
+		LoadStructureToWorld(map, end_pos, world_dimensions, @World, @Dirt, end_pos);
 	}
 }
 

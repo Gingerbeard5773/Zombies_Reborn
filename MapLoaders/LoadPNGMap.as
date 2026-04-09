@@ -1,11 +1,11 @@
-// loads a classic KAG .PNG map
+// Zombie fortress map loading
 
-#include "BasePNGLoader.as";
-#include "ProceduralGeneration.as";
-#include "MapSaver.as";
-#include "MinimapHook.as";
-#include "CustomTiles.as";
-#include "Zombie_Scrolls.as";
+#include "BasePNGLoader.as"
+#include "ProceduralGeneration.as"
+#include "MapSaver.as"
+#include "MinimapHook.as"
+#include "CustomTiles.as"
+#include "Zombie_Scrolls.as"
 
 namespace custom_colors
 {
@@ -62,7 +62,8 @@ bool LoadMap(CMap@ map, const string&in fileName)
 	ConfigFile cfg;
 	if (cfg.loadFile("Zombie_Vars.cfg"))
 	{
-		procedural_map_gen = cfg.exists("procedural_map_gen") ? cfg.read_bool("procedural_map_gen") : true;
+		const u8 num = cfg.exists("procedural_map_gen") ? cfg.read_u8("procedural_map_gen") : 1;
+		procedural_map_gen = num == 1;
 	}
 
 	int map_seed = Time();
