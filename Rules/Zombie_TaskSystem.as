@@ -640,7 +640,6 @@ void onNewTask(CBlob@ blob)
 {
 	Achievement::client_Unlock(Achievement::TheBoss);
 
-	//if (!blob.isChatBubbleVisible())
 	if (blob.get_u32("next_available_chat") < getGameTime())
 	{
 		blob.set_u32("next_available_chat", getGameTime() + 30 * 7);
@@ -648,14 +647,14 @@ void onNewTask(CBlob@ blob)
 	}
 }
 
-void client_Synchronize(CRules@ this, CBlob@ blob, const bool&in recieve = false)
+void client_Synchronize(CRules@ this, CBlob@ blob, const bool&in receive = false)
 {
 	if (isServer()) return;
 
 	CBitStream stream;
 	stream.write_netid(blob.getNetworkID());
-	stream.write_bool(recieve);
-	if (!recieve)
+	stream.write_bool(receive);
+	if (!receive)
 	{
 		TaskManager@ manager = getTaskManager(blob);
 		if (manager is null) return;
@@ -673,10 +672,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		if (player is null) return;
 
 		u16 netid;
-		if (!params.saferead_netid(netid)) return;
+		if (!params.saferead_netid(netid)) { error("Failed to saferead netid [server_synchronize_tasks]"); return; }
 
-		bool recieve;
-		if (!params.saferead_bool(recieve)) return;
+		bool receive;
+		if (!params.saferead_bool(receive)) { error("Failed to saferead receive [server_synchronize_tasks]"); return; }
 
 		CBlob@ blob = getBlobByNetworkID(netid);
 		if (blob is null) return;
@@ -686,7 +685,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		CBitStream stream;
 		stream.write_netid(netid);
-		if (recieve)
+		if (receive)
 		{
 			manager.Serialize(stream);
 			this.SendCommand(this.getCommandID("client_synchronize_tasks"), stream, player);
@@ -702,7 +701,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	else if (cmd == this.getCommandID("client_synchronize_tasks") && isClient())
 	{
 		u16 netid;
-		if (!params.saferead_netid(netid)) return;
+		if (!params.saferead_netid(netid)) { error("Failed to saferead receive [client_synchronize_tasks]"); return; }
 
 		CBlob@ blob = getBlobByNetworkID(netid);
 		if (blob is null) return;

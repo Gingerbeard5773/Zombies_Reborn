@@ -47,7 +47,7 @@ BrainTask@[] all_tasks;
 
 void SetupTasksArray()
 {
-	all_tasks.clear();
+	if (all_tasks.length > 0) return;
 
 	// Main tasks: Must be placed in same index as the correlating Task type 
 	all_tasks.push_back(BrainTask(null));
@@ -194,17 +194,19 @@ class TaskManager
 	{
 		tasks.clear();
 
-		if (!stream.saferead_s32(index)) return false;
+		if (!stream.saferead_s32(index)) { error("Failed to saferead index [TaskManager]"); return false; }
 
 		int tasks_length;
-		if (!stream.saferead_s32(tasks_length)) return false;
+		if (!stream.saferead_s32(tasks_length)) { error("Failed to saferead length [TaskManager]"); return false; }
+
+		SetupTasksArray();
 
 		for (int i = 0; i < tasks_length; i++)
 		{
 			u8 type;
-			if (!stream.saferead_u8(type)) return false;
-			
-			if (type >= all_tasks.length) return false;
+			if (!stream.saferead_u8(type)) { error("Failed to saferead type [TaskManager]"); return false; }
+
+			if (type >= all_tasks.length) { error("Task type index past possible range [TaskManager]"); return false; }
 
 			BrainTask@ task = all_tasks[type].Copy(blob);
 			task.Unserialize(stream);
@@ -511,10 +513,10 @@ class BrainTask
 	// Unserialize for synchronization
 	bool Unserialize(CBitStream@ stream)
 	{
-		if (!stream.saferead_Vec2f(destination))  return false;
-		if (!stream.saferead_Vec2f(origin))       return false;
-		if (!stream.saferead_string(target_name)) return false;
-		if (!stream.saferead_netid(target_netid)) return false;
+		if (!stream.saferead_Vec2f(destination))  { error("Failed to saferead destination [BrainTask]");  return false; }
+		if (!stream.saferead_Vec2f(origin))       { error("Failed to saferead origin [BrainTask]");       return false; }
+		if (!stream.saferead_string(target_name)) { error("Failed to saferead target_name [BrainTask]");  return false; }
+		if (!stream.saferead_netid(target_netid)) { error("Failed to saferead target_netid [BrainTask]"); return false; }
 		return true;
 	}
 	
