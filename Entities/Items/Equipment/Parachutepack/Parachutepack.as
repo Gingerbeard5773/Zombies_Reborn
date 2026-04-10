@@ -41,18 +41,39 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 		equipper.setVelocity(Vec2f(vel.x, vel.y * 0.8f));
 
 		if (canRemoveParachute)
+		{
 			RemoveParachute(this, equipper);
+		}
 
 		return;
 	}
 
-	if (equipper.isMyPlayer() && !canRemoveParachute)
+	if (getGameTime() < this.get_u32("next_parachute") || canRemoveParachute) return;
+
+	if (equipper.isMyPlayer())
 	{
-		CControls@ controls = getControls();
-		if (controls.isKeyJustPressed(KEY_LSHIFT) && getGameTime() >= this.get_u32("next_parachute"))
+		if (getControls().isKeyJustPressed(KEY_LSHIFT))
 		{
 			this.Tag("parachute");
 			this.SendCommand(this.getCommandID("server_open_parachute"));
+		}
+	}
+
+	if (isServer())
+	{
+		// Parachute auto-open for NPCs / disconnected players
+		CPlayer@ player = equipper.getPlayer();
+		if (player is null || player.isBot())
+		{
+			if (equipper.isAttached())
+			{
+				equipper.getShape().getVars().onground = true;
+			}
+			else if (equipper.getAirTime() > 30)
+			{
+				this.Tag("parachute");
+				this.SendCommand(this.getCommandID("client_open_parachute"));
+			}
 		}
 	}
 }
@@ -105,11 +126,8 @@ void OpenParachute(CBlob@ this, CBlob@ equipper)
 void RemoveParachute(CBlob@ this, CBlob@ equipper)
 {
 	this.Untag("parachute");
-	
-	if (equipper.isMyPlayer())
-	{
-		this.set_u32("next_parachute", getGameTime() + parachute_delay);
-	}
+
+	this.set_u32("next_parachute", getGameTime() + parachute_delay);
 
 	CSprite@ sprite = equipper.getSprite();
 	CSpriteLayer@ chute = sprite.getSpriteLayer("parachute");
