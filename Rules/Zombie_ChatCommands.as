@@ -21,6 +21,8 @@ string CommandsList()
 	"!respawn [username] : respawn a player\n" +
 	"!softban [username / IP] [minutes / -1 for permanent] [reason] : soft ban a player\n" +
 	"!carnage : kill all zombies on the map\n" +
+	"!killbots : kill all player bots\n" +
+	"!kickbots : kick all player bots\n" +
 	"!showtargets : toggle aim position debug for bots\n" +
 	"!spawnrates [days to print] [player number] : prints out a prediction of the rates\n" +
 	"!difficulty [difficulty] : sets the game difficulty\n" +
@@ -71,7 +73,22 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 bool PlayerCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ blob)
 {
-	//none atm
+	if (tokens[0] == "!seed")
+	{
+		const int map_seed = this.get_s32("map_seed");
+		const string message = "MAP SEED : "+map_seed;
+		server_SendGlobalMessage(this, message, 10, color_white.color, player);
+
+		if (isClient()) //localhost only atm
+		{
+			print(message);
+			CopyToClipboard(map_seed+"");
+			client_SendGlobalMessage(this, "Copied to Clipboard", 10, color_white.color);
+		}
+
+		return false;
+	}
+
 	return true;
 }
 
@@ -118,7 +135,7 @@ bool ModeratorCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 		const string[]@ commands = CommandsList().split("\n");
 
 		// Print each individual line
-		for (uint i = 0; i < commands.length(); i++)
+		for (u8 i = 0; i < commands.length; i++)
 		{
 			print(commands[i]);
 		}
@@ -196,17 +213,28 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 			undead.server_Die();
 		}
 	}
-	else if (tokens[0] == "!seed")
+	else if (tokens[0] == "!killbots") //kill all bots
 	{
-		const int map_seed = this.get_s32("map_seed");
-		const string message = "MAP SEED : "+map_seed;
-		print(message);
-		server_SendGlobalMessage(this, message, 10, color_white.color, player);
-
-		if (isClient()) //localhost only atm
-			CopyToClipboard(map_seed+"");
-
-		return false;
+		for (u8 i = 0; i < getPlayerCount(); ++i)
+		{
+			CPlayer@ p = getPlayer(i);
+			CBlob@ p_blob = p.getBlob();
+			if (p.isBot() && p_blob !is null)
+			{
+				p_blob.server_Die();
+			}
+		}
+	}
+	else if (tokens[0] == "!kickbots") //kick all bots
+	{
+		for (u8 i = 0; i < getPlayerCount(); ++i)
+		{
+			CPlayer@ p = getPlayer(i);
+			if (p.isBot())
+			{
+				KickPlayer(p);
+			}
+		}
 	}
 	else if (tokens[0] == "!respawn")
 	{
