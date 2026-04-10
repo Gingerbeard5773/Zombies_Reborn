@@ -7,17 +7,6 @@
 #include "CustomTiles.as"
 #include "Zombie_Scrolls.as"
 
-namespace custom_colors
-{
-	enum color
-	{
-		ironore = 0xff705648,
-		coal = 0xff2E2E2E,
-		iron = 0xff6B7273,
-		biron = 0xff3F4141
-	};
-}
-
 class ZombiePNGLoader : PNGLoader
 {
 	ZombiePNGLoader()
@@ -27,13 +16,19 @@ class ZombiePNGLoader : PNGLoader
 	
 	void handlePixel(const SColor &in pixel, int offset) override
 	{
+		const int
+		color_ironore = 0xff705648,
+		color_coal = 0xff2E2E2E,
+		color_iron = 0xff6B7273,
+		color_biron = 0xff3F4141;
+
 		PNGLoader::handlePixel(pixel, offset);
 		switch (pixel.color)
 		{
-			case custom_colors::ironore:  map.SetTile(offset, CMap::tile_ironore + XORRandom(4)); break;
-			case custom_colors::coal:     map.SetTile(offset, CMap::tile_coal + XORRandom(2));    break;
-			case custom_colors::iron:     map.SetTile(offset, CMap::tile_iron);                   break;
-			case custom_colors::biron:    map.SetTile(offset, CMap::tile_biron);                  break;
+			case color_ironore:  map.SetTile(offset, CMap::tile_ironore + XORRandom(4)); break;
+			case color_coal:     map.SetTile(offset, CMap::tile_coal + XORRandom(2));    break;
+			case color_iron:     map.SetTile(offset, CMap::tile_iron);                   break;
+			case color_biron:    map.SetTile(offset, CMap::tile_biron);                  break;
 		};
 	}
 };
@@ -95,7 +90,7 @@ bool LoadMap(CMap@ map, const string&in fileName)
 		rules.set_s32("map_seed", map_seed);
 		rules.Sync("map_seed", true);
 	}
-	
+
 	if (procedural_map_gen)
 	{
 		const string seed = isServer() ? " - MAP SEED: "+map_seed : "";
@@ -119,6 +114,14 @@ void SetupBackground(CMap@ map)
 	map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -220.0f), Vec2f(0.18f, 70.0f), color_white);
 	//map.AddBackground( "Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, 50.0f), Vec2f(0.5f, 0.5f), color_white ); 
 	map.AddBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, -580.0f), Vec2f(0.3f, 180.0f), color_white);
+
+	// border
+	map.topBorder = false;
+	map.SetBorderFadeWidth(24.0f);
+	map.SetBorderColourTop(SColor(0x000000));
+	map.SetBorderColourLeft(SColor(0xff000000));
+	map.SetBorderColourRight(SColor(0xff000000));
+	map.SetBorderColourBottom(SColor(0xff000000));
 
 	// fade in
 	SetScreenFlash(255, 0, 0, 0);

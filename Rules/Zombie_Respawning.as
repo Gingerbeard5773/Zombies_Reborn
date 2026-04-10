@@ -181,6 +181,24 @@ void spawnPlayer(CRules@ this, CPlayer@ player)
 Vec2f getParachuteSpawnLocation()
 {
 	CMap@ map = getMap();
-	Vec2f spawnPos = Vec2f(XORRandom(map.tilemapwidth * map.tilesize), 0);
-	return spawnPos;
+	const f32 spawnheight = 500.0f;
+	Vec2f spawn = Vec2f(XORRandom(map.tilemapwidth * map.tilesize), 0);
+
+	f32 closest = 99999.0f; 
+
+	Vec2f[] ends = { Vec2f(0, spawnheight), Vec2f(spawnheight, spawnheight), Vec2f(-spawnheight, spawnheight) };
+	for (u8 i = 0; i < 3; i++)
+	{
+		Vec2f end = spawn + ends[i];
+		map.rayCastSolid(spawn, end, end);
+
+		if (end.y < closest)
+		{
+			closest = end.y;
+		}
+	}
+
+	spawn.y = closest > spawnheight ? 0 : closest - spawnheight;
+
+	return spawn;
 }

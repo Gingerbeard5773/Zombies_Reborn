@@ -142,5 +142,5 @@ void NewDestination(CBlob@ blob, CMap@ map)
 
 const f32 getFlyHeight(const s32&in x, CMap@ map)
 {
-	return Maths::Max(0.0f, map.getLandYAtX(x / map.tilesize) * map.tilesize - 96.0f);
+	return map.getLandYAtX(x / map.tilesize) * map.tilesize - 96.0f;
 }

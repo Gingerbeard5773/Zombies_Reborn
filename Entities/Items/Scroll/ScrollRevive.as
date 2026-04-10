@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("client_revive");
 
 	this.getCurrentScript().tickFrequency = 2;
-	this.SetMapEdgeFlags(CBlob::map_collide_sides | CBlob::map_collide_up | CBlob::map_collide_down | CBlob::map_collide_nodeath);
+	this.SetMapEdgeFlags(CBlob::map_collide_sides | CBlob::map_collide_down | CBlob::map_collide_nodeath);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

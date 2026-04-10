@@ -152,7 +152,11 @@ void doTraderEvent(CRules@ this, CMap@ map)
 			
 			if (isGroundClearOfUndead)
 			{
-				spawns.push_back(blobpos);
+				const f32 spawnheight = 500.0f;
+				Vec2f spawnpos = blobpos;
+				spawnpos.y = groundpos.y > spawnheight ? 0 : groundpos.y - spawnheight;
+				spawnpos.x += 80 - XORRandom(160);
+				spawns.push_back(spawnpos);
 			}
 		}
 	}
@@ -161,7 +165,8 @@ void doTraderEvent(CRules@ this, CMap@ map)
 
 	server_SendGlobalMessage(this, 3, 8);
 
-	Vec2f spawn(spawns[XORRandom(spawns.length)].x + 80 - XORRandom(160), 0);
+	Vec2f spawn = spawns[XORRandom(spawns.length)];
+
 	server_CreateBlob("traderbomber", 0, spawn);
 }
 
@@ -175,6 +180,7 @@ void doSedgwickEvent(CRules@ this, CMap@ map, const u16&in day_number)
 	server_SendGlobalMessage(this, 4, 6);
 	
 	Vec2f spawn = survivors[XORRandom(survivors.length)].getPosition();
+
 	server_CreateBlob("sedgwick", -1, spawn);
 }
 

@@ -57,13 +57,17 @@ void onTick(CBrain@ this)
 		return;
 	}
 
-	const Vec2f pos = blob.getPosition();
-
 	if (carried.hasTag("undead"))
 	{
 		TaxiUndead(this, blob, carried);
+		return;
 	}
-	else if (pos.y < 30)
+
+	const f32 drop_height = 400.0f;
+	Vec2f pos = blob.getPosition();
+	Vec2f below = pos + Vec2f(0, drop_height);
+
+	if (pos.y < 30 && !getMap().rayCastSolid(pos, below))
 	{
 		// bye bye!
 		CPlayer@ player = carried.getPlayer();
@@ -75,7 +79,7 @@ void onTick(CBrain@ this)
 	}
 	else
 	{
-		FlyTo(blob, Vec2f(pos.x, 10));
+		FlyTo(blob, Vec2f(pos.x, -drop_height));
 	}
 }
 
@@ -257,7 +261,7 @@ void NewDestination(CBlob@ blob, CMap@ map)
 
 const f32 getFlyHeight(const s32&in x, CMap@ map)
 {
-	return Maths::Max(0.0f, map.getLandYAtX(x / map.tilesize) * map.tilesize - 128.0f);
+	return map.getLandYAtX(x / map.tilesize) * map.tilesize - 128.0f;
 }
 
 const f32 getXBetween(Vec2f&in point1, Vec2f&in point2)

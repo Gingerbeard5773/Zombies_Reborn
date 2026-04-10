@@ -1,13 +1,41 @@
 // Zombie Fortress settings
 
-#include "Zombie_Scrolls.as";
+#include "Default/DefaultGUI.as"
+#include "PrecacheTextures.as"
+#include "EmotesCommon.as"
+#include "Zombie_Scrolls.as"
 
 void onInit(CRules@ this)
 {
 	this.set_string("version", "1.7.0");
 	sv_contact_info = "github.com/Gingerbeard5773/Zombies_Reborn";
-	
+
+	getNet().legacy_cmd = false;
+
+	if (isServer())
+	{
+		getSecurity().reloadSecurity();
+	}
+
+	sv_gravity = 9.81f;
+	particles_gravity.y = 0.25f;
 	sv_visiblity_scale = 1.25f;
+	cc_halign = 2;
+	cc_valign = 2;
+
+	s_effects = false;
+
+	sv_max_localplayers = 1;
+
+	PrecacheTextures();
+
+	//smooth shader
+	Driver@ driver = getDriver();
+	driver.AddShader("hq2x", 1.0f);
+	driver.SetShader("hq2x", true);
+
+	//reset var if you came from another gamemode that edits it
+	SetGridMenusSize(24, 2.0f, 32);
 	
 	SColor printColor = 0xff66C6FF;
 	
@@ -21,16 +49,16 @@ void onInit(CRules@ this)
 	print("  This also applies for hosting a modified version of the mod.",     printColor);
 	print("-------------------------------------- ",  printColor);
 	print("");
-	
-	AddIcons();
-	AddFonts();
+
+	LoadDefaultGUI();
+	LoadCustomGUI();
 
 	SetupScrolls(this);
-	
+
 	this.addCommandID("client_send_global_message"); //Zombie_GlobalMessages.as
 }
 
-void AddIcons()
+void LoadCustomGUI()
 {
 	AddIconToken("$change_class$", "/GUI/InteractionIcons.png", Vec2f(32, 32), 12, 2);
 	AddIconToken("$heart_full$", "/GUI/HeartNBubble.png", Vec2f(12, 12), 1);
@@ -43,17 +71,16 @@ void AddIcons()
 	AddIconToken("$mat_coal_icon$", "MaterialCoal.png", Vec2f(16, 16), 3, 0);
 	AddIconToken("$mat_iron_icon$", "MaterialIron.png", Vec2f(16, 16), 3, 0);
 	AddIconToken("$flowers_icon$", "Flowers.png", Vec2f(16, 16), 6, 0);
-}
 
-void AddFonts()
-{
+	// Fonts
+
 	const bool isRussian = g_locale == "ru";
 	if (!GUI::isFontLoaded("big font"))
 	{
 		const string font = isRussian ? CFileMatcher("VinqueRg.ttf").getFirst() : "GUI/Fonts/AveriaSerif-Bold.ttf";
 		GUI::LoadFont("big font", font, isRussian ? 40 : 50, true);
 	}
-	
+
 	if (!GUI::isFontLoaded("medium font"))
 	{
 		const string font = isRussian ? CFileMatcher("Anticva.ttf").getFirst() : "GUI/Fonts/AveriaSerif-Regular.ttf";
@@ -69,4 +96,34 @@ void AddFonts()
 	{
 		GUI::LoadFont("vinque", CFileMatcher("VinqueRg.ttf").getFirst(), 30, true);
 	}
+}
+
+
+/// Chat emoticons
+
+void onEnterChat(CRules @this)
+{
+	if (getChatChannel() != 0) return; //no dots for team chat
+
+	CBlob@ localblob = getLocalPlayerBlob();
+	if (localblob !is null)
+		set_emote(localblob, "dots", 100000);
+}
+
+void onExitChat(CRules @this)
+{
+	CBlob@ localblob = getLocalPlayerBlob();
+	if (localblob !is null)
+		set_emote(localblob, "", 0);
+}
+
+
+/// Border
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	// Allow all blobs to go past the top border
+	u8 flags = blob.getMapEdgeFlags();
+	flags &= ~CBlob::map_collide_up;
+	blob.SetMapEdgeFlags(flags);
 }

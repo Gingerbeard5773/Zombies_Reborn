@@ -18,8 +18,6 @@ void onTick(CBlob@ this)
 		sprite.SetEmitSoundPaused(false);
 
 		Vehicle_BomberControls(this, v);
-		
-		KeepWithinMap(this);
 	}
 	else
 	{
@@ -67,10 +65,20 @@ void Vehicle_BomberControls(CBlob@ this, VehicleInfo@ v)
 	sprite.SetEmitSoundVolume(volume);
 	
 	Vehicle_FlyerControlsCustom(this, blob, flyer, v);
-	
-	this.AddForce(Vec2f(0, v.fly_speed * v.fly_amount));
-	
-	if (blob is null && v.fly_amount > 0.0f) v.fly_amount *= 0.998f;
+
+	// calculate altitude force dropoff
+	const f32 maximum_altitude = -80.0f;
+	const f32 altitude = this.getPosition().y;
+	const f32 factor = 1.0f - Maths::Clamp((maximum_altitude - altitude) / 2000.0f, 0.0f, 1.0f);
+
+	const f32 fly_amount = this.get_f32("fly_amount");
+
+	this.AddForce(Vec2f(0, v.fly_speed * fly_amount * factor));
+
+	if (blob is null && fly_amount > 0.0f)
+	{
+		this.set_f32("fly_amount", fly_amount * 0.998f);
+	}
 }
 
 void Vehicle_FlyerControlsCustom(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, VehicleInfo@ v)
@@ -78,7 +86,7 @@ void Vehicle_FlyerControlsCustom(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, 
 	f32 moveForce = v.move_speed;
 	const f32 turnSpeed = v.turn_speed;
 	const Vec2f vel = this.getVelocity();
-	f32 flyAmount = v.fly_amount;
+	f32 fly_amount = this.get_f32("fly_amount");
 	Vec2f force;
 	
 	const bool upgrade = hasTech(Tech::FlightTuning);
@@ -91,14 +99,14 @@ void Vehicle_FlyerControlsCustom(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, 
 		const f32 flight = 0.3f * (upgrade ? 1.25f : 1.0f);
 		if (up)
 		{
-			flyAmount = Maths::Min(flyAmount + flight / getTicksASecond(), 1.0f);
+			fly_amount = Maths::Min(fly_amount + flight / getTicksASecond(), 1.0f);
 		}
 		else
 		{
-			flyAmount = Maths::Max(flyAmount - flight / getTicksASecond(), 0.5f);
+			fly_amount = Maths::Max(fly_amount - flight / getTicksASecond(), 0.5f);
 		}
 
-		v.fly_amount = flyAmount;
+		this.set_f32("fly_amount", fly_amount);
 	}
 
 	// fly left/right
@@ -191,31 +199,13 @@ void HandleBombing(CBlob@ this, CBlob@ pilot)
 	}
 }
 
-void KeepWithinMap(CBlob@ this)
-{
-	//make a map boundary because the engine fails to do it.
-	Vec2f pos = this.getPosition();
-	Vec2f dim = getMap().getMapDimensions();
-	const f32 radius = this.getRadius();
-	Vec2f corrected_pos = pos;
-
-	if (pos.y < radius)          corrected_pos.y = radius;
-	if (pos.x < radius)          corrected_pos.x = radius;
-	if (pos.x > dim.x - radius)  corrected_pos.x = dim.x - radius;
-
-	if (corrected_pos != pos)
-	{
-		this.setPosition(corrected_pos);
-	}
-}
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return Vehicle_doesCollideWithBlob_ground(this, blob);
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{	
+{
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 
@@ -227,25 +217,4 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 		detached.IgnoreCollisionWhileOverlapped(null);
 		this.IgnoreCollisionWhileOverlapped(null);
 	}
-}
-
-///NETWORKING
-
-void onSendCreateData(CBlob@ this, CBitStream@ stream)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v)) return;
-	stream.write_f32(v.fly_amount);
-}
-
-bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v)) return true;
-	if (!stream.saferead_f32(v.fly_amount))
-	{
-		error("Failed to access bomber fly amount! : "+this.getName()+" : "+this.getNetworkID());
-		return false;
-	}
-	return true;
 }
