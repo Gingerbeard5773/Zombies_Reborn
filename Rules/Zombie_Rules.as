@@ -18,8 +18,6 @@ void onInit(CRules@ this)
 
 	onNewDayHourHandle@[] handles;
 	this.set("onNewDayHour handles", @handles);
-
-	addOnNewDayHour(this, @onNewDayHour);
 }
 
 void onRestart(CRules@ this)
@@ -63,8 +61,10 @@ void onTick(CRules@ this)
 
 void checkDayChange(CRules@ this)
 {
-	const u16 day_hour = Maths::Roundf(getMap().getDayTime()*10);
+	const u16 day_hour = Maths::Floor(getMap().getDayTime()*10);
 	if (day_hour == this.get_u16("last_day_hour")) return;
+
+	onNewDayHour(this, day_hour);
 
 	onNewDayHourHandle@[]@ handles;
 	if (this.get("onNewDayHour handles", @handles))
