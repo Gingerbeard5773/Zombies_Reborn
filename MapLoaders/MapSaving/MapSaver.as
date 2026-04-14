@@ -267,7 +267,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 	// collect rules data
 	const u16 dayNumber = this.exists("day_number") ? this.get_u16("day_number") : 1;
 	const f32 dayTime = map.getDayTime();
-	const u16 timDay = this.get_u16("tim_day");
+	const u16 bobertDay = this.get_u16("bobert_day");
 	const string techData = SerializeTechTree();
 	const s32 map_seed = this.get_s32("map_seed");
 
@@ -283,11 +283,13 @@ void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 	config.add_string("task_data", taskData);
 	config.add_u16("day_number", dayNumber);
 	config.add_f32("day_time", dayTime);
-	config.add_u16("tim_day", timDay);
+	config.add_u16("bobert_day", bobertDay);
 	config.add_string("tech_data", techData);
 	config.add_s32("map_seed", map_seed);
 
 	config.saveFile(SaveFile+SaveSlot);
+
+	blobHandlers.clear();
 }
 
 /*
@@ -337,6 +339,8 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 	LoadEquipment(map, equipmentData, @loaded_blobs);
 	LoadTasks(map, taskData, @loaded_blobs);
 
+	blobHandlers.clear();
+
 	return true;
 }
 
@@ -354,7 +358,7 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 	const string dirtData = config.read_string("dirt_data");
 	const u16 dayNumber = config.read_u16("day_number");
 	const f32 dayTime = config.read_f32("day_time");
-	const u16 timDay = config.read_u16("tim_day", 15);
+	const u16 bobertDay = config.read_u16("bobert_day", 15);
 	const string[]@ techData = config.read_string("tech_data").split(";");
 	const s32 mapSeed = config.read_s32("map_seed", 0);
 
@@ -364,8 +368,8 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 	this.set_u16("day_number", dayNumber);
 	this.Sync("day_number", true);
 
-	this.set_u16("tim_day", timDay);
-	this.Sync("tim_day", true);
+	this.set_u16("bobert_day", bobertDay);
+	this.Sync("bobert_day", true);
 
 	map.SetDayTime(dayTime);
 	this.set_u16("last_day_hour", Maths::Roundf(dayTime*10));

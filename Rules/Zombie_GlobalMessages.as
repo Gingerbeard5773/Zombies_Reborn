@@ -35,7 +35,8 @@ const string[] server_messages =
 	Translate::Migrant2,
 	Translate::Record,
 	Translate::Respawn2,
-	Translate::Tim
+	Translate::Bobert,
+	Translate::Enchanter
 };
 
 void onInit(CRules@ this)

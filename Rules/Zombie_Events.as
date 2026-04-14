@@ -5,6 +5,7 @@
 #include "Zombie_DaysCommon.as"
 #include "GetSurvivors.as"
 #include "BrainTask.as"
+#include "Zombie_EventsSpawner.as"
 
 void onStateChange(CRules@ this, const u8 oldState)
 {
@@ -31,11 +32,11 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	this.set_u16("tim_day", getTimInterval());
-	this.Sync("tim_day", true);
+	this.set_u16("bobert_day", getBobertInterval());
+	this.Sync("bobert_day", true);
 }
 
-u16 getTimInterval()
+u16 getBobertInterval()
 {
 	return 15 + XORRandom(11);
 }
@@ -43,20 +44,20 @@ u16 getTimInterval()
 void onNewDayHour(CRules@ this, u16 day_hour)
 {
 	CMap@ map = getMap();
-	
-	const u16 tim_day = this.get_u16("tim_day");
 
-	this.set_bool("pause_undead_spawns", day_number == tim_day);
 	const u16 day_number = this.get_u16("day_number");
+	const u16 bobert_day = this.get_u16("bobert_day");
+
+	this.set_bool("pause_undead_spawns", day_number == bobert_day);
 
 	switch(day_hour)
 	{
 		case 3:
 		{
-			if (day_number > tim_day)
+			if (day_number > bobert_day)
 			{
-				this.set_u16("tim_day", day_number + getTimInterval());
-				this.Sync("tim_day", true);
+				this.set_u16("bobert_day", day_number + getBobertInterval());
+				this.Sync("bobert_day", true);
 			}
 			doMigrantEvent(this, map, day_number);
 			break;
@@ -68,9 +69,9 @@ void onNewDayHour(CRules@ this, u16 day_hour)
 		}
 		case 10: //midnight
 		{
-			if (day_number == tim_day)
+			if (day_number == bobert_day)
 			{
-				doTimEvent(this, map);
+				doBobertEvent(this, map);
 				break;
 			}
 			
@@ -184,13 +185,14 @@ void doSedgwickEvent(CRules@ this, CMap@ map, const u16&in day_number)
 	server_CreateBlob("sedgwick", -1, spawn);
 }
 
-void doTimEvent(CRules@ this, CMap@ map)
+void doBobertEvent(CRules@ this, CMap@ map)
 {
-	CBlob@[] survivors = getSurvivors();
-	if (survivors.length <= 0) return;
+	CBlob@[] spawners = getSurvivors();
+
+	Vec2f spawn = getSpawnLocation(Vec2f(2, 2), 128.0f, spawners, @getStandardSpawnCost);
+	if (spawn == Vec2f_zero) return;
 
 	server_SendGlobalMessage(this, 9, 6);
 
-	Vec2f spawn = survivors[XORRandom(survivors.length)].getPosition();
-	server_CreateBlob("tim", 0, spawn);
+	server_CreateBlob("bobert", 0, spawn);
 }

@@ -17,7 +17,7 @@ void onInit(CBlob@ this)
 	
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
-	Bestiary::client_Unlock("tim");
+	Bestiary::client_Unlock("bobert");
 
 	addOnShopMadeItem(this, @onShopMadeItem);
 	
@@ -158,6 +158,12 @@ void onInit(CBlob@ this)
 		s.custom_data = 15;
 		AddRequirement(s.requirements, "coin", "", "Coins", 499);
 	}
+	{
+		SaleItem s(rand_items, name(Translate::Flamethrower), "$flamethrower$", "flamethrower", desc(Translate::Flamethrower));
+		s.stock = 1 + seed.NextRanged(2);
+		s.custom_data = 10;
+		AddRequirement(s.requirements, "coin", "", "Coins", 499);
+	}
 
 	AddRandomItemsToShop(shop, rand_items, seed, 3);
 
@@ -167,7 +173,7 @@ void onInit(CBlob@ this)
 	this.SetLightRadius(48.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
 
-	Chat(this, Translate::Tim4);
+	Chat(this, Translate::Bobert4);
 
 	ParticleTeleport(this.getPosition());
 }
@@ -178,7 +184,7 @@ void onShopMadeItem(CBlob@ this, CBlob@ caller, CBlob@ blob, SaleItem@ item)
 	
 	if (blob !is null && blob.getName() == "holygrenade")
 	{
-		Chat(this, Translate::Tim2);
+		Chat(this, Translate::Bobert2);
 	}
 }
 
@@ -194,7 +200,7 @@ void onTick(CBlob@ this)
 	
 	if (this.getTickSinceCreated() == 120)
 	{
-		Chat(this, Translate::Tim3);
+		Chat(this, Translate::Bobert3);
 	}
 	
 	//trader looks at player when nearby
@@ -212,11 +218,11 @@ void onTick(CBlob@ this)
 	const u32 timeTillLeave = this.get_u32("time till departure");
 	if (timeTillLeave-30*30 == gameTime)
 	{
-		Chat(this, Translate::Tim0);
+		Chat(this, Translate::Bobert0);
 	}
 	if (timeTillLeave-30 == gameTime)
 	{
-		Chat(this, Translate::Tim1);
+		Chat(this, Translate::Bobert1);
 	}
 	if (timeTillLeave < gameTime)
 	{

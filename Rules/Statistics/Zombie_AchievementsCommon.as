@@ -1,12 +1,6 @@
 // Zombie Fortress Achievements
 // Gingerbeard @ Jan 27, 2026
 
-/* Potential achievement ideas
-	Fumbled : duplicate something useless (a tile blob, or forage, ladders, etc)
-	Society : have 15 surviving workers at the same time
-	Pokey Fort : place 500 spikes in one game
-*/
-
 #include "Zombie_Translation.as"
 
 funcdef void onUnlockAchievementHandle(CRules@, int);

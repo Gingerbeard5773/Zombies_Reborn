@@ -1,9 +1,9 @@
 // SonantDread & Gingerbeard @ November 14th 2024
 
-#include "MakeScroll.as";
-#include "MakeSeed.as";
-#include "MakeCrate.as";
-#include "FactoryProductionCommon.as";
+#include "MakeScroll.as"
+#include "MakeSeed.as"
+#include "MakeCrate.as"
+#include "FactoryProductionCommon.as"
 
 /*
  HOW TO SAVE CUSTOM BLOB DATA FOR YOUR MOD
@@ -19,26 +19,33 @@ void InitializeBlobHandlers()
 {
 	if (blobHandlers.getSize() != 0) return;
 
-	blobHandlers.set("default",      BlobDataHandler());
-	blobHandlers.set("seed",         SeedBlobHandler());
-	blobHandlers.set("crate",        CrateBlobHandler());
-	blobHandlers.set("scroll",       ScrollBlobHandler());
-	blobHandlers.set("lever",        LeverBlobHandler());
-	blobHandlers.set("library",      LibraryBlobHandler());
-	blobHandlers.set("factory",      FactoryBlobHandler());
+	blobHandlers.set("default",        BlobDataHandler());
+	blobHandlers.set("seed",           SeedBlobHandler());
+	blobHandlers.set("crate",          CrateBlobHandler());
+	blobHandlers.set("scroll",         ScrollBlobHandler());
+	blobHandlers.set("lever",          LeverBlobHandler());
+	blobHandlers.set("library",        LibraryBlobHandler());
+	blobHandlers.set("factory",        FactoryBlobHandler());
 
-	blobHandlers.set("tree_bushy",   TreeBlobHandler());
-	blobHandlers.set("tree_pine",    TreeBlobHandler());
+	blobHandlers.set("tree_bushy",     TreeBlobHandler());
+	blobHandlers.set("tree_pine",      TreeBlobHandler());
 
-	blobHandlers.set("forge",        ForgeBlobHandler());
-	blobHandlers.set("quarry",       ForgeBlobHandler());
+	blobHandlers.set("forge",          ForgeBlobHandler());
+	blobHandlers.set("quarry",         ForgeBlobHandler());
 
-	blobHandlers.set("builder",      PlayerBlobHandler());
-	blobHandlers.set("knight",       PlayerBlobHandler());
-	blobHandlers.set("archer",       PlayerBlobHandler());
-	
-	blobHandlers.set("tim",          TraderBlobHandler());
-	blobHandlers.set("traderbomber", TraderBlobHandler());
+	blobHandlers.set("builder",        PlayerBlobHandler());
+	blobHandlers.set("knight",         PlayerBlobHandler());
+	blobHandlers.set("archer",         PlayerBlobHandler());
+
+	blobHandlers.set("migrant",        MigrantBlobHandler()); // LEGACY MAPS SUPPORT
+
+	blobHandlers.set("bobert",         TraderBlobHandler());
+	blobHandlers.set("traderbomber",   TraderBlobHandler());
+
+	blobHandlers.set("bomber",         BomberBlobHandler());
+	blobHandlers.set("armoredbomber",  BomberBlobHandler());
+
+	blobHandlers.set("enchanter",      EnchanterBlobHandler());
 }
 
 bool canSaveBlob(CBlob@ blob)
@@ -55,7 +62,6 @@ bool canSaveBlob(CBlob@ blob)
 	return true;
 }
 
-BlobDataHandler@ basicHandler = BlobDataHandler();
 class BlobDataHandler
 {
 	// Write our blob's information into the config
@@ -105,7 +111,7 @@ class SeedBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
+		string data = BlobDataHandler::Serialize(blob);
 		data += blob.get_string("seed_grow_blobname") + ";";
 		return data;
 	}
@@ -121,7 +127,7 @@ class CrateBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
+		string data = BlobDataHandler::Serialize(blob);
 		const string packed = blob.exists("packed") ? blob.get_string("packed") : "";
 		if (!packed.isEmpty())
 		{
@@ -148,15 +154,47 @@ class ScrollBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
-		data += blob.get_string("scroll defname0") + ";";
+		string data = BlobDataHandler::Serialize(blob);
+		const string scroll_name = blob.exists("scroll defname0") ? blob.get_string("scroll defname0") : "";
+		if (!scroll_name.isEmpty())
+		{
+			data += scroll_name + ";";
+			if (isSpecialScroll(scroll_name))
+			{
+				data += blob.get_bool("used") ? "1;" : "0;";
+				data += blob.get_u32("current_increment") + ";";
+			}
+		}
+
 		return data;
 	}
 
 	CBlob@ CreateBlob(const string&in name, const Vec2f&in pos, const string[]@ data) override
 	{
-		const string scroll_name = data[9];
-		return server_MakePredefinedScroll(pos, scroll_name);
+		const string scroll_name = data.length > 9 ? data[9] : "";
+		if (!scroll_name.isEmpty())
+		{
+			return server_MakePredefinedScroll(pos, scroll_name);
+		}
+		return BlobDataHandler::CreateBlob(name, pos, data);
+	}
+
+	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	{
+		BlobDataHandler::LoadBlobData(blob, data);
+		const string scroll_name = data.length > 9 ? data[9] : "";
+		if (isSpecialScroll(scroll_name))
+		{
+			const bool used = parseBool(data[10]);
+			const u32 current_increment = parseInt(data[11]);
+			blob.set_bool("used", used);
+			blob.set_u32("current_increment", current_increment);
+		}
+	}
+
+	bool isSpecialScroll(const string&in scroll_name)
+	{
+		return scroll_name == "time" || scroll_name == "desiccation";
 	}
 }
 
@@ -164,14 +202,14 @@ class LeverBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
-		data += (blob.get_bool("activated") ? "1;" : "0;");
+		string data = BlobDataHandler::Serialize(blob);
+		data += blob.get_bool("activated") ? "1;" : "0;";
 		return data;
 	}
 
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
-		basicHandler.LoadBlobData(blob, data);
+		BlobDataHandler::LoadBlobData(blob, data);
 		const bool activated = parseBool(data[9]);
 		blob.set_bool("activated", activated);
 	}
@@ -181,14 +219,14 @@ class LibraryBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
+		string data = BlobDataHandler::Serialize(blob);
 		data += blob.get_s32("researching") + ";";
 		return data;
 	}
 
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
-		basicHandler.LoadBlobData(blob, data);
+		BlobDataHandler::LoadBlobData(blob, data);
 		const int researching = parseInt(data[9]);
 		blob.set_s32("researching", researching);
 	}
@@ -198,7 +236,7 @@ class FactoryBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
+		string data = BlobDataHandler::Serialize(blob);
 
 		Production@ production;
 		if (blob.get("production", @production))
@@ -211,7 +249,7 @@ class FactoryBlobHandler : BlobDataHandler
 
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
-		basicHandler.LoadBlobData(blob, data);
+		BlobDataHandler::LoadBlobData(blob, data);
 
 		if (data.length <= 9) return;
 
@@ -250,14 +288,14 @@ class ForgeBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
+		string data = BlobDataHandler::Serialize(blob);
 		data += blob.get_s16("fuel_level") + ";";
 		return data;
 	}
 
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
-		basicHandler.LoadBlobData(blob, data);
+		BlobDataHandler::LoadBlobData(blob, data);
 		const s16 fuel_level = parseInt(data[9]);
 		blob.set_s16("fuel_level", fuel_level);
 	}
@@ -267,7 +305,7 @@ class PlayerBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
+		string data = BlobDataHandler::Serialize(blob);
 
 		string username = "";
 		u16 coins = 0;
@@ -291,7 +329,7 @@ class PlayerBlobHandler : BlobDataHandler
 
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
-		basicHandler.LoadBlobData(blob, data);
+		BlobDataHandler::LoadBlobData(blob, data);
 		const string username = data.length > 9 ? data[9] : "";
 		const u16 coins = data.length > 10 ? parseInt(data[10]) : 0;
 		if (!username.isEmpty())
@@ -303,19 +341,67 @@ class PlayerBlobHandler : BlobDataHandler
 	}
 }
 
+class MigrantBlobHandler : BlobDataHandler
+{
+	CBlob@ CreateBlob(const string&in name, const Vec2f&in pos, const string[]@ data) override
+	{
+		return BlobDataHandler::CreateBlob("builder", pos, data);
+	}
+}
+
 class TraderBlobHandler : BlobDataHandler
 {
 	string Serialize(CBlob@ blob) override
 	{
-		string data = basicHandler.Serialize(blob);
+		string data = BlobDataHandler::Serialize(blob);
 		data += (blob.get_u32("time till departure") - getGameTime()) + ";";
 		return data;
 	}
 
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
-		basicHandler.LoadBlobData(blob, data);
+		BlobDataHandler::LoadBlobData(blob, data);
 		const u32 time_left = data.length > 9 ? parseInt(data[9]) : 0;
+		blob.set_u32("time till departure", time_left);
+	}
+}
+
+class BomberBlobHandler : BlobDataHandler
+{
+	string Serialize(CBlob@ blob) override
+	{
+		string data = BlobDataHandler::Serialize(blob);
+		data += blob.get_f32("fly_amount") + ";";
+		return data;
+	}
+
+	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	{
+		BlobDataHandler::LoadBlobData(blob, data);
+		const f32 fly_amount = data.length > 9 ? parseFloat(data[9]) : 0.0f;
+		blob.set_f32("fly_amount", fly_amount);
+	}
+}
+
+class EnchanterBlobHandler : BlobDataHandler
+{
+	string Serialize(CBlob@ blob) override
+	{
+		string data = BlobDataHandler::Serialize(blob);
+		data += blob.get_bool("enchanter_paid") ? "1;" : "0;";
+		data += blob.get_u8("enchants_count") + ";";
+		data += (blob.get_u32("time till departure") - getGameTime()) + ";";
+		return data;
+	}
+
+	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	{
+		BlobDataHandler::LoadBlobData(blob, data);
+		const bool enchanter_paid = data.length > 9 ? parseBool(data[9]) : false;
+		const u8 enchants_count = data.length > 10 ? parseInt(data[10]) : 0;
+		const u32 time_left = data.length > 11 ? parseInt(data[11]) : 0;
+		blob.set_bool("enchanter_paid", enchanter_paid);
+		blob.set_u8("enchants_count", enchants_count);
 		blob.set_u32("time till departure", time_left);
 	}
 }
