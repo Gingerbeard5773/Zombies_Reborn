@@ -4,6 +4,11 @@
 #include "FireCommon.as"
 #include "Help.as"
 
+// This base file was edited for this mod with the following reasons:
+// To allow for invincibility for players inside vehicles
+// A unique minimap icon for bots
+// To allow sleepers and bots to be picked up by players
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().removeIfTag = "dead";
@@ -12,12 +17,6 @@ void onInit(CBlob@ this)
 	this.Tag("ignore saw");
 	this.Tag("sawed");//hack
 
-	//default player minimap dot - not for migrants
-	if (this.getName() != "migrant")
-	{
-		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 8, Vec2f(8, 8));
-	}
-
 	this.set_s16(burn_duration , 130);
 	this.set_f32("heal amount", 0.0f);
 
@@ -25,7 +24,26 @@ void onInit(CBlob@ this)
 	this.SetChatBubbleFont("hud");
 	this.maxChatBubbleLines = 4;
 
+	SetMinimapIcon(this);
+
 	InitKnockable(this);
+}
+
+void onSetPlayer(CBlob@ this, CPlayer@ player)
+{
+	SetMinimapIcon(this, player);
+}
+
+void SetMinimapIcon(CBlob@ this, CPlayer@ player = null)
+{
+	if (player !is null)
+	{
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 8, Vec2f(8, 8));
+	}
+	else
+	{
+		this.SetMinimapVars("MinimapIconBot.png", 0, Vec2f(8, 8));
+	}
 }
 
 void onTick(CBlob@ this)
@@ -94,7 +112,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		if (customData == Hitters::suicide)
 			this.Untag("invincible");
 		else
-			return 0.0f; //added so we can have immunity while in special vehicles - gingerbeard @ August 18 2024
+			return 0.0f; //added so we can have immunity while in special vehicles
 	}
 
 	switch(customData)
