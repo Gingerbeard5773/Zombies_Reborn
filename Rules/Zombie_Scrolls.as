@@ -1,7 +1,7 @@
 // Zombie Fortress scrolls
 
-#include "MakeScroll.as";
-#include "Zombie_Translation.as";
+#include "MakeScroll.as"
+#include "Zombie_Translation.as"
 
 //   -- ADDING NEW SCROLLS --
 // 1) set the scroll information here, such as the name, frame, and scripts the scroll uses.
@@ -51,6 +51,7 @@ void SetupScrolls(CRules@ this)
 		def.name = "Scroll of Drought";
 		def.scrollFrame = 8;
 		def.scripts.push_back("ScrollDrought.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
 		all.scrolls.set("drought", def);
 	}
 	/*{
@@ -65,6 +66,7 @@ void SetupScrolls(CRules@ this)
 		def.name = name(Translate::ScrollFlora);
 		def.scrollFrame = 10;
 		def.scripts.push_back("ScrollFlora.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
 		all.scrolls.set("flora", def);
 	}
 	{
@@ -72,6 +74,7 @@ void SetupScrolls(CRules@ this)
 		def.name = name(Translate::ScrollRevive);
 		def.scrollFrame = 11;
 		def.scripts.push_back("ScrollRevive.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
 		all.scrolls.set("revive", def);
 	}
 	{
@@ -93,6 +96,7 @@ void SetupScrolls(CRules@ this)
 		def.name = name(Translate::ScrollRepair);
 		def.scrollFrame = 15;
 		def.scripts.push_back("ScrollRepair.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
 		all.scrolls.set("repair", def);
 	}
 	{
@@ -101,6 +105,7 @@ void SetupScrolls(CRules@ this)
 		def.scrollFrame = 17;
 		def.scripts.push_back("ScrollHealth.as");
 		all.scrolls.set("health", def);
+		def.scripts.push_back("ScrollRangeIndicator.as");
 	}
 	{
 		ScrollDef def;
@@ -114,6 +119,7 @@ void SetupScrolls(CRules@ this)
 		def.name = name(Translate::ScrollMidas);
 		def.scrollFrame = 20;
 		def.scripts.push_back("ScrollMidas.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
 		all.scrolls.set("midas", def);
 	}
 	{
@@ -135,6 +141,7 @@ void SetupScrolls(CRules@ this)
 		def.name = name(Translate::ScrollStone);
 		def.scrollFrame = 23;
 		def.scripts.push_back("ScrollStone.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
 		all.scrolls.set("stone", def);
 	}
 

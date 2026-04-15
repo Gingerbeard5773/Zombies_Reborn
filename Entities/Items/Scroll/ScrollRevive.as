@@ -5,10 +5,14 @@
 #include "Zombie_StatisticsCommon.as"
 #include "Zombie_AchievementsCommon.as"
 
+const f32 radius = 40.0f;
+
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_revive");
 	this.addCommandID("client_revive");
+
+	this.set_f32("scroll_range", radius);
 
 	this.getCurrentScript().tickFrequency = 2;
 	this.SetMapEdgeFlags(CBlob::map_collide_sides | CBlob::map_collide_down | CBlob::map_collide_nodeath);
@@ -49,7 +53,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		}
 
 		CBlob@[] blobsInRadius;
-		getMap().getBlobsInRadius(this.getPosition(), 40.0f, @blobsInRadius);
+		getMap().getBlobsInRadius(this.getPosition(), radius, @blobsInRadius);
 
 		const u16 blobsLength = blobsInRadius.length;
 		for (u16 i = 0; i < blobsLength; i++)

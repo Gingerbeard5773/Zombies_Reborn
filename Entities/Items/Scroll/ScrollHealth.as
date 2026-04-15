@@ -5,10 +5,14 @@
 #include "Zombie_StatisticsCommon.as"
 #include "Zombie_AchievementsCommon.as"
 
+const f32 radius = 200.0f;
+
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
 	this.addCommandID("client_execute_spell");
+	
+	this.set_f32("scroll_range", radius);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -32,7 +36,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		u16[] healed;
 		const u8 team = caller.getTeamNum();
 		CBlob@[] blobsInRadius;
-		getMap().getBlobsInRadius(this.getPosition(), 200.0f, @blobsInRadius);
+		getMap().getBlobsInRadius(this.getPosition(), radius, @blobsInRadius);
 
 		for (u16 i = 0; i < blobsInRadius.length; i++)
 		{

@@ -12,6 +12,8 @@ void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
 	this.addCommandID("client_execute_spell");
+
+	this.set_f32("scroll_range", radius*8);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

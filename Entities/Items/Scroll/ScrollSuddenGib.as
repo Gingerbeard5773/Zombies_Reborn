@@ -37,21 +37,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@[] blobsInRadius;
 		if (getMap().getBlobsInRadius(pos, 500.0f, @blobsInRadius))
 		{
-			const u16 blobsLength = blobsInRadius.length;
-			for (u16 i = 0; i < blobsLength; i++)
+			const int blobs_length = blobsInRadius.length;
+			for (int i = 0; i < blobs_length; i++)
 			{
 				CBlob@ b = blobsInRadius[i];
-				if (b.getTeamNum() == team || !b.hasTag("undead")) continue;
+				if (b.getTeamNum() == team) continue;
 
-				ParticleZombieLightning(b.getPosition());
-				if (isServer())
+				if (!b.hasTag("player") && !b.hasTag("undead")) continue;
+
+				caller.server_Hit(b, pos, Vec2f(0, 0), 10.0f, Hitters::suddengib, true);
+
+				if (b.getHealth() <= b.get_f32("gib health"))
 				{
-					caller.server_Hit(b, pos, Vec2f(0, 0), 10.0f, Hitters::suddengib, true);
-					
-					if (b.getHealth() <= b.get_f32("gib health"))
-					{
-						killed++;
-					}
+					killed++;
 				}
 				hit = true;
 			}
