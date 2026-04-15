@@ -89,13 +89,15 @@ void SetupScrolls(CRules@ this)
 		all.scrolls.set("drought", def);
 		basic.scrolls.set("drought", def);
 	}
-	/*{
+	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollChaos);
+		def.name = name(Translate::ScrollHealth);
 		def.scrollFrame = 9;
-		def.scripts.push_back("ScrollChaos.as");
-		all.scrolls.set("chaos", def);
-	}*/
+		def.scripts.push_back("ScrollHealth.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
+		all.scrolls.set("health", def);
+		basic.scrolls.set("health", def);
+	}
 	{
 		ScrollDef def;
 		def.name = name(Translate::ScrollFlora);
@@ -149,11 +151,10 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollHealth);
+		def.name = name(Translate::ScrollResurgence);
 		def.scrollFrame = 17;
-		def.scripts.push_back("ScrollHealth.as");
-		all.scrolls.set("health", def);
-		def.scripts.push_back("ScrollRangeIndicator.as");
+		def.scripts.push_back("ScrollResurgence.as");
+		all.scrolls.set("resurgence", def);
 	}
 	/*{
 		ScrollDef def;
