@@ -211,6 +211,63 @@ void SetupScrolls(CRules@ this)
 		all.scrolls.set("stone", def);
 		basic.scrolls.set("stone", def);
 	}
+	
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Something";
+		def.scrollFrame = 24;
+		def.scripts.push_back("ScrollSomething.as");
+		all.scrolls.set("stone", def);
+	} */
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Something";
+		def.scrollFrame = 25;
+		def.scripts.push_back("ScrollSomething.as");
+		all.scrolls.set("stone", def);
+	} */
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Something";
+		def.scrollFrame = 26;
+		def.scripts.push_back("ScrollSomething.as");
+		all.scrolls.set("stone", def);
+	} */
+	{
+		ScrollDef def;
+		def.name = name(Translate::ScrollObliteration);
+		def.scrollFrame = 27;
+		def.scripts.push_back("ScrollObliteration.as");
+		all.scrolls.set("obliteration", def);
+	}
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Something";
+		def.scrollFrame = 28;
+		def.scripts.push_back("ScrollSomething.as");
+		all.scrolls.set("stone", def);
+	} */
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Something";
+		def.scrollFrame = 29;
+		def.scripts.push_back("ScrollSomething.as");
+		all.scrolls.set("stone", def);
+	} */
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Something";
+		def.scrollFrame = 30;
+		def.scripts.push_back("ScrollSomething.as");
+		all.scrolls.set("stone", def);
+	} */
+	/*{
+		ScrollDef def;
+		def.name = "Scroll of Something";
+		def.scrollFrame = 31;
+		def.scripts.push_back("ScrollSomething.as");
+		all.scrolls.set("stone", def);
+	} */
 
 	all.names = all.scrolls.getKeys();
 	basic.names = basic.scrolls.getKeys();
