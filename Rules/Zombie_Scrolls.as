@@ -151,6 +151,13 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
+		def.name = name(Translate::ScrollDesiccation);
+		def.scrollFrame = 16;
+		def.scripts.push_back("ScrollDesiccation.as");
+		all.scrolls.set("desiccation", def);
+	}
+	{
+		ScrollDef def;
 		def.name = name(Translate::ScrollResurgence);
 		def.scrollFrame = 17;
 		def.scripts.push_back("ScrollResurgence.as");
