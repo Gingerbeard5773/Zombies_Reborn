@@ -90,11 +90,11 @@ void onTick(CRules@ this)
 			continue;
 		}
 
-		// readjust respawn if the daycycle somehow changed
-		/*if (!fast_respawn && Maths::Abs(player_respawn_time - (gametime + time_till_dawn)) > 10 * 30)
+		// readjust respawn if the daycycle speed changed
+		if (!fast_respawn && Maths::Abs(player_respawn_time - (gametime + time_till_dawn)) > 10 * 30)
 		{
 			SetPlayerRespawn(this, player);
-		}*/
+		}
 	}
 }
 

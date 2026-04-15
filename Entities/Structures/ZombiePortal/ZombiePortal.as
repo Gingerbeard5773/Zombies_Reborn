@@ -168,11 +168,11 @@ void onDie(CBlob@ this)
 	{
 		server_DropCoins(this.getPosition() + Vec2f(0, -8.0f), 1000);
 
-		//make a random scroll
-		ScrollSet@ all = getScrollSet("all scrolls");
-		if (all !is null)
+		//make a random basic scroll
+		ScrollSet@ basic = getScrollSet("basic scrolls");
+		if (basic !is null)
 		{
-			server_MakePredefinedScroll(this.getPosition(), all.names[XORRandom(all.names.length)]);
+			server_MakePredefinedScroll(this.getPosition(), basic.names[XORRandom(basic.names.length)]);
 		}
 	}
 }
