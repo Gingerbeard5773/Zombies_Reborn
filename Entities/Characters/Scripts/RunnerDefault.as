@@ -36,6 +36,8 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 
 void SetMinimapIcon(CBlob@ this, CPlayer@ player = null)
 {
+	if (this.hasTag("dead")) return;
+
 	if (player !is null)
 	{
 		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 8, Vec2f(8, 8));
