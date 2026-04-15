@@ -46,6 +46,8 @@ void InitializeBlobHandlers()
 	blobHandlers.set("armoredbomber",  BomberBlobHandler());
 
 	blobHandlers.set("enchanter",      EnchanterBlobHandler());
+
+	blobHandlers.set("sign",           SignBlobHandler());
 }
 
 bool canSaveBlob(CBlob@ blob)
@@ -403,6 +405,23 @@ class EnchanterBlobHandler : BlobDataHandler
 		blob.set_bool("enchanter_paid", enchanter_paid);
 		blob.set_u8("enchants_count", enchants_count);
 		blob.set_u32("time till departure", time_left);
+	}
+}
+
+class SignBlobHandler : BlobDataHandler
+{
+	string Serialize(CBlob@ blob) override
+	{
+		string data = BlobDataHandler::Serialize(blob);
+		data += blob.get_string("text") + ";";
+		return data;
+	}
+
+	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	{
+		BlobDataHandler::LoadBlobData(blob, data);
+		const string text = data[9];
+		blob.set_string("text", text);
 	}
 }
 

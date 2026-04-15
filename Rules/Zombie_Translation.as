@@ -76,6 +76,7 @@ namespace Translate
 	Nursery                = Translate("Nursery\nA plant nursery for agricultural purposes",   "Рассадник\nРассадник для сельскохозяйственных культур"),
 	Armory                 = Translate("Armory\nBuild weapons and change your class",          "Оружейная\nСлужит для создания оружия из слитков, позволяет сменить класс"),
 	Library                = Translate("Library\nA place of study to obtain new technologies", "Библиотека\nМесто хранения знаний и открытий, здесь можно освоить новые технологии"),
+	Sign                   = Translate("Sign\n!write [text]",                                  ""),
 
 	//workers
 	Worker                 = Translate("Worker",                                                            "Работник"),

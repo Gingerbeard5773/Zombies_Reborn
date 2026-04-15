@@ -73,7 +73,31 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 bool PlayerCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ blob)
 {
-	if (tokens[0] == "!seed")
+	if (tokens[0] == "!write" && tokens.length > 1 && blob !is null)
+	{
+		CBlob@[] blobs;
+		getMap().getBlobsInRadius(blob.getPosition(), 16.0f, @blobs);
+
+		for (int i = 0; i < blobs.length; i++)
+		{
+			CBlob@ b = blobs[i];
+			if (b.getName() != "sign") continue;
+
+			string text = "";
+			for (int i = 1; i < tokens.length; i++)
+			{
+				text += tokens[i] + " ";
+			}
+			text = text.substr(0, text.length - 1);
+
+			b.set_string("text", text);
+			b.Sync("text", true);
+			break;
+		}
+
+		return false;
+	}
+	else if (tokens[0] == "!seed")
 	{
 		const int map_seed = this.get_s32("map_seed");
 		const string message = "MAP SEED : "+map_seed;
