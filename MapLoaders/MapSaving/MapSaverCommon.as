@@ -24,6 +24,7 @@ void InitializeBlobHandlers()
 	blobHandlers.set("crate",          CrateBlobHandler());
 	blobHandlers.set("scroll",         ScrollBlobHandler());
 	blobHandlers.set("lever",          LeverBlobHandler());
+	blobHandlers.set("clock",          ClockBlobHandler());
 	blobHandlers.set("library",        LibraryBlobHandler());
 	blobHandlers.set("factory",        FactoryBlobHandler());
 
@@ -214,6 +215,40 @@ class LeverBlobHandler : BlobDataHandler
 		BlobDataHandler::LoadBlobData(blob, data);
 		const bool activated = parseBool(data[9]);
 		blob.set_bool("activated", activated);
+	}
+}
+
+class ClockBlobHandler : BlobDataHandler
+{
+	string Serialize(CBlob@ blob) override
+	{
+		string data = BlobDataHandler::Serialize(blob);
+
+		bool[]@ hours_activated;
+		if (blob.get("hours_activated", @hours_activated))
+		{
+			string bool_line;
+			for (u8 i = 0; i < hours_activated.length; i++)
+			{
+				bool_line += (hours_activated[i] ? "1" : "0");
+			}
+			data += bool_line + ";";
+		}
+
+		return data;
+	}
+
+	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	{
+		BlobDataHandler::LoadBlobData(blob, data);
+		const string bool_line = data.length > 9 ? data[9] : "";
+
+		bool[] hours_activated(bool_line.length);
+		for (u8 i = 0; i < bool_line.length; i++)
+		{
+			hours_activated[i] = bool_line[i] == 49; //1 in ascii
+		}
+		blob.set("hours_activated", hours_activated);
 	}
 }
 

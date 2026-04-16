@@ -227,6 +227,10 @@ namespace Translate
 	Parachutepack          = Translate("Parachute Pack\nAllows you to fall slowly. Press [Shift] to activate.",                 "Парашютный ранец\nПозволяет вам медленно падать. Нажмите [Shift] для активации."),
 	Partisan               = Translate("Partisan\nAn extremely long unwieldy polearm for far-reach poking.",                    "Партизан\nЧрезвычайно длинное и громоздкое древковое оружие для дальних ударов."),
 
+	//clock
+	SetHours               = Translate("Set hours to activate", ""),
+	ToggleHour             = Translate("Toggle hour [{INPUT}]", ""),
+
 	//trader
 	Buy                    = Translate("Buy {ITEM} ({QUANTITY})",                                  "Купить {ITEM} ({QUANTITY})"),
 	Buy2                   = Translate("Buy {QUANTITY} {ITEM} for {COINS} $COIN$",                 "Купить {QUANTITY} {ITEM} за {COINS} $COIN$"),
