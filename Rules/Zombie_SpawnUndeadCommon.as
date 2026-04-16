@@ -12,6 +12,8 @@ class SpawnManager
 	u16 maximum_skelepedes = 4;
 	u16 maximum_gregs = 50;
 	
+	Random rand(Time());
+	
 	SpawnManager() {}
 
 	void Add(Spawn@ spawn)
@@ -60,7 +62,7 @@ class SpawnManager
 			return null;
 		}
 
-		f32 r = XORRandom(total_weight * 1000) / 1000.0f;
+		f32 r = rand.NextRanged(total_weight * 1000) / 1000.0f;
 
 		for (u8 i = 0; i < valid.length; i++)
 		{
