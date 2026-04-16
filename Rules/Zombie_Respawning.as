@@ -2,6 +2,8 @@
 
 #define SERVER_ONLY
 
+#include "GetSurvivors.as"
+
 const u32 spawn_seconds = 5; //minimum amount of seconds players have to wait to respawn
 
 u32 spawn_leniency = 40;   //players can insta-respawn for this many seconds after dawn comes
@@ -179,6 +181,20 @@ void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
 	if (player.getTeamNum() == 3) return;
 
 	player.server_setTeamNum(newteam);
+}
+
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+{
+	// do a fast respawn if there is no survivor players.
+	// this is done in case all players left the server, and we just joined into an empty server
+	CPlayer@[] players; getSurvivors(@players, player);
+	if (players.length > 0) return;
+
+	dictionary@ respawns;
+	if (!this.get("respawns", @respawns)) return;
+
+	const u32 respawn_time = 90 + getGameTime();
+	SetRespawn(this, player, respawns, respawn_time);
 }
 
 void SpawnPlayer(CRules@ this, CPlayer@ player)
