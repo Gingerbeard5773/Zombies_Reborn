@@ -109,6 +109,14 @@ bool LoadStructureToWorld(CMap@ map, Vec2f start_pos, Vec2f world_dimensions, s1
 
 			type = CMap::tile_ground_back;
 		}
+		else if (type == CMap::tile_castle && XORRandom(3) == 0)
+		{
+			type = CMap::tile_castle_moss;
+		}
+		else if (type == CMap::tile_castle_back && XORRandom(3) == 0)
+		{
+			type = CMap::tile_castle_back_moss;
+		}
 
 		if (type >= CMap::tile_castle_back && type <= 79) type = CMap::tile_castle_back;
 		if (type >= CMap::tile_wood_back && type <= 207)  type = CMap::tile_wood_back;
