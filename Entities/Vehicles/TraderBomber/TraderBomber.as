@@ -34,15 +34,39 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	
 	addOnShopMadeItem(this, @onShopMadeItem);
+	
+	if (isServer())
+	{
+		this.set_u32("shop_seed", Time());
+		SetupShop(this);
+	}
 
 	AddIconToken("$tree_pine$",  "Trees.png", Vec2f(16, 16), 20);
 	AddIconToken("$tree_bushy$", "Trees.png", Vec2f(16, 16), 4);
+	
+	//VEHICLE
+	Vehicle_Setup(this, 47.0f, 0.19f, Vec2f_zero, false);
+	
+	VehicleInfo@ v;
+	if (!this.get("VehicleInfo", @v)) return;
+	
+	Vehicle_SetupAirship(this, v, -350.0f);
+	v.fly_amount = down_speed;
+	
+	this.set_u32("time till departure", getGameTime() + getTicksASecond() * 60 * stay_minutes);
+	
+	this.SetLight(true);
+	this.SetLightRadius(48.0f);
+	this.SetLightColor(SColor(255, 255, 240, 171));
+}
 
-	Random seed(this.getNetworkID());
+void SetupShop(CBlob@ this)
+{
+	Random seed(this.getNetworkID() + this.get_u32("shop_seed"));
 
 	Shop shop(this, "Trader");
 	shop.menu_size = Vec2f(3, 6);
-	
+
 	SaleItem@[] rand_items;
 	{
 		SaleItem s(rand_items, name(Translate::ScrollFowl), "$scroll_fowl$", "fowl", Translate::TradeScrollFowl, ItemType::scroll, 1, 1);
@@ -175,10 +199,18 @@ void onInit(CBlob@ this)
 		SaleItem s(shop.items, sell("Chicken", 1), "$COIN$", "coin", sell2("Chicken", 1, 100), ItemType::coin, 100);
 		AddRequirement(s.requirements, "blob", "chicken", "Chicken", 1);
 	}
+
+	if (seed.NextRanged(2) == 0)
 	{
-		SaleItem s(shop.items, buy("Bushy Tree", 1), "$tree_bushy$", "tree_bushy", buy2("Bushy Tree", 1, 400), ItemType::seed);
+		SaleItem s(shop.items, buy("Bushy Tree", 1), "$tree_bushy$", "tree_bushy", buy2("Bushy Tree", 1, 400), ItemType::seed, 1, 2);
 		AddRequirement(s.requirements, "coin", "", "Coins", 400);
 	}
+	else
+	{
+		SaleItem s(shop.items, buy("Pine Tree", 1), "$tree_pine$", "tree_pine", buy2("Pine Tree", 1, 400), ItemType::seed, 1, 2);
+		AddRequirement(s.requirements, "coin", "", "Coins", 400);
+	}
+
 	{
 		SaleItem s(shop.items, buy(Translate::IronOre, 250), "$mat_iron_icon$", "mat_iron", buy2(Translate::IronOre, 250, 1400), ItemType::material, 250);
 		AddRequirement(s.requirements, "coin", "", "Coins", 1400);
@@ -187,21 +219,12 @@ void onInit(CBlob@ this)
 		SaleItem s(shop.items, buy(name(Translate::Coal), 250), "$mat_coal_icon$", "mat_coal", buy2(name(Translate::Coal), 250, 500), ItemType::material, 250);
 		AddRequirement(s.requirements, "coin", "", "Coins", 500);
 	}
-	
-	//VEHICLE
-	Vehicle_Setup(this, 47.0f, 0.19f, Vec2f_zero, false);
-	
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v)) return;
-	
-	Vehicle_SetupAirship(this, v, -350.0f);
-	v.fly_amount = down_speed;
-	
-	this.set_u32("time till departure", getGameTime() + getTicksASecond() * 60 * stay_minutes);
-	
-	this.SetLight(true);
-	this.SetLightRadius(48.0f);
-	this.SetLightColor(SColor(255, 255, 240, 171));
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	SetupShop(this);
+	return true;
 }
 
 string buy(const string&in item, const u16&in quantity)
