@@ -1,9 +1,9 @@
 // Give spawn items to players
 
-#include "Zombie_TechnologyCommon.as";
+#include "Zombie_TechnologyCommon.as"
 
 const string give_items_cmd = "give_spawn_mats";
-const string timer_prop = "mats_time";
+const string timer_prop = "_mats_time";
 
 const u32 materials_wait = 20;
 
@@ -30,7 +30,7 @@ void onTick(CRules@ this)
 	CBlob@ blob = player.getBlob();
 	if (blob is null) return;
 	
-	const string name = getRecieverName(blob);
+	const string name = blob.getName();
 	if (getMatsTime(this, name) > gameTime || !canReceiveMats(name)) return;
 
 	CBlob@[] overlapping;
@@ -54,17 +54,11 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
 	if (player !is null && player.isMyPlayer() && blob !is null)
 	{
-		const string name = getRecieverName(blob);
+		const string name = blob.getName();
 		if (getMatsTime(this, name) > getGameTime() || !canReceiveMats(name)) return;
 		
 		client_GiveMats(this, blob, true);
 	}
-}
-
-const string getRecieverName(CBlob@ blob)
-{
-	const string name = blob.getName();
-	return name;
 }
 
 const bool canReceiveMats(const string&in name)
@@ -79,7 +73,7 @@ const u32 getMatsTime(CRules@ this, const string&in name)
 
 void client_GiveMats(CRules@ this, CBlob@ blob, const bool&in checkTimeAlive = false)
 {
-	this.set_u32(getRecieverName(blob) + timer_prop, getGameTime() + (materials_wait * getTicksASecond()));
+	this.set_u32(blob.getName() + timer_prop, getGameTime() + (materials_wait * getTicksASecond()));
 	
 	CBitStream params;
 	params.write_bool(checkTimeAlive);
@@ -88,7 +82,7 @@ void client_GiveMats(CRules@ this, CBlob@ blob, const bool&in checkTimeAlive = f
 
 void server_GiveMats(CRules@ this, CPlayer@ player, CBlob@ blob)
 {
-	const string name = getRecieverName(blob);
+	const string name = blob.getName();
 	if (name == "builder")
 	{
 		u16 amount_wood, amount_stone;
@@ -169,7 +163,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 }
 
 //render gui for the player
-void onRender(CRules@ this)
+/*void onRender(CRules@ this)
 {
 	if (g_videorecording || this.isGameOver()) return;
 
@@ -180,7 +174,7 @@ void onRender(CRules@ this)
 	if (blob is null) return;
 
 	const u32 gameTime = getGameTime();
-	const string name = getRecieverName(blob);
+	const string name = blob.getName();
 	const s32 next_items = getMatsTime(this, name);
 	if (next_items > gameTime)
 	{
@@ -202,4 +196,4 @@ void onRender(CRules@ this)
 					  drawpos,
 					  SColor(255, 255, 55, 55));
 	}
-}
+}*/

@@ -44,14 +44,22 @@ void onRender(CSprite@ this)
 	Vec2f origin(getScreenWidth() / 3, getScreenHeight() - 40.0f);
 	Vec2f tl = origin + Vec2f(0, -14);
 
-	DrawFrontStone(tl + Vec2f(80, 0), 80, 1.0f);
-	DrawHPBar(blob, tl + Vec2f(-60, 0));
+	const bool builder = blob.getName() == "builder";
+	const f32 builder_margin = (builder ? 30 : 0);
 
-	DrawInventoryOnHUD(blob, tl + Vec2f(140, 0));
+	DrawFrontStone(tl + Vec2f(80, 0), 80 + builder_margin, 1.0f);
+	DrawHPBar(blob, tl + Vec2f(-60 - builder_margin, 0));
+
+	if (builder)
+	{
+		DrawResupplyOnHUD(blob, origin - Vec2f(30, 4));
+	}
+
+	DrawClassIcon(blob, origin);
 
 	DrawCoinsOnHUD(blob, origin + Vec2f(40, 0));
 
-	DrawClassIcon(blob, origin);
+	DrawInventoryOnHUD(blob, tl + Vec2f(140, 0));
 }
 
 void DrawClassIcon(CBlob@ this, Vec2f origin)
@@ -183,9 +191,10 @@ void DrawInventoryOnHUD(CBlob@ this, Vec2f origin)
 	}
 
 	const int width_buffer = 10;
+	const int width = (drawn.length * 40) + 10 + width_buffer;
 	GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 0, Vec2f(16, 32), origin + Vec2f(-32, 0));
-	GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 3, Vec2f(16, 32), origin + Vec2f((drawn.length * 40) + width_buffer, 0));
-	GUI::DrawPane(origin + Vec2f(-10, 6), origin + Vec2f((drawn.length * 40) + 10 + width_buffer, 60));
+	GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 3, Vec2f(16, 32), origin + Vec2f(width, 0));
+	GUI::DrawPane(origin + Vec2f(-10, 6), origin + Vec2f(width + 10, 60));
 
 	drawn.clear();
 	for (int i = 0; i < inv.getItemsCount(); i++)
@@ -225,4 +234,56 @@ void DrawCoinsOnHUD(CBlob@ this, Vec2f origin)
 	GUI::DrawIconByName("$COIN$", origin);
 	GUI::SetFont("menu");
 	GUI::DrawTextCentered("" + player.getCoins(), origin + Vec2f(15, 32), color_white);
+}
+
+void DrawResupplyOnHUD(CBlob@ this, Vec2f origin)
+{
+	CRules@ rules = getRules();
+	if (!rules.exists("builder_mats_time")) return;
+
+	GUI::SetFont("menu");
+
+	const int next_items = rules.get_u32("builder_mats_time");
+
+	string action = (this.getName() == "builder" ? "Go Build" : "Go Fight");
+	if (rules.get_u16("day_number") < 2)
+	{
+		action = "Prepare for Battle";
+	}
+
+	const u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
+	const string units = ((secs != 1) ? " seconds" : " second");
+
+	const string resupply = getTranslatedString("Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!")
+	                        .replace("{SEC}", "" + secs)
+	                        .replace("{TIMESUFFIX}", getTranslatedString(units))
+	                        .replace("{ACTION}", getTranslatedString(action));
+
+	Vec2f dim;
+	GUI::GetTextDimensions(resupply, dim);
+
+	Vec2f icon_size = Vec2f(16, 16);
+
+	if (next_items > getGameTime())
+	{
+		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 0, icon_size, origin, 1.0f);
+		GUI::DrawTextCentered(secs + "s", origin + Vec2f(14, 36), color_white);
+
+		if (hoverOnResupplyIcon(origin, icon_size))
+		{
+			GUI::DrawTextCentered(resupply, origin + Vec2f(0, -icon_size.x - 5), color_white);
+		}
+	}
+	else
+	{
+		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 1, icon_size, origin + Vec2f(0, 6), 1.0f);
+	}
+}
+
+bool hoverOnResupplyIcon(Vec2f icon_pos, Vec2f icon_size)
+{
+	Vec2f mouse_pos = getControls().getMouseScreenPos();
+
+	return mouse_pos.x > icon_pos.x && mouse_pos.x < icon_pos.x + icon_size.x * 2
+		&& mouse_pos.y > icon_pos.y && mouse_pos.y < icon_pos.y + icon_size.y * 2 + 6;
 }
