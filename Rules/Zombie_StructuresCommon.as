@@ -252,13 +252,13 @@ bool isStructureTile(CMap@ map, const u16&in type, u16&out new_type)
 	if (map.isTileWood(type))                         return true;
 	if (type >= CMap::tile_wood_back && type <= 207)  return true;
 
-	if (isTileIron(type))
+	if (isTileIron(type) || isTileGoldBlock(type))
 	{
 		new_type = CMap::tile_castle;
 		return true;
 	}
 
-	if (isTileBIron(type))
+	if (isTileBIron(type) || isTileBGoldBlock(type))
 	{
 		new_type = CMap::tile_castle_back;
 		return true;

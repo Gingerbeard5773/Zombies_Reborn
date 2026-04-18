@@ -242,6 +242,70 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 
 			case CMap::tile_biron_f:
 				return CMap::tile_empty;
+
+
+			// GOLD BLOCK //
+			case CMap::tile_goldblock:
+				return CMap::tile_goldblock_d0;
+
+			case CMap::tile_goldblock_v0:
+			case CMap::tile_goldblock_v1:
+			case CMap::tile_goldblock_v2:
+			case CMap::tile_goldblock_v3:
+			case CMap::tile_goldblock_v4:
+			case CMap::tile_goldblock_v5:
+				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE);
+				return CMap::tile_goldblock_d0;
+
+			case CMap::tile_goldblock_d0:
+			case CMap::tile_goldblock_d1:
+			case CMap::tile_goldblock_d2:
+			case CMap::tile_goldblock_d3:
+			case CMap::tile_goldblock_d4:
+			case CMap::tile_goldblock_d5:
+			case CMap::tile_goldblock_d6:
+			case CMap::tile_goldblock_d7:
+			case CMap::tile_goldblock_d8:
+			case CMap::tile_goldblock_d9:
+			case CMap::tile_goldblock_d10:
+			case CMap::tile_goldblock_d11:
+			case CMap::tile_goldblock_d12:
+			case CMap::tile_goldblock_d13:
+			case CMap::tile_goldblock_d14:
+				return oldTileType + 1;
+
+			case CMap::tile_goldblock_f:
+				return CMap::tile_empty;
+
+
+			// GOLD BLOCK BACKGROUND //
+			case CMap::tile_bgoldblock:
+				return CMap::tile_bgoldblock_d0;
+
+			case CMap::tile_bgoldblock_v0:
+			case CMap::tile_bgoldblock_v1:
+				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
+				map.RemoveTileFlag(index, Tile::LIGHT_SOURCE | Tile::SOLID | Tile::COLLISION);
+				SetWaterPassable(map, index);
+				return CMap::tile_bgoldblock_d0;
+
+			case CMap::tile_bgoldblock_d0:
+			case CMap::tile_bgoldblock_d1:
+			case CMap::tile_bgoldblock_d2:
+			case CMap::tile_bgoldblock_d3:
+			case CMap::tile_bgoldblock_d4:
+			case CMap::tile_bgoldblock_d5:
+			case CMap::tile_bgoldblock_d6:
+			case CMap::tile_bgoldblock_d7:
+			case CMap::tile_bgoldblock_d8:
+			case CMap::tile_bgoldblock_d9:
+			case CMap::tile_bgoldblock_d10:
+			case CMap::tile_bgoldblock_d11:
+				return oldTileType + 1;
+
+			case CMap::tile_bgoldblock_f:
+				return CMap::tile_empty;
 		};
 	}
 	return map.getTile(index).type;
@@ -275,10 +339,12 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 	{
 		switch(tile_old)
 		{
-			case CMap::tile_ironore_f: OnIronOreTileDestroyed(map, index); break;
-			case CMap::tile_coal_f:    OnCoalTileDestroyed(map, index);    break;
-			case CMap::tile_iron_f:    OnIronTileDestroyed(map, index);    break;
-			case CMap::tile_biron_f:   OnBIronTileDestroyed(map, index);   break;
+			case CMap::tile_ironore_f:    OnIronOreTileDestroyed(map, index);    break;
+			case CMap::tile_coal_f:       OnCoalTileDestroyed(map, index);       break;
+			case CMap::tile_iron_f:       OnIronTileDestroyed(map, index);       break;
+			case CMap::tile_biron_f:      OnBIronTileDestroyed(map, index);      break;
+			case CMap::tile_goldblock_f:  OnGoldBlockTileDestroyed(map, index);  break;
+			case CMap::tile_bgoldblock_f: OnBGoldBlockTileDestroyed(map, index); break;
 		};
 	}
 
@@ -394,6 +460,84 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 				UpdateTileFaces(map, map.getTileWorldPosition(index), CMap::tile_biron, CMap::tile_biron_v2, directions_up_down);
 				OnBIronTileHit(map, index);
 				break;
+
+
+			// GOLD BLOCK //
+			case CMap::tile_goldblock:
+			{
+				Vec2f pos = map.getTileWorldPosition(index);
+				SetGoldBlockTileFaces(map, pos, index);
+
+				map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+				map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+				if (isClient()) Sound::Play("build_wall.ogg", pos, 1.0f, 1.0f);
+				break;
+			}
+
+			case CMap::tile_goldblock_v0:
+			case CMap::tile_goldblock_v1:
+			case CMap::tile_goldblock_v2:
+			case CMap::tile_goldblock_v3:
+			case CMap::tile_goldblock_v4:
+			case CMap::tile_goldblock_v5:
+				OnIronTileHit(map, index, false);
+				break;
+
+			case CMap::tile_goldblock_d0:
+			case CMap::tile_goldblock_d1:
+			case CMap::tile_goldblock_d2:
+			case CMap::tile_goldblock_d3:
+			case CMap::tile_goldblock_d4:
+			case CMap::tile_goldblock_d5:
+			case CMap::tile_goldblock_d6:
+			case CMap::tile_goldblock_d7:
+			case CMap::tile_goldblock_d8:
+			case CMap::tile_goldblock_d9:
+			case CMap::tile_goldblock_d10:
+			case CMap::tile_goldblock_d11:
+			case CMap::tile_goldblock_d12:
+			case CMap::tile_goldblock_d13:
+			case CMap::tile_goldblock_d14:
+			case CMap::tile_goldblock_f:
+				OnGoldBlockTileHit(map, index);
+				break;
+
+
+			// GOLD BLOCK BACKGROUND //
+			case CMap::tile_bgoldblock:
+			{
+				Vec2f pos = map.getTileWorldPosition(index);
+				SetBGoldBlockTileFaces(map, pos, index);
+
+				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
+				map.RemoveTileFlag(index, Tile::LIGHT_SOURCE | Tile::SOLID | Tile::COLLISION);
+				SetWaterPassable(map, index);
+				if (isClient()) Sound::Play("build_wall.ogg", pos, 1.0f, 1.0f);
+				break;
+			}
+
+			case CMap::tile_bgoldblock_v0:
+			case CMap::tile_bgoldblock_v1:
+				map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
+				SetWaterPassable(map, index);
+				if (isClient()) Sound::Play("build_wall.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+				break;
+
+			case CMap::tile_bgoldblock_d0:
+			case CMap::tile_bgoldblock_d1:
+			case CMap::tile_bgoldblock_d2:
+			case CMap::tile_bgoldblock_d3:
+			case CMap::tile_bgoldblock_d4:
+			case CMap::tile_bgoldblock_d5:
+			case CMap::tile_bgoldblock_d6:
+			case CMap::tile_bgoldblock_d7:
+			case CMap::tile_bgoldblock_d8:
+			case CMap::tile_bgoldblock_d9:
+			case CMap::tile_bgoldblock_d10:
+			case CMap::tile_bgoldblock_d11:
+			case CMap::tile_bgoldblock_f:
+				OnBGoldBlockTileHit(map, index);
+				break;
 		};
 	}
 }
@@ -469,6 +613,58 @@ void OnBIronTileDestroyed(CMap@ map, const u32&in index)
 {
 	if (isClient()) Sound::Play("destroy_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
 }
+
+
+/// GOLD BLOCK
+
+void OnGoldBlockTileHit(CMap@ map, const u32&in index, const bool&in sound = true)
+{
+	map.AddTileFlag(index, Tile::SOLID | Tile::COLLISION);
+	map.RemoveTileFlag(index, Tile::LIGHT_PASSES | Tile::LIGHT_SOURCE | Tile::WATER_PASSES);
+
+	if (isClient() && sound)
+		Sound::Play("dig_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+}
+
+void OnGoldBlockTileDestroyed(CMap@ map, const u32&in index)
+{
+	if (isClient()) Sound::Play("destroy_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+}
+
+void SetGoldBlockTileFaces(CMap@ map, Vec2f pos, const u32&in index)
+{
+	Vec2f tilepos = map.getTileSpacePosition(pos);
+	const bool checker = (int(tilepos.x) + int(tilepos.y)) % 2 == 0;
+
+	TileType type = checker ? CMap::tile_goldblock_v0 : CMap::tile_goldblock_v1;
+	map.SetTile(map.getTileOffset(pos), type);
+}
+
+
+/// GOLD BLOCK BACKGROUND
+
+void OnBGoldBlockTileHit(CMap@ map, const u32&in index)
+{
+	map.AddTileFlag(index, Tile::BACKGROUND | Tile::LIGHT_PASSES);
+	SetWaterPassable(map, index);
+
+	if (isClient()) Sound::Play("dig_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+}
+
+void OnBGoldBlockTileDestroyed(CMap@ map, const u32&in index)
+{
+	if (isClient()) Sound::Play("destroy_stone.ogg", map.getTileWorldPosition(index), 1.0f, 1.0f);
+}
+
+void SetBGoldBlockTileFaces(CMap@ map, Vec2f pos, const u32&in index)
+{
+	Vec2f tilepos = map.getTileSpacePosition(pos);
+	const bool checker = (int(tilepos.x) + int(tilepos.y)) % 2 == 0;
+
+	TileType type = checker ? CMap::tile_bgoldblock_v0 : CMap::tile_bgoldblock_v1;
+	map.SetTile(map.getTileOffset(pos), type);
+}
+
 
 ///GENERIC
 

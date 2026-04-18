@@ -59,7 +59,7 @@ void tileCheck(CBlob@ this, Vec2f pos, CMap@ map, bool&out onSurface, bool&out o
 
 bool canRetractSpike(TileType tile, CMap@ map)
 {
-	return map.isTileCastle(tile) || isTileIron(tile);
+	return map.isTileCastle(tile) || isTileIron(tile) || isTileGoldBlock(tile);
 }
 
 void onTick(CBlob@ this)

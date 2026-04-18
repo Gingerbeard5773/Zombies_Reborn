@@ -269,5 +269,9 @@ namespace Material
 		{
 			createFor(this, 'mat_iron', 1.0f * damage);
 		}
+		else if (isTileGoldBlock(type))
+		{
+			createFor(this, 'mat_gold', 1.0f * damage);
+		}
 	}
 }

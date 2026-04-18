@@ -66,7 +66,48 @@ namespace CMap
 		tile_biron_d5,
 		tile_biron_d6,
 		tile_biron_d7,
-		tile_biron_f
+		tile_biron_f,
+
+		tile_goldblock = 489,
+		tile_goldblock_v0,
+		tile_goldblock_v1,
+		tile_goldblock_v2,
+		tile_goldblock_v3,
+		tile_goldblock_v4,
+		tile_goldblock_v5,
+		tile_goldblock_d0,
+		tile_goldblock_d1,
+		tile_goldblock_d2,
+		tile_goldblock_d3,
+		tile_goldblock_d4,
+		tile_goldblock_d5,
+		tile_goldblock_d6,
+		tile_goldblock_d7,
+		tile_goldblock_d8,
+		tile_goldblock_d9,
+		tile_goldblock_d10,
+		tile_goldblock_d11,
+		tile_goldblock_d12,
+		tile_goldblock_d13,
+		tile_goldblock_d14,
+		tile_goldblock_f,
+
+		tile_bgoldblock = 512,
+		tile_bgoldblock_v0,
+		tile_bgoldblock_v1,
+		tile_bgoldblock_d0,
+		tile_bgoldblock_d1,
+		tile_bgoldblock_d2,
+		tile_bgoldblock_d3,
+		tile_bgoldblock_d4,
+		tile_bgoldblock_d5,
+		tile_bgoldblock_d6,
+		tile_bgoldblock_d7,
+		tile_bgoldblock_d8,
+		tile_bgoldblock_d9,
+		tile_bgoldblock_d10,
+		tile_bgoldblock_d11,
+		tile_bgoldblock_f
 	};
 }
 
@@ -90,6 +131,16 @@ bool isTileBIron(const u16&in tile)
 	return tile >= CMap::tile_biron && tile <= CMap::tile_biron_f;
 }
 
+bool isTileGoldBlock(const u16&in tile)
+{
+	return tile >= CMap::tile_goldblock && tile <= CMap::tile_goldblock_f;
+}
+
+bool isTileBGoldBlock(const u16&in tile)
+{
+	return tile >= CMap::tile_bgoldblock && tile <= CMap::tile_bgoldblock_f;
+}
+
 //universal
 bool isTileBetween(const u16&in tile, const u16&in min, const u16&in max)
 {
@@ -99,7 +150,7 @@ bool isTileBetween(const u16&in tile, const u16&in min, const u16&in max)
 //engine replacement since the engine is garbage and cannot be modified script side
 bool isTileSolid(CMap@ map, const u16&in tile)
 {
-	return map.isTileSolid(tile) || isTileIronOre(tile) || isTileCoal(tile) || isTileIron(tile);
+	return map.isTileSolid(tile) || isTileIronOre(tile) || isTileCoal(tile) || isTileIron(tile) || isTileGoldBlock(tile);
 }
 
 bool isTileGroundStuff(CMap@ map, const u16&in tile)
@@ -111,22 +162,26 @@ bool isTileGroundStuff(CMap@ map, const u16&in tile)
 
 u8 getTileTierSolid(TileType tile)
 {
-	if (isTileBetween(tile, CMap::tile_wood_d1, CMap::tile_wood_d0))      return 0; //damaged wood block
-	if (isTileBetween(tile, CMap::tile_castle_d1, CMap::tile_castle_d0))  return 1; //damaged castle
-	if (tile == CMap::tile_wood)                                          return 1; //wood
-	if (tile == CMap::tile_castle)                                        return 2; //castle
-	if (tile == CMap::tile_castle_moss)                                   return 2; //mossy castle
-	if (isTileBetween(tile, CMap::tile_iron_d0, CMap::tile_iron_f))       return 2; //damaged iron
-	if (isTileIron(tile))                                                 return 3; //iron
+	if (isTileBetween(tile, CMap::tile_wood_d1, CMap::tile_wood_d0))             return 0; //damaged wood block
+	if (isTileBetween(tile, CMap::tile_castle_d1, CMap::tile_castle_d0))         return 1; //damaged castle
+	if (tile == CMap::tile_wood)                                                 return 1; //wood
+	if (tile == CMap::tile_castle)                                               return 2; //castle
+	if (tile == CMap::tile_castle_moss)                                          return 2; //mossy castle
+	if (isTileBetween(tile, CMap::tile_iron_d0, CMap::tile_iron_f))              return 2; //damaged iron
+	if (isTileIron(tile))                                                        return 3; //iron
+	if (isTileBetween(tile, CMap::tile_goldblock_d0, CMap::tile_goldblock_f))    return 3; //damaged gold
+	if (isTileGoldBlock(tile))                                                   return 4; //gold block
 	return 255;
 }
 
 u8 getTileTierBackground(TileType tile)
 {
-	if (tile == CMap::tile_wood_back)                                     return 1; //wood
-	if (tile == CMap::tile_castle_back)                                   return 2; //castle
-	if (tile == CMap::tile_castle_back_moss)                              return 2; //mossy castle
-	if (isTileBetween(tile, CMap::tile_biron_d0, CMap::tile_biron_f))     return 2; //damaged iron
-	if (isTileBIron(tile))                                                return 3; //iron
+	if (tile == CMap::tile_wood_back)                                            return 1; //wood
+	if (tile == CMap::tile_castle_back)                                          return 2; //castle
+	if (tile == CMap::tile_castle_back_moss)                                     return 2; //mossy castle
+	if (isTileBetween(tile, CMap::tile_biron_d0, CMap::tile_biron_f))            return 2; //damaged iron
+	if (isTileBIron(tile))                                                       return 3; //iron
+	if (isTileBetween(tile, CMap::tile_bgoldblock_d0, CMap::tile_bgoldblock_f))  return 3; //damaged gold
+	if (isTileBGoldBlock(tile))                                                  return 4; //gold block
 	return 0;
 }

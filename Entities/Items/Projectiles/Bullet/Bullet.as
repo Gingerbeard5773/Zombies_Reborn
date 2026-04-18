@@ -93,7 +93,7 @@ void onHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 cust
 	CMap@ map = getMap();
 	f32 vellen = velocity.Length();
 	TileType tile = map.getTile(worldPoint).type;
-	if (map.isTileCastle(tile) || isTileIron(tile))
+	if (map.isTileCastle(tile) || isTileIron(tile) || isTileGoldBlock(tile))
 	{
 		sparks(worldPoint, -velocity.Angle(), Maths::Max(vellen*0.05f, damage));
 	}

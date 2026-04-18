@@ -118,6 +118,8 @@ u8 getTileStrength(CMap@ map, TileType tile)
 {
 	if (isTileGroundStuff(map, tile)) return 2;
 	if (isTileBIron(tile))            return 3;
-	if (isTileIron(tile))             return 5; //iron STRONG.
+	if (isTileIron(tile))             return 5;
+	if (isTileBGoldBlock(tile))       return 4;
+	if (isTileGoldBlock(tile))        return 5;
 	return 0;
 }

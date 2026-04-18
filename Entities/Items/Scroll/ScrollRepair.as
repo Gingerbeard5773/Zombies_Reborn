@@ -71,6 +71,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				{
 					map.server_SetTile(tpos, CMap::tile_biron);
 				}
+				else if (isTileGoldBlock(t))
+				{
+					map.server_SetTile(tpos, CMap::tile_goldblock);
+				}
+				else if (isTileBGoldBlock(t))
+				{
+					map.server_SetTile(tpos, CMap::tile_bgoldblock);
+				}
 			}
 		}
 		

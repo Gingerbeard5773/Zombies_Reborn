@@ -296,7 +296,7 @@ void LinearExplosion(CBlob@ this, const Vec2f&in _direction, f32 length, const f
 						justhurt = justhurt || !canExplosionDestroy(map, tpos, t);
 						map.server_DestroyTile(tpos, justhurt ? 5.0f : 100.0f, this);
 						
-						if (isTileIron(t) && width_step == width_steps / 2 + 1)
+						if (isTileExplosiveResistant(t) && width_step == width_steps / 2 + 1)
 						{
 							steps = step;
 							damagedsteps = max_depth; //blocked!
@@ -414,6 +414,11 @@ bool canExplosionDestroy(CMap@ map, Vec2f&in tpos, const TileType&in t)
 	return !isTileGroundStuff(map, t);
 }
 
+bool isTileExplosiveResistant(const TileType&in t)
+{
+	return isTileIron(t) || isTileGoldBlock(t);
+}
+
 bool HitBlob(CBlob@ this, Vec2f&in mapPos, CBlob@ hit_blob, const f32&in radius, const f32&in damage, const u8&in hitter,
              const bool&in bother_raycasting = true, const bool&in should_teamkill = false)
 {
@@ -433,7 +438,7 @@ bool HitBlob(CBlob@ this, Vec2f&in mapPos, CBlob@ hit_blob, const f32&in radius,
 				CBlob@ b = hi.blob;
 				if (b is null)
 				{
-					if (isTileIron(hi.tile)) return false;
+					if (isTileExplosiveResistant(hi.tile)) return false;
 					continue;
 				}
 				
