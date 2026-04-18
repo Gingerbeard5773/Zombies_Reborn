@@ -16,6 +16,7 @@ void onInit(CBlob@ this)
 		anim.AddFrame(2);
 		layer.SetVisible(false);
 		layer.SetHUD(true);
+		layer.SetIgnoreParentFacing(true);
 	}
 }
 

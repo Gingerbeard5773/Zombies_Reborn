@@ -62,6 +62,7 @@ namespace Translate
 	ScrollResurgence       = Translate("Scroll of Resurgence\nUse this to resurrect everyone who has died.",                                   ""),
 	ScrollTime             = Translate("Scroll of Time\nUse this to fast forward time by one day.",                                            ""),
 	ScrollObliteration     = Translate("Scroll of Obliteration\nUse this to destroy every enemy in the world.",                                ""),
+	ScrollIron             = Translate("Scroll of Iron\nUse this to convert nearby stone blocks into iron blocks.",                            ""),
 
 	//builder
 	IronBlock              = Translate("Iron Block\nResistant to explosions",                  "Железный блок\nВзрывоустойчивый Блок"),

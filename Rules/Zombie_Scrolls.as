@@ -261,13 +261,14 @@ void SetupScrolls(CRules@ this)
 		def.scripts.push_back("ScrollSomething.as");
 		all.scrolls.set("stone", def);
 	} */
-	/*{
+	{
 		ScrollDef def;
-		def.name = "Scroll of Something";
+		def.name = name(Translate::ScrollIron);
 		def.scrollFrame = 31;
-		def.scripts.push_back("ScrollSomething.as");
-		all.scrolls.set("stone", def);
-	} */
+		def.scripts.push_back("ScrollIron.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
+		all.scrolls.set("iron", def);
+	}
 
 	all.names = all.scrolls.getKeys();
 	basic.names = basic.scrolls.getKeys();

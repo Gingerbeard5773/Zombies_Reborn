@@ -59,7 +59,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				{
 					map.server_SetTile(tpos, CMap::tile_castle);
 				}
-				else if (t >= CMap::tile_castle_back && t <= CMap::tile_castle_back + 15)
+				else if (t >= CMap::tile_castle_back && t <= CMap::tile_castle_back + 15 || t == CMap::tile_castle_back_moss)
 				{
 					map.server_SetTile(tpos, CMap::tile_castle_back);
 				}
