@@ -10,10 +10,12 @@ void onInit(CBlob@ this)
 	CShape@ shape = this.getShape();
 	shape.AddPlatformDirection(Vec2f(0, -1), 89, false);
 	shape.SetRotationsAllowed(false);
-	
+
+	this.Tag("iron_resistance");
+
 	this.Tag("blocks sword");
 	this.set_TileType("background tile", CMap::tile_biron);
-	
+
 	this.server_setTeamNum(-1);
 
 	if (isServer())
@@ -79,8 +81,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			break;
 		case Hitters::keg:
 			damage *= 0.1f;
-			break;
-		default:
 			break;
 	}
 

@@ -21,6 +21,7 @@ void onInit(CBlob@ this)
 	consts.mapCollisions = false; // we have our own map collision
 
 	this.Tag("place norotate");
+	this.Tag("builder always hit");
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 
@@ -59,6 +60,20 @@ void tileCheck(CBlob@ this, Vec2f pos, CMap@ map, bool&out onSurface, bool&out o
 bool canRetractSpike(TileType tile, CMap@ map)
 {
 	return map.isTileCastle(tile) || isTileIron(tile) || isTileGoldBlock(tile);
+}
+
+bool canStab(CBlob@ b)
+{
+	return b.hasTag("flesh") && b.getName() != "chicken";
+}
+
+f32 getSpikeDamage(CBlob@ this)
+{
+	const string name = this.getName();
+	if (name == "spikes")       return 0.5f;
+	if (name == "iron_spikes")  return 0.75f;
+	if (name == "gold_spikes")  return 0.85f;
+	return 0.5f;
 }
 
 void onTick(CBlob@ this)
@@ -134,7 +149,13 @@ void onTick(CBlob@ this)
 				for (u16 i = 0; i < overlapping.length; i++)
 				{
 					CBlob@ b = overlapping[i];
-					if (team == b.getTeamNum() || !canStab(b)) continue;
+					if (team == b.getTeamNum()) continue;
+
+					if (!canStab(b))
+					{
+						this.IgnoreCollisionWhileOverlapped(b);
+						continue;
+					}
 
 					state = stabbing;
 					timer = delay_stab;
@@ -159,12 +180,13 @@ void onTick(CBlob@ this)
 				CBlob@[] overlapping;
 				if (isServer() && this.getOverlapping(@overlapping))
 				{
+					const f32 damage = getSpikeDamage(this);
 					for (u16 i = 0; i < overlapping.length; i++)
 					{
 						CBlob@ b = overlapping[i];
 						if (!canStab(b)) continue;
 
-						this.server_Hit(b, pos, b.getVelocity() * -1, 0.5f, Hitters::spikes, true);
+						this.server_Hit(b, pos, b.getVelocity() * -1, damage, Hitters::spikes, true);
 					}
 				}
 			}
@@ -193,11 +215,6 @@ void onTick(CBlob@ this)
 	onHealthChange(this, 1.0f);
 }
 
-bool canStab(CBlob@ b)
-{
-	return b.hasTag("flesh") && b.getName() != "chicken";
-}
-
 //physics logic
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
@@ -213,13 +230,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 	if (state == falling)
 	{
-		const u8 pierce = this.get_u8("spike_pierce");
-		if (pierce >= 4)
+		if (this.getName() == "spikes")
 		{
-			this.server_Die();
-			return;
+			const u8 pierce = this.get_u8("spike_pierce");
+			if (pierce >= 4)
+			{
+				this.server_Die();
+				return;
+			}
+			this.set_u8("spike_pierce", pierce + 1);
 		}
-		this.set_u8("spike_pierce", pierce + 1);
 
 		const f32 vellen = this.getVelocity().Length();
 		f32 damage = 4.0f;

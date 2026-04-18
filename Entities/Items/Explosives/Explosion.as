@@ -444,16 +444,21 @@ bool HitBlob(CBlob@ this, Vec2f&in mapPos, CBlob@ hit_blob, const f32&in radius,
 				
 				if (b is this || b is hit_blob || !b.isCollidable()) continue; 
 				
-				if (b.getName() == "iron_door") return false;
-				
-				if (b.getName() == "iron_platform")
+				if (b.hasTag("iron_resistance"))
 				{
-					ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
-					Vec2f dir = plat.direction;
-					if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
+					if (b.isPlatform())
+					{
+						ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+						Vec2f dir = plat.direction;
+						if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
 
-					if (Maths::Abs(dir.AngleWith(-hitvec)) < plat.angleLimit) return false;
+						if (Maths::Abs(dir.AngleWith(-hitvec)) < plat.angleLimit) return false;
+
+						continue;
+					}
+					return false;
 				}
+
 				continue;
 			}
 
