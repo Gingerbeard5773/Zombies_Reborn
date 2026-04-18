@@ -149,13 +149,7 @@ void onTick(CBlob@ this)
 				for (u16 i = 0; i < overlapping.length; i++)
 				{
 					CBlob@ b = overlapping[i];
-					if (team == b.getTeamNum()) continue;
-
-					if (!canStab(b))
-					{
-						this.IgnoreCollisionWhileOverlapped(b);
-						continue;
-					}
+					if (team == b.getTeamNum() || !canStab(b)) continue;
 
 					state = stabbing;
 					timer = delay_stab;
