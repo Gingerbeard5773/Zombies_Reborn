@@ -18,12 +18,12 @@ void onInit(CBlob@ this)
 
 	this.server_setTeamNum(-1);
 
-	if (isServer())
+	/*if (isServer())
 	{
 		dictionary harvest;
 		harvest.set('mat_gold', 1);
 		this.set('harvest', harvest);
-	}
+	}*/
 
 	MakeDamageFrame(this);
 }

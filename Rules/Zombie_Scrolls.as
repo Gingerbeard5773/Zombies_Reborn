@@ -240,13 +240,14 @@ void SetupScrolls(CRules@ this)
 		def.scripts.push_back("ScrollObliteration.as");
 		all.scrolls.set("obliteration", def);
 	}
-	/*{
+	{
 		ScrollDef def;
-		def.name = "Scroll of Something";
+		def.name = "Scroll of Gilding";
 		def.scrollFrame = 28;
-		def.scripts.push_back("ScrollSomething.as");
-		all.scrolls.set("stone", def);
-	} */
+		def.scripts.push_back("ScrollGilding.as");
+		def.scripts.push_back("ScrollRangeIndicator.as");
+		all.scrolls.set("gilding", def);
+	}
 	/*{
 		ScrollDef def;
 		def.name = "Scroll of Something";

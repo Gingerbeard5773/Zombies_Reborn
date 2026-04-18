@@ -35,8 +35,8 @@ namespace Translate
 	Migrant2               = Translate("Refugees have arrived!",                                      "Беженцы прибывают!"),
 	Bobert                 = Translate("Bobert has appeared!",                                        ""),
 	Enchanter              = Translate("Tim the enchanter has appeared!",                             ""),
-	ScrollTimeStart        = Translate("Time is speeding up",                                                                                  ""),
-	ScrollTimeFinish       = Translate("Time has returned to its normal pace",                                                                 ""),
+	ScrollTimeStart        = Translate("Time is speeding up",                                         ""),
+	ScrollTimeFinish       = Translate("Time has returned to its normal pace",                        ""),
 
 	//scrolls
 	ScrollClone            = Translate("Scroll of Duplication\nUse this to duplicate an object you are pointing to.",                          "Свиток дублирования\nПри использовании, он клонирует объект, на который вы указываете курсором."),
@@ -52,17 +52,18 @@ namespace Translate
 	ScrollWisent           = Translate("Scroll of Wisent\nUse this to summon a bison.",                                                        "Свиток Зубра\nПри использовании, вы призываете сухопутное существо - бизона."),
 	ScrollHealth           = Translate("Scroll of Health\nUse this to heal yourself and others around you.",                                   "Свиток Здоровья\nПри использовании, придает жизненную силу, исцеляя вас и всех окружающих."),
 	ScrollRepair           = Translate("Scroll of Repair\nUse this to repair everything around you.",                                          "Свиток ремонта\nПри использовании, ремонтирует строения и блоки, а также все что окружает вас."),
-	
+
 	ScrollCreation         = Translate("Scroll of Creation\nUse this to magically construct a structure from thin air.",                       "Свиток Творения\nПри использовании, волшебным образом сооружает строение из воздуха."),
 	ScrollEarth            = Translate("Scroll of Earth\nUse this to fill in dirt background with dirt.",                                      "Свиток Земли\nПри использовании, заполняет раскопанные блоки почвы."),
 	ScrollChaos            = Translate("Scroll of Chaos\nUse this to ???.",                                                                    "Свиток Хаоса\nТворит неизведанные вещи при использовании."),
-	
+
 	ScrollMidas            = Translate("Scroll of Midas",                                                                                      "Свиток Мидаса"),
 	ScrollDesiccation      = Translate("Scroll of Desiccation\nUse this to dry up all the water in the world.",                                ""),
 	ScrollResurgence       = Translate("Scroll of Resurgence\nUse this to resurrect everyone who has died.",                                   ""),
 	ScrollTime             = Translate("Scroll of Time\nUse this to fast forward time by one day.",                                            ""),
 	ScrollObliteration     = Translate("Scroll of Obliteration\nUse this to destroy every enemy in the world.",                                ""),
 	ScrollIron             = Translate("Scroll of Iron\nUse this to convert nearby stone blocks into iron blocks.",                            ""),
+	ScrollGilding          = Translate("Scroll of Gilding\nUse this to gild nearby iron blocks with gold.",                                    ""),
 
 	//builder
 	IronBlock              = Translate("Iron Block\nResistant to explosions",                  "Железный блок\nВзрывоустойчивый Блок"),
