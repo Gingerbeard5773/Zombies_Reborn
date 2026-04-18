@@ -4,6 +4,7 @@
 #include "Zombie_GlobalMessagesCommon.as"
 #include "Zombie_WarnsCommon.as"
 #include "Zombie_StatisticsCommon.as"
+#include "Zombie_TechnologyCommon.as"
 #include "MapSaver.as"
 
 //Use ' !list ' in game to view the commands list.
@@ -271,6 +272,31 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 
 			respawns.set(ply_name, getGameTime());
 		}
+	}
+	else if (tokens[0] == "!technology")
+	{
+		onTechnologyRulesHandle@ onTechnologyRules;
+		this.get("onTechnology handle", @onTechnologyRules);
+
+		Technology@[]@ TechTree = getTechTree();
+		for (u8 i = 0; i < TechTree.length; i++)
+		{
+			Technology@ tech = TechTree[i];
+			if (tech is null) continue;
+
+			tech.completed = true;
+
+			if (onTechnologyRules !is null)
+			{
+				onTechnologyRules(this, tech.index);
+			}
+		}
+
+		server_SendGlobalMessage(this, "Unlocked all technologies", 5, color_white.color);
+
+		CBitStream stream;
+		SerializeTechTree(this, stream);
+		this.SendCommand(this.getCommandID("client_synchronize_technology"), stream);
 	}
 	else if (tokens[0] == "!loadgen")
 	{

@@ -451,28 +451,6 @@ void onTechnology(CRules@ this, u8 tech)
 	if (hasTech(TechTree, Tech::RegenerationIII)) regeneration_frequency += 8;
 }
 
-bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
-{
-	if (player is null) return true;
-
-	//for testing
-	if (sv_test || player.isMod() || player.getUsername() == "MrHobo")
-	{
-		if (text_in == "!technology")
-		{
-			Technology@[]@ TechTree = getTechTree();
-			for (u8 i = 0; i < TechTree.length; i++)
-			{
-				Technology@ tech = TechTree[i];
-				if (tech is null) continue;
-
-				tech.completed = true;
-			}
-		}
-	}
-	return true;
-}
-
 /// NETWORK
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
@@ -480,20 +458,7 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	if (!isServer()) return;
 
 	CBitStream stream;
-
-	//serialize tech tree
-	Technology@[]@ TechTree = getTechTree();
-	for (u8 i = 0; i < TechTree.length; i++)
-	{
-		Technology@ tech = TechTree[i];
-		if (tech is null) continue;
-
-		stream.write_u32(tech.time);
-		stream.write_bool(tech.available);
-		stream.write_bool(tech.paused);
-		stream.write_bool(tech.completed);
-	}
-
+	SerializeTechTree(this, stream);
 	this.SendCommand(this.getCommandID("client_synchronize_technology"), stream, player);
 }
 
@@ -501,17 +466,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client_synchronize_technology") && isClient())
 	{
-		//unserialize tech tree
-		Technology@[]@ TechTree = getTechTree();
-		for (u8 i = 0; i < TechTree.length; i++)
-		{
-			Technology@ tech = TechTree[i];
-			if (tech is null) continue;
-
-			if (!params.saferead_u32(tech.time))       { error("Tech ["+i+"] Failed [0]"); return; }
-			if (!params.saferead_bool(tech.available)) { error("Tech ["+i+"] Failed [1]"); return; }
-			if (!params.saferead_bool(tech.paused))    { error("Tech ["+i+"] Failed [2]"); return; }
-			if (!params.saferead_bool(tech.completed)) { error("Tech ["+i+"] Failed [3]"); return; }
-		}
+		UnserializeTechTree(this, params);
 	}
 }

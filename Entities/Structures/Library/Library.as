@@ -181,19 +181,6 @@ void onFinishTechnology(Technology@ tech)
 	}*/
 }
 
-bool isTechTreeCompleted()
-{
-	Technology@[]@ TechTree = getTechTree();
-	for (u8 i = 0; i < TechTree.length; i++)
-	{
-		Technology@ tech = TechTree[i];
-		if (tech is null) continue;
-		
-		if (!tech.completed) return false;
-	}
-	return true;
-}
-
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (caller.getTeamNum() != this.getTeamNum()) return;

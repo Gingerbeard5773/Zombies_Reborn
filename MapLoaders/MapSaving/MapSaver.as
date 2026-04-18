@@ -354,6 +354,8 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	ConfigFile config = ConfigFile();
 	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) return false;
+	
+	const bool firstLoad = !this.exists("map_name");
 
 	const string dirtData = config.read_string("dirt_data");
 	const u16 dayNumber = config.read_u16("day_number");
@@ -381,6 +383,9 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 	this.Sync("map_name", true);
 
 	//overwrite technology
+	onTechnologyRulesHandle@ onTechnologyRules;
+	this.get("onTechnology handle", @onTechnologyRules);
+
 	Technology@[]@ techTree = getTechTree();
 	int data_index = 0;
 	for (u8 i = 0; i < techTree.length; i++)
@@ -392,6 +397,18 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 		tech.available = parseBool(techData[data_index++]);
 		tech.paused = parseBool(techData[data_index++]);
 		tech.completed = parseBool(techData[data_index++]);
+
+		if (onTechnologyRules !is null)
+		{
+			onTechnologyRules(this, tech.index);
+		}
+	}
+
+	if (!firstLoad) //only sync if its not our first load (necessary because of cmd issues on launch)
+	{
+		CBitStream stream;
+		SerializeTechTree(this, stream);
+		this.SendCommand(this.getCommandID("client_synchronize_technology"), stream);
 	}
 
 	//recalculate targets

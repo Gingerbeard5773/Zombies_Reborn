@@ -2,13 +2,6 @@
 
 //Tech Tree system
 
-/*
-	TECH IDEAS FOR THE FUTURE?
-	Iron Saws        : Saws are 25% more durable
-	Steel Saws       : Saws are 50% more durable
-	Auto Saws        : Saws auto chop trees they are overlapping
-*/
-
 //funcdef void onTechnologyHandle(CBlob@, u8);
 funcdef void onTechnologyRulesHandle(CRules@, u8);
 
@@ -164,4 +157,51 @@ bool hasTech(Technology@[]@ TechTree, const u8&in index)
 bool hasTech(const u8&in index)
 {
 	return hasTech(getTechTree(), index);
+}
+
+bool isTechTreeCompleted()
+{
+	Technology@[]@ TechTree = getTechTree();
+	for (u8 i = 0; i < TechTree.length; i++)
+	{
+		Technology@ tech = TechTree[i];
+		if (tech is null) continue;
+		
+		if (!tech.completed) return false;
+	}
+	return true;
+}
+
+/// NETWORK
+
+void SerializeTechTree(CRules@ this, CBitStream@ stream)
+{
+	Technology@[]@ TechTree = getTechTree();
+	for (u8 i = 0; i < TechTree.length; i++)
+	{
+		Technology@ tech = TechTree[i];
+		if (tech is null) continue;
+
+		stream.write_u32(tech.time);
+		stream.write_bool(tech.available);
+		stream.write_bool(tech.paused);
+		stream.write_bool(tech.completed);
+	}
+}
+
+bool UnserializeTechTree(CRules@ this, CBitStream@ stream)
+{
+	Technology@[]@ TechTree = getTechTree();
+	for (u8 i = 0; i < TechTree.length; i++)
+	{
+		Technology@ tech = TechTree[i];
+		if (tech is null) continue;
+
+		if (!stream.saferead_u32(tech.time))       { error("Tech ["+i+"] Failed [0]"); return false; }
+		if (!stream.saferead_bool(tech.available)) { error("Tech ["+i+"] Failed [1]"); return false; }
+		if (!stream.saferead_bool(tech.paused))    { error("Tech ["+i+"] Failed [2]"); return false; }
+		if (!stream.saferead_bool(tech.completed)) { error("Tech ["+i+"] Failed [3]"); return false; }
+	}
+
+	return true;
 }
