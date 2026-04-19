@@ -1,10 +1,11 @@
 // Builder logic
 
-#include "BuilderCommon.as";
-#include "PlacementCommon.as";
-#include "Help.as";
-#include "CommonBuilderBlocks.as";
-#include "KnockedCommon.as";
+#include "BuilderCommon.as"
+#include "PlacementCommon.as"
+#include "Help.as"
+#include "CommonBuilderBlocks.as"
+#include "KnockedCommon.as"
+#include "Zombie_TechnologyCommon.as"
 
 namespace Builder
 {
@@ -13,6 +14,7 @@ namespace Builder
 		PAGE_ZERO = 0,
 		PAGE_ONE,
 		PAGE_TWO,
+		PAGE_THREE,
 		PAGE_COUNT
 	};
 }
@@ -21,14 +23,16 @@ const string[] PAGE_NAME =
 {
 	"Building",
 	"Structure",
-	"Wiring"
+	"Wiring",
+	"Gold",
 };
 
 const Vec2f[] PAGE_SIZE =
 {
 	Vec2f(3, 6),
 	Vec2f(8, 5),
-	Vec2f(4, 6)
+	Vec2f(4, 6),
+	Vec2f(3, 2)
 };
 
 const u8 GRID_SIZE = 48;
@@ -85,8 +89,10 @@ void MakeBlocksMenu(CInventory@ this, CBlob@ blob, const Vec2f &in INVENTORY_POS
 	if (blocks is null) return;
 
 	const u8 PAGE = blob.get_u8("build page");
+	if (PAGE >= Builder::PAGE_COUNT) return;
+
 	const Vec2f MENU_SIZE = PAGE_SIZE[PAGE];
-	const Vec2f MENU_POS = Vec2f(0, MENU_SIZE.y * -GRID_SIZE - GRID_PADDING) + INVENTORY_POS;
+	const Vec2f MENU_POS = Vec2f(0, Maths::Max(MENU_SIZE.y, 4) * -GRID_SIZE - GRID_PADDING) + INVENTORY_POS;
 
 	CGridMenu@ menu = CreateGridMenu(MENU_POS, blob, MENU_SIZE, getTranslatedString("Build"));
 	if (menu is null) return;
@@ -140,16 +146,21 @@ void MakeBlocksMenu(CInventory@ this, CBlob@ blob, const Vec2f &in INVENTORY_POS
 			clear.SetHoverText(getTranslatedString("Stop building\n"));
 		}
 	}
+	
+	const bool canBuildGoldTiles = isTechTreeCompleted();
+	const u8 page_count = Builder::PAGE_COUNT + (canBuildGoldTiles ? 0 : -1);
 
-	const Vec2f INDEX_POS = Vec2f(menu.getLowerRightPosition().x + GRID_PADDING + GRID_SIZE, menu.getUpperLeftPosition().y + GRID_SIZE * Builder::PAGE_COUNT / 2);
+	const Vec2f INDEX_POS = Vec2f(menu.getLowerRightPosition().x + GRID_PADDING + GRID_SIZE, menu.getUpperLeftPosition().y + GRID_SIZE * page_count / 2);
 
-	CGridMenu@ index = CreateGridMenu(INDEX_POS, blob, Vec2f(2, Builder::PAGE_COUNT), "Type");
+	CGridMenu@ index = CreateGridMenu(INDEX_POS, blob, Vec2f(2, page_count), "Type");
 	if (index !is null)
 	{
 		index.deleteAfterClick = false;
 
 		for(u8 i = 0; i < Builder::PAGE_COUNT; i++)
 		{
+			if (i == Builder::PAGE_THREE && !canBuildGoldTiles) continue;
+
 			CBitStream stream;
 			stream.write_u8(i);
 			CGridButton@ button = index.AddButton("$"+PAGE_NAME[i]+"$", PAGE_NAME[i], "BuilderInventory.as", "Callback_SelectPage", Vec2f(2, 1), stream);
@@ -198,6 +209,8 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		if (!params.saferead_u8(i)) return; 
 
 		const u8 PAGE = blob.get_u8("build page");
+		if (PAGE >= Builder::PAGE_COUNT) return;
+
 		if (blocks !is null && i < blocks[PAGE].length)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];

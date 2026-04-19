@@ -165,6 +165,7 @@ void onFinishTechnology(Technology@ tech)
 	if (isServer() && isTechTreeCompleted())
 	{
 		Achievement::server_Unlock(Achievement::Librarian);
+		server_SendGlobalMessage(rules, 11, 10, color_white.color);
 	}
 
 	/*CBlob@[] blobs;

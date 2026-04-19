@@ -50,6 +50,8 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	AddIconToken("$iron_spikes_ZF$", "IronSpikes.png", Vec2f(8, 8), 0);
 	AddIconToken("$obstructor_ZF$", "Obstructor.png", Vec2f(8, 8), 8);
 	AddIconToken("$ground_block$", "World.png", Vec2f(8, 8), CMap::tile_ground);
+	AddIconToken("$gold_block_ZF$", "World.png", Vec2f(8, 8), CMap::tile_goldblock);
+	AddIconToken("$bgold_block_ZF$", "World.png", Vec2f(8, 8), CMap::tile_bgoldblock);
 
 	BuildBlock[] page_0;
 	blocks.push_back(page_0);
@@ -349,6 +351,39 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
 		blocks[2].push_back(b);
+	}
+
+	BuildBlock[] page_3;
+	blocks.push_back(page_3);
+	{
+		BuildBlock b(CMap::tile_goldblock, "gold_block", "$gold_block_ZF$", "Gold Block\nExceptionally durable\nResistant to explosions");
+		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 2);
+		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 20);
+		blocks[3].push_back(b);
+	}
+	{
+		BuildBlock b(CMap::tile_bgoldblock, "back_gold_block", "$bgold_block_ZF$", "Back Gold Wall\nExceptionally durable support");
+		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 1);
+		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 5);
+		blocks[3].push_back(b);
+	}
+	{
+		BuildBlock b(0, "gold_spikes", "$gold_spikes$", "Gold Spikes\nExceptionally durable spikes");
+		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 3);
+		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 15);
+		blocks[3].push_back(b);
+	}
+	{
+		BuildBlock b(0, "gold_platform", "$gold_platform$", "Gold Platform\nExceptionally durable\nOne way platform\nBlocks water");
+		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 3);
+		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 15);
+		blocks[3].push_back(b);
+	}
+	{
+		BuildBlock b(0, "gold_door", getTeamIcon("gold_door", "1x1GoldDoor.png", team_num, Vec2f(16, 8)), "Gold Door\nExceptionally durable");
+		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 4);
+		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 20);
+		blocks[3].push_back(b);
 	}
 }
 

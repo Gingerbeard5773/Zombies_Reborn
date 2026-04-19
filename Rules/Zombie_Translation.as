@@ -35,6 +35,7 @@ namespace Translate
 	Migrant2               = Translate("Refugees have arrived!",                                      "Беженцы прибывают!"),
 	Bobert                 = Translate("Bobert has appeared!",                                        ""),
 	Enchanter              = Translate("Tim the enchanter has appeared!",                             ""),
+	GoldTilesUnlocked      = Translate("All technology researched- Gold tiles unlocked!",             ""),
 	ScrollTimeStart        = Translate("Time is speeding up",                                         ""),
 	ScrollTimeFinish       = Translate("Time has returned to its normal pace",                        ""),
 
