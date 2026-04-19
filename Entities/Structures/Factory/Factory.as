@@ -67,9 +67,9 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	{
-		Production tech(name(Translate::Tank), 11);
+		Production tech(name(Translate("Tank")), 11);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 80);
-		tech.addProductionItem("tank", name(Translate::Tank), "", 80, 1, Product::crate);
+		tech.addProductionItem("tank", name(Translate("Tank")), "", 80, 1, Product::crate);
 		production_set.push_back(tech);
 	}
 	{
@@ -85,9 +85,9 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	{
-		Production tech(Translate::Bigbomb, 19);
+		Production tech(Translate("Bigbomb"), 19);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
-		tech.addProductionItem("bigbomb", Translate::Bigbomb, "", 30, 4);
+		tech.addProductionItem("bigbomb", Translate("Bigbomb"), "", 30, 4);
 		production_set.push_back(tech);
 	}
 	{
@@ -99,8 +99,8 @@ void SetupProductionSet()
 	{
 		Production tech("Pyrotechnics", FactoryFrame::pyro);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 40);
-		tech.addProductionItem("molotov", name(Translate::Molotov), "", 25, 2);
-		tech.addProductionItem("mat_molotovarrows", name(Translate::MolotovArrows), "", 35, 2);
+		tech.addProductionItem("molotov", name(Translate("Molotov")), "", 25, 2);
+		tech.addProductionItem("mat_molotovarrows", name(Translate("MolotovArrows")), "", 35, 2);
 		production_set.push_back(tech);
 	}
 	{
@@ -123,15 +123,15 @@ void SetupProductionSet()
 		production_set.push_back(tech);
 	}
 	{
-		Production tech(name(Translate::FireworkArrows), 21);
+		Production tech(name(Translate("FireworkArrows")), 21);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 25);
-		tech.addProductionItem("mat_fireworkarrows", name(Translate::FireworkArrows), "", 40, 2);
+		tech.addProductionItem("mat_fireworkarrows", name(Translate("FireworkArrows")), "", 40, 2);
 		production_set.push_back(tech);
 	}
 	{
-		Production tech(name(Translate::Cannonballs), 22);
+		Production tech(name(Translate("Cannonballs")), 22);
 		AddRequirement(tech.reqs, "blob", "mat_gold", "Gold", 50);
-		tech.addProductionItem("mat_cannonballs", name(Translate::Cannonballs), "", 35, 3);
+		tech.addProductionItem("mat_cannonballs", name(Translate("Cannonballs")), "", 35, 3);
 		production_set.push_back(tech);
 	}
 	getRules().set("factory_production_set", production_set);
@@ -170,7 +170,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void RequiresWorkerButton(CBlob@ this, CBlob@ caller, Vec2f offset = Vec2f_zero)
 {
-	CButton@ button = caller.CreateGenericButton("$worker_migrant$", offset, this, 0, Translate::WorkerRequired);
+	CButton@ button = caller.CreateGenericButton("$worker_migrant$", offset, this, 0, Translate("WorkerRequired"));
 	if (button !is null)
 	{
 		button.SetEnabled(false);

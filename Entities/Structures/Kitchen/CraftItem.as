@@ -25,7 +25,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	Craft@ craft = getCraft(this);
 	if (craft is null) return;
 
-	CButton@ button = caller.CreateGenericButton("$"+this.getName()+"_craft_icon_"+craft.selected+"$", craft.button_offset, this, CraftMenu, Translate::SetRecipe);
+	CButton@ button = caller.CreateGenericButton("$"+this.getName()+"_craft_icon_"+craft.selected+"$", craft.button_offset, this, CraftMenu, Translate("SetRecipe"));
 }
 
 void CraftMenu(CBlob@ this, CBlob@ caller)
@@ -35,7 +35,7 @@ void CraftMenu(CBlob@ this, CBlob@ caller)
 	Craft@ craft = getCraft(this);
 	if (craft is null) return;
 
-	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), this, craft.menu_size, Translate::Recipes);
+	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), this, craft.menu_size, Translate("Recipes"));
 	if (menu is null) return;
 
 	for (u8 i = 0; i < craft.items.length; i++)
@@ -47,7 +47,7 @@ void CraftMenu(CBlob@ this, CBlob@ caller)
 		
 		const bool isSelected = craft.selected == i;
 		const string recipe_name = item.title.split("\n")[0];
-		const string text = (isSelected ? Translate::CurrentRecipe : Translate::SetRecipe) + ": " + recipe_name;
+		const string text = (isSelected ? Translate("CurrentRecipe") : Translate("SetRecipe")) + ": " + recipe_name;
 
 		CGridButton@ butt = menu.AddButton("$"+this.getName()+"_craft_icon_" + i + "$", text, this.getCommandID("server_set_crafting"), params);
 		butt.hoverText = item.title + "\n\n" + getButtonRequirementsText(item.reqs, false);

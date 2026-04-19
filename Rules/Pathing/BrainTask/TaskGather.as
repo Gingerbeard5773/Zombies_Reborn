@@ -5,7 +5,7 @@ class GatherTask : BrainTask
 	GatherTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskGather;
+		description = Translate("TaskGather");
 		type = Task::Gather;
 		if (target !is null)
 		{

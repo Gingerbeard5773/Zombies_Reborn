@@ -13,7 +13,7 @@ void onInit(CBlob@ this)
 
 	AddIconToken("$scubagear$", "ScubaGear.png", Vec2f(16, 16), 1, 0);
 
-	this.setInventoryName(name(Translate::ScubaGear));
+	this.setInventoryName(name(Translate("ScubaGear")));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

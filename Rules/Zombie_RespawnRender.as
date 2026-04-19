@@ -1,6 +1,6 @@
 //Render time till player respawn
 
-#include "Zombie_Translation.as";
+#include "Zombie_Translation.as"
 
 void onRender(CRules@ this)
 {
@@ -18,12 +18,12 @@ void onRender(CRules@ this)
 	const u32 time = this.get_u32("client respawn time") + 30;
 	const s32 time_left = (time - gameTime) / getTicksASecond();
 	
-	string text = time_left > 100 ? Translate::Respawn0 : getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + time_left);
+	string text = time_left > 100 ? Translate("Respawn0") : getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + time_left);
 	SColor col = SColor(0xFFE0BA16);
 	
 	if (player.getTeamNum() == 3) //undead player
 	{
-		text = Translate::Respawn1;
+		text = Translate("Respawn1");
 		col = SColor(0xFFDB5743);
 	}
 	

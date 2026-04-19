@@ -15,7 +15,7 @@ void onInit(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || (this.getPosition() - caller.getPosition()).Length() > 50.0f) return;
-	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Teleport, desc(Translate::ScrollTeleport));
+	caller.CreateGenericButton(11, Vec2f_zero, this, Callback_Teleport, desc(Translate("ScrollTeleport")));
 }
 
 void Callback_Teleport(CBlob@ this, CBlob@ caller)

@@ -38,7 +38,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (this.hasTag("used")) return;
 
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), desc(Translate::ScrollDesiccation));
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), desc(Translate("ScrollDesiccation")));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

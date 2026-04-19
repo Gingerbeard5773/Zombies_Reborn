@@ -28,19 +28,19 @@ void onInit(CBlob@ this)
 	shop.button_enable_radius = 35.0f;
 	
 	{
-		SaleItem s(shop.items, name(Translate::ScrollFowl), "$scroll_fowl$", "fowl", name(Translate::ScrollFowl), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollFowl")), "$scroll_fowl$", "fowl", name(Translate("ScrollFowl")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollRoyalty), "$scroll_royalty$", "royalty", name(Translate::ScrollRoyalty), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollRoyalty")), "$scroll_royalty$", "royalty", name(Translate("ScrollRoyalty")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 40);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollWisent), "$scroll_wisent$", "wisent", name(Translate::ScrollWisent), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollWisent")), "$scroll_wisent$", "wisent", name(Translate("ScrollWisent")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollFish), "$scroll_fish$", "fish", name(Translate::ScrollFish), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollFish")), "$scroll_fish$", "fish", name(Translate("ScrollFish")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 	}
 	{
@@ -48,27 +48,27 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 30);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollFlora), "$scroll_flora$", "flora", name(Translate::ScrollFlora), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollFlora")), "$scroll_flora$", "flora", name(Translate("ScrollFlora")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollRevive), "$scroll_revive$", "revive", name(Translate::ScrollRevive), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollRevive")), "$scroll_revive$", "revive", name(Translate("ScrollRevive")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 25);
 	}
 	/*{
-		SaleItem s(shop.items, name(Translate::ScrollCrate), "$scroll_crate$", "crate", name(Translate::ScrollCrate), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollCrate")), "$scroll_crate$", "crate", name(Translate("ScrollCrate")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
 	}*/
 	/*{
-		SaleItem s(shop.items, name(Translate::ScrollClone), "$scroll_clone$", "clone", name(Translate::ScrollClone), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollClone")), "$scroll_clone$", "clone", name(Translate("ScrollClone")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 200);
 	}*/
 	{
-		SaleItem s(shop.items, name(Translate::ScrollRepair), "$scroll_repair$", "repair", name(Translate::ScrollRepair), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollRepair")), "$scroll_repair$", "repair", name(Translate("ScrollRepair")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollHealth), "$scroll_health$", "health", name(Translate::ScrollHealth), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollHealth")), "$scroll_health$", "health", name(Translate("ScrollHealth")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
 	}
 	{
@@ -76,90 +76,90 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 100);
 	}
 	{
-		SaleItem s(shop.items, Translate::ScrollMidas, "$scroll_midas$", "midas", Translate::ScrollMidas, ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, Translate("ScrollMidas"), "$scroll_midas$", "midas", Translate("ScrollMidas"), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 150);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollTeleport), "$scroll_teleport$", "teleport", name(Translate::ScrollTeleport), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollTeleport")), "$scroll_teleport$", "teleport", name(Translate("ScrollTeleport")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 20);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollSea), "$scroll_sea$", "sea", name(Translate::ScrollSea), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollSea")), "$scroll_sea$", "sea", name(Translate("ScrollSea")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 200);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::ScrollStone), "$scroll_stone$", "stone", name(Translate::ScrollStone), ItemType::scroll, 1, 1);
+		SaleItem s(shop.items, name(Translate("ScrollStone")), "$scroll_stone$", "stone", name(Translate("ScrollStone")), ItemType::scroll, 1, 1);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::Cake), "$cake$", "cake", name(Translate::Cake));
+		SaleItem s(shop.items, name(Translate("Cake")), "$cake$", "cake", name(Translate("Cake")));
 		s.stock = 3 + seed.NextRanged(3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 99);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::SteelHelmet), "$steelhelmet$", "steelhelmet", name(Translate::SteelHelmet));
+		SaleItem s(shop.items, name(Translate("SteelHelmet")), "$steelhelmet$", "steelhelmet", name(Translate("SteelHelmet")));
 		s.stock = 1 + seed.NextRanged(3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 149);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::SteelArmor), "$steelarmor$", "steelarmor", name(Translate::SteelArmor));
+		SaleItem s(shop.items, name(Translate("SteelArmor")), "$steelarmor$", "steelarmor", name(Translate("SteelArmor")));
 		s.stock = 1 + seed.NextRanged(3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 399);
 	}
 	{
-		SaleItem s(shop.items, Translate::Bigbomb, "$bigbomb$", "bigbomb", Translate::Bigbomb);
+		SaleItem s(shop.items, Translate("Bigbomb"), "$bigbomb$", "bigbomb", Translate("Bigbomb"));
 		s.stock = 5 + seed.NextRanged(15);
 		AddRequirement(s.requirements, "coin", "", "Coins", 69);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::HolyGrenade), "$holygrenade$", "holygrenade", desc(Translate::HolyGrenade));
+		SaleItem s(shop.items, name(Translate("HolyGrenade")), "$holygrenade$", "holygrenade", desc(Translate("HolyGrenade")));
 		s.stock = 1;
 		AddRequirement(s.requirements, "coin", "", "Coins", 999);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::Musket), "$musket$", "musket", name(Translate::Musket));
+		SaleItem s(shop.items, name(Translate("Musket")), "$musket$", "musket", name(Translate("Musket")));
 		s.stock = 1 + seed.NextRanged(3);
 		AddRequirement(s.requirements, "coin", "", "Coins", 349);
 	}
 	{
-		SaleItem s(shop.items, name(Translate::MusketBalls), "$mat_musketballs$", "mat_musketballs", name(Translate::MusketBalls));
+		SaleItem s(shop.items, name(Translate("MusketBalls")), "$mat_musketballs$", "mat_musketballs", name(Translate("MusketBalls")));
 		s.stock = 5 + seed.NextRanged(11);
 		AddRequirement(s.requirements, "coin", "", "Coins", 49);
 	}
 
 	SaleItem@[] rand_items;
 	{
-		SaleItem s(rand_items, name(Translate::Chainsaw), "$chainsaw$", "chainsaw", name(Translate::Chainsaw));
+		SaleItem s(rand_items, name(Translate("Chainsaw")), "$chainsaw$", "chainsaw", name(Translate("Chainsaw")));
 		s.stock = 1 + seed.NextRanged(3);
 		s.custom_data = 20;
 		AddRequirement(s.requirements, "coin", "", "Coins", 149);
 	}
 	/*{
-		SaleItem s(rand_items, name(Translate::SteelDrill), "$steeldrill$", "steeldrill", name(Translate::SteelDrill));
+		SaleItem s(rand_items, name(Translate("SteelDrill")), "$steeldrill$", "steeldrill", name(Translate("SteelDrill")));
 		s.stock = 1 + seed.NextRanged(3);
 		s.custom_data = 15;
 		AddRequirement(s.requirements, "coin", "", "Coins", 199);
 	}*/
 	{
-		SaleItem s(rand_items, name(Translate::Spear), "$spear$", "spear", name(Translate::Spear));
+		SaleItem s(rand_items, name(Translate("Spear")), "$spear$", "spear", name(Translate("Spear")));
 		s.stock = 1 + seed.NextRanged(3);
 		s.custom_data = 15;
 		AddRequirement(s.requirements, "coin", "", "Coins", 159);
 	}
 	{
-		SaleItem s(rand_items, name(Translate::Shotgun), "$shotgun$", "shotgun", desc(Translate::Shotgun));
+		SaleItem s(rand_items, name(Translate("Shotgun")), "$shotgun$", "shotgun", desc(Translate("Shotgun")));
 		s.stock = 1 + seed.NextRanged(2);
 		s.custom_data = 15;
 		AddRequirement(s.requirements, "coin", "", "Coins", 499);
 	}
 	{
-		SaleItem s(rand_items, name(Translate::Bazooka), "$bazooka$", "bazooka", desc(Translate::Bazooka));
+		SaleItem s(rand_items, name(Translate("Bazooka")), "$bazooka$", "bazooka", desc(Translate("Bazooka")));
 		s.stock = 1 + seed.NextRanged(2);
 		s.custom_data = 15;
 		AddRequirement(s.requirements, "coin", "", "Coins", 499);
 	}
 	{
-		SaleItem s(rand_items, name(Translate::Flamethrower), "$flamethrower$", "flamethrower", desc(Translate::Flamethrower));
+		SaleItem s(rand_items, name(Translate("Flamethrower")), "$flamethrower$", "flamethrower", desc(Translate("Flamethrower")));
 		s.stock = 1 + seed.NextRanged(2);
 		s.custom_data = 10;
 		AddRequirement(s.requirements, "coin", "", "Coins", 499);
@@ -173,7 +173,7 @@ void onInit(CBlob@ this)
 	this.SetLightRadius(48.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
 
-	Chat(this, Translate::Bobert4);
+	Chat(this, Translate("Bobert4"));
 
 	ParticleTeleport(this.getPosition());
 }
@@ -184,7 +184,7 @@ void onShopMadeItem(CBlob@ this, CBlob@ caller, CBlob@ blob, SaleItem@ item)
 	
 	if (blob !is null && blob.getName() == "holygrenade")
 	{
-		Chat(this, Translate::Bobert2);
+		Chat(this, Translate("Bobert2"));
 	}
 }
 
@@ -200,7 +200,7 @@ void onTick(CBlob@ this)
 	
 	if (this.getTickSinceCreated() == 120)
 	{
-		Chat(this, Translate::Bobert3);
+		Chat(this, Translate("Bobert3"));
 	}
 	
 	//trader looks at player when nearby
@@ -218,11 +218,11 @@ void onTick(CBlob@ this)
 	const u32 timeTillLeave = this.get_u32("time till departure");
 	if (timeTillLeave-30*30 == gameTime)
 	{
-		Chat(this, Translate::Bobert0);
+		Chat(this, Translate("Bobert0"));
 	}
 	if (timeTillLeave-30 == gameTime)
 	{
-		Chat(this, Translate::Bobert1);
+		Chat(this, Translate("Bobert1"));
 	}
 	if (timeTillLeave < gameTime)
 	{

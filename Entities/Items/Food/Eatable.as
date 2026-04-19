@@ -19,12 +19,12 @@ void onInit(CBlob@ this)
 string getTranslatedInventoryName(CBlob@ this)
 {
 	const string blob_name = this.getName();
-	if (blob_name == "bread")         return name(Translate::Bread);
-	if (blob_name == "cake")          return name(Translate::Cake);
-	if (blob_name == "cookedchicken") return name(Translate::Cookedchicken);
-	if (blob_name == "cookedfish")    return name(Translate::Cookedfish);
-	if (blob_name == "cookedsteak")   return name(Translate::Cookedsteak);
-	if (blob_name == "beer")          return name(Translate::Beer);
+	if (blob_name == "bread")         return name(Translate("Bread"));
+	if (blob_name == "cake")          return name(Translate("Cake"));
+	if (blob_name == "cookedchicken") return name(Translate("Cookedchicken"));
+	if (blob_name == "cookedfish")    return name(Translate("Cookedfish"));
+	if (blob_name == "cookedsteak")   return name(Translate("Cookedsteak"));
+	if (blob_name == "beer")          return name(Translate("Beer"));
 	
 	return this.getInventoryName();
 }
@@ -83,6 +83,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		return;
 
 	if (getHealingAmount(this) <= 0) return;
-	
-	caller.CreateGenericButton("$" + this.getName() + "$", Vec2f_zero, this, this.getCommandID("heal command server"), "Consume "+this.getInventoryName());
+
+	const string message = Translate("Consume").replace("{ITEM}", this.getInventoryName());
+	caller.CreateGenericButton("$" + this.getName() + "$", Vec2f_zero, this, this.getCommandID("heal command server"), message);
 }

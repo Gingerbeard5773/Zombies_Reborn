@@ -38,19 +38,19 @@ void onInit(CBlob@ this)
 	this.set("Craft", @craft); 
 	
 	{
-		CraftItem i("mat_ironingot", Translate::IronIngot, 0, 10);
-		AddRequirement(i.reqs, "blob", "mat_iron", Translate::IronOre, 15);
+		CraftItem i("mat_ironingot", Translate("IronIngot"), 0, 10);
+		AddRequirement(i.reqs, "blob", "mat_iron", Translate("IronOre"), 15);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("mat_coal", Translate::Coal, 2, 10, 10, ItemType::material);
+		CraftItem i("mat_coal", Translate("Coal"), 2, 10, 10, ItemType::material);
 		AddRequirement(i.reqs, "blob", "mat_wood", "Wood", 25);
 		craft.addItem(this, i);
 	}
 	{
-		CraftItem i("mat_steelingot", Translate::SteelIngot, 1, 20);
-		AddRequirement(i.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
-		AddRequirement(i.reqs, "blob", "mat_coal", name(Translate::Coal), 25);
+		CraftItem i("mat_steelingot", Translate("SteelIngot"), 1, 20);
+		AddRequirement(i.reqs, "blob", "mat_ironingot", name(Translate("IronIngot")), 3);
+		AddRequirement(i.reqs, "blob", "mat_coal", name(Translate("Coal")), 25);
 		craft.addItem(this, i);
 	}
 }
@@ -110,7 +110,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	const int index = getFuelIndex(caller);
 	if (index == -1) return;
 
-	CButton@ button = caller.CreateGenericButton("$"+fuel_icons[index]+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("server_add_fuel"), Translate::AddFuel);
+	CButton@ button = caller.CreateGenericButton("$"+fuel_icons[index]+"$", Vec2f(-5.0f, 5.0f), this, this.getCommandID("server_add_fuel"), Translate("AddFuel"));
 	if (button !is null)
 	{
 		button.deleteAfterClick = false;

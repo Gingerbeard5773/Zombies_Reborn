@@ -80,18 +80,21 @@ void client_ResetCurrentStats(CRules@ this)
 	if (!isOurAuthority()) return;
 
 	ConfigFile@ cfg = Statistics::openConfig();
-	for (u8 i = 0; i < Statistics::statistic_names.length; i++)
+	
+	const string[]@ statistic_names = Statistics::getNames();
+	for (u8 i = 0; i < statistic_names.length; i++)
 	{
-		const string statistic_name = Statistics::statistic_names[i];
+		const string statistic_name = statistic_names[i];
 		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
 		string[]@ values = statistic.split(" ");
 
 		cfg.add_string(statistic_name, "0 " + values[Statistics::AllTime]);
 	}
 
-	for (u8 i = 0; i < Bestiary::entries.length; i++)
+	BestiaryEntry@[]@ entries = Bestiary::getEntries();
+	for (u8 i = 0; i < entries.length; i++)
 	{
-		const string statistic_name = Bestiary::entries[i].name;
+		const string statistic_name = entries[i].name;
 		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
 		string[]@ values = statistic.split(" ");
 
@@ -398,7 +401,8 @@ void onUnlockAchievement(CRules@ this, int index)
 {
 	if (!isOurAuthority()) return;
 
-	if (index >= Achievement::achievements.length)
+	Achievement@[]@ achievements = Achievement::getAchievements();
+	if (index >= achievements.length)
 	{ 
 		error("Impossible achievement index, no pair found ["+index+"]"); 
 		return; 
@@ -415,7 +419,7 @@ void onUnlockAchievement(CRules@ this, int index)
 	cfg.add_string("achievements", achievements_array);
 	cfg.saveFile(Achievement::filename);
 
-	Achievement@ achievement = Achievement::achievements[index];
+	Achievement@ achievement = achievements[index];
 	const string achievement_sound = achievement.rarity == Achievement::Insane ? "AchievementGet2" : "AchievementGet1";
 	Sound::Play(achievement_sound);
 
@@ -428,7 +432,8 @@ void onUnlockBestiaryEntry(CRules@ this, string entry_name)
 {
 	if (!isOurAuthority()) return;
 
-	const int index = Bestiary::find(entry_name);
+	BestiaryEntry@[]@ entries = Bestiary::getEntries();
+	const int index = Bestiary::find(entries, entry_name);
 	if (index == -1) return;
 
 	ConfigFile@ cfg = Bestiary::openConfig();
@@ -444,8 +449,8 @@ void onUnlockBestiaryEntry(CRules@ this, string entry_name)
 
 	Sound::Play("snes_coin.ogg");
 
-	const string zombie_name = name(Bestiary::entries[index].description);
-	const string message = Translate::BestiaryNewEntry.replace("{INPUT}", zombie_name);
+	const string zombie_name = name(entries[index].description);
+	const string message = Translate("BestiaryNewEntry").replace("{INPUT}", zombie_name);
 	client_SendGlobalMessage(this, message, 8, SColor(0xff66C6FF));
 
 	this.push("easy_ui_events", Event::Bestiary);

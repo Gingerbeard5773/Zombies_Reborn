@@ -118,32 +118,32 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_iron, "iron_block_ZF", "$iron_block_ZF$", Translate::IronBlock);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 2);
+		BuildBlock b(CMap::tile_iron, "iron_block_ZF", "$iron_block_ZF$", Translate("IronBlock"));
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate("IronIngot")), 2);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_biron, "biron_block_ZF", "$biron_block_ZF$", Translate::IronBlockBack);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 1);
+		BuildBlock b(CMap::tile_biron, "biron_block_ZF", "$biron_block_ZF$", Translate("IronBlockBack"));
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate("IronIngot")), 1);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "iron_door", getTeamIcon("iron_door", "1x1IronDoor.png", team_num, Vec2f(16, 8)), Translate::IronDoor);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 4);
+		BuildBlock b(0, "iron_door", getTeamIcon("iron_door", "1x1IronDoor.png", team_num, Vec2f(16, 8)), Translate("IronDoor"));
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate("IronIngot")), 4);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "iron_platform", "$iron_platform_ZF$", Translate::IronPlatform);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
+		BuildBlock b(0, "iron_platform", "$iron_platform_ZF$", Translate("IronPlatform"));
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate("IronIngot")), 3);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "iron_spikes", "$iron_spikes_ZF$", Translate::IronSpikes);
-		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate::IronIngot), 3);
+		BuildBlock b(0, "iron_spikes", "$iron_spikes_ZF$", Translate("IronSpikes"));
+		AddRequirement(b.reqs, "blob", "mat_ironingot", name(Translate("IronIngot")), 3);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_ground, "ground_block", "$ground_block$", Translate::Dirt);
+		BuildBlock b(CMap::tile_ground, "ground_block", "$ground_block$", Translate("Dirt"));
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 5);
 		blocks[0].push_back(b);
 	}
@@ -160,7 +160,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	BuildBlock[] page_1;
 	blocks.push_back(page_1);
 	{
-		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 64), 0), Translate::Windmill);
+		BuildBlock b(0, "windmill", getTeamIcon("windmill", "WindMill.png", team_num, Vec2f(64, 64), 0), Translate("Windmill"));
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 200);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 250);
 		b.buildOnGround = true;
@@ -168,7 +168,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "kitchen", getTeamIcon("kitchen", "Kitchen.png", team_num, Vec2f(40, 32)), Translate::Kitchen);
+		BuildBlock b(0, "kitchen", getTeamIcon("kitchen", "Kitchen.png", team_num, Vec2f(40, 32)), Translate("Kitchen"));
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 100);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 100);
 		b.buildOnGround = true;
@@ -176,7 +176,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "forge", getTeamIcon("forge", "Forge.png", team_num, Vec2f(56, 40)), Translate::Forge);
+		BuildBlock b(0, "forge", getTeamIcon("forge", "Forge.png", team_num, Vec2f(56, 40)), Translate("Forge"));
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 200);
 		b.buildOnGround = true;
@@ -184,7 +184,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}	
 	{
-		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), Translate::Nursery);
+		BuildBlock b(0, "nursery", getTeamIcon("nursery", "Nursery.png", team_num, Vec2f(40, 32)), Translate("Nursery"));
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 400);
 		AddRequirement(b.reqs, "blob", "seed", "Seed", 1);
 		b.buildOnGround = true;
@@ -192,7 +192,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "armory", getTeamIcon("armory", "Armory.png", team_num, Vec2f(56, 40)), Translate::Armory);
+		BuildBlock b(0, "armory", getTeamIcon("armory", "Armory.png", team_num, Vec2f(56, 40)), Translate("Armory"));
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 200);
 		b.buildOnGround = true;
@@ -200,7 +200,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "library", getTeamIcon("library", "Library.png", team_num, Vec2f(56, 40)), Translate::Library);
+		BuildBlock b(0, "library", getTeamIcon("library", "Library.png", team_num, Vec2f(56, 40)), Translate("Library"));
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 300);
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 150);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 50);
@@ -210,7 +210,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[1].push_back(b);
 	}
 	{
-		BuildBlock b(0, "sign", "$sign$", Translate::Sign);
+		BuildBlock b(0, "sign", "$sign$", Translate("Sign"));
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 100);
 		b.buildOnGround = true;
 		b.size.Set(16, 16);
@@ -357,31 +357,31 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	blocks.push_back(page_3);
 	{
 		BuildBlock b(CMap::tile_goldblock, "gold_block", "$gold_block_ZF$", "Gold Block\nExceptionally durable\nResistant to explosions");
-		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 2);
+		AddRequirement(b.reqs, "blob", "mat_steelingot", name(Translate("SteelIngot")), 2);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 20);
 		blocks[3].push_back(b);
 	}
 	{
 		BuildBlock b(CMap::tile_bgoldblock, "back_gold_block", "$bgold_block_ZF$", "Back Gold Wall\nExceptionally durable support");
-		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 1);
+		AddRequirement(b.reqs, "blob", "mat_steelingot", name(Translate("SteelIngot")), 1);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 5);
 		blocks[3].push_back(b);
 	}
 	{
 		BuildBlock b(0, "gold_spikes", "$gold_spikes$", "Gold Spikes\nExceptionally durable spikes");
-		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 3);
+		AddRequirement(b.reqs, "blob", "mat_steelingot", name(Translate("SteelIngot")), 3);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 15);
 		blocks[3].push_back(b);
 	}
 	{
 		BuildBlock b(0, "gold_platform", "$gold_platform$", "Gold Platform\nExceptionally durable\nOne way platform\nBlocks water");
-		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 3);
+		AddRequirement(b.reqs, "blob", "mat_steelingot", name(Translate("SteelIngot")), 3);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 15);
 		blocks[3].push_back(b);
 	}
 	{
 		BuildBlock b(0, "gold_door", getTeamIcon("gold_door", "1x1GoldDoor.png", team_num, Vec2f(16, 8)), "Gold Door\nExceptionally durable");
-		AddRequirement(b.reqs, "blob", "mat_steelingot", "Steel Ingot", 4);
+		AddRequirement(b.reqs, "blob", "mat_steelingot", name(Translate("SteelIngot")), 4);
 		AddRequirement(b.reqs, "blob", "mat_gold", "Gold", 20);
 		blocks[3].push_back(b);
 	}

@@ -9,5 +9,5 @@ void onInit(CBlob@ this)
 
 	setArrowHoverRect(this);
 	
-	this.setInventoryName(name(Translate::MolotovArrows));
+	this.setInventoryName(name(Translate("MolotovArrows")));
 }

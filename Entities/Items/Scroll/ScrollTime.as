@@ -40,7 +40,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (this.hasTag("used") || getRules().daycycle_speed == 1) return;
 
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), desc(Translate::ScrollTime));
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("server_execute_spell"), desc(Translate("ScrollTime")));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -66,7 +66,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		Sound::Play("SpellMagic4.ogg");
 		this.getSprite().ReloadSprites(5, 0);
 
-		client_SendGlobalMessage(getRules(), Translate::ScrollTimeStart, 5);
+		client_SendGlobalMessage(getRules(), Translate("ScrollTimeStart"), 5);
 	}
 }
 
@@ -160,7 +160,7 @@ void onDie(CBlob@ this)
 	ParticleAnimated("MediumSteam", pos, Vec2f_zero, f32(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, false);
 	ParticlesFromSprite(this.getSprite(), pos, Vec2f(0.0f, -0.5f), 50, 1);
 
-	client_SendGlobalMessage(getRules(), Translate::ScrollTimeFinish, 5);
+	client_SendGlobalMessage(getRules(), Translate("ScrollTimeFinish"), 5);
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)

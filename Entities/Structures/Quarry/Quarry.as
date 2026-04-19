@@ -139,7 +139,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	const int index = getFuelIndex(caller);
 	if (index == -1) return;
 
-	CButton@ button = caller.CreateGenericButton("$"+fuel_icons[index]+"$", Vec2f_zero, this, this.getCommandID("server_add_fuel"), Translate::AddFuel);
+	CButton@ button = caller.CreateGenericButton("$"+fuel_icons[index]+"$", Vec2f_zero, this, this.getCommandID("server_add_fuel"), Translate("AddFuel"));
 	if (button !is null)
 	{
 		button.deleteAfterClick = false;

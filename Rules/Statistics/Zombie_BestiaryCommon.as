@@ -41,27 +41,32 @@ namespace Bestiary
 		{0, 1, 2, 3}, //spectre
 		{0},          //sedgwick
 		{0},          //trader
-		{0}          //bobert
+		{0}           //bobert
 	};
 
-	BestiaryEntry@[] entries =
+	BestiaryEntry@[]@ getEntries()
 	{
-		BestiaryEntry("skeleton",     Translate::BestiarySkeleton,     "Skeleton",      Vec2f(25, 25), 3, animation_frames[0]),
-		BestiaryEntry("zombie",       Translate::BestiaryZombie,       "Zombie",        Vec2f(25, 25), 3, animation_frames[1]),
-		BestiaryEntry("zombieknight", Translate::BestiaryZombieKnight, "ZombieKnight",  Vec2f(32, 32), 3, animation_frames[2]),
-		BestiaryEntry("greg",         Translate::BestiaryGreg,         "Greg",          Vec2f(32, 32), 3, animation_frames[3]),
-		BestiaryEntry("wraith",       Translate::BestiaryWraith,       "Wraith",        Vec2f(32, 32), 3, animation_frames[4]),
-		BestiaryEntry("darkwraith",   Translate::BestiaryDarkWraith,   "DarkWraith",    Vec2f(32, 32), 3, animation_frames[5]),
-		BestiaryEntry("skelepede",    Translate::BestiarySkelepede,    "SkelepedeIcon", Vec2f(96, 32), 3, animation_frames[6]),
-		BestiaryEntry("horror",       Translate::BestiaryHorror,       "Horror",        Vec2f(32, 32), 3, animation_frames[7]),
-		BestiaryEntry("jerry",        Translate::BestiaryJerry,        "Jerry",         Vec2f(32, 32), 3, animation_frames[8]),
-		BestiaryEntry("spectre",      Translate::BestiarySpectre,      "Spectre",       Vec2f(32, 32), 3, animation_frames[9]),
-		BestiaryEntry("sedgwick",     Translate::BestiarySedgwick,     "Necromancer",   Vec2f(24, 24), 3, animation_frames[10]),
-		BestiaryEntry("trader",       Translate::BestiaryTrader,       "TraderMale",    Vec2f(16, 16), 0, animation_frames[11]),
-		BestiaryEntry("bobert",       Translate::BestiaryBobert,       "Bobert",        Vec2f(16, 16), 0, animation_frames[12])
-	};
+		BestiaryEntry@[] entries =
+		{
+			BestiaryEntry("skeleton",     Translate("BestiarySkeleton"),     "Skeleton",      Vec2f(25, 25), 3, animation_frames[0]),
+			BestiaryEntry("zombie",       Translate("BestiaryZombie"),       "Zombie",        Vec2f(25, 25), 3, animation_frames[1]),
+			BestiaryEntry("zombieknight", Translate("BestiaryZombieKnight"), "ZombieKnight",  Vec2f(32, 32), 3, animation_frames[2]),
+			BestiaryEntry("greg",         Translate("BestiaryGreg"),         "Greg",          Vec2f(32, 32), 3, animation_frames[3]),
+			BestiaryEntry("wraith",       Translate("BestiaryWraith"),       "Wraith",        Vec2f(32, 32), 3, animation_frames[4]),
+			BestiaryEntry("darkwraith",   Translate("BestiaryDarkWraith"),   "DarkWraith",    Vec2f(32, 32), 3, animation_frames[5]),
+			BestiaryEntry("skelepede",    Translate("BestiarySkelepede"),    "SkelepedeIcon", Vec2f(96, 32), 3, animation_frames[6]),
+			BestiaryEntry("horror",       Translate("BestiaryHorror"),       "Horror",        Vec2f(32, 32), 3, animation_frames[7]),
+			BestiaryEntry("jerry",        Translate("BestiaryJerry"),        "Jerry",         Vec2f(32, 32), 3, animation_frames[8]),
+			BestiaryEntry("spectre",      Translate("BestiarySpectre"),      "Spectre",       Vec2f(32, 32), 3, animation_frames[9]),
+			BestiaryEntry("sedgwick",     Translate("BestiarySedgwick"),     "Necromancer",   Vec2f(24, 24), 3, animation_frames[10]),
+			BestiaryEntry("trader",       Translate("BestiaryTrader"),       "TraderMale",    Vec2f(16, 16), 0, animation_frames[11]),
+			BestiaryEntry("bobert",       Translate("BestiaryBobert"),       "Bobert",        Vec2f(16, 16), 0, animation_frames[12])
+		};
 
-	int find(const string&in name)
+		return @entries;
+	}
+
+	int find(BestiaryEntry@[]@ entries, const string&in name)
 	{
 		for (u8 i = 0; i < entries.length; i++)
 		{

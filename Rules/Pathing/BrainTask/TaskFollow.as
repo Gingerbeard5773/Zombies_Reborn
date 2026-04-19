@@ -5,7 +5,7 @@ class FollowTask : BrainTask
 	FollowTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskFollow;
+		description = Translate("TaskFollow");
 		type = Task::Follow;
 		path_refresh_rate = 30;
 		solo = true;

@@ -121,7 +121,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		Sound::Play("/ResearchComplete.ogg");
 
-		const string tech_completed = Translate::TechComplete.replace("{TECH}", name(tech.description));
+		const string tech_completed = Translate("TechComplete").replace("{TECH}", name(tech.description));
 		client_SendGlobalMessage(getRules(), tech_completed, 6, SColor(0xffa293ff)); 
 		print(tech_completed);
 	}

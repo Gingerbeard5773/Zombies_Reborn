@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 {
 	this.Tag("place norotate"); //stop rotation from locking. blame builder code apparently
 	
-	this.setInventoryName(name(Translate::Spear));
+	this.setInventoryName(name(Translate("Spear")));
 }
 
 void onTick(CBlob@ this)

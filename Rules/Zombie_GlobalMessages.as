@@ -24,22 +24,6 @@ shared class GlobalMessage
 	}
 }
 
-const string[] server_messages =
-{
-	Translate::Day,
-	Translate::GameOver,
-	Translate::GameWin,
-	Translate::Trader,
-	Translate::Sedgwick,
-	Translate::Migrant1,
-	Translate::Migrant2,
-	Translate::Record,
-	Translate::Respawn2,
-	Translate::Bobert,
-	Translate::Enchanter,
-	Translate::GoldTilesUnlocked
-};
-
 void onInit(CRules@ this)
 {
 	onReceiveGlobalMessageHandle@ handle = @onReceiveGlobalMessage;
@@ -91,6 +75,23 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		{
 			u8 index;
 			if (!params.saferead_u8(index)) return;
+
+			// TODO: SWITCH TO BETTER
+			const string[] server_messages =
+			{
+				Translate("Day"),
+				Translate("GameOver"),
+				Translate("GameWin"),
+				Translate("Trader"),
+				Translate("Sedgwick"),
+				Translate("Migrant1"),
+				Translate("Migrant2"),
+				Translate("Record"),
+				Translate("Respawn2"),
+				Translate("Bobert"),
+				Translate("Enchanter"),
+				Translate("GoldTilesUnlocked")
+			};
 
 			if (index > server_messages.length)
 			{

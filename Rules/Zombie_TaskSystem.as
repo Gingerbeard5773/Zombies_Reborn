@@ -20,12 +20,6 @@ BrainTask@ custom_mode = null;
 string drawtext;
 Vec2f drawtextpos;
 
-const string[] task_confirmations =
-{
-	Translate::Confirm1, Translate::Confirm2, Translate::Confirm3, Translate::Confirm4, Translate::Confirm5, Translate::Confirm6,
-	Translate::Confirm7, Translate::Confirm8, Translate::Confirm9, Translate::Confirm10, Translate::Confirm11, Translate::Confirm12
-};
-
 void onInit(CRules@ this)
 {
 	SetupTasksArray();
@@ -293,7 +287,7 @@ void RenderInteractableMigrant(CControls@ controls, Driver@ driver)
 	if (blob is null) return;
 
 	GUI::SetFont("menu");
-	GUI::DrawTextCentered(Translate::Order, blob.getInterpolatedScreenPos(), color_white);
+	GUI::DrawTextCentered(Translate("Order"), blob.getInterpolatedScreenPos(), color_white);
 
 	blob.RenderForHUD(RenderStyle::outline_front);
 	RenderSelectedMigrant(blob, driver);
@@ -332,7 +326,7 @@ void RenderTaskMenu(CControls@ controls, Driver@ driver)
 	{
 		GUI::DrawSplineArrow2D(blob.getScreenPos(), mouse, SColor(255, 255, 143, 0));
 		GUI::SetFont("menu");
-		GUI::DrawTextCentered(Translate::TaskPath, mouse + Vec2f(50, 0), color_white);
+		GUI::DrawTextCentered(Translate("TaskPath"), mouse + Vec2f(50, 0), color_white);
 		return;
 	}
 
@@ -530,7 +524,7 @@ void DrawMigrantStats(CBlob@ blob, Vec2f menu_tl, Vec2f menu_br)
 
 	if (getRules().get_netid("guide netid") == blob.getNetworkID())
 	{
-		GUI::DrawTextCentered(Translate::Guide, Vec2f(info_tl.x + task_buttonsize*0.5f, info_br.y + 40.0f), color_white);
+		GUI::DrawTextCentered(Translate("Guide"), Vec2f(info_tl.x + task_buttonsize*0.5f, info_br.y + 40.0f), color_white);
 	}
 }
 
@@ -643,7 +637,7 @@ void onNewTask(CBlob@ blob)
 	if (blob.get_u32("next_available_chat") < getGameTime())
 	{
 		blob.set_u32("next_available_chat", getGameTime() + 30 * 7);
-		blob.Chat(task_confirmations[XORRandom(task_confirmations.length)]);
+		blob.Chat(Translate("Confirm"+XORRandom(13)));
 	}
 }
 

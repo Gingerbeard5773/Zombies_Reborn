@@ -59,6 +59,6 @@ void ShowTeamMenu(CRules@ this)
 	else
 	{
 		params.write_u8(0);
-		CGridButton@ button =  menu.AddButton("$BLUE_TEAM$", Translate::Survivors, "TeamMenu.as", "Callback_PickTeams", BUTTON_SIZE, params);
+		CGridButton@ button =  menu.AddButton("$BLUE_TEAM$", Translate("Survivors"), "TeamMenu.as", "Callback_PickTeams", BUTTON_SIZE, params);
 	}
 }

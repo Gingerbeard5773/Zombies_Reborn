@@ -83,7 +83,7 @@ void onInit(CBlob@ this)
 	this.set_u32(last_drill_prop, 0);
 	this.Tag("ignore fall");
 	
-	this.setInventoryName(name(Translate::SteelDrill));
+	this.setInventoryName(name(Translate("SteelDrill")));
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)

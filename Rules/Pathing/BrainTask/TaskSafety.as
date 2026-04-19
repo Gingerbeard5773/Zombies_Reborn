@@ -9,7 +9,7 @@ class SafetyTask : BrainTask
 	SafetyTask(CBlob@ blob_, const u32&in seed = 1)
 	{
 		super(blob_);
-		description = Translate::TaskSafety;
+		description = Translate("TaskSafety");
 		type = Task::Safety;
 		solo = true;
 		this.seed = seed;

@@ -7,7 +7,7 @@ class FuelTask : BrainTask
 	FuelTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskFuel;
+		description = Translate("TaskFuel");
 		type = Task::Fuel;
 		if (target !is null)
 		{

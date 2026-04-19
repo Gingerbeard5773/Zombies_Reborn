@@ -26,7 +26,7 @@ void onInit(CBlob@ this)
 	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
 
-	this.setInventoryName(name(Translate::HeadLamp));
+	this.setInventoryName(name(Translate("HeadLamp")));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

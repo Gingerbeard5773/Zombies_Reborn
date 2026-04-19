@@ -6,5 +6,5 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::remove_after_this;
 	
-	this.setInventoryName(name(Translate::MusketBalls));
+	this.setInventoryName(name(Translate("MusketBalls")));
 }

@@ -216,7 +216,7 @@ class FactoryTask : AssignmentTask
 	FactoryTask(CBlob@ blob_, CBlob@ assigned = null)
 	{
 		super(blob_, assigned);
-		description = Translate::TaskFactory;
+		description = Translate("TaskFactory");
 		type = Task::Factory;
 	}
 	
@@ -238,7 +238,7 @@ class LibraryTask : AssignmentTask
 	LibraryTask(CBlob@ blob_, CBlob@ assigned = null)
 	{
 		super(blob_, assigned);
-		description = Translate::TaskLibrary;
+		description = Translate("TaskLibrary");
 		type = Task::Library;
 	}
 	
@@ -263,7 +263,7 @@ class TurretTask : AssignmentTask
 	TurretTask(CBlob@ blob_, CBlob@ assigned = null)
 	{
 		super(blob_, assigned);
-		description = Translate::TaskTurret;
+		description = Translate("TaskTurret");
 		type = Task::Turret;
 	}
 
@@ -329,7 +329,7 @@ class BoatTask : AssignmentTask
 	BoatTask(CBlob@ blob_, CBlob@ assigned = null)
 	{
 		super(blob_, assigned);
-		description = Translate::TaskBoat;
+		description = Translate("TaskBoat");
 		type = Task::Boat;
 	}
 	

@@ -5,7 +5,7 @@ class PatrolTask : BrainTask
 	PatrolTask(CBlob@ blob_, Vec2f destination = Vec2f_zero)
 	{
 		super(blob_);
-		description = Translate::TaskPatrol;
+		description = Translate("TaskPatrol");
 		type = Task::Patrol;
 		self = true;
 		this.destination = destination;

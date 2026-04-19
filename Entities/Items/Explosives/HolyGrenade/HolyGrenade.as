@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 	this.getSprite().SetEmitSoundPaused(true);
 	this.SetLightRadius(25.0f);
 
-	this.setInventoryName(name(Translate::HolyGrenade));
+	this.setInventoryName(name(Translate("HolyGrenade")));
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)

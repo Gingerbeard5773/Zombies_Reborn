@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 	this.Tag("ignore parent facing");
 	this.Tag("place norotate"); //stop rotation from locking. blame builder code apparently
 	this.getShape().SetOffset(base_offset - Vec2f(16, 0));
-	this.setInventoryName(name(Translate::Partisan));
+	this.setInventoryName(name(Translate("Partisan")));
 }
 
 void onTick(CBlob@ this)

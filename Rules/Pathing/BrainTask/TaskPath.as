@@ -6,7 +6,7 @@ class PathTask : BrainTask
 	{
 		super(blob_);
 		this.destination = destination;
-		description = Translate::TaskPath;
+		description = Translate("TaskPath");
 		type = Task::Path;
 		self = true;
 	}

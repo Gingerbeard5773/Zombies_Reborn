@@ -14,7 +14,7 @@ void onInit(CBlob@ this)
 
 	AddIconToken("$backpack$", "Backpack.png", Vec2f(16, 16), 1, 0);
 	
-	this.setInventoryName(name(Translate::Backpack));
+	this.setInventoryName(name(Translate("Backpack")));
 }
 
 void OnUnequip(CBlob@ this, CBlob@ equipper)

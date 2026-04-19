@@ -70,7 +70,7 @@ void onInit(CBlob@ this)
 
 	this.set_u32(last_drill_prop, 0);
 	
-	this.setInventoryName(name(Translate::Chainsaw));
+	this.setInventoryName(name(Translate("Chainsaw")));
 }
 
 void onTick(CSprite@ this)

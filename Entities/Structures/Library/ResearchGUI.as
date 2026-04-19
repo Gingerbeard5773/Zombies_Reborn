@@ -259,7 +259,7 @@ void DrawButton(CBlob@ blob, CBlob@ localBlob, Technology@ tech, Technology@ res
 	string suffix;
 	if (tech.completed)
 	{
-		suffix = "\n\n" +"$GREEN$"+Translate::Completed+"$GREEN$";
+		suffix = "\n\n" +"$GREEN$"+Translate("Completed")+"$GREEN$";
 		GUI::DrawButtonPressed(buttonUL, buttonLR);
 		GUI::DrawRectangle(buttonUL + Vec2f(5, 5), buttonLR - Vec2f(5, 5), SColor(100, 127, 255, 20));
 	}
@@ -277,10 +277,10 @@ void DrawButton(CBlob@ blob, CBlob@ localBlob, Technology@ tech, Technology@ res
 		string research_time = "";
 		if (tech.isResearching())
 		{
-			suffix = ("\n\n$GREEN$"+Translate::Researching+"$GREEN$").replace("{PERCENT}", Maths::Round(tech.getPercent()*100.0f)+"%");
+			suffix = ("\n\n$GREEN$"+Translate("Researching")+"$GREEN$").replace("{PERCENT}", Maths::Round(tech.getPercent()*100.0f)+"%");
 			if (tech.paused)
 			{
-				suffix = ("\n\n$RED$"+Translate::Paused+"$RED$").replace("{PERCENT}",  Maths::Round(tech.getPercent()*100.0f)+"%");
+				suffix = ("\n\n$RED$"+Translate("Paused")+"$RED$").replace("{PERCENT}",  Maths::Round(tech.getPercent()*100.0f)+"%");
 				if (researched is null)
 					suffix += "\nClick to resume";
 			}
@@ -299,12 +299,12 @@ void DrawButton(CBlob@ blob, CBlob@ localBlob, Technology@ tech, Technology@ res
 			
 			if (!tech.available)
 			{
-				suffix += "\n$RED$"+Translate::RequiresTech+"$RED$\n";
+				suffix += "\n$RED$"+Translate("RequiresTech")+"$RED$\n";
 			}
 			
 			f32 time = tech.time_to_unlock / f32(60 * getRules().daycycle_speed);
 			time = Maths::Ceil(time * 10.0f) / 10.0f;
-			research_time = Translate::ResearchTime.replace("{TIME}", time+"")+"\n";
+			research_time = Translate("ResearchTime").replace("{TIME}", time+"")+"\n";
 		}
 
 		drawtext = tech.description + suffix + "\n" + research_time;

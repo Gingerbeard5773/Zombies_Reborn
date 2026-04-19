@@ -32,7 +32,7 @@ void onInit(CBlob@ this)
 	onFireHandle@ fire_handle = @onFire;
 	this.set("onFire handle", @fire_handle);
 	
-	this.setInventoryName(name(Translate::Musket));
+	this.setInventoryName(name(Translate("Musket")));
 }
 
 void onReload(CBlob@ this, CBlob@ holder, GunInfo@ gun)

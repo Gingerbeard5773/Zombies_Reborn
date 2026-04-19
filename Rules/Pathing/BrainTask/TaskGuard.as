@@ -5,7 +5,7 @@ class GuardTask : BrainTask
 	GuardTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskGuard;
+		description = Translate("TaskGuard");
 		type = Task::Guard;
 		path_refresh_rate = 30;
 		solo = true;

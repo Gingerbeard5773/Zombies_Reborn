@@ -99,10 +99,10 @@ Pane@ getPageSelector()
 	page_selector.SetStretchRatio(1.0f, 1.0f);
 	page_selector.SetCellWrap(4);
 	page_selector.SetMaxSize(800, 20);
-	Button@ page1 = getPageButton(Translate::Scoreboard,   PageHandler(0));
-	Button@ page2 = getPageButton(Translate::Statistics,   PageHandler(1));
-	Button@ page3 = getPageButton(Translate::Achievements, PageHandler(2));
-	Button@ page4 = getPageButton(Translate::Bestiary,     PageHandler(3));
+	Button@ page1 = getPageButton(Translate("Scoreboard"),   PageHandler(0));
+	Button@ page2 = getPageButton(Translate("Statistics"),   PageHandler(1));
+	Button@ page3 = getPageButton(Translate("Achievements"), PageHandler(2));
+	Button@ page4 = getPageButton(Translate("Bestiary"),     PageHandler(3));
 	page_selector.AddComponent(page1);
 	page_selector.AddComponent(page2);
 	page_selector.AddComponent(page3);
@@ -207,7 +207,7 @@ Component@[]@ getStatisticsPage()
 	Pane@ page_container = getPageContainer();
 	Pane@ page_selector = getPageSelector();
 
-	Label@ header = getHeader(Translate::Statistics, "big font");
+	Label@ header = getHeader(Translate("Statistics"), "big font");
 
 	float[] row_sizes = { 0, 1 };
 	page_container.SetRowSizes(row_sizes);
@@ -239,9 +239,9 @@ Component@[]@ getStatisticsPage()
 	statistics_list.AddEventListener(Event::ScrollIndex, ScrollHandler(statistics_slider, statistics_list, false));
 	statistics_slider.AddEventListener(Event::Percentage, ScrollHandler(statistics_slider, statistics_list, true));
 
-	Label@ statistic_header = getHeader(Translate::Statistic, "medium font", color_white);
-	Label@ current_header = getHeader(Translate::CurrentGame, "medium font", color_white);
-	Label@ alltime_header = getHeader(Translate::AllTime, "medium font", color_white);
+	Label@ statistic_header = getHeader(Translate("Statistic"), "medium font", color_white);
+	Label@ current_header = getHeader(Translate("CurrentGame"), "medium font", color_white);
+	Label@ alltime_header = getHeader(Translate("AllTime"), "medium font", color_white);
 
 	List@ header_container = getStatisticContainer();
 	header_container.AddComponent(statistic_header);
@@ -251,13 +251,16 @@ Component@[]@ getStatisticsPage()
 	statistics_pane.AddComponent(header_container);
 	statistics_pane.AddComponent(statistics_list);
 
-	for (u8 i = 0; i < Statistics::statistic_names.length; i++)
+	const string[]@ statistic_names = Statistics::getNames();
+	const string[]@ statistic_translate = Statistics::getDescriptions();
+
+	for (u8 i = 0; i < statistic_names.length; i++)
 	{
-		const string name = Statistics::statistic_names[i];
+		const string name = statistic_names[i];
 
 		List@ line_container = getStatisticContainer();
 
-		Label@ statistic_name = getHeader(Statistics::statistic_translate[i], "medium font", color_white);
+		Label@ statistic_name = getHeader(statistic_translate[i], "medium font", color_white);
 		Label@ statistic_current = getHeader("", "medium font", color_white);
 		Label@ statistic_alltime = getHeader("", "medium font", color_white);
 
@@ -374,10 +377,12 @@ Component@[]@ getAchievementsPage()
 	achievements_list.AddEventListener(Event::ScrollIndex, ScrollHandler(achievements_slider, achievements_list, false));
 	achievements_slider.AddEventListener(Event::Percentage, ScrollHandler(achievements_slider, achievements_list, true));
 
+	Achievement@[]@ achievements = Achievement::getAchievements();
+
 	u8 unlocked_count = 0;
-	for (u8 i = 0; i < Achievement::achievements.length; i++)
+	for (u8 i = 0; i < achievements.length; i++)
 	{
-		Achievement@ achievement = Achievement::achievements[i];
+		Achievement@ achievement = achievements[i];
 
 		const bool unlocked = Achievement::isUnlocked(achievements_array, achievement.id);
 		if (unlocked) unlocked_count++;
@@ -446,7 +451,7 @@ Component@[]@ getAchievementsPage()
 
 	progress.AddComponent(progress_label);
 
-	Label@ header = getHeader(Translate::Achievements, "big font");
+	Label@ header = getHeader(Translate("Achievements"), "big font");
 	header.SetMargin(0, 0);
 
 	achievements_container.AddComponent(achievements_list);
@@ -517,7 +522,7 @@ Component@[]@ getBestiaryPage()
 	f32[] row_sizes = {0.1f, 0.9f};
 	page_container.SetRowSizes(row_sizes);
 
-	Label@ header = getHeader(Translate::Bestiary, "big font");
+	Label@ header = getHeader(Translate("Bestiary"), "big font");
 	
 	Slider@ bestiary_slider = StandardVerticalSlider(ui);
 	bestiary_slider.SetAlignment(1.0f, 0.0f);
@@ -543,13 +548,15 @@ Component@[]@ getBestiaryPage()
 	viewing_pane.SetMargin(20, 20);
 	viewing_pane.SetStretchRatio(1.0f, 1.0f);
 
-	const string bestiary_entries = Bestiary::getArray(Bestiary::entries.length, Bestiary::openConfig());
+	BestiaryEntry@[]@ entries = Bestiary::getEntries();
+
+	const string bestiary_entries = Bestiary::getArray(entries.length, Bestiary::openConfig());
 
 	bool setup = false;
 
-	for (u8 i = 0; i < Bestiary::entries.length; i++)
+	for (u8 i = 0; i < entries.length; i++)
 	{
-		BestiaryEntry@ entry = Bestiary::entries[i];
+		BestiaryEntry@ entry = entries[i];
 
 		Button@ icon_button = StandardButton(ui);
 		icon_button.SetPadding(10, 10);
@@ -654,8 +661,8 @@ class BestiaryHandler : EventHandler
 		List@ alltime_container = StandardList(ui);
 		alltime_container.SetStretchRatio(1.0f, 1.0f);
 
-		Label@ current_name = getHeader(Translate::CurrentGame+" "+getTranslatedString("Kills"), "menu", color_white);
-		Label@ alltime_name = getHeader(Translate::AllTime+" "+getTranslatedString("Kills"), "menu", color_white);
+		Label@ current_name = getHeader(Translate("CurrentGame")+" "+getTranslatedString("Kills"), "menu", color_white);
+		Label@ alltime_name = getHeader(Translate("AllTime")+" "+getTranslatedString("Kills"), "menu", color_white);
 
 		Label@ statistic_current = getHeader("", "menu", color_white);
 		Label@ statistic_alltime = getHeader("", "menu", color_white);
@@ -712,8 +719,8 @@ const f32 drawScoreboard(CPlayer@[]@ players, Vec2f&in topleft, const u8&in team
 	GUI::DrawText(teamName, topleft, color_white);
 	
 	const string playercount = getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + playersLength);
-	const string zombiecount = Translate::Zombies.replace("{AMOUNT}", rules.get_u16("undead count") + "");
-	const string zombiekills = Translate::TotalKills.replace("{INPUT}", rules.get_u32("undead_killed_total") + "");
+	const string zombiecount = Translate("Zombies").replace("{AMOUNT}", rules.get_u16("undead count") + "");
+	const string zombiekills = Translate("TotalKills").replace("{INPUT}", rules.get_u32("undead_killed_total") + "");
 	
 	GUI::DrawText(playercount, Vec2f(topleft.x + 150, topleft.y), color_white);
 	GUI::DrawText(zombiecount, Vec2f(topleft.x + 300, topleft.y), color_white);
@@ -871,7 +878,7 @@ void onRenderScoreboard(CRules@ this)
 	//draw the scoreboard
 	GUI::SetFont("menu");
 
-	topleft.y = drawScoreboard(survivors, topleft, 0, screenMidX, Translate::Survivors);
+	topleft.y = drawScoreboard(survivors, topleft, 0, screenMidX, Translate("Survivors"));
 	topleft.y += 45;
 	
 	if (spectators.length > 0)
@@ -958,10 +965,10 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 	Vec2f pos(x, y);
 	f32 width = 200;
 
-	const string info = Translate::ZF;
+	const string info = Translate("ZF");
 	const string mapName = getTranslatedString("Map: {MAP}").replace("{MAP}", this.get_string("map_name"));
-	const string dayRecord = Translate::AllTimeRecord.replace("{INPUT}", this.get_u16("day_record")+"");
-	const string dayCount = Translate::DayNum.replace("{DAYS}", this.get_u16("day_number")+"");
+	const string dayRecord = Translate("AllTimeRecord").replace("{INPUT}", this.get_u16("day_record")+"");
+	const string dayCount = Translate("DayNum").replace("{DAYS}", this.get_u16("day_number")+"");
 	
 	Vec2f dim;
 	GUI::GetTextDimensions(info, dim);

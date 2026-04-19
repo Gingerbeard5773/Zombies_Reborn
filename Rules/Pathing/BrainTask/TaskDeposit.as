@@ -5,7 +5,7 @@ class DepositTask : BrainTask
 	DepositTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskDeposit;
+		description = Translate("TaskDeposit");
 		type = Task::Deposit;
 		if (target !is null)
 		{

@@ -14,7 +14,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (carried is null || !carried.exists("equipment_slot")) return;
 
 	const string icon = carried.exists("equipment_icon") ? carried.get_string("equipment_icon") : "$"+carried.getName()+"$";
-	const string hover = Translate::Equip.replace("{ITEM}", carried.getInventoryName());
+	const string hover = Translate("Equip").replace("{ITEM}", carried.getInventoryName());
 	caller.CreateGenericButton(icon, Vec2f(0, -8), this, Callback_EquipBot, hover);
 }
 

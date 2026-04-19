@@ -25,7 +25,7 @@ void onInit(CBlob@ this)
 	this.getSprite().SetFrame(this.inventoryIconFrame);
 	this.set_string("equipment_icon", "$goldenhelmet_"+this.inventoryIconFrame+"$");
 
-	this.setInventoryName(name(Translate::GoldenHelmet));
+	this.setInventoryName(name(Translate("GoldenHelmet")));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

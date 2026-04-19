@@ -231,7 +231,7 @@ void AddItemStockDescription(CGridButton@ button, SaleItem@ item)
 	if (item.stock < 0) return;
 
 	const string color = item.stock > 0 ? "$GREEN$" : "$RED$";
-	const string description = item.stock > 0 ? Translate::InStock.replace("{QUANTITY}", item.stock+"") : Translate::OutOfStock;
+	const string description = item.stock > 0 ? Translate("InStock").replace("{QUANTITY}", item.stock+"") : Translate("OutOfStock");
 	button.hoverText += "\n " + color + description + color;
 	if (item.stock <= 0)
 		button.SetEnabled(false);

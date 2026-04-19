@@ -7,7 +7,7 @@ class DormTask : BrainTask
 	DormTask(CBlob@ blob_)
 	{
 		super(blob_);
-		description = Translate::TaskDorm;
+		description = Translate("TaskDorm");
 		type = Task::Dorm;
 		path_refresh_rate = 80;
 	}

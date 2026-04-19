@@ -50,7 +50,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (isItemsInNearbyStorages(this) && !this.getInventory().isFull())
 	{
 		Vec2f offset = this.exists("pull_items_button_offset") ? this.get_Vec2f("pull_items_button_offset") : Vec2f_zero;
-		CButton@ button = caller.CreateGenericButton(28, offset, this, this.getCommandID("server_pull_items"), Translate::PullItems);
+		CButton@ button = caller.CreateGenericButton(28, offset, this, this.getCommandID("server_pull_items"), Translate("PullItems"));
 	}
 }
 

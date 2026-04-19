@@ -29,7 +29,7 @@ void SetupScrolls(CRules@ this)
 	}*/
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollFowl);
+		def.name = name(Translate("ScrollFowl"));
 		def.scrollFrame = 1;
 		def.scripts.push_back("ScrollFowl.as");
 		all.scrolls.set("fowl", def);
@@ -44,7 +44,7 @@ void SetupScrolls(CRules@ this)
 	}*/
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollRoyalty);
+		def.name = name(Translate("ScrollRoyalty"));
 		def.scrollFrame = 3;
 		def.scripts.push_back("ScrollRoyalty.as");
 		all.scrolls.set("royalty", def);
@@ -52,7 +52,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollWisent);
+		def.name = name(Translate("ScrollWisent"));
 		def.scrollFrame = 4;
 		def.scripts.push_back("ScrollWisent.as");
 		all.scrolls.set("wisent", def);
@@ -60,7 +60,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollFish);
+		def.name = name(Translate("ScrollFish"));
 		def.scrollFrame = 5;
 		def.scripts.push_back("ScrollFish.as");
 		all.scrolls.set("fish", def);
@@ -91,7 +91,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollHealth);
+		def.name = name(Translate("ScrollHealth"));
 		def.scrollFrame = 9;
 		def.scripts.push_back("ScrollHealth.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");
@@ -100,7 +100,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollFlora);
+		def.name = name(Translate("ScrollFlora"));
 		def.scrollFrame = 10;
 		def.scripts.push_back("ScrollFlora.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");
@@ -109,7 +109,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollRevive);
+		def.name = name(Translate("ScrollRevive"));
 		def.scrollFrame = 11;
 		def.scripts.push_back("ScrollRevive.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");
@@ -118,7 +118,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollCrate);
+		def.name = name(Translate("ScrollCrate"));
 		def.scrollFrame = 12;
 		def.scripts.push_back("ScrollCrate.as");
 		all.scrolls.set("crate", def);
@@ -126,7 +126,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollTeleport);
+		def.name = name(Translate("ScrollTeleport"));
 		def.scrollFrame = 13;
 		def.scripts.push_back("ScrollTeleport.as");
 		all.scrolls.set("teleport", def);
@@ -134,7 +134,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollClone);
+		def.name = name(Translate("ScrollClone"));
 		def.scrollFrame = 14;
 		def.scripts.push_back("ScrollClone.as");
 		all.scrolls.set("clone", def);
@@ -142,7 +142,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollRepair);
+		def.name = name(Translate("ScrollRepair"));
 		def.scrollFrame = 15;
 		def.scripts.push_back("ScrollRepair.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");
@@ -151,14 +151,14 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollDesiccation);
+		def.name = name(Translate("ScrollDesiccation"));
 		def.scrollFrame = 16;
 		def.scripts.push_back("ScrollDesiccation.as");
 		all.scrolls.set("desiccation", def);
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollResurgence);
+		def.name = name(Translate("ScrollResurgence"));
 		def.scrollFrame = 17;
 		def.scripts.push_back("ScrollResurgence.as");
 		all.scrolls.set("resurgence", def);
@@ -180,7 +180,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollMidas);
+		def.name = name(Translate("ScrollMidas"));
 		def.scrollFrame = 20;
 		def.scripts.push_back("ScrollMidas.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");
@@ -189,14 +189,14 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollTime);
+		def.name = name(Translate("ScrollTime"));
 		def.scrollFrame = 21;
 		def.scripts.push_back("ScrollTime.as");
 		all.scrolls.set("time", def);
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollSea);
+		def.name = name(Translate("ScrollSea"));
 		def.scrollFrame = 22;
 		def.scripts.push_back("ScrollSea.as");
 		all.scrolls.set("sea", def);
@@ -204,7 +204,7 @@ void SetupScrolls(CRules@ this)
 	}
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollStone);
+		def.name = name(Translate("ScrollStone"));
 		def.scrollFrame = 23;
 		def.scripts.push_back("ScrollStone.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");
@@ -235,14 +235,14 @@ void SetupScrolls(CRules@ this)
 	} */
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollObliteration);
+		def.name = name(Translate("ScrollObliteration"));
 		def.scrollFrame = 27;
 		def.scripts.push_back("ScrollObliteration.as");
 		all.scrolls.set("obliteration", def);
 	}
 	{
 		ScrollDef def;
-		def.name = "Scroll of Gilding";
+		def.name = name(Translate("ScrollGilding"));
 		def.scrollFrame = 28;
 		def.scripts.push_back("ScrollGilding.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");
@@ -264,7 +264,7 @@ void SetupScrolls(CRules@ this)
 	} */
 	{
 		ScrollDef def;
-		def.name = name(Translate::ScrollIron);
+		def.name = name(Translate("ScrollIron"));
 		def.scrollFrame = 31;
 		def.scripts.push_back("ScrollIron.as");
 		def.scripts.push_back("ScrollRangeIndicator.as");

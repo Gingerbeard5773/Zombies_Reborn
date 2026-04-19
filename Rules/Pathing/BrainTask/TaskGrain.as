@@ -5,7 +5,7 @@ class GrainTask : BrainTask
 	GrainTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskGrain;
+		description = Translate("TaskGrain");
 		type = Task::Grain;
 		origin = target is null ? destination : target.getPosition();
 	}

@@ -35,7 +35,7 @@ void onInit(CBlob@ this)
 	onProjectileHandle@ projectile_handle = @onProjectile;
 	this.set("onProjectile handle", @projectile_handle);
 	
-	this.setInventoryName(name(Translate::Bazooka));
+	this.setInventoryName(name(Translate("Bazooka")));
 	
 	this.getCurrentScript().tickFrequency = 3;
 }

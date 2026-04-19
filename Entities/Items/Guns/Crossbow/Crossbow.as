@@ -23,7 +23,7 @@ void onInit(CBlob@ this)
 	CrossbowInfo crossbow;
 	this.set("crossbowInfo", @crossbow);
 	
-	this.setInventoryName(name(Translate::Crossbow));
+	this.setInventoryName(name(Translate("Crossbow")));
 }
 
 void onTick(CBlob@ this)

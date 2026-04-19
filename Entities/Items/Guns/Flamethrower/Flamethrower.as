@@ -31,7 +31,7 @@ void onInit(CBlob@ this)
 	sprite.SetEmitSound("flamethrower.ogg");
 	sprite.SetEmitSoundPaused(true);
 
-	this.setInventoryName(name(Translate::Flamethrower));
+	this.setInventoryName(name(Translate("Flamethrower")));
 }
 
 void onTick(CBlob@ this)

@@ -14,7 +14,7 @@ void onInit(CBlob@ this)
 	this.SetLightRadius(20.0f);
 	this.SetLightColor(SColor(255, 255, 200, 50));
 	
-	this.setInventoryName(name(Translate::Molotov));
+	this.setInventoryName(name(Translate("Molotov")));
 }
 
 void onInit(CSprite@ this)

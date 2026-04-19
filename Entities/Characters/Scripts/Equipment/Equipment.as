@@ -49,13 +49,13 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu@ gridmenu)
 		
 		if (carried !is null && canEquip(carried, i))
 		{
-			hover = Translate::Equip.replace("{ITEM}", carried.getInventoryName());
+			hover = Translate("Equip").replace("{ITEM}", carried.getInventoryName());
 		}
 		CBlob@ equipped = getBlobByNetworkID(ids[i]);
 		if (equipped !is null)
 		{
 			icon = equipped.exists("equipment_icon") ? equipped.get_string("equipment_icon") : "$"+equipped.getName()+"$";
-			hover = Translate::Unequip.replace("{ITEM}", equipped.getInventoryName());
+			hover = Translate("Unequip").replace("{ITEM}", equipped.getInventoryName());
 		}
 
 		CBitStream params;

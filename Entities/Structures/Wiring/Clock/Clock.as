@@ -162,7 +162,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
 
-	CButton@ button = caller.CreateGenericButton(11, Vec2f_zero, this, Callback_OpenMenu, Translate::SetHours);
+	CButton@ button = caller.CreateGenericButton(11, Vec2f_zero, this, Callback_OpenMenu, Translate("SetHours"));
 	if (button !is null)
 	{
 		button.radius = 16.0f;
@@ -172,7 +172,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void Callback_OpenMenu(CBlob@ this, CBlob@ caller)
 {
-	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), this, Vec2f(hours_count, 1), Translate::SetHours);
+	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), this, Vec2f(hours_count, 1), Translate("SetHours"));
 	if (menu is null) return;
 
 	bool[]@ hours_activated;
@@ -183,7 +183,8 @@ void Callback_OpenMenu(CBlob@ this, CBlob@ caller)
 		CBitStream stream;
 		stream.write_netid(this.getNetworkID());
 		stream.write_u8(i);
-		CGridButton@ butt = menu.AddButton("ClockHours.png", i+1, Vec2f(20, 16), Translate::ToggleHour.replace("{INPUT}", (i+1)+""), "Clock.as", "Callback_SetHour", Vec2f(1, 1), stream);
+		const string message = Translate("ToggleHour").replace("{INPUT}", (i+1)+"");
+		CGridButton@ butt = menu.AddButton("ClockHours.png", i+1, Vec2f(20, 16), message, "Clock.as", "Callback_SetHour", Vec2f(1, 1), stream);
 		butt.SetSelected(hours_activated[i] ? 1 : 0);
 	}
 }

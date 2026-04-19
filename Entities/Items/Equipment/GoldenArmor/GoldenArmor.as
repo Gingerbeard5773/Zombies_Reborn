@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 
 	AddIconToken("$goldenarmor$", "GoldenArmor.png", Vec2f(16, 16), 1, 0);
 
-	this.setInventoryName(name(Translate::GoldenArmor));
+	this.setInventoryName(name(Translate("GoldenArmor")));
 }
 
 void OnEquip(CBlob@ this, CBlob@ equipper)

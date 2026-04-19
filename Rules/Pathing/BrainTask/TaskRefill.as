@@ -9,7 +9,7 @@ class RefillTask : BrainTask
 	RefillTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskRefill;
+		description = Translate("TaskRefill");
 		type = Task::Refill;
 
 		VehicleInfo@ v;

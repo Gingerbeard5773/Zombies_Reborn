@@ -7,7 +7,7 @@ class TreeTask : BrainTask
 	TreeTask(CBlob@ blob_, CBlob@ target = null)
 	{
 		super(blob_);
-		description = Translate::TaskTree;
+		description = Translate("TaskTree");
 		type = Task::Tree;
 		origin = target is null ? Vec2f_zero : target.getPosition();
 	}
