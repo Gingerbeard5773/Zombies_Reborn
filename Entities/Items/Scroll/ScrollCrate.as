@@ -41,6 +41,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
 
+		CBlob@ caller = player.getBlob();
+		if (caller is null) return;
+
 		if (this.hasTag("dead")) return;
 		this.Tag("dead");
 
@@ -58,12 +61,32 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Achievement::server_Unlock(Achievement::Kidnapper, player);
 		}
 
-		CBlob@ crate = server_MakeCrate(name, aimBlob.getInventoryName(), 0, aimBlob.getTeamNum(), aimBlob.getPosition());
-		CShape@ shape = aimBlob.getShape();
-		crate.set_Vec2f("required space", Vec2f(Maths::Ceil(shape.getWidth()/8), Maths::Ceil(shape.getHeight()/8)));
-		aimBlob.server_Die();
+		if (name == "enchanter")
+		{
+			//fun easter egg if you try to crate tim
+			PutIntoCrateInventory(caller);
+
+			if (aimBlob.hasCommandID("client_on_attempt_crated"))
+			{
+				aimBlob.SendCommand(aimBlob.getCommandID("client_on_attempt_crated"));
+			}
+		}
+		else if (aimBlob.hasTag("player") && !aimBlob.hasTag("undead"))
+		{
+			//players and bots get forced inside a crate
+			PutIntoCrateInventory(aimBlob);
+		}
+		else 
+		{
+			//otherwise create a crate that can be unpacked
+			CBlob@ crate = server_MakeCrate(name, aimBlob.getInventoryName(), 0, aimBlob.getTeamNum(), aimBlob.getPosition());
+			CShape@ shape = aimBlob.getShape();
+			crate.set_Vec2f("required space", Vec2f(Maths::Ceil(shape.getWidth()/8), Maths::Ceil(shape.getHeight()/8)));
+			aimBlob.server_Die();
+		}
+
 		this.server_Die();
-		
+
 		this.SendCommand(this.getCommandID("client_execute_spell"));
 	}
 	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
@@ -74,6 +97,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 const bool canCrate(CBlob@ caller, CBlob@ blob)
 {
+	if (caller is blob) return false;
+
 	const string name = blob.getName();
 	if (name == "library")
 	{
@@ -85,5 +110,17 @@ const bool canCrate(CBlob@ caller, CBlob@ blob)
 		return false;
 	}
 
-	return name != "scroll" && name != "crate" && blob.getPlayer() is null;
+	return name != "scroll" && name != "crate";
+}
+
+CBlob@ PutIntoCrateInventory(CBlob@ blob)
+{
+	CBlob@ crate = server_CreateBlob("crate", blob.getTeamNum(), blob.getPosition());
+	if (crate !is null)
+	{
+		crate.server_PutInInventory(blob);
+		crate.setVelocity(blob.getVelocity());
+	}
+	
+	return crate;
 }
