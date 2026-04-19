@@ -25,7 +25,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			damage *= 1.0f;
 			break;
 		case Hitters::bite:
-			damage *= 0.5f;
+			damage *= 0.3f;
 			break;
 		case Hitters::bomb:
 		case Hitters::explosion:
