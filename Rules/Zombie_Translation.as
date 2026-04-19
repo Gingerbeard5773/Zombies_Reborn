@@ -51,7 +51,6 @@ void SetupTranslations()
 	d.set("Day",                    Init("Day {INPUT}",                                                 "День {INPUT}"));
 	d.set("Record",                 Init("Day {INPUT}\n\nNew record!",                                  "День {INPUT}\n\nНовый рекорд!"));
 	d.set("GameOver",               Init("Game over! All players perished! You survived {INPUT} days.", "Конец игры! Все игроки погибли! Вы смогли прожить {INPUT} дней."));
-	d.set("GameWin",                Init("Day {INPUT} Reached! You win!",                               "День {INPUT} достигнут! Вы победили!"));
 	d.set("Trader",                 Init("A flying merchant has arrived!",                              "Прибыл летающий-торговец!"));
 	d.set("Sedgwick",               Init("Sedgwick the necromancer has appeared!",                      "Некромант Седжвик только что явился!"));
 	d.set("Migrant1",               Init("A refugee has arrived!",                                      "Прибыл беженец!"));

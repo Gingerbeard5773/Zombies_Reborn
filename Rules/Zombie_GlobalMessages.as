@@ -65,58 +65,28 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		u32 color;
 		if (!params.saferead_u32(color)) return;
-		
-		bool isIndex;
-		if (!params.saferead_bool(isIndex)) return;
-		
+
 		string message;
+		if (!params.saferead_string(message)) return;
 
-		if (isIndex)
+		dictionary@ d;
+		if (this.get("translations", @d) && d.exists(message))
 		{
-			u8 index;
-			if (!params.saferead_u8(index)) return;
-
-			// TODO: SWITCH TO BETTER
-			const string[] server_messages =
-			{
-				Translate("Day"),
-				Translate("GameOver"),
-				Translate("GameWin"),
-				Translate("Trader"),
-				Translate("Sedgwick"),
-				Translate("Migrant1"),
-				Translate("Migrant2"),
-				Translate("Record"),
-				Translate("Respawn2"),
-				Translate("Bobert"),
-				Translate("Enchanter"),
-				Translate("GoldTilesUnlocked")
-			};
-
-			if (index > server_messages.length)
-			{
-				error("server message from index does not exist! :: "+getCurrentScriptName()); return; 
-			}
-			
-			message = server_messages[index];
-
-			u8 inputs_length;
-			if (!params.saferead_u8(inputs_length)) return;
-			
-			for (u8 i = 0; i < inputs_length; i++)
-			{
-				string input;
-				if (!params.saferead_string(input)) return;
-
-				const int index = message.findFirst("{INPUT}");
-				if (index == -1) break;
-
-				message = message.substr(0, index) + input + message.substr(index + 7);
-			}
+			d.get(message, message);
 		}
-		else
+
+		u8 inputs_length;
+		if (!params.saferead_u8(inputs_length)) return;
+
+		for (u8 i = 0; i < inputs_length; i++)
 		{
-			if (!params.saferead_string(message)) return;
+			string input;
+			if (!params.saferead_string(input)) return;
+
+			const int index = message.findFirst("{INPUT}");
+			if (index == -1) break;
+
+			message = message.substr(0, index) + input + message.substr(index + 7);
 		}
 
 		GlobalMessage new_message(message, time, SColor(color));

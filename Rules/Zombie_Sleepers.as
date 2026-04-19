@@ -26,7 +26,7 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 		blob.server_SetPlayer(random_player);
 		
 		const string[] inputs = { player.getCharacterName() };
-		server_SendGlobalMessage(this, 8, 8, inputs, color_white.color, random_player);
+		server_SendGlobalMessage(this, "Respawn2", 8, inputs, color_white.color, random_player);
 
 		return;
 	}
@@ -183,7 +183,7 @@ void UseSleepersAsRespawn(CRules@ this)
 				if (player is null || player.getBlob() !is null || player.getTeamNum() != 0) continue;
 				
 				const string[] inputs = { sleeper.get_string("sleeper_name") };
-				server_SendGlobalMessage(this, 8, 8, inputs, color_white.color, player);
+				server_SendGlobalMessage(this, "Respawn2", 8, inputs, color_white.color, player);
 
 				WakeupSleeper(sleeper, player);
 				break;

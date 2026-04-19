@@ -122,12 +122,12 @@ void onNewDayHour(CRules@ this, u16 day_hour)
 		Achievement::server_Unlock(Achievement::WorldRecord);
 		hitRecord = true;
 		const string[] inputs = {day_number+""};
-		server_SendGlobalMessage(this, 7, 10, inputs);
+		server_SendGlobalMessage(this, "Record", 10, inputs);
 	}
 	else 
 	{
 		const string[] inputs = {day_number+""};
-		server_SendGlobalMessage(this, 0, 10, inputs);
+		server_SendGlobalMessage(this, "Day", 10, inputs);
 	}
 	
 	if (this.get_u8("survivor player count") >= 6 && day_number > 5)
@@ -174,7 +174,7 @@ void checkGameEnded(CRules@ this, CPlayer@ player)
 	
 	this.SetCurrentState(GAME_OVER);
 	string[] inputs = {dayNumber+""};
-	server_SendGlobalMessage(this, 1, nextmap_seconds, inputs);
+	server_SendGlobalMessage(this, "GameOver", nextmap_seconds, inputs);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)

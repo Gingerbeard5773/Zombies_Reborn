@@ -113,7 +113,7 @@ void doMigrantEvent(CRules@ this, CMap@ map, const u16&in day_number)
 		manager.AddTask(task, true);
 	}
 
-	server_SendGlobalMessage(this, amount == 1 ? 5 : 6, 6);
+	server_SendGlobalMessage(this, amount == 1 ? "Migrant1" : "Migrant2", 6);
 }
 
 void doTraderEvent(CRules@ this, CMap@ map)
@@ -164,7 +164,7 @@ void doTraderEvent(CRules@ this, CMap@ map)
 
 	if (spawns.length <= 0) return;
 
-	server_SendGlobalMessage(this, 3, 8);
+	server_SendGlobalMessage(this, "Trader", 8);
 
 	Vec2f spawn = spawns[XORRandom(spawns.length)];
 
@@ -178,7 +178,7 @@ void doSedgwickEvent(CRules@ this, CMap@ map, const u16&in day_number)
 	CBlob@[] survivors = getSurvivors();
 	if (survivors.length <= 0) return;
 
-	server_SendGlobalMessage(this, 4, 6);
+	server_SendGlobalMessage(this, "Sedgwick", 6);
 	
 	Vec2f spawn = survivors[XORRandom(survivors.length)].getPosition();
 
@@ -192,7 +192,7 @@ void doBobertEvent(CRules@ this, CMap@ map)
 	Vec2f spawn = getSpawnLocation(Vec2f(2, 2), 128.0f, spawners, @getStandardSpawnCost);
 	if (spawn == Vec2f_zero) return;
 
-	server_SendGlobalMessage(this, 9, 6);
+	server_SendGlobalMessage(this, "Bobert", 6);
 
 	server_CreateBlob("bobert", 0, spawn);
 }
