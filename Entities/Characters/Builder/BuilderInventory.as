@@ -61,7 +61,7 @@ void onInit(CInventory@ this)
 
 	for(u8 i = 0; i < Builder::PAGE_COUNT; i++)
 	{
-		AddIconToken("$"+PAGE_NAME[i]+"$", "BuilderPageIcons.png", Vec2f(48, 24), i);
+		AddIconToken("$"+PAGE_NAME[i]+"_Page$", "BuilderPageIcons.png", Vec2f(48, 24), i);
 	}
 
 	blob.addCommandID("make block");
@@ -163,7 +163,7 @@ void MakeBlocksMenu(CInventory@ this, CBlob@ blob, const Vec2f &in INVENTORY_POS
 
 			CBitStream stream;
 			stream.write_u8(i);
-			CGridButton@ button = index.AddButton("$"+PAGE_NAME[i]+"$", PAGE_NAME[i], "BuilderInventory.as", "Callback_SelectPage", Vec2f(2, 1), stream);
+			CGridButton@ button = index.AddButton("$"+PAGE_NAME[i]+"_Page$", PAGE_NAME[i], "BuilderInventory.as", "Callback_SelectPage", Vec2f(2, 1), stream);
 			if (button is null) continue;
 
 			button.selectOneOnClick = true;
