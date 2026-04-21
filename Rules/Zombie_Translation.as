@@ -299,30 +299,31 @@ void SetupTranslations()
 	d.set("Bobert4",                Init("Hi!!! Buy my stuff! :D",                                   "Привет! Купи мои вещи!"));
 
 	//enchanter
-	d.set("Enchanter0",             Init("Bring forth the items I seek and you shall be rewarded.", ""));
-	d.set("Enchanter1",             Init("Excellent. Bring forth an item you wish to be given power.", ""));
-	d.set("Enchanter2",             Init("I cannot bestow this item with magic.", ""));
-	d.set("Enchanter3",             Init("This object has no arcane potential.", ""));
-	d.set("Enchanter4",             Init("This is an unenchantable item.", ""));
-	d.set("Enchanter5",             Init("I return whence I came. Goodbye.", ""));
+	d.set("Enchanter0",             Init("Bring forth the items I seek and you shall be rewarded.",        ""));
+	d.set("Enchanter1",             Init("Excellent. Bring forth an item you wish to be given power.",     ""));
+	d.set("Enchanter2",             Init("I cannot bestow this item with magic.",                          ""));
+	d.set("Enchanter3",             Init("This object has no arcane potential.",                           ""));
+	d.set("Enchanter4",             Init("This is an unenchantable item.",                                 ""));
+	d.set("Enchanter5",             Init("I return whence I came. Goodbye.",                               ""));
 	d.set("Enchanter6",             Init("You have paid, but I must leave now. I shall enchant randomly.", ""));
-	d.set("Enchanter7",             Init("I have used enough of my magic, I am leaving. Farewell.", ""));
-	d.set("Enchanter8",             Init("For my services, you must deliver the items I ask for.", ""));
-	d.set("Enchanter9",             Init("Provide me with what I require.", ""));
-	d.set("Enchanter10",            Init("Very well. Place before me what you seek to strengthen.", ""));
-	d.set("Enchanter11",            Init("To have the gall to attempt such a thing, shame on thee...", ""));
+	d.set("Enchanter7",             Init("I have used enough of my magic, I am leaving. Farewell.",        ""));
+	d.set("Enchanter8",             Init("For my services, you must deliver the items I ask for.",         ""));
+	d.set("Enchanter9",             Init("Provide me with what I require.",                                ""));
+	d.set("Enchanter10",            Init("Very well. Place before me what you seek to strengthen.",        ""));
+	d.set("Enchanter11",            Init("To have the gall to attempt such a thing, shame on thee...",     ""));
 
-	d.set("EnchantGUI0",            Init("Give Payment", ""));
-	d.set("EnchantGUI1",            Init("Assess Item", ""));
+	d.set("EnchantGUI0",            Init("Give Payment",                           ""));
+	d.set("EnchantGUI1",            Init("Assess Item",                            ""));
 	d.set("EnchantGUI2",            Init("Tim requires these items as remittance", ""));
-	d.set("EnchantGUI3",            Init("Do you wish to enchant this item?", ""));
-	d.set("EnchantGUI4",            Init("Enchants into $BLUE$ {ITEM}", ""));
-	d.set("EnchantGUI5",            Init("{INPUT} Enchants left", ""));
+	d.set("EnchantGUI3",            Init("Do you wish to enchant this item?",      ""));
+	d.set("EnchantGUI4",            Init("Enchants into $BLUE$ {ITEM}",            ""));
+	d.set("EnchantGUI5",            Init("{INPUT} Enchants left",                  ""));
 
-	d.set("Wings",                  Init("Dragoon Wings\nMythical wings forged from magic.", ""));
-	d.set("GoldenHelmet",           Init("Golden Helmet\nAn enchanted helmet etched with rune magic.", ""));
-	d.set("GoldenArmor",            Init("Golden Armor\nAn enchanted breastplate etched with rune magic.", ""));
+	d.set("Wings",                  Init("Dragoon Wings\nMythical wings forged from magic.",                       ""));
+	d.set("GoldenHelmet",           Init("Golden Helmet\nAn enchanted helmet etched with rune magic.",             ""));
+	d.set("GoldenArmor",            Init("Golden Armor\nAn enchanted breastplate etched with rune magic.",         ""));
 	d.set("GoldenChicken",          Init("Golden Chicken\nA legendary chicken from myths which lays golden eggs.", ""));
+	d.set("Trident",                Init("Trident\nA godly weapon that has loyalty to its master.",                ""));
 
 	//library
 	d.set("Researching",            Init("Researching - {PERCENT}",      "Исследование - {PERCENT}"));

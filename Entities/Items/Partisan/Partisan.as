@@ -123,21 +123,10 @@ f32 getAimAngle(CBlob@ this, CBlob@ holder)
 {
 	Vec2f aim_vec = (this.getPosition() - holder.getAimPos());
 	aim_vec.Normalize();
-
-	f32 targetAngle = -(aim_vec.getAngleDegrees() + (!this.isFacingLeft() ? 180 : 0));
-	f32 oldAngle = this.getAngleDegrees();
-
-	bool lastFacing = this.get_bool("last_facing_left");
-	if (lastFacing != this.isFacingLeft())
-	{
-		oldAngle += 180.0f;
-	}
-
-	this.set_bool("last_facing_left", this.isFacingLeft());
-
-	const f32 lerpStrength = this.get_u32("end attack") > getGameTime() ? 0.05f : 0.15f;
-	const f32 newAngle = LerpAngle(oldAngle, targetAngle, lerpStrength);
-	return newAngle;
+	const f32 target_angle = -(aim_vec.getAngleDegrees() + (!this.isFacingLeft() ? 180 : 0));
+	const f32 strength = this.get_u32("end attack") > getGameTime() ? 0.05f : 0.15f;
+	const f32 angle = LerpAngle(this.getAngleDegrees(), target_angle, strength);
+	return angle;
 }
 
 f32 getSpearTilePushback(CBlob@ this)
