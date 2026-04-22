@@ -7,13 +7,6 @@
 
 void onInit(CBlob@ this)
 {
-	// Prevent classes from jabbing n stuff
-	AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
-	if (ap !is null) 
-	{
-		ap.SetKeysToTake(key_action1 | key_action2);
-	}
-	
 	this.addCommandID("shoot arrow client");
 	this.addCommandID("shoot arrow server");
 	
@@ -124,9 +117,9 @@ void ManageBow(CBlob@ this, CBlob@ holder, AttachmentPoint@ point, CrossbowInfo@
 	const bool ismyplayer = holder.isMyPlayer();
 
 	CSprite@ sprite = holder.getSprite();
-	
+
 	const bool repeater = hasTech(Tech::Repeaters);
-	
+
 	if (repeater && crossbow.charge_state < Crossbow::charged)
 	{
 		if (crossbow.charge_time >= Crossbow::READY_TIME)
@@ -254,6 +247,12 @@ bool TakeAmmo(CBlob@ blob, CrossbowInfo@ crossbow)
 	}
 
 	return false;
+}
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
+{
+	const bool allow_key_action2 = hasTech(Tech::Repeaters) && attached.getName() == "archer";
+	attachedPoint.SetKeysToTake(allow_key_action2 ? key_action1 : key_action1 | key_action2);
 }
 
 void onSendCreateData(CBlob@ this, CBitStream@ stream)
