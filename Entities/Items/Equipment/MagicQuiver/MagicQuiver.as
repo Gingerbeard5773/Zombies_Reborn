@@ -50,7 +50,7 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 	CBlob@ mat = server_CreateBlob(random_type, equipper.getTeamNum(), equipper.getPosition());
 	if (mat is null) return;
 
-	mat.server_PutInInventory(equipper);
+	equipper.server_PutInInventory(mat);
 	this.set_netid("magic_arrow_netid", mat.getNetworkID());
 
 	this.set_u32("next_magic_arrow", getGameTime() + arrow_delay);
