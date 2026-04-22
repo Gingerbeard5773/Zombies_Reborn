@@ -324,6 +324,7 @@ void SetupTranslations()
 	d.set("GoldenArmor",            Init("Golden Armor\nAn enchanted breastplate etched with rune magic.",         ""));
 	d.set("GoldenChicken",          Init("Golden Chicken\nA legendary chicken from myths which lays golden eggs.", ""));
 	d.set("Trident",                Init("Trident\nA godly weapon that has loyalty to its master.",                ""));
+	d.set("MagicQuiver",            Init("Magic Quiver\nA quiver embedded with magic that conjures arrows.",       ""));
 
 	//library
 	d.set("Researching",            Init("Researching - {PERCENT}",      "Исследование - {PERCENT}"));
