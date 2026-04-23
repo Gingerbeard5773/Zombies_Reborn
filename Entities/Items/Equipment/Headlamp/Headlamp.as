@@ -23,7 +23,6 @@ void onInit(CBlob@ this)
 
 	addOnEquip(this, @OnEquip);
 	addOnUnequip(this, @OnUnequip);
-	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
 
 	this.setInventoryName(name(Translate("HeadLamp")));
@@ -36,15 +35,9 @@ void OnEquip(CBlob@ this, CBlob@ equipper)
 
 void OnUnequip(CBlob@ this, CBlob@ equipper)
 {
-	this.getSprite().SetVisible(true);
 	equipper.getSprite().RemoveSpriteLayer("headlamp");
 
 	this.SetLight(false);
-}
-
-void onTickEquipped(CBlob@ this, CBlob@ equipper)
-{
-	this.getSprite().SetVisible(false);
 }
 
 void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
@@ -52,13 +45,11 @@ void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
 	CSpriteLayer@ headlamp = equipper_sprite.getSpriteLayer("headlamp");
 	if (headlamp is null)
 	{
-		//add headlamp spritelayer. done in onTick because KAG ENGINE IS FUCKING SHIT AND CANT SYNC NEW CLIENTS PROPERLY.
 		@headlamp = equipper_sprite.addSpriteLayer("headlamp", "Headlamp.png", 16, 16);
 		if (headlamp !is null)
 		{
 			headlamp.SetVisible(true);
 			headlamp.SetRelativeZ(1);
-			//headlamp.SetOffset(Vec2f(0, -4));
 
 			if (equipper_sprite.isFacingLeft())
 				headlamp.SetFacingLeft(true);

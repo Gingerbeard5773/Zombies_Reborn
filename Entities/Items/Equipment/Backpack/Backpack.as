@@ -9,23 +9,16 @@ void onInit(CBlob@ this)
 	this.Tag("sawed");//hack
 
 	addOnUnequip(this, @OnUnequip);
-	addOnTickEquipped(this, @onTickEquipped);
 	addOnTickSpriteEquipped(this, @onTickSpriteEquipped);
 
 	AddIconToken("$backpack$", "Backpack.png", Vec2f(16, 16), 1, 0);
-	
+
 	this.setInventoryName(name(Translate("Backpack")));
 }
 
 void OnUnequip(CBlob@ this, CBlob@ equipper)
 {
-	this.getSprite().SetVisible(true);
 	equipper.getSprite().RemoveSpriteLayer("backpack");
-}
-
-void onTickEquipped(CBlob@ this, CBlob@ equipper)
-{
-	this.getSprite().SetVisible(false);
 }
 
 void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
@@ -33,7 +26,6 @@ void onTickSpriteEquipped(CBlob@ this, CSprite@ equipper_sprite)
 	CSpriteLayer@ backpack = equipper_sprite.getSpriteLayer("backpack");
 	if (backpack is null)
 	{
-		//add backpack spritelayer. done in onTick because KAG ENGINE IS FUCKING SHIT AND CANT SYNC NEW CLIENTS PROPERLY.
 		@backpack = equipper_sprite.addSpriteLayer("backpack", "Backpack.png", 16, 16);
 		if (backpack !is null)
 		{
