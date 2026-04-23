@@ -21,11 +21,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (!this.isAttached())
-	{
-		SetShape(this);
-		return;
-	}
+	SetShape(this);
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	CBlob@ holder = point.getOccupied();
@@ -141,12 +137,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	{
 		attachedPoint.SetKeysToTake(key_action1 | key_action2);
 	}
-	
-	if (this.hasTag("full_shape"))
-	{
-		this.getShape().RemoveShape(1);
-		this.Untag("full_shape");
-	}
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
@@ -156,14 +146,28 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 void SetShape(CBlob@ this)
 {
-	if (this.hasTag("full_shape")) return;
+	if (this.isAttached())
+	{
+		if (this.get_bool("full_shape"))
+		{
+			this.getShape().RemoveShape(1);
+			this.set_bool("full_shape", false);
+		}
+	}
+	else if (!this.get_bool("full_shape"))
+	{
+		Vec2f[] points = { Vec2f(-10.0f, 0.0f),
+		                   Vec2f(50.0f, 0.0f),
+		                   Vec2f(50.0f, 4.0f),
+		                   Vec2f(-10.0f, 4.0f)
+		                 };
+		this.getShape().AddShape(points);
+		this.set_bool("full_shape", true);
+	}
+}
 
-	Vec2f[] points = { Vec2f(-10.0f, 0.0f),
-					   Vec2f(50.0f, 0.0f),
-					   Vec2f(50.0f, 4.0f),
-					   Vec2f(-10.0f, 4.0f)
-					 };
-	this.getShape().AddShape(points);
-
-	this.Tag("full_shape");
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	this.set_bool("full_shape", false); //joining client must recalculate shape
+	return true;
 }
