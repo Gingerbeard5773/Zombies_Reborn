@@ -86,12 +86,12 @@ void onTickEquipped(CBlob@ this, CBlob@ equipper)
 	}
 }
 
-void SetTelepathed(CBlob@ blob, const bool&in visible)
+void SetTelepathed(CBlob@ blob, const bool&in telepathed)
 {
 	CSprite@ sprite = blob.getSprite();
 	if (sprite is null) return;
 
-	sprite.SetHUD(visible);
+	sprite.SetHUD(telepathed);
 
 	const int layer_count = sprite.getSpriteLayerCount();
 	for (int i = 0; i < layer_count; i++)
@@ -103,7 +103,7 @@ void SetTelepathed(CBlob@ blob, const bool&in visible)
 		if (layer is sprite.getLightLayer()) continue;
 		#endif
 
-		layer.SetHUD(visible);
+		layer.SetHUD(telepathed);
 	}
 }
 
