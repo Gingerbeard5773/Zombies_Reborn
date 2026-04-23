@@ -362,7 +362,7 @@ Component@[]@ getAchievementsPage()
 	float[] achievements_columnsizes = { 1, 0.05f };
 	achievements_container.SetColumnSizes(achievements_columnsizes);
 	
-	const string achievements_array = Achievement::getArray(Achievement::Count);
+	const string achievements_array = Achievement::getArray(Achievement::Count, Achievement::openConfig());
 
 	StandardList@ achievements_list = StandardList(ui);
 	achievements_list.SetMargin(10, 5);

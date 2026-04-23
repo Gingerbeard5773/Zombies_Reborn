@@ -68,15 +68,15 @@ void DrawClassIcon(CBlob@ this, Vec2f origin)
 	const string name = this.getName();
 	if (name == "knight")
 	{
-		u8 type = this.get_u8("bomb type");
+		const u8 bomb_type = this.get_u8("bomb type");
 		u8 frame = 1;
-		if (type == 0)
+		if (bomb_type == 0)
 		{
 			frame = 0;
 		}
-		else if (type < 255)
+		else if (bomb_type < 255)
 		{
-			frame = 1 + type;
+			frame = 1 + bomb_type;
 		}
 		GUI::DrawIcon("KnightIcons.png", frame, Vec2f(16, 32), drawpos, 1.0f, this.getTeamNum());
 	}

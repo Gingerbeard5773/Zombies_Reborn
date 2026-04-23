@@ -38,10 +38,7 @@ void onTick(CBlob@ this)
 	const f32 time = end_attack - getGameTime();
 
 	CSprite@ sprite = this.getSprite();
-	
-	//f32 push_back = getSpearTilePushback(this);
-	//sprite.SetOffset(Vec2f(push_back - 16, 0));
-	
+
 	if (end_attack > getGameTime())
 	{
 		Vec2f offset(-time * 2.5f, 0);
@@ -127,32 +124,6 @@ f32 getAimAngle(CBlob@ this, CBlob@ holder)
 	const f32 strength = this.get_u32("end attack") > getGameTime() ? 0.05f : 0.15f;
 	const f32 angle = LerpAngle(this.getAngleDegrees(), target_angle, strength);
 	return angle;
-}
-
-f32 getSpearTilePushback(CBlob@ this)
-{
-	f32 angle = -this.getAngleDegrees();
-	angle += this.isFacingLeft() ? -180 : 0;
-	Vec2f dir = Vec2f(1, 0).RotateBy(angle);
-
-	const f32 total_length = spear_length + 8.0f;
-	Vec2f start = this.getPosition();
-	HitInfo@[] hits;
-	if (getMap().getHitInfosFromRay(start, -angle, total_length, this, @hits))
-	{
-		for (uint i = 0; i < hits.length; i++)
-		{
-			HitInfo@ hit = hits[i];
-			if (hit.blob is null && hit.hitpos != Vec2f_zero)
-			{
-				f32 dist = (hit.hitpos - start).Length();
-				f32 pushback = Maths::Min(total_length - dist, 15.0f);
-				return Maths::Clamp(pushback, 0, total_length);
-			}
-		}
-	}
-
-	return 0.0f;
 }
 
 f32 LerpAngle(f32 a, f32 b, f32 t)

@@ -289,7 +289,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
 
 	config.saveFile(SaveFile+SaveSlot);
 
-	blobHandlers.clear();
+	blobHandlers.deleteAll();
 }
 
 /*
@@ -339,7 +339,7 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 	LoadEquipment(map, equipmentData, @loaded_blobs);
 	LoadTasks(map, taskData, @loaded_blobs);
 
-	blobHandlers.clear();
+	blobHandlers.deleteAll();
 
 	return true;
 }

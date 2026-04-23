@@ -160,11 +160,6 @@ namespace Achievement
 		return cfg;
 	}
 
-	bool isUnlocked(const int&in index, ConfigFile@ cfg = openConfig())
-	{
-		return isUnlocked(getArray(index, cfg), index);
-	}
-
 	bool isUnlocked(const string&in achievements_array, const int&in index)
 	{
 		if (achievements_array.length <= index) return false;
@@ -172,7 +167,7 @@ namespace Achievement
 		return achievements_array[index] == 49; //1 in ascii
 	}
 
-	string getArray(const int&in index, ConfigFile@ cfg = openConfig())
+	string getArray(const int&in index, ConfigFile@ cfg)
 	{
 		string achievements_array = cfg.exists("achievements") ? cfg.read_string("achievements") : "";
 

@@ -107,8 +107,10 @@ namespace Statistics
 		return cfg;
 	}
 
-	void AddToConfig(const string&in statistic_name, const u32&in amount, ConfigFile@ cfg = openConfig())
+	void AddToConfig(const string&in statistic_name, const u32&in amount)
 	{
+		ConfigFile@ cfg = openConfig();
+
 		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
 		string[]@ values = statistic.split(" ");
 
@@ -120,7 +122,12 @@ namespace Statistics
 		cfg.saveFile(filename);
 	}
 
-	void Add(const string&in statistic_name, const u32&in amount, ConfigFile@ cfg = openConfig())
+	void Add(const string&in statistic_name, const u32&in amount)
+	{
+		Add(statistic_name, amount, openConfig());
+	}
+
+	void Add(const string&in statistic_name, const u32&in amount, ConfigFile@ cfg)
 	{
 		CPlayer@ local = getLocalPlayer();
 		if (local is null) return;
@@ -139,7 +146,12 @@ namespace Statistics
 		statistics_set.set(statistic_name, value + amount);
 	}
 
-	u32 Get(const string&in statistic_name, const Type&in statistic_type, ConfigFile@ cfg = openConfig())
+	u32 Get(const string&in statistic_name, const Type&in statistic_type)
+	{
+		return Get(statistic_name, statistic_type, openConfig());
+	}
+
+	u32 Get(const string&in statistic_name, const Type&in statistic_type, ConfigFile@ cfg)
 	{
 		const string statistic = cfg.exists(statistic_name) ? cfg.read_string(statistic_name) : "0 0";
 		string[]@ values = statistic.split(" ");

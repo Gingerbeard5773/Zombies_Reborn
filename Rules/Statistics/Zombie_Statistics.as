@@ -413,8 +413,7 @@ void onUnlockAchievement(CRules@ this, int index)
 
 	if (Achievement::isUnlocked(achievements_array, index)) return;
 
-	achievements_array.erase(index, 1);
-	achievements_array.insert(index, "1");
+	achievements_array[index] = 49; // "1" in ascii
 
 	cfg.add_string("achievements", achievements_array);
 	cfg.saveFile(Achievement::filename);
@@ -441,8 +440,7 @@ void onUnlockBestiaryEntry(CRules@ this, string entry_name)
 
 	if (Bestiary::isUnlocked(bestiary_entries, index)) return;
 
-	bestiary_entries.erase(index, 1);
-	bestiary_entries.insert(index, "1");
+	bestiary_entries[index] = 49; // "1" in ascii
 
 	cfg.add_string("bestiary_entries", bestiary_entries);
 	cfg.saveFile(Bestiary::filename);

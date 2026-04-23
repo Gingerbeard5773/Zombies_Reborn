@@ -144,7 +144,7 @@ class TaskManager
 		if (task.solo) tasks.clear();
 
 		tasks.push_back(task);
-		if (set_current || task.solo) index = tasks.length - 1;
+		if (set_current || tasks.length == 1) index = tasks.length - 1;
 	}
 
 	// Set the override task
@@ -311,11 +311,11 @@ class BrainTask
 	{
 		if (origin == Vec2f_zero) return;
 
-		int deltaY = -2 + Maths::FastSin(getGameTime() / 4.5f) * 3.0f;
 		Driver@ driver = getDriver();
-		Vec2f pos = driver.getScreenPosFromWorldPos((origin + Vec2f(0, -8)) + Vec2f(0, -16) * driver.getResolutionFactor());
-		pos.y += deltaY;
-		GUI::DrawIcon("InteractionIcons.png", 19, Vec2f(32, 32), pos, getCamera().targetDistance * driver.getResolutionScaleFactor());
+		const f32 scale = getCamera().targetDistance * driver.getResolutionScaleFactor();
+		Vec2f pos = driver.getScreenPosFromWorldPos(origin - Vec2f(0, 8)) - Vec2f(32, 32) * scale;
+		pos.y += -2 + Maths::FastSin(getGameTime() / 4.5f) * 3.0f;
+		GUI::DrawIcon("InteractionIcons.png", 19, Vec2f(32, 32), pos, scale);
 	}
 
 	/// Helper functions

@@ -133,7 +133,7 @@ void HandleTaskMenuInteractions(CRules@ this, CControls@ controls, CBlob@ localB
 	Vec2f menu_tl, menu_br;
 	getMenuBoundaries(manager.tasks.length, center, menu_tl, menu_br);
 
-	Vec2f origin = menu_tl + menu_height;
+	Vec2f origin = menu_tl + Vec2f(menu_height, menu_height);
 	
 	// Choose current task and remove task buttons
 	for (int i = 0; i < manager.tasks.length; i++)
@@ -342,7 +342,7 @@ void RenderTaskMenu(CControls@ controls, Driver@ driver)
 
 	DrawMigrantStats(blob, menu_tl, menu_br);
 
-	Vec2f origin = menu_tl + menu_height;
+	Vec2f origin = menu_tl + Vec2f(menu_height, menu_height);
 
 	// Draw 'empty task unit' if we have no tasks
 	if (manager.tasks.length == 0)
@@ -583,7 +583,7 @@ BrainTask@[]@ getApplicableTasks(CBlob@ blob, CBlob@ migrant)
 	BrainTask@[] tasks;
 	
 	CShape@ shape = blob.getShape();
-	if (shape is null || !shape.isActive()) return tasks;
+	if (shape is null || !shape.doTickScripts) return tasks;
 	
 	for (int i = 0; i < all_tasks.length; i++)
 	{
@@ -600,7 +600,7 @@ BrainTask@[]@ getApplicableTasks(CBlob@ blob, CBlob@ migrant)
 bool isTaskBlob(CBlob@ blob, CBlob@ migrant)
 {
 	CShape@ shape = blob.getShape();
-	if (shape is null || !shape.isActive()) return false;
+	if (shape is null || !shape.doTickScripts) return false;
 
 	for (int i = 0; i < all_tasks.length; i++)
 	{

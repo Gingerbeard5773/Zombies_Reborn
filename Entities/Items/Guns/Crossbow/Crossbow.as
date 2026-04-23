@@ -251,8 +251,12 @@ bool TakeAmmo(CBlob@ blob, CrossbowInfo@ crossbow)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
-	const bool allow_key_action2 = hasTech(Tech::Repeaters) && attached.getName() == "archer";
-	attachedPoint.SetKeysToTake(allow_key_action2 ? key_action1 : key_action1 | key_action2);
+	attachedPoint.SetKeysToTake(key_action1 | key_action2);
+
+	if (hasTech(Tech::Repeaters) && attached.getName() == "archer")
+	{
+		attachedPoint.SetKeysToTake(key_action1);
+	}
 }
 
 void onSendCreateData(CBlob@ this, CBitStream@ stream)

@@ -89,11 +89,6 @@ namespace Bestiary
 		return cfg;
 	}
 
-	bool isUnlocked(const int&in index, ConfigFile@ cfg = openConfig())
-	{
-		return isUnlocked(getArray(index, cfg), index);
-	}
-
 	bool isUnlocked(const string&in bestiary_entries, const int&in index)
 	{
 		if (bestiary_entries.length <= index) return false;
@@ -101,7 +96,7 @@ namespace Bestiary
 		return bestiary_entries[index] == 49; //1 in ascii
 	}
 
-	string getArray(const int&in index = 0, ConfigFile@ cfg = openConfig())
+	string getArray(const int&in index, ConfigFile@ cfg)
 	{
 		string bestiary_entries = cfg.exists("bestiary_entries") ? cfg.read_string("bestiary_entries") : "";
 
