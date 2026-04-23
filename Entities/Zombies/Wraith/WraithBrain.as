@@ -1,8 +1,8 @@
 #define SERVER_ONLY
 
-#include "UndeadTargeting.as";
-#include "PressOldKeys.as";
-#include "WraithCommon.as";
+#include "UndeadTargeting.as"
+#include "PressOldKeys.as"
+#include "WraithCommon.as"
 
 const f32 brain_target_radius = 512.0f;
 
@@ -16,6 +16,12 @@ void onTick(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
 	CBlob@ target = this.getTarget();
+
+	const s32 auto_explode_timer = blob.get_s32("auto_enrage_time") - getGameTime();
+	if (blob.isKeyPressed(key_action1) || auto_explode_timer < 0)
+	{
+		server_SetEnraged(blob);
+	}
 
 	u8 delay = blob.get_u8("brain_delay");
 	delay--;
@@ -33,14 +39,16 @@ void onTick(CBrain@ this)
 				return;
 			}
 			
+			Vec2f destination = target.getPosition();
+			
 			// aim at the target
-			blob.setAimPos(target.getPosition());
+			blob.setAimPos(destination);
 			
 			// chase target
-			FlyTo(blob, target.getPosition());
+			FlyTo(blob, destination);
 			
 			// should we be mad?
-			if ((target.getPosition() - blob.getPosition()).Length() < blob.get_f32("explosive_radius"))
+			if ((destination - blob.getPosition()).Length() < blob.get_f32("explosive_radius"))
 			{
 				server_SetEnraged(blob);
 			}

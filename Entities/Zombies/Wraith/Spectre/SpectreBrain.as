@@ -91,6 +91,12 @@ void onTick(CBrain@ this)
 	pather.Tick();
 	pather.SetSuggestedKeys();
 
+	const s32 auto_explode_timer = blob.get_s32("auto_enrage_time") - getGameTime();
+	if (blob.isKeyPressed(key_action1) || auto_explode_timer < 0)
+	{
+		server_SetEnraged(blob);
+	}
+
 	u8 delay = blob.get_u8("brain_delay");
 	delay--;
 
@@ -130,9 +136,9 @@ void onTick(CBrain@ this)
 			}
 
 			// should we be mad?
-			if ((destination - pos).Length() < blob.get_f32("explosive_radius") && !blob.hasTag("phasing"))
+			if ((destination - pos).Length() < blob.get_f32("explosive_radius") && !blob.getShape().isStatic())
 			{
-				server_SetEnraged(blob, true, false, false);
+				server_SetEnraged(blob);
 			}
 		}
 		else

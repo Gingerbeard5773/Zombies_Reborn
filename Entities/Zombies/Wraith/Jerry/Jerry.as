@@ -1,9 +1,8 @@
 ﻿#include "Hitters.as"
 #include "WraithCommon.as"
 
+const u32 TIME_TO_ENRAGE = 110 * 30;
 const int COINS_ON_DEATH = 100;
-
-const u32 TIME_TO_ENRAGE_DARK = TIME_TO_ENRAGE * 2.4f;
 
 void onInit(CBlob@ this)
 {
@@ -15,13 +14,15 @@ void onInit(CBlob@ this)
 	sprite.SetEmitSoundPaused(false);
 
 	this.getShape().SetRotationsAllowed(false);
+
 	this.getBrain().server_SetActive(true);
-	
+
 	this.set_f32("gib health", 0.0f);
 	this.Tag("flesh");
 	this.Tag("see_through_walls");
 	this.Tag("wraith");
 
+	// explosiveness
 	this.set_f32("explosive_radius", 64.0f);
 	this.set_f32("explosive_damage", 10.0f);
 	this.set_u8("custom_hitter", 26); //keg
@@ -29,36 +30,24 @@ void onInit(CBlob@ this)
 	this.set_f32("map_damage_radius", 72.0f);
 	this.set_f32("map_damage_ratio", 0.7f);
 	this.set_bool("map_damage_raycast", true);
+	//
 
-	this.set_s32("auto_enrage_time", getGameTime() + TIME_TO_ENRAGE_DARK + XORRandom(TIME_TO_ENRAGE_DARK / 2));
+	this.set_s32("auto_enrage_time", getGameTime() + TIME_TO_ENRAGE + XORRandom(TIME_TO_ENRAGE / 2));
 
 	this.SetLight(true);
 	this.SetLightRadius(this.get_f32("explosive_radius"));
 	this.SetLightColor(SColor(255, 138, 3, 3));
 
-	this.addCommandID("enrage_client");
+	this.addCommandID("client_enrage");
 }
 
 void onTick(CBlob@ this)
 {
-	if (isClient())
+	if (isClient() && this.getTimeToDie() > 0.0f)
 	{
-		const f32 time_to_die = this.getTimeToDie();
-		if (time_to_die > 0.0f)
-		{
-			CSprite@ sprite = this.getSprite();
-			const f32 currentSpeed = sprite.getEmitSoundSpeed() + 0.01f;
-			sprite.SetEmitSoundSpeed(currentSpeed);
-		}
-	}
-
-	if (isServer())
-	{
-		const s32 auto_explode_timer = this.get_s32("auto_enrage_time") - getGameTime();
-		if (this.isKeyPressed(key_action1) || auto_explode_timer < 0)
-		{
-			server_SetEnraged(this, true, false, false);
-		}
+		CSprite@ sprite = this.getSprite();
+		const f32 currentSpeed = sprite.getEmitSoundSpeed() + 0.01f;
+		sprite.SetEmitSoundSpeed(currentSpeed);
 	}
 }
 
@@ -84,22 +73,15 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("enrage_client") && isClient())
+	if (cmd == this.getCommandID("client_enrage") && isClient())
 	{
-		bool enrage, stun;
-		if (!params.saferead_bool(enrage)) return;
-		if (!params.saferead_bool(stun)) return;
+		this.set_bool("exploding", true);
 
-		this.set_bool("exploding", enrage);
+		this.getSprite().PlaySound("JerryIgnite", 2.5f , 0.8f);
 
-		if (enrage)
-		{
-			this.getSprite().PlaySound("JerryIgnite", 2.5f , 0.8f);
-
-			this.SetLight(true);
-			this.SetLightRadius(this.get_f32("explosive_radius"));
-			this.SetLightColor(SColor(255, 200, 20, 20));
-		}
+		this.SetLight(true);
+		this.SetLightRadius(this.get_f32("explosive_radius"));
+		this.SetLightColor(SColor(255, 200, 20, 20));
 	}
 }
 
