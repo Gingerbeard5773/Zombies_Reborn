@@ -34,7 +34,7 @@ void onInit(CBlob@ this)
 	this.set_bool("map_damage_raycast", true);
 	//
 
-	this.set_s32("auto_enrage_time", getGameTime() + TIME_TO_ENRAGE + XORRandom(TIME_TO_ENRAGE / 2));
+	this.set_s32("auto_enrage_time", TIME_TO_ENRAGE + XORRandom(TIME_TO_ENRAGE / 2));
 
 	this.addCommandID("client_enrage");
 }
