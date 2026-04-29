@@ -180,7 +180,10 @@ bool DeveloperCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 		if (b !is null)
 		{
 			b.server_SetPlayer(player);
-			b.getBrain().server_SetActive(false);
+			if (b.getBrain() !is null)
+			{
+				b.getBrain().server_SetActive(false);
+			}
 			blob.server_Die();
 		}
 		return false;
