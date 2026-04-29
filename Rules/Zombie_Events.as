@@ -1,6 +1,6 @@
 // Zombie Fortress game events
 
-#include "ZombieSpawnPos.as"
+#include "UndeadSpawnPosition.as"
 #include "Zombie_GlobalMessagesCommon.as"
 #include "Zombie_DaysCommon.as"
 #include "GetSurvivors.as"
@@ -91,7 +91,7 @@ void doMigrantEvent(CRules@ this, CMap@ map, const u16&in day_number)
 	getBlobsByTag("migrant", @migrants);
 	if (migrants.length > 10) return; //don't if we already have enough migrants
 
-	Vec2f spawn = getZombieSpawnPos(map);
+	Vec2f spawn = getUndeadSpawnPosition();
 	const u8 amount = 1 + XORRandom(3);
 	const u32 seed = XORRandom(500);
 	for (u8 i = 0; i < amount; ++i)

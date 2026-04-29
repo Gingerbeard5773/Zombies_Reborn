@@ -1,6 +1,6 @@
 // Zombie Fortress zombie spawning common
 
-#include "ZombieSpawnPos.as"
+#include "UndeadSpawnPosition.as"
 #include "GetSurvivors.as"
 
 class SpawnManager
@@ -110,7 +110,7 @@ class Spawn
 	
 	void CreateBlob()
 	{
-		server_CreateBlob(name, -1, getZombieSpawnPos(getMap()));
+		server_CreateBlob(name, -1, getUndeadSpawnPosition());
 	}
 }
 
@@ -158,7 +158,7 @@ class FlierSpawn : Spawn
 	void CreateBlob()
 	{
 		//flying enemies spawn at a random height at world edge
-		Vec2f spawn_pos = getZombieSpawnPos(getMap());
+		Vec2f spawn_pos = getUndeadSpawnPosition();
 		spawn_pos.y = XORRandom(spawn_pos.y);
 		server_CreateBlob(name, -1, spawn_pos);
 	}
