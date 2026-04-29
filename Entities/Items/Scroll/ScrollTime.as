@@ -72,7 +72,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void onTick(CBlob@ this)
 {
-	getOriginalDaycycleSpeed();
 	HandleEffects(this);
 
 	Hover(this);

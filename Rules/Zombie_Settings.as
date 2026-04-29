@@ -58,6 +58,20 @@ void onInit(CRules@ this)
 	this.addCommandID("client_send_global_message"); //Zombie_GlobalMessages.as
 }
 
+void onRestart(CRules@ this)
+{
+	ConfigFile cfg = ConfigFile();
+	if (cfg.loadFile("Zombie Fortress/Gamemode.cfg"))
+	{
+		const u16 config_daycycle_speed = cfg.read_u16("daycycle_speed", 8);
+		if (this.daycycle_speed != config_daycycle_speed)
+		{
+			this.daycycle_speed = config_daycycle_speed;
+			print("Incorrect daycycle speed detected :: Correcting back to normal.", ConsoleColour::CRAZY);
+		}
+	}
+}
+
 void LoadCustomGUI()
 {
 	AddIconToken("$change_class$", "/GUI/InteractionIcons.png", Vec2f(32, 32), 12, 2);
