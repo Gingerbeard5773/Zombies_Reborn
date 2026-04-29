@@ -2,6 +2,8 @@
 // A better alternative to hard-bans, since players can still 'play' while being punished.
 // Lets griefers grief legally i suppose? >:)
 
+#include "UndeadTeam.as"
+
 const string FileName = "Zombie_SoftBans.cfg";
 
 ConfigFile@ openBansConfig()
@@ -117,7 +119,7 @@ void SetUndead(CRules@ this, CPlayer@ player)
 {
 	const string username = player.getUsername();
 
-	player.server_setTeamNum(3);
+	player.server_setTeamNum(getUndeadTeam());
 	CBlob@ blob = player.getBlob();
 	if (blob !is null)
 	{

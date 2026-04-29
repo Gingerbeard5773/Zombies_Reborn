@@ -3,6 +3,7 @@
 #include "ParticleTeleport.as"
 #include "GetSurvivors.as"
 #include "Zombie_BestiaryCommon.as"
+#include "UndeadTeam.as"
 
 enum SpellNum
 {
@@ -30,7 +31,7 @@ void onInit(CBlob@ this)
 	//dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
-	this.server_setTeamNum(3);
+	this.server_setTeamNum(getUndeadTeam());
 
 	Sound::Play("EvilNotice.ogg");
 	ParticleZombieLightning(this.getPosition());

@@ -4,6 +4,7 @@
 
 #include "VoteCommon.as"
 #include "Zombie_SoftBansCommon.as"
+#include "UndeadTeam.as"
 
 const float required_minutes = 10; //time you have to wait after joining w/o skip_votewait.
 const float required_minutes_nextmap = 10; //global nextmap vote cooldown
@@ -125,8 +126,8 @@ class VoteKickCheckFunctor : VoteCheckFunctor
 		if (!VoteCheckFunctor::PlayerCanVote(player)) return false;
 
 		if (!getSecurity().checkAccess_Feature(player, "mark_player")) return false;
-		
-		if (player.getTeamNum() == 3) return false; //softbanned players can't vote.
+
+		if (isUndeadTeam(player)) return false; //undead players can't vote.
 
 		return true;
 	}
@@ -252,8 +253,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 				CPlayer@ player = getPlayer(i);
 				if (player is null) continue;
 
-				const int player_team = player.getTeamNum();
-				if (player_team == 3 && !getSecurity().checkAccess_Feature(me, "mark_any_team")) continue;
+				if (isUndeadTeam(player) && !getSecurity().checkAccess_Feature(me, "mark_any_team")) continue;
 
 				if (getSecurity().checkAccess_Feature(player, "kick_immunity")) continue;
 

@@ -5,7 +5,8 @@
 
 #define SERVER_ONLY;
 
-#include "Zombie_SoftBansCommon.as";
+#include "Zombie_SoftBansCommon.as"
+#include "UndeadTeam.as"
 
 void onBlobCreated(CRules@ this, CBlob@ blob)
 {
@@ -90,7 +91,7 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 
 void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
 {
-	if (player.getTeamNum() != 3) return;
+	if (!isUndeadTeam(player)) return;
 
 	string playerKey;
 	int time;

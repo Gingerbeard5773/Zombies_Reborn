@@ -2,6 +2,8 @@
 
 #define SERVER_ONLY;
 
+#include "UndeadTeam.as"
+
 void onInit(CRules@ this)
 {
 	Reset(this);
@@ -31,7 +33,7 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		this.add_u16("undead count", 1);
 		this.Sync("undead count", true);
 	}
-	else if (canTarget(blob))
+	else if (canTarget(blob) && !isUndeadTeam(blob))
 	{
 		//add new target
 		this.push("target netids", blob.getNetworkID());
@@ -65,7 +67,7 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 	}
 }
 
-const bool canTarget(CBlob@ blob)
+bool canTarget(CBlob@ blob)
 {
 	return blob.hasTag("player");
 }

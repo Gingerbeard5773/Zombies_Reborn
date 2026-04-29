@@ -3,6 +3,7 @@
 #define SERVER_ONLY
 
 #include "GetSurvivors.as"
+#include "UndeadTeam.as"
 
 const u32 spawn_seconds = 5; //minimum amount of seconds players have to wait to respawn
 
@@ -178,7 +179,7 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 
 void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
 {
-	if (player.getTeamNum() == 3) return;
+	if (isUndeadTeam(player)) return;
 
 	player.server_setTeamNum(newteam);
 }

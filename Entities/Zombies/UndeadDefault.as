@@ -1,3 +1,5 @@
+#include "UndeadTeam.as"
+
 void onInit(CBlob@ this)
 {
 	this.Tag("undead");
@@ -9,7 +11,7 @@ void onInit(CBlob@ this)
 	this.set_u8("knocked", 1);
 	this.addCommandID("knocked"); //unused atm, only added to stop console spam
 
-	this.server_setTeamNum(3);
+	this.server_setTeamNum(getUndeadTeam());
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
