@@ -41,7 +41,7 @@ void onTick(CRules@ this)
 
 	if (getGameTime() % 30 != 0) return;
 
-	for (u8 i = 0; i < global_messages.length; i++)
+	for (int i = 0; i < global_messages.length; i++)
 	{
 		GlobalMessage@ global_message = global_messages[i];
 		if (global_message.time > 0)
@@ -61,13 +61,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	if (cmd == this.getCommandID("client_send_global_message"))
 	{
 		u8 time;
-		if (!params.saferead_u8(time)) return;
+		if (!params.saferead_u8(time)) { error("Failed to access time [GlobalMessages]"); return; }
 
 		u32 color;
-		if (!params.saferead_u32(color)) return;
+		if (!params.saferead_u32(color)) { error("Failed to access color [GlobalMessages]"); return; }
 
 		string message;
-		if (!params.saferead_string(message)) return;
+		if (!params.saferead_string(message)) { error("Failed to access message [GlobalMessages]"); return; }
 
 		dictionary@ d;
 		if (this.get("translations", @d) && d.exists(message))
@@ -76,7 +76,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		}
 
 		u8 inputs_length;
-		if (!params.saferead_u8(inputs_length)) return;
+		if (!params.saferead_u8(inputs_length)) { error("Failed to access inputs size [GlobalMessages]"); return; }
 
 		for (u8 i = 0; i < inputs_length; i++)
 		{
@@ -89,13 +89,29 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			message = message.substr(0, index) + input + message.substr(index + 7);
 		}
 
-		GlobalMessage new_message(message, time, SColor(color));
-		global_messages.push_back(@new_message);
+		onReceiveGlobalMessage(this, message,time, SColor(color));
+	}
+	else if (cmd == this.getCommandID("client_send_global_sound"))
+	{
+		string sound;
+		if (!params.saferead_string(sound)) { error("Failed to access sound [GlobalMessages]"); return; }
+
+		Sound::Play(sound);
 	}
 }
 
 void onReceiveGlobalMessage(CRules@ this, string message, u8 time, SColor color)
 {
+	for (int i = 0; i < global_messages.length; i++)
+	{
+		GlobalMessage@ global_message = global_messages[i];
+		if (global_message.message == message)
+		{
+			global_message.time = time;
+			return;
+		}
+	}
+
 	GlobalMessage new_message(message, time, color);
 	global_messages.push_back(@new_message);
 }
@@ -103,15 +119,15 @@ void onReceiveGlobalMessage(CRules@ this, string message, u8 time, SColor color)
 void onRender(CRules@ this)
 {
 	if (global_messages.length <= 0) return;
-	
+
 	Vec2f drawpos(getScreenWidth()*0.5f, getScreenHeight()*0.22f);
 	GUI::SetFont("menu");
-	
-	for (u8 i = 0; i < global_messages.length; i++)
+
+	for (int i = 0; i < global_messages.length; i++)
 	{
 		GlobalMessage@ global_message = global_messages[i];
 		GUI::DrawShadowedTextCentered(global_message.message, drawpos, global_message.color);
-		
+
 		if (global_messages.length > 1)
 		{
 			Vec2f message_dim;

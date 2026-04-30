@@ -20,7 +20,7 @@ void server_SendGlobalMessage(CRules@ this, const string&in message, const u8&in
 	stream.write_u32(message_color);
 	stream.write_string(message);
 	stream.write_u8(0);
-	server_SendGlobalMessageCommand(this, stream, player);
+	server_SendGlobalCommand(this, "client_send_global_message", stream, player);
 }
 
 //Same as above but with inputs. each input replaces one instance of {INPUT} of the message string in order.
@@ -37,13 +37,25 @@ void server_SendGlobalMessage(CRules@ this, const string&in message, const u8&in
 		stream.write_string(inputs[i]);
 	}
 
-	server_SendGlobalMessageCommand(this, stream, player);
+	server_SendGlobalCommand(this, "client_send_global_message", stream, player);
 }
 
-void server_SendGlobalMessageCommand(CRules@ this, CBitStream@ stream, CPlayer@ player)
+void server_SendGlobalCommand(CRules@ this, const string&in cmd, CBitStream@ stream, CPlayer@ player)
 {
 	if (player is null)
-		this.SendCommand(this.getCommandID("client_send_global_message"), stream);
+	{
+		this.SendCommand(this.getCommandID(cmd), stream);
+	}
 	else
-		this.SendCommand(this.getCommandID("client_send_global_message"), stream, player);
+	{
+		this.SendCommand(this.getCommandID(cmd), stream, player);
+	}
+}
+
+//Sends a global sound by server.
+void server_SendGlobalSound(CRules@ this, const string&in sound, CPlayer@ player = null)
+{
+	CBitStream stream;
+	stream.write_string(sound);
+	server_SendGlobalCommand(this, "client_send_global_sound", stream, player);
 }
