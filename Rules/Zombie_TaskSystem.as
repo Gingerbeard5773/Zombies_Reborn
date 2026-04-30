@@ -48,6 +48,8 @@ void onTick(CRules@ this)
 	CControls@ controls = getControls();
 	if (controls is null) return;
 
+	if (getHUD().hasMenus()) return;
+
 	HandleMigrantButton(this, controls, localBlob);
 	
 	HandleTaskMenuInteractions(this, controls, localBlob);
@@ -258,6 +260,8 @@ void onRender(CRules@ this)
 {
 	CControls@ controls = getControls();
 	if (controls is null) return;
+
+	if (getHUD().hasMenus()) return;
 
 	Driver@ driver = getDriver();
 

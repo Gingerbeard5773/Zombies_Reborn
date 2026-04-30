@@ -5,7 +5,7 @@
 #include "CustomTiles.as"
 #include "Zombie_StatisticsCommon.as"
 
-const int radius = 8;
+const int radius = 9;
 
 void onInit(CBlob@ this)
 {

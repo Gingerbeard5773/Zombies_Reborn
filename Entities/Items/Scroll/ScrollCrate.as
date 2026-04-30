@@ -97,6 +97,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 const bool canCrate(CBlob@ caller, CBlob@ blob)
 {
+	if (blob.hasTag("temp blob")) return false;
+
 	if (caller is blob) return false;
 
 	const string name = blob.getName();
