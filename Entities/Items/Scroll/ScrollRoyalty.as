@@ -8,6 +8,7 @@
 void onInit(CBlob@ this)
 {
 	this.addCommandID("server_execute_spell");
+	this.addCommandID("client_execute_spell");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -31,12 +32,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		server_CreateBlob("princess", XORRandom(7), this.getPosition());
 		this.server_Die();
+		
+		this.SendCommand(this.getCommandID("client_execute_spell"));
 	}
-}
-
-void onDie(CBlob@ this)
-{
-	Vec2f pos = this.getPosition();
-	Sound::Play("MigrantSayHello.ogg", pos);
-	Sound::Play("AchievementUnlocked.ogg", pos, 2.0f);
+	else if (cmd == this.getCommandID("client_execute_spell") && isClient())
+	{
+		Vec2f pos = this.getPosition();
+		Sound::Play("MigrantSayHello.ogg", pos);
+		Sound::Play("AchievementUnlocked.ogg", pos, 2.0f);
+	}
 }
