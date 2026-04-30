@@ -167,6 +167,11 @@ class ScrollBlobHandler : BlobDataHandler
 				data += blob.get_bool("used") ? "1;" : "0;";
 				data += blob.get_u32("current_increment") + ";";
 			}
+
+			if (scroll_name == "rewind")
+			{
+				data += blob.getNetworkID() + ";";
+			}
 		}
 
 		return data;
@@ -175,6 +180,16 @@ class ScrollBlobHandler : BlobDataHandler
 	CBlob@ CreateBlob(const string&in name, const Vec2f&in pos, const string[]@ data) override
 	{
 		const string scroll_name = data.length > 9 ? data[9] : "";
+
+		if (scroll_name == "rewind" && getRules().exists("time_travel_netid"))
+		{
+			const u16 netid = parseInt(data[10]);
+			if (netid == getRules().get_netid("time_travel_netid"))
+			{
+				return null;
+			}
+		}
+
 		if (!scroll_name.isEmpty())
 		{
 			return server_MakePredefinedScroll(pos, scroll_name);

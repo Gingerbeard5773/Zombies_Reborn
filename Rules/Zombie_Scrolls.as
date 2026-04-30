@@ -255,13 +255,13 @@ void SetupScrolls(CRules@ this)
 		def.scripts.push_back("ScrollSomething.as");
 		all.scrolls.set("stone", def);
 	} */
-	/*{
+	{
 		ScrollDef def;
-		def.name = "Scroll of Something";
+		def.name = name(Translate("ScrollRewind"));
 		def.scrollFrame = 30;
-		def.scripts.push_back("ScrollSomething.as");
-		all.scrolls.set("stone", def);
-	} */
+		def.scripts.push_back("ScrollRewind.as");
+		all.scrolls.set("rewind", def);
+	}
 	{
 		ScrollDef def;
 		def.name = name(Translate("ScrollIron"));

@@ -586,15 +586,17 @@ void LoadTasks(CMap@ map, const string&in taskData, CBlob@[]@ loaded_blobs)
 		const string[]@ manager_compartments = managers[m].split("{");
 		const string[]@ manager_info = manager_compartments[0].split(";");
 		const string[]@ manager_tasks = manager_compartments[1].split("|");
-		
+
 		CBlob@ blob = loaded_blobs[parseInt(manager_info[0])];
+		if (blob is null) continue;
+
 		TaskManager@ manager = getTaskManager(blob);
 		if (manager is null) { error("Failed to load tasks for blob : "+blob.getNetworkID()); continue; }
-		
+
 		manager.index = parseInt(manager_info[1]);
 
 		manager.tasks.clear();
-	
+
 		for (int i = 0; i < manager_tasks.length; i++)
 		{
 			const string[]@ data = manager_tasks[i].split(";");
@@ -605,6 +607,6 @@ void LoadTasks(CMap@ map, const string&in taskData, CBlob@[]@ loaded_blobs)
 			manager.tasks.push_back(task);
 		}
 	}
-	
+
 	all_tasks.clear();
 }

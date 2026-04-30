@@ -48,6 +48,9 @@ void onReload(CRules@ this)
 
 void onRestart(CRules@ this)
 {
+	// dont reset stats if we are time traveling
+	if (this.exists("time_travel_netid") && this.get_netid("time_travel_netid") > 0) return;
+
 	server_ResetPlayerStats(this);
 
 	client_ResetCurrentStats(this);

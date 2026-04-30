@@ -60,6 +60,9 @@ void SetupTranslations()
 	d.set("GoldTilesUnlocked",      Init("All technology researched- Gold tiles unlocked!",             ""));
 	d.set("ScrollTimeStart",        Init("Time is speeding up",                                         ""));
 	d.set("ScrollTimeFinish",       Init("Time has returned to its normal pace",                        ""));
+	d.set("ScrollRewindStart",      Init("Time has become unstable!",                                   ""));
+	d.set("ScrollRewindFinish",     Init("You have returned to the past.",                              ""));
+	d.set("ScrollRewindFail",       Init("Not enough time has passed",                                  ""));
 
 	//scrolls
 	d.set("ScrollClone",            Init("Scroll of Duplication\nUse this to duplicate an object you are pointing to.",                          "Свиток дублирования\nПри использовании, он клонирует объект, на который вы указываете курсором."));
@@ -87,6 +90,7 @@ void SetupTranslations()
 	d.set("ScrollObliteration",     Init("Scroll of Obliteration\nUse this to destroy every enemy in the world.",                                ""));
 	d.set("ScrollIron",             Init("Scroll of Iron\nUse this to convert nearby stone blocks into iron blocks.",                            ""));
 	d.set("ScrollGilding",          Init("Scroll of Gilding\nUse this to gild nearby iron blocks with gold.",                                    ""));
+	d.set("ScrollRewind",           Init("Scroll of Rewind\nUse this to travel back in time by two days.",                                       ""));
 
 	//builder
 	d.set("IronBlock",              Init("Iron Block\nResistant to explosions",                  "Железный блок\nВзрывоустойчивый Блок"));
