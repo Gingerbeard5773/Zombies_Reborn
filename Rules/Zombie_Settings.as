@@ -55,7 +55,9 @@ void onInit(CRules@ this)
 
 	SetupScrolls(this);
 
-	this.addCommandID("client_send_global_message"); //Zombie_GlobalMessages.as
+	//Zombie_GlobalMessages.as
+	this.addCommandID("client_send_global_message");
+	this.addCommandID("client_send_global_sound");
 }
 
 void onRestart(CRules@ this)
