@@ -2,7 +2,7 @@
 
 void onInit(CMovement@ this)
 {
-	//this.getCurrentScript().runFlags |= Script::tick_not_attached;
+	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	//this.getCurrentScript().tickFrequency = 3;
 }
 
