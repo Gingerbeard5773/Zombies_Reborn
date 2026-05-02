@@ -1,29 +1,23 @@
 //Gingerbeard @ September 30, 2024
 
-#include "Hitters.as";
-#include "Zombie_TechnologyCommon.as";
+#include "Hitters.as"
+#include "Zombie_TechnologyCommon.as"
+#include "UndeadKnockedCommon.as"
 
 const u8 STUN_TICKS = 6 * 30;
 const u8 STUN_TICKS_TECH = 12 * 30;
+
+void onInit(CBlob@ this)
+{
+	this.set_u32("stun_time", 0);
+}
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (customData == Hitters::water_stun || customData == Hitters::water_stun_force)
 	{
 		const u8 ticks_to_stun = hasTech(Tech::HolyWater) ? STUN_TICKS_TECH : STUN_TICKS;
-		if (isServer())
-		{
-			this.set_u8("brain_delay", ticks_to_stun);
-
-			this.setKeyPressed(key_left, false);
-			this.setKeyPressed(key_right, false);
-			this.setKeyPressed(key_up, false);
-			this.setKeyPressed(key_down, false);
-
-			this.server_DetachAll(); //save players from gregs
-		}
-
-		this.set_u32("stun_time", getGameTime() + ticks_to_stun);
+		setUndeadKnocked(this, ticks_to_stun);
 	}
 
 	return damage;
@@ -38,6 +32,8 @@ void onInit(CSprite@ this)
 		this.getCurrentScript().tickFrequency = 0;
 		return;
 	}
+	
+	this.getCurrentScript().tickFrequency = 15;
 
 	CSpriteLayer@ stars = this.addSpriteLayer("dazzle stars", "Dazzle.png" , 16, 9, 0, 0);
 	if (stars !is null)

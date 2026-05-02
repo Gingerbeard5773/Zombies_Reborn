@@ -1,7 +1,7 @@
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 void onInit(CBlob@ this)
-{	
+{
 	if (this.isMyPlayer())
 	{
 		getDriver().SetShader("drunk", true);
@@ -18,12 +18,10 @@ void onTick(CBlob@ this)
 		this.set_u16("drunk", Maths::Max(this.get_u16("drunk") - 1, 0));
 	}
 
-	if (getKnocked(this) < 10 && rand.NextRanged(8000 / (1 + level * 1.5f)) == 0)
+	if (getKnockedRemaining(this) < 10 && rand.NextRanged(8000 / (1 + level * 1.5f)) == 0)
 	{
 		const u8 knock = 5 + rand.NextRanged(3) * level;
-	
-		SetKnocked(this, knock);
-		//this.getSprite().PlaySound("drunk_fx" + XORRandom(5), 0.8f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+		SetKnocked(this, knock, true);
 	}
 	
 	if (this.isMyPlayer())

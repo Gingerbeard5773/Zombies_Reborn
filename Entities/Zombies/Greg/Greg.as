@@ -1,5 +1,6 @@
-﻿#include "ShieldCommon.as";
-#include "ParticleSparks.as";
+﻿#include "ShieldCommon.as"
+#include "ParticleSparks.as"
+#include "UndeadKnockedCommon.as"
 
 const int COINS_ON_DEATH = 25;
 const int GRAB_COOLDOWN = 30;
@@ -26,7 +27,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	if (isServer() && blob !is null && blob is this.getBrain().getTarget() && this.get_u32("greg_next_grab") < getGameTime())
 	{
-		if (this.exists("stun_time") && this.get_u32("stun_time") > getGameTime()) return;
+		if (isUndeadKnockable(this) && isUndeadKnocked(this)) return;
 
 		//we use server_hit for synchronization purposes (its a hack)
 		//this triggers onHitBlob

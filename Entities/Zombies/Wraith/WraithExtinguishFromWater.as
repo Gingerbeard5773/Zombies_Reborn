@@ -2,6 +2,7 @@
 
 #include "Hitters.as"
 #include "Zombie_AchievementsCommon.as"
+#include "UndeadKnockedCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -49,38 +50,27 @@ void server_Extinguish(CBlob@ this, const bool&in stun = true)
 	if (stun)
 	{
 		this.getBrain().SetTarget(null);
-		this.set_u8("brain_delay", 250); //do a fake stun
 
-		this.setKeyPressed(key_left, false);
-		this.setKeyPressed(key_right, false);
-		this.setKeyPressed(key_up, false);
-		this.setKeyPressed(key_down, false);
+		if (isUndeadKnockable(this))
+		{
+			setUndeadKnocked(this, 250, true);
+		}
 	}
 
-	//why the fuck does kag need light on server to work. fuckers
+	//why the fuck does kag need light on server to work. fuckers (this can be removed when staging is merged)
 	this.SetLight(false);
 
-	CBitStream params;
-	params.write_bool(stun);
-	this.SendCommand(this.getCommandID("client_extinguish"), params);
+	this.SendCommand(this.getCommandID("client_extinguish"));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("client_extinguish") && isClient())
 	{
-		bool stun;
-		if (!params.saferead_bool(stun)) { error("Failed to read stun! [WraithExtinguishFromWater]"); return; }
-
 		this.set_bool("exploding", false);
 
 		this.SetLight(false);
 		this.getSprite().PlaySound("Steam.ogg");
-
-		if (stun)
-		{
-			this.set_u32("stun_time", getGameTime() + 250);
-		}
 
 		//steam particles
 		for (u8 i = 0; i < 5; i++)

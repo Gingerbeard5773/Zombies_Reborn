@@ -1,5 +1,6 @@
-#include "UndeadAttackCommon.as";
-#include "CustomTiles.as";
+#include "UndeadAttackCommon.as"
+#include "UndeadKnockedCommon.as"
+#include "CustomTiles.as"
 
 void onInit(CBlob@ this)
 {
@@ -9,12 +10,12 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	if (!isServer() || this.hasTag("dead")) return;
-	
+
 	UndeadAttackVars@ attackVars;
 	if (!this.get("attackVars", @attackVars)) return;
-	
-	if (this.exists("stun_time") && this.get_u32("stun_time") > getGameTime()) return;
-	
+
+	if (isUndeadKnockable(this) && isUndeadKnocked(this)) return;
+
 	CMap@ map = getMap();
 	const u32 gameTime = getGameTime();
 	Vec2f pos = this.getPosition();
