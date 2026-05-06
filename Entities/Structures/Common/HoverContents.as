@@ -1,5 +1,7 @@
 // Gingerbeard @ January 1st, 2025
 
+// View valuable contents of a storage remotely by hovering with cursor while pressing E
+
 #define CLIENT_ONLY
 
 void onRender(CSprite@ this)
@@ -21,7 +23,7 @@ void onRender(CSprite@ this)
 	const f32 radius = blob.getRadius();
 	Vec2f pos = blob.getPosition();
 
-	if ((playerblob.getPosition() - pos).getLength() < radius + 16.0f) return;
+	//if ((playerblob.getPosition() - pos).getLength() < radius + 16.0f) return;
 
 	Vec2f mouseworld = getControls().getMouseWorldPos();
 	const bool mouseOnBlob = (mouseworld - pos).getLength() < radius;
@@ -36,40 +38,60 @@ void onRender(CSprite@ this)
 	for (u16 i = 0; i < items_count; i++)
 	{
 		CBlob@ item = inv.getItem(i);
-		if (!item.exists("scroll defname0")) continue;
+		const bool isScroll = item.exists("scroll defname0");
 
-		const string name = item.get_string("scroll defname0");
-		if (names.find(name) != -1) continue;
-		
-		names.push_back(name);
-		blobs.push_back(item);
+		if (isValuable(item) || isScroll)
+		{
+			const string name = isScroll ? "scroll_" + item.get_string("scroll defname0") : item.getName();
+			if (names.find(name) != -1) continue;
+
+			names.push_back(name);
+			blobs.push_back(item);
+		}
 	}
 	
 	if (blobs.length == 0) return;
 	
-	const f32 camera_zoom = camera.targetDistance;
+	const f32 scale = camera.targetDistance;
 
-	Vec2f draw_pos = blob.getScreenPos() + Vec2f(0, -80 * camera_zoom);
+	Vec2f base_pos = blob.getScreenPos() + Vec2f(0, -120 * scale);
+	Vec2f pane_padding(8, 8);
+	const f32 min_pane_height = 32 + pane_padding.y;
 
-	Vec2f pane_padding = Vec2f(8, 8);
-	Vec2f icon_size = Vec2f(32, 32);
+	f32 total_width = 0.0f;
 
-	const f32 pane_width = blobs.length * icon_size.x + 2 * pane_padding.x;
-	const f32 pane_height = icon_size.y + 2 * pane_padding.y;
+	for (u16 i = 0; i < blobs.length; i++)
+	{
+		Vec2f icon_dim = blobs[i].inventoryFrameDimension * 2.0f;
+		total_width += icon_dim.x + pane_padding.x;
+	}
 
-	Vec2f tl = draw_pos - Vec2f(pane_width / 2, pane_height);
-	Vec2f br = draw_pos + Vec2f(pane_width / 2, 0);
-
-	GUI::DrawButtonPressed(tl, br);
-
-	draw_pos.x = tl.x + pane_padding.x - icon_size.y;
-	draw_pos.y = tl.y + pane_padding.y;
+	Vec2f draw_pos = base_pos;
+	draw_pos.x -= total_width * 0.5f;
 
 	for (u16 i = 0; i < blobs.length; i++)
 	{
 		CBlob@ item = blobs[i];
-		
-		draw_pos.x += item.inventoryFrameDimension.x * 2;
-		GUI::DrawIconByName("$scroll_"+names[i]+"$", draw_pos);
+
+		Vec2f icon_dim = item.inventoryFrameDimension * 2.0f;
+		const f32 pane_height = Maths::Max(min_pane_height, icon_dim.y + pane_padding.y);
+		Vec2f pane_size(icon_dim.x + pane_padding.x, pane_height);
+		Vec2f tl = draw_pos;
+		Vec2f br = draw_pos + pane_size;
+
+		GUI::DrawButtonPressed(tl, br);
+
+		Vec2f icon_pos = draw_pos + (pane_size - icon_dim) * 0.5f;
+
+		GUI::DrawIconByName("$" + names[i] + "$", icon_pos, 1.0f, 1.0f, blob.getTeamNum(), color_white);
+
+		draw_pos.x += pane_size.x;
 	}
+}
+
+bool isValuable(CBlob@ item)
+{
+	if (item.getName() == "holygrenade") return true;
+
+	return item.hasTag("gun") || item.exists("equipment_slot");
 }
