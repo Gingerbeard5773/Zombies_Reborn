@@ -527,6 +527,17 @@ void SetupTranslations()
 	d.set("BestiaryTrader",         Init("Trader\nThe merchant whom travels by sky to every settlement to trade. They offer scrolls of varying quality.",  ""));
 	d.set("BestiaryBobert",         Init("Bobert\nA friendly undead wandering trader who shows up occasionally with rare foreign goods.",                  ""));
 	d.set("BestiaryEnchanter",      Init("Tim\nA wizard who specializes in enchanting, he is capable of improving your items for a price.",                ""));
+	
+	//settings
+	d.set("Settings",               Init("Settings", ""));
+	
+	//saves
+	d.set("Saves",                  Init("Saves", ""));
+	d.set("LoadWorld",              Init("Load World", ""));
+	d.set("SaveWorld",              Init("Saving Worlds", ""));
+	d.set("SaveInfo0",              Init("Use chat command", ""));
+	d.set("SaveInfo1",              Init("!savemap [name]", ""));
+	d.set("SaveInfo2",              Init("to save the current world to your local folder.", ""));
 }
 
 string name(const string&in translated)

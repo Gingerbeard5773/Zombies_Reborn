@@ -16,13 +16,28 @@ void onRestart(CRules@ this)
 
 void Reset(CRules@ this)
 {
-	CBlob@[] undead;
-	getBlobsByTag("undead", @undead);
+	u16[] netids;
+	u16 undead_count = 0;
 
-	this.set_u16("undead count", undead.length);
+	CBlob@[] blobs;
+	getBlobs(@blobs);
+
+	for (int i = 0; i < blobs.length; i++)
+	{
+		CBlob@ blob = blobs[i];
+		if (blob.hasTag("undead"))
+		{
+			undead_count++;
+		}
+		else if (canTarget(blob) && !isUndeadTeam(blob))
+		{
+			netids.push_back(blob.getNetworkID());
+		}
+	}
+
+	this.set_u16("undead count", undead_count);
 	this.Sync("undead count", true);
 
-	u16[] netids;
 	this.set("target netids", netids);
 }
 

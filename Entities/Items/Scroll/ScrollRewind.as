@@ -4,6 +4,7 @@
 #include "Zombie_Translation.as"
 #include "Zombie_StatisticsCommon.as"
 #include "Zombie_GlobalMessagesCommon.as"
+#include "SaveFileCommon.as"
 
 const u8 TIME_TRAVEL_DAYS = 2; // also edit LoadSavedRules.as to fully change this
 
@@ -104,10 +105,10 @@ bool canTimeTravel()
 	const u16 num = (day_number - TIME_TRAVEL_DAYS) % (TIME_TRAVEL_DAYS + 1);
 
 	ConfigFile config = ConfigFile();
-	if (!config.loadFile("../Cache/Zombie_Save_TimeSave"+num)) return false;
+	if (!config.loadFile("../Cache/"+Save::SaveFileName+"TimeSave"+num)) return false;
 
 	// Enough time must have passed
-	const u16 dayNumber = config.read_u16("day_number");
+	const u16 dayNumber = config.read_u16("day_number", 0);
 	if (day_number - TIME_TRAVEL_DAYS < dayNumber) return false;
 
 	// Saved file must be on the same map

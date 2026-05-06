@@ -157,7 +157,7 @@ class StandardIcon : Icon, StandardStack
         return clickable;
     }
 
-    private Vec2f getCroppedFrameDim()
+    Vec2f getCroppedFrameDim()
     {
         return Vec2f(
             frameDim.x - cropLeft - cropRight,
@@ -165,7 +165,7 @@ class StandardIcon : Icon, StandardStack
         );
     }
 
-    private Vec2f getScale()
+    Vec2f getScale()
     {
         Vec2f croppedFrameDim = getCroppedFrameDim();
         Vec2f trueBounds = getTrueBounds();
@@ -187,7 +187,7 @@ class StandardIcon : Icon, StandardStack
         return scale;
     }
 
-    private Vec2f getOffset()
+    Vec2f getOffset()
     {
         Vec2f trueBounds = getTrueBounds();
         Vec2f croppedFrameDim = getCroppedFrameDim();
@@ -204,7 +204,7 @@ class StandardIcon : Icon, StandardStack
         return (trueBounds - scaledFrameDim) * 0.5f - scaledCropOffset;
     }
 
-    private bool canRender()
+    bool canRender()
     {
         return (
             isVisible() &&
@@ -228,6 +228,7 @@ class StandardIcon : Icon, StandardStack
     }
 }
 
+// AnimatedIcon by Gingerbeard
 class AnimatedIcon : StandardIcon
 {
     private u8[] animation_frames;
@@ -255,5 +256,62 @@ class AnimatedIcon : StandardIcon
         frameIndex = animation_frames[frame];
 
         StandardIcon::Render();
+    }
+}
+
+// MapIcon by Gingerbeard
+class MapIcon : StandardIcon
+{
+    MapIcon(string texture, Vec2f frameDim, SColor color = color_white)
+    {
+        super(texture, 0, frameDim, 0, color);
+    }
+
+    void Render()
+    {
+        if (canRender())
+        {
+            const int width = Texture::width(texture);
+            const int height = Texture::height(texture); 
+
+            Vec2f scale = getScale();
+            Vec2f offset = getOffset() + Vec2f(5.0f, 5.0f);
+
+            Vec2f pos = position + offset;
+            Vec2f size = Vec2f(frameDim.x * scale.x, frameDim.y * scale.y);
+
+            Vec2f tl = pos;
+            Vec2f tr = pos + Vec2f(size.x, 0);
+            Vec2f br = pos + size;
+            Vec2f bl = pos + Vec2f(0, size.y);
+
+            GUI::DrawFramedPane(tl - Vec2f(5.0f, 5.0f), br + Vec2f(6.0f, 6.0f));
+
+            Vec2f uv0(0.0f, 0.0f);
+            Vec2f uv1(frameDim.x / f32(width), frameDim.y / f32(height));
+
+            Vec2f[] verts =
+            {
+                tl,
+                tr,
+                br,
+                bl
+            };
+
+            Vec2f[] uvs =
+            {
+                uv0,
+                Vec2f(uv1.x, uv0.y),
+                uv1,
+                Vec2f(uv0.x, uv1.y)
+            };
+
+            Render::SetTransformScreenspace();
+
+            SColor[] v_col(4, color);
+            Render::QuadsColored(texture, 0.0f, verts, uvs, v_col);
+        }
+
+        StandardStack::Render();
     }
 }

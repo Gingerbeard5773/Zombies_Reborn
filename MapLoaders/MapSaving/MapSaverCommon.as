@@ -9,10 +9,7 @@
  HOW TO SAVE CUSTOM BLOB DATA FOR YOUR MOD
  1) Create a blob handler class for your blob, with the applicable functions.
  2) Then set the class with the associated blob name into InitializeBlobHandlers().
- 3) Delete the save file every time you modify blob handlers- doing this will avoid crashes caused by faulty data reading
 */
-
-const string SaveFile = "Zombie_Save_";
 
 dictionary blobHandlers;
 void InitializeBlobHandlers()
@@ -37,6 +34,7 @@ void InitializeBlobHandlers()
 	blobHandlers.set("builder",        PlayerBlobHandler());
 	blobHandlers.set("knight",         PlayerBlobHandler());
 	blobHandlers.set("archer",         PlayerBlobHandler());
+	blobHandlers.set("wizard",         PlayerBlobHandler());
 
 	blobHandlers.set("migrant",        MigrantBlobHandler()); // LEGACY MAPS SUPPORT
 
@@ -60,8 +58,6 @@ bool canSaveBlob(CBlob@ blob)
 
 	if (!blob.hasTag("undead") && blob.hasTag("dead")) return false;
 
-	//if (blob.getPlayer() !is null) return false;
-
 	return true;
 }
 
@@ -69,14 +65,16 @@ class BlobDataHandler
 {
 	// Write our blob's information into the config
 	// Each piece of data must be divided by the token ';'
+	// Important: Do not save non-existant info like empty strings!
 	string Serialize(CBlob@ blob)
 	{
 		string data = blob.getName() + ";";
+		CShape@ shape = blob.getShape();
 		Vec2f pos = blob.getPosition();
 		data += pos.x + ";" + pos.y + ";";
 		data += blob.getHealth() + ";";
 		data += blob.getTeamNum() + ";";
-		data += blob.getShape().isStatic() ? "1;" : "0;";
+		data += shape !is null && shape.isStatic() ? "1;" : "0;";
 		data += blob.getAngleDegrees() + ";";
 		data += blob.getQuantity() + ";";
 		data += blob.isFacingLeft() ? "1;" : "0;";
@@ -94,6 +92,8 @@ class BlobDataHandler
 	// Note; all other classes will need updated if you change the amount of data that is processed in this base class
 	void LoadBlobData(CBlob@ blob, const string[]@ data)
 	{
+		if (data.length < 9) { error("MapSaver: Failed to load basic blob data ["+blob.getName()+"]"); return; }
+
 		const f32 health = parseFloat(data[3]);
 		const int team = parseInt(data[4]);
 		const bool isStatic = parseBool(data[5]);
@@ -115,14 +115,22 @@ class SeedBlobHandler : BlobDataHandler
 	string Serialize(CBlob@ blob) override
 	{
 		string data = BlobDataHandler::Serialize(blob);
-		data += blob.get_string("seed_grow_blobname") + ";";
+		const string seed_name = blob.exists("seed_grow_blobname") ? blob.get_string("seed_grow_blobname") : "";
+		if (!seed_name.isEmpty())
+		{
+			data += seed_name + ";";
+		}
 		return data;
 	}
 
 	CBlob@ CreateBlob(const string&in name, const Vec2f&in pos, const string[]@ data) override
 	{
-		const string seedName = data[9];
-		return server_MakeSeed(pos, seedName);
+		const string seed_name = data.length > 9 ? data[9] : "";
+		if (!seed_name.isEmpty())
+		{
+			return server_MakeSeed(pos, seed_name);
+		}
+		return BlobDataHandler::CreateBlob(name, pos, data);
 	}
 }
 
@@ -183,7 +191,7 @@ class ScrollBlobHandler : BlobDataHandler
 
 		if (scroll_name == "rewind" && getRules().exists("time_travel_netid"))
 		{
-			const u16 netid = parseInt(data[10]);
+			const u16 netid = data.length > 10 ? parseInt(data[10]) : 0;
 			if (netid == getRules().get_netid("time_travel_netid"))
 			{
 				return null;
@@ -203,8 +211,8 @@ class ScrollBlobHandler : BlobDataHandler
 		const string scroll_name = data.length > 9 ? data[9] : "";
 		if (isSpecialScroll(scroll_name))
 		{
-			const bool used = parseBool(data[10]);
-			const u32 current_increment = parseInt(data[11]);
+			const bool used = data.length > 10 ? parseBool(data[10]) : false;
+			const u32 current_increment = data.length > 11 ? parseInt(data[11]) : 0;
 			blob.set_bool("used", used);
 			blob.set_u32("current_increment", current_increment);
 		}
@@ -228,7 +236,7 @@ class LeverBlobHandler : BlobDataHandler
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
 		BlobDataHandler::LoadBlobData(blob, data);
-		const bool activated = parseBool(data[9]);
+		const bool activated = data.length > 9 ? parseBool(data[9]) : false;
 		blob.set_bool("activated", activated);
 	}
 }
@@ -279,7 +287,7 @@ class LibraryBlobHandler : BlobDataHandler
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
 		BlobDataHandler::LoadBlobData(blob, data);
-		const int researching = parseInt(data[9]);
+		const int researching = data.length > 9 ? parseInt(data[9]) : 0;
 		blob.set_s32("researching", researching);
 	}
 }
@@ -326,12 +334,23 @@ class FactoryBlobHandler : BlobDataHandler
 
 class TreeBlobHandler : BlobDataHandler
 {
+	string Serialize(CBlob@ blob) override
+	{
+		string data = BlobDataHandler::Serialize(blob);
+		data += blob.get_u8("grown_times") + ";";
+		return data;
+	}
+
 	CBlob@ CreateBlob(const string&in name, const Vec2f&in pos, const string[]@ data) override
 	{
 		CBlob@ blob = server_CreateBlobNoInit(name);
-		blob.setPosition(pos);
-		blob.Tag("startbig");
-		blob.Init();
+		if (blob !is null)
+		{
+			const u8 grown_times = data.length > 9 ? parseInt(data[9]) : 15;
+			blob.set_u8("grown_times", grown_times);
+			blob.setPosition(pos);
+			blob.Init();
+		}
 		return blob;
 	}
 }
@@ -348,7 +367,7 @@ class ForgeBlobHandler : BlobDataHandler
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
 		BlobDataHandler::LoadBlobData(blob, data);
-		const s16 fuel_level = parseInt(data[9]);
+		const s16 fuel_level = data.length > 9 ? parseInt(data[9]) : 0;
 		blob.set_s16("fuel_level", fuel_level);
 	}
 }
@@ -378,18 +397,26 @@ class PlayerBlobHandler : BlobDataHandler
 
 		return data;
 	}
-
-	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	
+	CBlob@ CreateBlob(const string&in name, const Vec2f&in pos, const string[]@ data) override
 	{
-		BlobDataHandler::LoadBlobData(blob, data);
-		const string username = data.length > 9 ? data[9] : "";
-		const u16 coins = data.length > 10 ? parseInt(data[10]) : 0;
-		if (!username.isEmpty())
+		CBlob@ blob = server_CreateBlobNoInit(name);
+		if (blob !is null)
 		{
-			blob.set_string("sleeper_name", username);
-			blob.set_u16("sleeper_coins", coins);
-			blob.Tag("sleeper");
+			const int team = parseInt(data[4]);
+			const string username = data.length > 9 ? data[9] : "";
+			const u16 coins = data.length > 10 ? parseInt(data[10]) : 0;
+			if (!username.isEmpty())
+			{
+				blob.set_string("sleeper_name", username);
+				blob.set_u16("sleeper_coins", coins);
+				blob.Tag("sleeper");
+			}
+			blob.setPosition(pos);
+			blob.server_setTeamNum(team);
+			blob.Init();
 		}
+		return blob;
 	}
 }
 
@@ -463,14 +490,18 @@ class SignBlobHandler : BlobDataHandler
 	string Serialize(CBlob@ blob) override
 	{
 		string data = BlobDataHandler::Serialize(blob);
-		data += blob.get_string("text") + ";";
+		const string text = blob.exists("text") ? blob.get_string("text") : "";
+		if (!text.isEmpty())
+		{
+			data += blob.get_string("text") + ";";
+		}
 		return data;
 	}
 
 	void LoadBlobData(CBlob@ blob, const string[]@ data) override
 	{
 		BlobDataHandler::LoadBlobData(blob, data);
-		const string text = data[9];
+		const string text = data.length > 9 ? data[9] : "";
 		blob.set_string("text", text);
 	}
 }

@@ -6,6 +6,8 @@
 #include "Zombie_StatisticsCommon.as"
 #include "Zombie_TechnologyCommon.as"
 #include "MapSaver.as"
+#include "Events.as"
+#include "PlayerPermissions.as"
 
 //Use ' !list ' in game to view the commands list.
 
@@ -50,22 +52,19 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		string[]@ tokens = text_in.split(" ");
 
-		CSecurity@ sec = getSecurity();
-		const string role = sec.getPlayerSeclev(player).getName();
-		const bool isLocalhost = isServer() && isClient();
-		const bool isDev = isCool.find(player.getUsername()) != -1 || isLocalhost || player.isMod() || player.isRCON() || role == "Super Admin";
-		const bool isMod = isDev || role == "Admin" || sec.checkAccess_Command(player, "ban");
+		bool isAdmin, isSuperAdmin;
+		getPermissions(player, isAdmin, isSuperAdmin);
 
 		if (!PlayerCommands(this, tokens, player, blob))
 			return false;
 
-		if (isMod && !ModeratorCommands(this, tokens, player, blob))
+		if (isAdmin && !ModeratorCommands(this, tokens, player, blob))
 			return false;
 
-		if (isDev && !DeveloperCommands(this, tokens, player, blob))
+		if (isSuperAdmin && !DeveloperCommands(this, tokens, player, blob))
 			return false;
-			
-		if (isMod)
+
+		if (isAdmin)
 			return true;
 	}
 
@@ -407,6 +406,7 @@ bool onClientProcessChat(CRules@ this, const string &in text_in, string &out tex
 			print(message, 0xff66C6FF);
 			client_SendGlobalMessage(this, message, 5, 0xff66C6FF);
 			SaveMap(this, getMap(), SaveSlot);
+			this.push("easy_ui_events", Event::SaveMap);
 			return false;
 		}
 	}

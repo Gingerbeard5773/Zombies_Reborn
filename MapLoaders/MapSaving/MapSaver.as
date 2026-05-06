@@ -8,9 +8,12 @@
 
  For Zombies Reborn, we autosave at the beginning of each day. (LoadSavedRules.as)
  If the server dies, the autosave will automatically load on the next startup.
+ 
+ Errors from this script typically mean that a save file is corrupted or outdated
 */
 
 #include "MapSaverCommon.as"
+#include "SaveFileCommon.as"
 #include "Zombie_TechnologyCommon.as"
 #include "EquipmentCommon.as"
 #include "BrainTask.as"
@@ -18,7 +21,7 @@
 // store tiles using run line encoding
 string SerializeTileData(CMap@ map)
 {
-	string mapData = "";
+	string map_data = "";
 
 	u16 last_type = map.getTile(0).type;
 	u32 tile_count = 1;
@@ -32,20 +35,20 @@ string SerializeTileData(CMap@ map)
 		}
 		else
 		{
-			mapData += last_type + " " + tile_count + ";";
+			map_data += last_type + " " + tile_count + ";";
 			last_type = type;
 			tile_count = 1;
 		}
 	}
-	mapData += last_type + " " + tile_count + ";";
+	map_data += last_type + " " + tile_count + ";";
 
-	return mapData;
+	return map_data;
 }
 
 // store dirt background using run line encoding
 string SerializeDirtData(CMap@ map)
 {
-	string mapData = "";
+	string map_data = "";
 
 	bool was_dirt = map.getTile(0).dirt == 80;
 	u32 tile_count = 1;
@@ -59,20 +62,20 @@ string SerializeDirtData(CMap@ map)
 		}
 		else
 		{
-			mapData += (was_dirt ? "1" : "0") + " " + tile_count + ";";
+			map_data += (was_dirt ? "1" : "0") + " " + tile_count + ";";
 			was_dirt = is_dirt;
 			tile_count = 1;
 		}
 	}
-	mapData += (was_dirt ? "1" : "0") + " " + tile_count + ";";
+	map_data += (was_dirt ? "1" : "0") + " " + tile_count + ";";
 
-	return mapData;
+	return map_data;
 }
 
 // store water using run line encoding
 string SerializeWaterData(CMap@ map)
 {
-	string mapData = "";
+	string map_data = "";
 
 	bool was_water = map.isInWater(map.getTileWorldPosition(0));
 	u32 tile_count = 1;
@@ -86,21 +89,21 @@ string SerializeWaterData(CMap@ map)
 		}
 		else
 		{
-			mapData += (was_water ? "1" : "0") + " " + tile_count + ";";
+			map_data += (was_water ? "1" : "0") + " " + tile_count + ";";
 			was_water = has_water;
 			tile_count = 1;
 		}
 	}
-	mapData += (was_water ? "1" : "0") + " " + tile_count + ";";
+	map_data += (was_water ? "1" : "0") + " " + tile_count + ";";
 
-	return mapData;
+	return map_data;
 }
 
 string SerializeBlobData(u16[]@ saved_netids)
 {
 	CBlob@[] blobs;
 	getBlobs(@blobs);
-	string blobData = "";
+	string blob_data = "";
 
 	for (int i = 0; i < blobs.length; i++)
 	{
@@ -113,16 +116,16 @@ string SerializeBlobData(u16[]@ saved_netids)
 		const string data = handler.Serialize(blob);
 		if (!data.isEmpty())
 		{
-			blobData += data + ";"; // extra semicolon to seperate each blob
+			blob_data += data + ";"; // extra semicolon to seperate each blob
 		}
 	}
 
-	return blobData;
+	return blob_data;
 }
 
 string SerializeInventoryData(u16[]@ saved_netids)
 {
-	string inventoryData;
+	string inventory_data;
 
 	for (u16 i = 0; i < saved_netids.length; i++)
 	{
@@ -135,15 +138,15 @@ string SerializeInventoryData(u16[]@ saved_netids)
 		const int parent_index = saved_netids.find(parent.getNetworkID());
 		if (parent_index == -1) continue;
 
-		inventoryData += i + " " + parent_index + ";";
+		inventory_data += i + " " + parent_index + ";";
 	}
 
-	return inventoryData;
+	return inventory_data;
 }
 
 string SerializeAttachmentData(u16[]@ saved_netids)
 {
-	string attachmentData;
+	string attachment_data;
 
 	for (u16 i = 0; i < saved_netids.length; i++)
 	{
@@ -162,16 +165,16 @@ string SerializeAttachmentData(u16[]@ saved_netids)
 			const int occupied_index = saved_netids.find(occupied.getNetworkID());
 			if (occupied_index == -1) continue;
 
-			attachmentData += i + " " + occupied_index + " " + a + ";";
+			attachment_data += i + " " + occupied_index + " " + a + ";";
 		}
 	}
 
-	return attachmentData;
+	return attachment_data;
 }
 
 string SerializeEquipmentData(u16[]@ saved_netids)
 {
-	string equipmentData;
+	string equipment_data;
 
 	for (u16 i = 0; i < saved_netids.length; i++)
 	{
@@ -189,16 +192,16 @@ string SerializeEquipmentData(u16[]@ saved_netids)
 			const int equipped_index = saved_netids.find(equippedblob.getNetworkID());
 			if (equipped_index == -1) continue;
 
-			equipmentData += i + " " + equipped_index + " " + e + ";";
+			equipment_data += i + " " + equipped_index + " " + e + ";";
 		}
 	}
 
-	return equipmentData;
+	return equipment_data;
 }
 
 string SerializeTaskData(u16[]@ saved_netids)
 {
-	string taskData;
+	string task_data;
 
 	for (u16 i = 0; i < saved_netids.length; i++)
 	{
@@ -208,88 +211,95 @@ string SerializeTaskData(u16[]@ saved_netids)
 		TaskManager@ manager = getTaskManager(blob);
 		if (manager is null || manager.tasks.length <= 0) continue;
 		
-		taskData += i + ";";
-		taskData += manager.index + ";";
-		taskData += "{";
+		task_data += i + ";";
+		task_data += manager.index + ";";
+		task_data += "{";
 
 		for (int t = 0; t < manager.tasks.length; t++)
 		{
-			taskData += manager.tasks[t].SerializeString(saved_netids);
+			task_data += manager.tasks[t].SerializeString(saved_netids);
 
-			if (t < manager.tasks.length - 1) taskData += "|";
+			if (t < manager.tasks.length - 1) task_data += "|";
 		}
 
-		taskData += "}";
+		task_data += "}";
 	}
 
-	return taskData;
+	return task_data;
 }
 
 string SerializeTechTree()
 {
-	string techData = "";
+	string tech_data = "";
 	Technology@[]@ techTree = getTechTree();
 
 	for (u8 i = 0; i < techTree.length; i++)
 	{
 		Technology@ tech = techTree[i];
-		if (tech !is null)
-		{
-			techData += tech.time + ";";
-			techData += (tech.available ? 1 : 0) + ";";
-			techData += (tech.paused ? 1 : 0) + ";";
-			techData += (tech.completed ? 1 : 0) + ";";
-		}
+		if (tech is null) continue;
+
+		tech_data += tech.time + ";";
+		tech_data += (tech.available ? 1 : 0) + ";";
+		tech_data += (tech.paused ? 1 : 0) + ";";
+		tech_data += (tech.completed ? 1 : 0) + ";";
 	}
-	return techData;
+	return tech_data;
 }
 
-void SaveMap(CRules@ this, CMap@ map, const string&in SaveSlot = "AutoSave")
+void SaveMap(CRules@ this, CMap@ map, const string&in save_slot = "AutoSave")
 {
 	InitializeBlobHandlers();
 
 	ConfigFile@ config = ConfigFile();
+	SaveFile@ save = SaveFile();
 
 	// collect all map data
-	const string map_dimensions = map.tilemapwidth + ";" + map.tilemapheight;
-	const string mapData = SerializeTileData(map);
-	const string dirtData = SerializeDirtData(map);
-	const string waterData = SerializeWaterData(map);
+	save.map_dimensions = map.tilemapwidth + ";" + map.tilemapheight;
+	save.map_data = SerializeTileData(map);
+	save.dirt_data = SerializeDirtData(map);
+	save.water_data = SerializeWaterData(map);
 
 	// collect all blob data
 	u16[] saved_netids;
-	const string blobData = SerializeBlobData(@saved_netids);
-	const string inventoryData = SerializeInventoryData(@saved_netids);
-	const string attachmentData = SerializeAttachmentData(@saved_netids);
-	const string equipmentData = SerializeEquipmentData(@saved_netids);
-	const string taskData = SerializeTaskData(@saved_netids);
+	save.blob_data = SerializeBlobData(@saved_netids);
+	save.inventory_data = SerializeInventoryData(@saved_netids);
+	save.attachment_data = SerializeAttachmentData(@saved_netids);
+	save.equipment_data = SerializeEquipmentData(@saved_netids);
+	save.task_data = SerializeTaskData(@saved_netids);
 
 	// collect rules data
-	const u16 dayNumber = this.exists("day_number") ? this.get_u16("day_number") : 1;
-	const f32 dayTime = map.getDayTime();
-	const u16 bobertDay = this.get_u16("bobert_day");
-	const string techData = SerializeTechTree();
-	const s32 map_seed = this.get_s32("map_seed");
+	save.day_number = this.exists("day_number") ? this.get_u16("day_number") : 1;
+	save.day_time = map.getDayTime();
+	save.bobert_day = this.get_u16("bobert_day");
+	save.tech_data = SerializeTechTree();
+	save.map_seed = this.get_s32("map_seed");
 
-	// save data to config file
-	config.add_string("map_dimensions", map_dimensions);
-	config.add_string("map_data", mapData);
-	config.add_string("dirt_data", dirtData);
-	config.add_string("water_data", waterData);
-	config.add_string("blob_data", blobData);
-	config.add_string("inventory_data", inventoryData);
-	config.add_string("attachment_data", attachmentData);
-	config.add_string("equipment_data", equipmentData);
-	config.add_string("task_data", taskData);
-	config.add_u16("day_number", dayNumber);
-	config.add_f32("day_time", dayTime);
-	config.add_u16("bobert_day", bobertDay);
-	config.add_string("tech_data", techData);
-	config.add_s32("map_seed", map_seed);
+	save.Write(config);
 
-	config.saveFile(SaveFile+SaveSlot);
+	config.saveFile(Save::SaveFileName + save_slot);
+
+	QuerySave(save_slot);
 
 	blobHandlers.deleteAll();
+}
+
+void QuerySave(const string&in save_slot)
+{
+	//add the save slot to our complete saves list
+
+	ConfigFile saves = ConfigFile();
+	if (!saves.loadFile("../Cache/" + Save::AllSavesFileName))
+	{
+		saves.saveFile(Save::AllSavesFileName);
+	}
+
+	const string all_saves = saves.read_string("all_saves", "");
+	const string[]@ tokens = all_saves.split(" ");
+	if (tokens.find(save_slot) == -1)
+	{
+		saves.add_string("all_saves", all_saves + " " + save_slot);
+		saves.saveFile(Save::AllSavesFileName);
+	}
 }
 
 /*
@@ -304,40 +314,34 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 
 	if (!isServer()) return true;
 
-	const string SaveSlot = this.exists("mapsaver_save_slot") ? this.get_string("mapsaver_save_slot") : "AutoSave";
+	const string save_slot = this.exists("mapsaver_save_slot") ? this.get_string("mapsaver_save_slot") : "AutoSave";
 
 	ConfigFile config = ConfigFile();
-	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) return false;
+	if (!config.loadFile("../Cache/" + Save::SaveFileName + save_slot)) return false;
 
-	if (!config.exists("map_dimensions")) return false;
+	SaveFile@ save = SaveFile(config);
 
-	const string[]@ map_dimensions = config.read_string("map_dimensions").split(";");
-	if (map_dimensions.length < 2) return false;
+	const string[]@ dimensions = save.map_dimensions.split(";");
+	if (dimensions.length < 2) { error("MapSaver: Failed to load saved map - Corrupt map dimensions"); return false; }
 
-	const int width = parseInt(map_dimensions[0]);
-	const int height = parseInt(map_dimensions[1]);
-
-	const string mapData = config.read_string("map_data");
-	const string waterData = config.read_string("water_data");
-	const string blobData = config.read_string("blob_data");
-	const string inventoryData = config.read_string("inventory_data");
-	const string attachmentData = config.read_string("attachment_data");
-	const string equipmentData = config.read_string("equipment_data");
-	const string taskData = config.read_string("task_data", "");
+	const int width = parseInt(dimensions[0]);
+	const int height = parseInt(dimensions[1]);
 
 	map.CreateTileMap(width, height, 8.0f, "Sprites/world.png");
 
 	InitializeBlobHandlers();
 
-	LoadTiles(map, mapData.split(";"));
-	LoadWater(map, waterData.split(";"));
+	LoadTiles(map, save.map_data);
+	LoadWater(map, save.water_data);
 
 	CBlob@[] loaded_blobs;
-	LoadBlobs(map, blobData, @loaded_blobs);
-	LoadInventories(map, inventoryData, @loaded_blobs);
-	LoadAttachments(map, attachmentData, @loaded_blobs);
-	LoadEquipment(map, equipmentData, @loaded_blobs);
-	LoadTasks(map, taskData, @loaded_blobs);
+	LoadBlobs(map, save.blob_data, @loaded_blobs);
+	LoadInventories(map, save.inventory_data, @loaded_blobs);
+	LoadAttachments(map, save.attachment_data, @loaded_blobs);
+	LoadEquipment(map, save.equipment_data, @loaded_blobs);
+	LoadTasks(map, save.task_data, @loaded_blobs);
+
+	QuerySave(save_slot);
 
 	blobHandlers.deleteAll();
 
@@ -350,42 +354,38 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	if (!isServer()) return true;
 
-	const string SaveSlot = this.exists("mapsaver_save_slot") ? this.get_string("mapsaver_save_slot") : "AutoSave";
+	const string save_slot = this.exists("mapsaver_save_slot") ? this.get_string("mapsaver_save_slot") : "AutoSave";
 
 	ConfigFile config = ConfigFile();
-	if (!config.loadFile("../Cache/" + SaveFile + SaveSlot)) return false;
-	
-	const bool firstLoad = !this.exists("map_name");
+	if (!config.loadFile("../Cache/" + Save::SaveFileName + save_slot)) return false;
 
-	const string dirtData = config.read_string("dirt_data");
-	const u16 dayNumber = config.read_u16("day_number");
-	const f32 dayTime = config.read_f32("day_time");
-	const u16 bobertDay = config.read_u16("bobert_day", 15);
-	const string[]@ techData = config.read_string("tech_data").split(";");
-	const s32 mapSeed = config.read_s32("map_seed", 0);
+	SaveFile@ save = SaveFile(config);
+
+	const bool first_load = !this.exists("map_name");
 
 	//dirt data has to be loaded late because of an engine issue..
-	LoadDirt(map, dirtData.split(";"));
+	LoadDirt(map, save.dirt_data);
 
-	this.set_u16("day_number", dayNumber);
+	this.set_u16("day_number", save.day_number);
 	this.Sync("day_number", true);
 
-	this.set_u16("bobert_day", bobertDay);
+	this.set_u16("bobert_day", save.bobert_day);
 	this.Sync("bobert_day", true);
 
-	map.SetDayTime(dayTime);
-	this.set_u16("last_day_hour", Maths::Roundf(dayTime*10));
+	map.SetDayTime(save.day_time);
+	this.set_u16("last_day_hour", Maths::Roundf(save.day_time*10));
 
-	this.set_s32("map_seed", mapSeed);
+	this.set_s32("map_seed", save.map_seed);
 	this.Sync("map_seed", true);
 
-	this.set_string("map_name", mapSeed+"");
+	this.set_string("map_name", save.map_seed+"");
 	this.Sync("map_name", true);
 
 	//overwrite technology
 	onTechnologyRulesHandle@ onTechnologyRules;
 	this.get("onTechnology handle", @onTechnologyRules);
 
+	const string[]@ tech_tokens = save.tech_data.split(";");
 	Technology@[]@ techTree = getTechTree();
 	int data_index = 0;
 	for (u8 i = 0; i < techTree.length; i++)
@@ -393,10 +393,10 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 		Technology@ tech = techTree[i];
 		if (tech is null) continue;
 
-		tech.time = parseInt(techData[data_index++]);
-		tech.available = parseBool(techData[data_index++]);
-		tech.paused = parseBool(techData[data_index++]);
-		tech.completed = parseBool(techData[data_index++]);
+		tech.time = parseInt(tech_tokens[data_index++]);
+		tech.available = parseBool(tech_tokens[data_index++]);
+		tech.paused = parseBool(tech_tokens[data_index++]);
+		tech.completed = parseBool(tech_tokens[data_index++]);
 
 		if (onTechnologyRules !is null)
 		{
@@ -404,42 +404,26 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 		}
 	}
 
-	if (!firstLoad) //only sync if its not our first load (necessary because of cmd issues on launch)
+	if (!first_load) //only sync if its not our first load (necessary because of cmd issues on launch)
 	{
 		CBitStream stream;
 		SerializeTechTree(this, stream);
 		this.SendCommand(this.getCommandID("client_synchronize_technology"), stream);
 	}
 
-	//recalculate targets
-	u16[] netids;
-	CBlob@[] players;
-	if (getBlobsByTag("player", @players))
-	{
-		for (u16 i = 0; i < players.length; i++)
-		{
-			CBlob@ player = players[i];
-			if (player.hasTag("undead")) continue;
-
-			netids.push_back(player.getNetworkID());
-		}
-	}
-	this.set("target netids", netids);
-
 	this.set_bool("loaded_saved_map", true);
 
 	return true;
 }
 
-void LoadTiles(CMap@ map, const string[]&in mapTiles)
+void LoadTiles(CMap@ map, const string&in map_data)
 {
+	const string[]@ tiles = map_data.split(";");
 	u32 current_index = 0;
-	for (int i = 0; i < mapTiles.length; i++)
+	for (int i = 0; i < tiles.length - 1; i++)
 	{
-		if (mapTiles[i].isEmpty()) continue;
-
-		string[]@ data = mapTiles[i].split(" ");
-		if (data.length != 2) continue;
+		string[]@ data = tiles[i].split(" ");
+		if (data.length != 2) { error("MapSaver: Failed tile indices"); continue; }
 
 		const int tile_type = parseInt(data[0]);
 		const int tile_count = parseInt(data[1]);
@@ -451,13 +435,14 @@ void LoadTiles(CMap@ map, const string[]&in mapTiles)
 	}
 }
 
-void LoadDirt(CMap@ map, const string[]&in mapTiles)
+void LoadDirt(CMap@ map, const string&in map_data)
 {
+	const string[]@ tiles = map_data.split(";");
 	u32 current_index = 0;
-	for (int i = 0; i < mapTiles.length; i++)
+	for (int i = 0; i < tiles.length - 1; i++)
 	{
-		string[]@ data = mapTiles[i].split(" ");
-		if (data.length != 2) continue;
+		string[]@ data = tiles[i].split(" ");
+		if (data.length != 2) { error("MapSaver: Failed dirt indices"); continue; }
 
 		const bool is_dirt = parseBool(data[0]);
 		const int tile_count = parseInt(data[1]);
@@ -474,15 +459,14 @@ void LoadDirt(CMap@ map, const string[]&in mapTiles)
 	}
 }
 
-void LoadWater(CMap@ map, const string[]&in mapTiles)
+void LoadWater(CMap@ map, const string&in map_data)
 {
+	const string[]@ tiles = map_data.split(";");
 	u32 current_index = 0;
-	for (int i = 0; i < mapTiles.length; i++)
+	for (int i = 0; i < tiles.length - 1; i++)
 	{
-		if (mapTiles[i].isEmpty()) continue;
-
-		string[]@ data = mapTiles[i].split(" ");
-		if (data.length != 2) continue;
+		string[]@ data = tiles[i].split(" ");
+		if (data.length != 2) { error("MapSaver: Failed water indices"); continue; }
 
 		const bool has_water = parseBool(data[0]);
 		const int tile_count = parseInt(data[1]);
@@ -494,17 +478,16 @@ void LoadWater(CMap@ map, const string[]&in mapTiles)
 	}
 }
 
-void LoadBlobs(CMap@ map, const string&in blobData, CBlob@[]@ loaded_blobs)
+void LoadBlobs(CMap@ map, const string&in blob_data, CBlob@[]@ loaded_blobs)
 {
 	// each blob is separated by 2x semicolon
-	const string[]@ blobs = blobData.split(";;");
-
+	const string[]@ blobs = blob_data.split(";;");
 	for (int i = 0; i < blobs.length; i++)
 	{
 		if (blobs[i].isEmpty()) continue;
 
 		string[]@ data = blobs[i].split(";");
-		if (data.length == 0) continue;
+		if (data.length < 3) { error("MapSaver: Failed indexing for blob data"); continue; }
 
 		const string name = data[0];
 		const Vec2f pos(parseFloat(data[1]), parseFloat(data[2]));
@@ -519,79 +502,98 @@ void LoadBlobs(CMap@ map, const string&in blobData, CBlob@[]@ loaded_blobs)
 	}
 }
 
-void LoadInventories(CMap@ map, const string&in inventoryData, CBlob@[]@ loaded_blobs)
+void LoadInventories(CMap@ map, const string&in inventory_data, CBlob@[]@ loaded_blobs)
 {
-	const string[]@ pairs = inventoryData.split(";");
-	for (int i = 0; i < pairs.length; i++)
+	const string[]@ pairs = inventory_data.split(";");
+	for (int i = 0; i < pairs.length - 1; i++)
 	{
 		const string[]@ indices = pairs[i].split(" ");
-		if (indices.length != 2) return;
+		if (indices.length != 2) { error("MapSaver: Failed inventory indices"); continue; }
+		
+		const int blob_index = parseInt(indices[0]);
+		const int parent_index = parseInt(indices[1]);
+		if (blob_index >= loaded_blobs.length || parent_index >= loaded_blobs.length) { error("MapSaver: Failed inventory indices [out of bounds]"); continue; }
 
-		CBlob@ blob = loaded_blobs[parseInt(indices[0])];
-		CBlob@ parent = loaded_blobs[parseInt(indices[1])];
+		CBlob@ blob = loaded_blobs[blob_index];
+		CBlob@ parent = loaded_blobs[parent_index];
 		if (blob is null || parent is null) continue;
 
 		parent.server_PutInInventory(blob);
 	}
 }
 
-void LoadAttachments(CMap@ map, const string&in attachmentData, CBlob@[]@ loaded_blobs)
+void LoadAttachments(CMap@ map, const string&in attachment_data, CBlob@[]@ loaded_blobs)
 {
-	const string[]@ pairs = attachmentData.split(";");
-	for (int i = 0; i < pairs.length; i++)
+	const string[]@ pairs = attachment_data.split(";");
+	for (int i = 0; i < pairs.length - 1; i++)
 	{
 		const string[]@ indices = pairs[i].split(" ");
-		if (indices.length != 3) return;
+		if (indices.length != 3) { error("MapSaver: Failed attachment indices"); continue; }
 
-		CBlob@ blob = loaded_blobs[parseInt(indices[0])];
-		CBlob@ parent = loaded_blobs[parseInt(indices[1])];
-		const int ap_index = parseInt(indices[2]);
+		const int blob_index = parseInt(indices[0]);
+		const int parent_index = parseInt(indices[1]);
+		if (blob_index >= loaded_blobs.length || parent_index >= loaded_blobs.length) { error("MapSaver: Failed attachment indices [out of bounds]"); continue; }
+
+		CBlob@ blob = loaded_blobs[blob_index];
+		CBlob@ parent = loaded_blobs[parent_index];
 		if (blob is null || parent is null) continue;
 
+		const int ap_index = parseInt(indices[2]);
 		blob.server_AttachTo(parent, ap_index);
 	}
 }
 
-void LoadEquipment(CMap@ map, const string&in equipmentData, CBlob@[]@ loaded_blobs)
+void LoadEquipment(CMap@ map, const string&in equipment_data, CBlob@[]@ loaded_blobs)
 {
-	const string[]@ pairs = equipmentData.split(";");
-	for (int i = 0; i < pairs.length; i++)
+	const string[]@ pairs = equipment_data.split(";");
+	for (int i = 0; i < pairs.length - 1; i++)
 	{
 		const string[]@ indices = pairs[i].split(" ");
-		if (indices.length != 3) return;
+		if (indices.length != 3) { error("MapSaver: Failed equipment indices"); continue; }
 
-		CBlob@ equipper = loaded_blobs[parseInt(indices[0])];
-		CBlob@ equippedblob = loaded_blobs[parseInt(indices[1])];
-		const int equipment_index = parseInt(indices[2]);
+		const int equipper_index = parseInt(indices[0]);
+		const int equippedblob_index = parseInt(indices[1]);
+		if (equipper_index >= loaded_blobs.length || equippedblob_index >= loaded_blobs.length) { error("MapSaver: Failed equipment indices [out of bounds]"); continue; }
+
+		CBlob@ equipper = loaded_blobs[equipper_index];
+		CBlob@ equippedblob = loaded_blobs[equippedblob_index];
 		if (equipper is null || equippedblob is null) continue;
 
 		u16[]@ ids;
 		if (!equipper.get("equipment_ids", @ids)) continue;
 
+		const int equipment_index = parseInt(indices[2]);
 		ids[equipment_index] = equippedblob.getNetworkID();
 
 		EquipBlob(equipper, equippedblob);
 	}
 }
 
-void LoadTasks(CMap@ map, const string&in taskData, CBlob@[]@ loaded_blobs)
+void LoadTasks(CMap@ map, const string&in task_data, CBlob@[]@ loaded_blobs)
 {
-	if (taskData.isEmpty()) return;
+	if (task_data.isEmpty()) return;
 
 	SetupTasksArray();
 
-	const string[]@ managers = taskData.split("}");
+	const string[]@ managers = task_data.split("}");
 	for (int m = 0; m < managers.length - 1; m++)
 	{
 		const string[]@ manager_compartments = managers[m].split("{");
+		if (manager_compartments.length != 2) { error("MapSaver: Failed manager compartments!"); continue; }
+
 		const string[]@ manager_info = manager_compartments[0].split(";");
+		if (manager_info.length < 2) { error("MapSaver: Failed manager info!"); continue; }
+
 		const string[]@ manager_tasks = manager_compartments[1].split("|");
 
-		CBlob@ blob = loaded_blobs[parseInt(manager_info[0])];
+		const int blob_index = parseInt(manager_info[0]);
+		if (blob_index >= loaded_blobs.length) { error("MapSaver: Failed task blob [out of bounds]"); continue; }
+
+		CBlob@ blob = loaded_blobs[blob_index];
 		if (blob is null) continue;
 
 		TaskManager@ manager = getTaskManager(blob);
-		if (manager is null) { error("Failed to load tasks for blob : "+blob.getNetworkID()); continue; }
+		if (manager is null) continue;
 
 		manager.index = parseInt(manager_info[1]);
 

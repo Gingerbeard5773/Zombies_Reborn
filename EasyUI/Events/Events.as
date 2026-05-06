@@ -56,4 +56,5 @@ enum Event
     Statistic,
     Achievement,
     Bestiary,
+    SaveMap
 }
