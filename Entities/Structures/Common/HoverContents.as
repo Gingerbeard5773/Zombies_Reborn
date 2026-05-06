@@ -83,10 +83,20 @@ void onRender(CSprite@ this)
 
 		Vec2f icon_pos = draw_pos + (pane_size - icon_dim) * 0.5f;
 
-		GUI::DrawIconByName("$" + names[i] + "$", icon_pos, 1.0f, 1.0f, blob.getTeamNum(), color_white);
+		GUI::DrawIconByName(getIconName(item, names[i]), icon_pos, 1.0f, 1.0f, blob.getTeamNum(), color_white);
 
 		draw_pos.x += pane_size.x;
 	}
+}
+
+string getIconName(CBlob@ item, const string&in name)
+{
+	if (item.exists("equipment_icon")) return item.get_string("equipment_icon");
+
+	const string inventory_icon = "$" + item.getInventoryName() + "$";
+	if (GUI::hasIconName(inventory_icon)) return inventory_icon;
+
+	return "$" + name + "$";
 }
 
 bool isValuable(CBlob@ item)
