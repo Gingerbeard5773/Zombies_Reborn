@@ -361,10 +361,10 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	SaveFile@ save = SaveFile(config);
 
-	const bool first_load = !this.exists("map_name");
-
 	//dirt data has to be loaded late because of an engine issue..
 	LoadDirt(map, save.dirt_data);
+
+	LoadTechTree(this, save.tech_data);
 
 	this.set_u16("day_number", save.day_number);
 	this.Sync("day_number", true);
@@ -380,36 +380,6 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	this.set_string("map_name", save.map_seed+"");
 	this.Sync("map_name", true);
-
-	//overwrite technology
-	onTechnologyRulesHandle@ onTechnologyRules;
-	this.get("onTechnology handle", @onTechnologyRules);
-
-	const string[]@ tech_tokens = save.tech_data.split(";");
-	Technology@[]@ techTree = getTechTree();
-	int data_index = 0;
-	for (u8 i = 0; i < techTree.length; i++)
-	{
-		Technology@ tech = techTree[i];
-		if (tech is null) continue;
-
-		tech.time = parseInt(tech_tokens[data_index++]);
-		tech.available = parseBool(tech_tokens[data_index++]);
-		tech.paused = parseBool(tech_tokens[data_index++]);
-		tech.completed = parseBool(tech_tokens[data_index++]);
-
-		if (onTechnologyRules !is null)
-		{
-			onTechnologyRules(this, tech.index);
-		}
-	}
-
-	if (!first_load) //only sync if its not our first load (necessary because of cmd issues on launch)
-	{
-		CBitStream stream;
-		SerializeTechTree(this, stream);
-		this.SendCommand(this.getCommandID("client_synchronize_technology"), stream);
-	}
 
 	this.set_bool("loaded_saved_map", true);
 
@@ -611,4 +581,39 @@ void LoadTasks(CMap@ map, const string&in task_data, CBlob@[]@ loaded_blobs)
 	}
 
 	all_tasks.clear();
+}
+
+void LoadTechTree(CRules@ this, const string&in tech_data)
+{
+	const string[]@ indices = tech_data.split(";");
+
+	onTechnologyRulesHandle@ onTechnologyRules;
+	this.get("onTechnology handle", @onTechnologyRules);
+
+	Technology@[]@ techTree = getTechTree();
+	int data_index = 0;
+	for (u8 i = 0; i < techTree.length; i++)
+	{
+		Technology@ tech = techTree[i];
+		if (tech is null) continue;
+
+		if (data_index + 4 >= indices.length) { error("MapSaver: Failed to load technology ["+i+"] - Legacy save file?"); break; }
+
+		tech.time = parseInt(indices[data_index++]);
+		tech.available = parseBool(indices[data_index++]);
+		tech.paused = parseBool(indices[data_index++]);
+		tech.completed = parseBool(indices[data_index++]);
+
+		if (onTechnologyRules !is null)
+		{
+			onTechnologyRules(this, tech.index);
+		}
+	}
+
+	if (this.exists("map_name")) // avoid cmd issues at first map load
+	{
+		CBitStream stream;
+		SerializeTechTree(this, stream);
+		this.SendCommand(this.getCommandID("client_synchronize_technology"), stream);
+	}
 }
