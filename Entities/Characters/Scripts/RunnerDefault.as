@@ -24,6 +24,11 @@ void onInit(CBlob@ this)
 	this.SetChatBubbleFont("hud");
 	this.maxChatBubbleLines = 4;
 
+	if (this.hasTag("sleeper"))
+	{
+		this.setInventoryName(this.get_string("sleeper_name"));
+	}
+
 	SetMinimapIcon(this);
 
 	InitKnockable(this);

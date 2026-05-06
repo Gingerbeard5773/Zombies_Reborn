@@ -32,9 +32,12 @@ void onInit(CBlob@ this)
 {
 	this.Tag("migrant");
 
-	Random rand(this.exists("previous blob netid") ? this.get_u32("previous blob netid") : this.getNetworkID());
-	const string name = first_name[rand.NextRanged(first_name.length)] +" "+last_name[rand.NextRanged(last_name.length)];
-	this.setInventoryName(name);
+	if (!this.hasTag("sleeper"))
+	{
+		Random rand(this.exists("previous blob netid") ? this.get_u32("previous blob netid") : this.getNetworkID());
+		const string name = first_name[rand.NextRanged(first_name.length)] +" "+last_name[rand.NextRanged(last_name.length)];
+		this.setInventoryName(name);
+	}
 
 	BrainPath pather(this, Path::GROUND);
 	this.set("brain_path", @pather);
