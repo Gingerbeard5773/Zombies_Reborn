@@ -2,5 +2,18 @@
 
 funcdef void onNewDayHourHandle(CRules@, u16);
 
-//shorthand funcdef setting
-void addOnNewDayHour(CRules@ this, onNewDayHourHandle@ handle)   { this.push("onNewDayHour handles", @handle); }
+void addOnNewDayHour(CRules@ this, onNewDayHourHandle@ handle)
+{
+	if (!isServer()) return;
+
+	dictionary@ dict;
+	if (!this.get("onNewDayHour handles", @dict))
+	{
+		dictionary temp;
+		this.set("onNewDayHour handles", temp);
+		@dict = temp;
+	}
+
+	const string script = getFilenameWithoutPath(getCurrentScriptName());
+	dict.set(script, handle);
+}

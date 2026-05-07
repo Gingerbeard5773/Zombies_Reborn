@@ -42,6 +42,11 @@ void onRestart(CRules@ this)
 	}
 }
 
+void onReload(CRules@ this)
+{
+	addOnNewDayHour(this, @onNewDayHour);
+}
+
 void onTimeTravelComplete(CRules@ this, CMap@ map)
 {
 	if (this.exists("time_travel_netid") && this.get_netid("time_travel_netid") > 0)

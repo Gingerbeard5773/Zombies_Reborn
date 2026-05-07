@@ -143,3 +143,14 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	flags &= ~CBlob::map_collide_up;
 	blob.SetMapEdgeFlags(flags);
 }
+
+
+/// Game end effects
+
+void onStateChange(CRules@ this, const u8 oldState)
+{
+	if (this.getCurrentState() == GAME_OVER)
+	{
+		Sound::Play("PortalBreach.ogg");
+	}
+}

@@ -1,5 +1,7 @@
 // Zombie Fortress game events
 
+#define SERVER_ONLY
+
 #include "UndeadSpawnPosition.as"
 #include "Zombie_GlobalMessagesCommon.as"
 #include "Zombie_DaysCommon.as"
@@ -7,26 +9,15 @@
 #include "BrainTask.as"
 #include "Zombie_EventsSpawner.as"
 
-void onStateChange(CRules@ this, const u8 oldState)
-{
-	if (this.getCurrentState() == GAME_OVER)
-	{
-		Sound::Play("PortalBreach.ogg");
-	}
-}
-
 void onInit(CRules@ this)
 {
-	if (!isServer()) return;
+	addOnNewDayHour(this, @onNewDayHour);
 
 	Reset(this);
-	addOnNewDayHour(this, @onNewDayHour);
 }
 
 void onRestart(CRules@ this)
 {
-	if (!isServer()) return;
-
 	Reset(this);
 }
 
@@ -34,6 +25,11 @@ void Reset(CRules@ this)
 {
 	this.set_u16("bobert_day", getBobertInterval());
 	this.Sync("bobert_day", true);
+}
+
+void onReload(CRules@ this)
+{
+	addOnNewDayHour(this, @onNewDayHour);
 }
 
 u16 getBobertInterval()

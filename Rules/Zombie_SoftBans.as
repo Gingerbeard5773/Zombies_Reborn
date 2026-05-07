@@ -3,10 +3,16 @@
 
 // this file MUST be called after Zombie_Respawning.as in gamemode.cfg to work fully
 
-#define SERVER_ONLY;
+#define SERVER_ONLY
 
 #include "Zombie_SoftBansCommon.as"
 #include "UndeadTeam.as"
+
+void onInit(CRules@ this)
+{
+	string[] usernames;
+	this.set("softban_spawn_queue", usernames);
+}
 
 void onBlobCreated(CRules@ this, CBlob@ blob)
 {
@@ -18,7 +24,7 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	string[]@ usernames;
 	if (!this.get("softban_spawn_queue", @usernames) || usernames.length <= 0) return;
 	
-	for (u8 i = 0; i < usernames.length; i++)
+	for (int i = 0; i < usernames.length; i++)
 	{
 		CPlayer@ player = getPlayerByUsername(usernames[i]);
 		if (player is null) continue;
@@ -30,16 +36,9 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	}
 }
 
-void onInit(CRules@ this)
-{
-	string[] usernames;
-	this.set("softban_spawn_queue", usernames);
-}
-
 void onRestart(CRules@ this)
 {
-	const u8 playerCount = getPlayerCount();
-	for (u8 i = 0; i < playerCount; i++)
+	for (int i = 0; i < getPlayerCount(); i++)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;
