@@ -172,6 +172,55 @@ string SerializeAttachmentData(u16[]@ saved_netids)
 	return attachment_data;
 }
 
+string SerializeDamageOwnerPlayerData(u16[]@ saved_netids)
+{
+	string owner_data;
+	
+	string[] player_names;
+	
+	for (int i = 0; i < getPlayerCount(); i++)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player is null || player.isBot()) continue;
+
+		player_names.push_back(player.getUsername());
+	}
+
+	u16[][] blob_indexes(player_names.length);
+
+	for (u16 i = 0; i < saved_netids.length; i++)
+	{
+		CBlob@ blob = getBlobByNetworkID(saved_netids[i]);
+		if (blob is null) continue;
+
+		CPlayer@ owner_player = blob.getDamageOwnerPlayer();
+		if (owner_player is null) continue;
+
+		if (blob is owner_player.getBlob()) continue;
+
+		const int player_index = player_names.find(owner_player.getUsername());
+		if (player_index == -1) continue;
+
+		blob_indexes[player_index].push_back(i);
+	}
+	
+	for (int i = 0; i < player_names.length; i++)
+	{
+		if (blob_indexes[i].length == 0) continue;
+
+		owner_data += player_names[i] + "{";
+
+		for (int b = 0; b < blob_indexes[i].length; b++)
+		{
+			owner_data += blob_indexes[i][b] + ";";
+		}
+
+		owner_data += "}";
+	}
+
+	return owner_data;
+}
+
 string SerializeEquipmentData(u16[]@ saved_netids)
 {
 	string equipment_data;
@@ -264,6 +313,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in save_slot = "AutoSave")
 	save.blob_data = SerializeBlobData(@saved_netids);
 	save.inventory_data = SerializeInventoryData(@saved_netids);
 	save.attachment_data = SerializeAttachmentData(@saved_netids);
+	save.owner_data = SerializeDamageOwnerPlayerData(@saved_netids);
 	save.equipment_data = SerializeEquipmentData(@saved_netids);
 	save.task_data = SerializeTaskData(@saved_netids);
 
@@ -338,6 +388,7 @@ bool LoadSavedMap(CRules@ this, CMap@ map)
 	LoadBlobs(map, save.blob_data, @loaded_blobs);
 	LoadInventories(map, save.inventory_data, @loaded_blobs);
 	LoadAttachments(map, save.attachment_data, @loaded_blobs);
+	LoadDamageOwnerPlayers(save.owner_data, @loaded_blobs);
 	LoadEquipment(map, save.equipment_data, @loaded_blobs);
 	LoadTasks(map, save.task_data, @loaded_blobs);
 
@@ -513,6 +564,32 @@ void LoadAttachments(CMap@ map, const string&in attachment_data, CBlob@[]@ loade
 	}
 }
 
+void LoadDamageOwnerPlayers(const string&in owner_data, CBlob@[]@ loaded_blobs)
+{
+	const string[]@ players = owner_data.split("}");
+	for (int p = 0; p < players.length - 1; p++)
+	{
+		const string[]@ owner_compartments = players[p].split("{");
+		if (owner_compartments.length != 2) { error("MapSaver: Failed owner compartments"); continue; }
+
+		const string player_name = owner_compartments[0];
+		CPlayer@ player = getPlayerByUsername(player_name); 
+		if (player is null) continue;
+
+		const string[]@ blob_indexes = owner_compartments[1].split(";");
+		for (int i = 0; i < blob_indexes.length - 1; i++)
+		{
+			const int blob_index = parseInt(blob_indexes[i]);
+			if (blob_index >= loaded_blobs.length) { error("MapSaver: Failed owner [out of bounds]"); continue; }
+
+			CBlob@ blob = loaded_blobs[blob_index];
+			if (blob is null) continue;
+
+			blob.SetDamageOwnerPlayer(player);
+		}
+	}
+}
+
 void LoadEquipment(CMap@ map, const string&in equipment_data, CBlob@[]@ loaded_blobs)
 {
 	const string[]@ pairs = equipment_data.split(";");
@@ -549,7 +626,7 @@ void LoadTasks(CMap@ map, const string&in task_data, CBlob@[]@ loaded_blobs)
 	for (int m = 0; m < managers.length - 1; m++)
 	{
 		const string[]@ manager_compartments = managers[m].split("{");
-		if (manager_compartments.length != 2) { error("MapSaver: Failed manager compartments!"); continue; }
+		if (manager_compartments.length != 2) { error("MapSaver: Failed manager compartments"); continue; }
 
 		const string[]@ manager_info = manager_compartments[0].split(";");
 		if (manager_info.length < 2) { error("MapSaver: Failed manager info!"); continue; }
