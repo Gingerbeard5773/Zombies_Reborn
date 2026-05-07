@@ -42,57 +42,64 @@ void onInit(CRules@ this)
 	CGameplayEvent@ func = @awardCoins;
 	this.set("awardCoins handle", @func);
 
-	AddAward(CMap::tile_wood,    1,   "wood_blocks_placed");
-	AddAward(CMap::tile_castle,  3,   "stone_blocks_placed");
-	AddAward(CMap::tile_iron,    5,   "iron_blocks_placed");
-	AddAward(CMap::tile_ground,  5,   "dirt_blocks_placed");
+	AddAward(CMap::tile_wood,        1,   "wood_blocks_placed");
+	AddAward(CMap::tile_castle,      3,   "stone_blocks_placed");
+	AddAward(CMap::tile_iron,        5,   "iron_blocks_placed");
+	AddAward(CMap::tile_bgoldblock,  5,   "");
+	AddAward(CMap::tile_goldblock,   15,  "gold_blocks_placed");
+	AddAward(CMap::tile_ground,      5,   "dirt_blocks_placed");
 
-	AddAward("stone_door",       5,   "doors_placed");
-	AddAward("trap_block",       3,   "trap_blocks_placed");
-	AddAward("spikes",           3,   "spikes_placed");
+	AddAward("stone_door",           5,   "doors_placed");
+	AddAward("trap_block",           3,   "trap_blocks_placed");
+	AddAward("spikes",               3,   "spikes_placed");
 
-	AddAward("wooden_door",      1,   "doors_placed");
-	AddAward("wooden_platform",  1,   "platforms_placed");
-	AddAward("bridge",           1,   "platforms_placed");
-	AddAward("ladder",           1,   "ladders_placed");
+	AddAward("wooden_door",          1,   "doors_placed");
+	AddAward("wooden_platform",      1,   "platforms_placed");
+	AddAward("bridge",               1,   "platforms_placed");
+	AddAward("ladder",               1,   "ladders_placed");
 
-	AddAward("iron_door",        10,  "doors_placed");
-	AddAward("iron_platform",    10,  "platforms_placed");
-	AddAward("iron_spikes",      10,  "spikes_placed");
+	AddAward("iron_door",            10,  "doors_placed");
+	AddAward("iron_platform",        10,  "platforms_placed");
+	AddAward("iron_spikes",          10,  "spikes_placed");
+	
+	AddAward("gold_door",            25,  "doors_placed");
+	AddAward("gold_platform",        25,  "platforms_placed");
+	AddAward("gold_spikes",          25,  "spikes_placed");
 
-	AddAward("building",         10,  "buildings_placed");
-	AddAward("windmill",         30,  "buildings_placed");
-	AddAward("kitchen",          30,  "buildings_placed");
-	AddAward("forge",            30,  "buildings_placed");
-	AddAward("armory",           30,  "buildings_placed");
-	AddAward("library",          50,  "buildings_placed");
-	AddAward("apothecary",       30,  "buildings_placed");
+	AddAward("building",             10,  "buildings_placed");
+	AddAward("windmill",             30,  "buildings_placed");
+	AddAward("kitchen",              30,  "buildings_placed");
+	AddAward("forge",                30,  "buildings_placed");
+	AddAward("armory",               30,  "buildings_placed");
+	AddAward("library",              50,  "buildings_placed");
+	AddAward("apothecary",           30,  "buildings_placed");
 
-	AddAward("bolter",           5,   "components_placed");
-	AddAward("dispenser",        5,   "components_placed");
-	AddAward("obstructor",       5,   "components_placed");
-	AddAward("spiker",           5,   "components_placed");
-	AddAward("magazine",         5,   "components_placed");
-	AddAward("pressure_plate",   5,   "components_placed");
+	AddAward("bolter",               5,   "components_placed");
+	AddAward("dispenser",            5,   "components_placed");
+	AddAward("obstructor",           5,   "components_placed");
+	AddAward("spiker",               5,   "components_placed");
+	AddAward("magazine",             5,   "components_placed");
+	AddAward("pressure_plate",       5,   "components_placed");
+	AddAward("clock",                10,  "components_placed");
 
-	AddAward("wire",             2,   "components_placed");
-	AddAward("elbow",            2,   "components_placed");
-	AddAward("tee",              2,   "components_placed");
-	AddAward("junction",         2,   "components_placed");
-	AddAward("diode",            2,   "components_placed");
-	AddAward("resistor",         2,   "components_placed");
-	AddAward("inverter",         2,   "components_placed");
-	AddAward("oscillator",       2,   "components_placed");
-	AddAward("transistor",       2,   "components_placed");
-	AddAward("toggle",           2,   "components_placed");
-	AddAward("randomizer",       2,   "components_placed");
-	AddAward("lever",            2,   "components_placed");
-	AddAward("button",           2,   "components_placed");
-	AddAward("coin_slot",        2,   "components_placed");
-	AddAward("sensor",           2,   "components_placed");
-	AddAward("lamp",             2,   "components_placed");
-	AddAward("emitter",          2,   "components_placed");
-	AddAward("receiver",         2,   "components_placed");
+	AddAward("wire",                 2,   "components_placed");
+	AddAward("elbow",                2,   "components_placed");
+	AddAward("tee",                  2,   "components_placed");
+	AddAward("junction",             2,   "components_placed");
+	AddAward("diode",                2,   "components_placed");
+	AddAward("resistor",             2,   "components_placed");
+	AddAward("inverter",             2,   "components_placed");
+	AddAward("oscillator",           2,   "components_placed");
+	AddAward("transistor",           2,   "components_placed");
+	AddAward("toggle",               2,   "components_placed");
+	AddAward("randomizer",           2,   "components_placed");
+	AddAward("lever",                2,   "components_placed");
+	AddAward("button",               2,   "components_placed");
+	AddAward("coin_slot",            2,   "components_placed");
+	AddAward("sensor",               2,   "components_placed");
+	AddAward("lamp",                 2,   "components_placed");
+	AddAward("emitter",              2,   "components_placed");
+	AddAward("receiver",             2,   "components_placed");
 }
 
 void onReload(CRules@ this)

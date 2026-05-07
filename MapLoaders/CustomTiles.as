@@ -106,7 +106,6 @@ namespace CMap
 		tile_bgoldblock_d8,
 		tile_bgoldblock_d9,
 		tile_bgoldblock_d10,
-		tile_bgoldblock_d11,
 		tile_bgoldblock_f
 	};
 }

@@ -301,7 +301,6 @@ TileType server_onTileHit(CMap@ map, f32 damage, u32 index, TileType oldTileType
 			case CMap::tile_bgoldblock_d8:
 			case CMap::tile_bgoldblock_d9:
 			case CMap::tile_bgoldblock_d10:
-			case CMap::tile_bgoldblock_d11:
 				return oldTileType + 1;
 
 			case CMap::tile_bgoldblock_f:
@@ -534,7 +533,6 @@ void onSetTile(CMap@ map, u32 index, TileType tile_new, TileType tile_old)
 			case CMap::tile_bgoldblock_d8:
 			case CMap::tile_bgoldblock_d9:
 			case CMap::tile_bgoldblock_d10:
-			case CMap::tile_bgoldblock_d11:
 			case CMap::tile_bgoldblock_f:
 				OnBGoldBlockTileHit(map, index);
 				break;

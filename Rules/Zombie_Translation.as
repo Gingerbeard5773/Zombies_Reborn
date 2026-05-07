@@ -419,6 +419,7 @@ void SetupTranslations()
 	d.set("StatWoodBlocks",         Init("Wood Blocks Placed",         ""));
 	d.set("StatStoneBlocks",        Init("Stone Blocks Placed",        ""));
 	d.set("StatIronBlocks",         Init("Iron Blocks Placed",         ""));
+	d.set("StatGoldBlocks",         Init("Gold Blocks Placed",         ""));
 	d.set("StatDirtBlocks",         Init("Dirt Blocks Placed",         ""));
 	d.set("StatBlocks",             Init("Blocks Placed",              ""));
 	d.set("StatSpikes",             Init("Spikes Placed",              ""));
