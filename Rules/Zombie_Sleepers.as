@@ -2,9 +2,9 @@
 
 #define SERVER_ONLY;
 
-#include "KnockedCommon.as";
-#include "GetSurvivors.as";
-#include "Zombie_GlobalMessagesCommon.as";
+#include "KnockedCommon.as"
+#include "GetSurvivors.as"
+#include "Zombie_GlobalMessagesCommon.as"
 
 const u32 unused_time_required = 30*60*2; //time it takes for a sleeper to be available for respawning players to use
 
@@ -35,7 +35,8 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 	blob.set_u32("sleeper_time", getGameTime());
 	blob.Tag("sleeper");
 	blob.Sync("sleeper", true);
-	
+	blob.Sync("sleeper_name", true);
+
 	if (isKnockable(blob))
 		setKnocked(blob, 255, true);
 }
@@ -120,6 +121,7 @@ void WakeupSleeper(CBlob@ sleeper, CPlayer@ player)
 	sleeper.set_string("sleeper_name", "");
 	sleeper.Untag("sleeper");
 	sleeper.Sync("sleeper", true);
+	sleeper.Sync("sleeper_name", true);
 	
 	AttachmentPoint@ pickup = sleeper.getAttachments().getAttachmentPoint("PICKUP", false);
 	if (pickup !is null && pickup.getOccupied() !is null)
