@@ -175,31 +175,32 @@ string SerializeAttachmentData(u16[]@ saved_netids)
 string SerializeDamageOwnerPlayerData(u16[]@ saved_netids)
 {
 	string owner_data;
-	
+
 	string[] player_names;
-	
-	for (int i = 0; i < getPlayerCount(); i++)
-	{
-		CPlayer@ player = getPlayer(i);
-		if (player is null || player.isBot()) continue;
-
-		player_names.push_back(player.getUsername());
-	}
-
-	u16[][] blob_indexes(player_names.length);
+	u16[][] blob_indexes;
 
 	for (u16 i = 0; i < saved_netids.length; i++)
 	{
 		CBlob@ blob = getBlobByNetworkID(saved_netids[i]);
 		if (blob is null) continue;
 
-		CPlayer@ owner_player = blob.getDamageOwnerPlayer();
-		if (owner_player is null) continue;
+		string username = blob.exists("damage_owner") ? blob.get_string("damage_owner") : "";
 
-		if (blob is owner_player.getBlob()) continue;
+		CPlayer@ player = blob.getDamageOwnerPlayer();
+		if (player !is null && !player.isBot() && blob !is player.getBlob())
+		{
+			username = player.getUsername();
+		}
 
-		const int player_index = player_names.find(owner_player.getUsername());
-		if (player_index == -1) continue;
+		if (username.isEmpty()) continue;
+
+		int player_index = player_names.find(username);
+		if (player_index == -1)
+		{
+			player_names.push_back(username);
+			player_index = player_names.length - 1;
+			blob_indexes.set_length(player_names.length);
+		}
 
 		blob_indexes[player_index].push_back(i);
 	}
@@ -574,7 +575,6 @@ void LoadDamageOwnerPlayers(const string&in owner_data, CBlob@[]@ loaded_blobs)
 
 		const string player_name = owner_compartments[0];
 		CPlayer@ player = getPlayerByUsername(player_name); 
-		if (player is null) continue;
 
 		const string[]@ blob_indexes = owner_compartments[1].split(";");
 		for (int i = 0; i < blob_indexes.length - 1; i++)
@@ -585,7 +585,14 @@ void LoadDamageOwnerPlayers(const string&in owner_data, CBlob@[]@ loaded_blobs)
 			CBlob@ blob = loaded_blobs[blob_index];
 			if (blob is null) continue;
 
-			blob.SetDamageOwnerPlayer(player);
+			if (player !is null)
+			{
+				blob.SetDamageOwnerPlayer(player);
+			}
+			else
+			{
+				blob.set_string("damage_owner", player_name);
+			}
 		}
 	}
 }
@@ -687,7 +694,7 @@ void LoadTechTree(CRules@ this, const string&in tech_data)
 		}
 	}
 
-	if (this.exists("map_name")) // avoid cmd issues at first map load
+	if (!isClient() && this.exists("map_name")) // avoid cmd issues at first map load
 	{
 		CBitStream stream;
 		SerializeTechTree(this, stream);

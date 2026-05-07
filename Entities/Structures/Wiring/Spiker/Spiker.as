@@ -121,6 +121,11 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		spike.setAngleDegrees(this.getAngleDegrees());
 		spike.set_u8("state", 0);
 
+		if (this.exists("damage_owner"))
+		{
+			spike.set_string("damage_owner", this.get_string("damage_owner"));
+		}
+
 		CShape@ shape = spike.getShape();
 		shape.SetStatic(true);
 		ShapeConsts@ consts = shape.getConsts();

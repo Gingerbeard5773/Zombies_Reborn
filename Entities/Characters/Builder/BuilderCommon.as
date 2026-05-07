@@ -154,6 +154,11 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, const u32 &in index)
 		shape.SetStatic(false);
 		shape.server_SetActive(false);
 		blockBlob.setPosition(pos);
+		
+		if (blockBlob.hasTag("has damage owner"))
+		{
+			blockBlob.SetDamageOwnerPlayer(this.getPlayer());
+		}
 
 		if (!b.buildOnGround)
 		{

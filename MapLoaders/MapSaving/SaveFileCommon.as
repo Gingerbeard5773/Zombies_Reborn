@@ -74,6 +74,7 @@ shared class SaveFile
 		WriteDivided(inventory_data, stream);
 		WriteDivided(attachment_data, stream);
 		WriteDivided(owner_data, stream);
+		WriteDivided(equipment_data, stream);
 		WriteDivided(task_data, stream);
 		stream.write_u16(day_number);
 		stream.write_f32(day_time);
@@ -92,6 +93,7 @@ shared class SaveFile
 		if (!ReadDivided(inventory_data, stream))     { error("Failed to read inventory_data [SaveFileCommon]");  return false; }
 		if (!ReadDivided(attachment_data, stream))    { error("Failed to read attachment_data [SaveFileCommon]"); return false; }
 		if (!ReadDivided(owner_data, stream))         { error("Failed to read owner_data [SaveFileCommon]");      return false; }
+		if (!ReadDivided(equipment_data, stream))     { error("Failed to read equipment_data [SaveFileCommon]");  return false; }
 		if (!ReadDivided(task_data, stream))          { error("Failed to read task_data [SaveFileCommon]");       return false; }
 		if (!stream.saferead_u16(day_number))         { error("Failed to read day_number [SaveFileCommon]");      return false; }
 		if (!stream.saferead_f32(day_time))           { error("Failed to read day_time [SaveFileCommon]");        return false; }
