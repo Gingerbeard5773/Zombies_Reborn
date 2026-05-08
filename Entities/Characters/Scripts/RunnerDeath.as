@@ -1,13 +1,12 @@
 #include "Hitters.as"
-#include "GenericButtonCommon.as"
 #include "Zombie_AchievementsCommon.as"
 
 /*
  Zombie fortress modifications for this base script
 	* Revival scroll necessary logic
 	* Dead bodies turn into their respective zombie variant
-	* Inventory access logic for bots
 	* Crowd Crush achievement logic
+	* Moved inventory hooks to RunnerDefault.as
 */
 
 const u32 VANISH_BODY_SECS = 200;
@@ -141,10 +140,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
-bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
+void onDie(CBlob@ this)
 {
-	// can't be put in player inventory.
-	return inventoryBlob.getPlayer() is null;
+	this.Tag("dead");
 }
 
 void onTick(CBlob@ this)
@@ -184,16 +182,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	{
 		this.set_u32("death time", getGameTime());
 	}
-}
-
-bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
-{
-	if (!canSeeButtons(this, forBlob)) return false;
-
-	const u16 inv_access = getRules().get_u16("inventory access");
-	if (this.getNetworkID() == inv_access) return true;
-
-	return (this.hasTag("dead") && this.getInventory().getItemsCount() > 0);
 }
 
 void StuffFallsOut(CBlob@ this)

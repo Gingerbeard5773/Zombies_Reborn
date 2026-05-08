@@ -3,11 +3,17 @@
 #include "KnockedCommon.as"
 #include "FireCommon.as"
 #include "Help.as"
+#include "GenericButtonCommon.as"
 
-// This base file was edited for this mod with the following reasons:
-// To allow for invincibility for players inside vehicles
-// A unique minimap icon for bots
-// To allow sleepers and bots to be picked up by players
+/*
+ Zombie fortress modifications for this base script
+	* To allow for invincibility for players inside vehicles
+	* A unique minimap icon for bots
+	* To allow sleepers and bots to be picked up by players
+	* To stop players from getting sawed
+	* Sleepers have inventory names for joining clients
+	* Allow accessing sleeper & bot inventories
+*/
 
 void onInit(CBlob@ this)
 {
@@ -59,12 +65,26 @@ void onTick(CBlob@ this)
 	DoKnockedUpdate(this);
 }
 
-// pick up efffects
-// something was picked up
-
 void onAddToInventory(CBlob@ this, CBlob@ blob)
 {
 	this.getSprite().PlaySound("/PutInInventory.ogg");
+}
+
+bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	return false;
+}
+
+bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
+{
+	if (!canSeeButtons(this, forBlob)) return false;
+
+	const u16 inv_access = getRules().get_u16("inventory access");
+	if (this.getNetworkID() == inv_access) return true;
+	
+	if (this.getDistanceTo(forBlob) > this.getRadius() * 2.0f) return false;
+
+	return ((this.hasTag("dead") || this.hasTag("sleeper")) && this.getInventory().getItemsCount() > 0);
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
