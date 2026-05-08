@@ -52,6 +52,8 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 {
 	//set dead player to a migrant or sleeper if our player is solo
 
+	if (this.get_u16("day_number") < 2) return;
+
 	CPlayer@[] players;
 	CBlob@[] survivors = getSurvivors(@players);
 	if (survivors.length > 0 || players.length != 1) return;
