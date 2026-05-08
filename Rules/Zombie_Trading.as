@@ -113,7 +113,7 @@ void onReload(CRules@ this)
 void onRestart(CRules@ this)
 {
 	names.clear();
-	for (u8 i = 0; i < getPlayerCount(); i++)
+	for (int i = 0; i < getPlayerCount(); i++)
 	{
 		CPlayer@ player = getPlayer(i);
 		if (player is null) continue;

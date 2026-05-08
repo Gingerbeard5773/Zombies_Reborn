@@ -1,17 +1,93 @@
 //Allow reconnecting players to get back into the game fast
 
-#define SERVER_ONLY;
+#define SERVER_ONLY
 
 #include "KnockedCommon.as"
 #include "GetSurvivors.as"
 #include "Zombie_GlobalMessagesCommon.as"
+#include "Zombie_DaysCommon.as"
 
 const u32 unused_time_required = 30*60*2; //time it takes for a sleeper to be available for respawning players to use
+const u8 maximum_migrant_respawns_per_day = 1; //amount of migrant respawns available per day before its shut off
+
+u8 migrant_respawns_used = 0;
+
+void onInit(CRules@ this)
+{
+	addOnNewDayHour(this, @onNewDayHour);
+
+	Reset(this);
+}
+
+void onReload(CRules@ this)
+{
+	addOnNewDayHour(this, @onNewDayHour);
+}
+
+void onRestart(CRules@ this)
+{
+	Reset(this);
+}
+
+void Reset(CRules@ this)
+{
+	//set players to any sleepers that were loaded on the map (saved map)
+	for (int i = 0; i < getPlayerCount(); i++)
+	{
+		onNewPlayerJoin(this, getPlayer(i));
+	}
+
+	migrant_respawns_used = 0;
+}
+
+void onNewDayHour(CRules@ this, u16 day_hour)
+{
+	if (day_hour != this.daycycle_start*10) return;
+
+	//reset our available migrant respawns every new day
+	migrant_respawns_used = 0;
+}
+
+void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
+{
+	//set dead player to a migrant or sleeper if our player is solo
+
+	CPlayer@[] players;
+	CBlob@[] survivors = getSurvivors(@players);
+	if (survivors.length > 0 || players.length != 1) return;
+
+	if (victim !is players[0]) return;
+
+	if (migrant_respawns_used == maximum_migrant_respawns_per_day) return;
+
+	CBlob@[] migrants;
+	getBlobsByTag("migrant", @migrants);
+	getBlobsByTag("sleeper", @migrants);
+
+	for (int i = 0; i < migrants.length; i++)
+	{
+		CBlob@ migrant = migrants[i];
+		if (migrant.hasTag("dead")) continue;
+
+		WakeupSleeper(migrant, victim);
+
+		const string migrant_name = migrant.hasTag("sleeper") ? migrant.get_string("sleeper_name") : migrant.getInventoryName();
+		const string[] inputs = { migrant_name };
+		server_SendGlobalMessage(this, "Respawn2", 8, inputs, color_white.color, victim);
+
+		if (++migrant_respawns_used == maximum_migrant_respawns_per_day)
+		{
+			server_SendGlobalMessage(this, "Respawn4", 8, color_white.color, victim);
+		}
+
+		break;
+	}
+}
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
 	//set leaving player as sleeper
-	
+
 	CBlob@ blob = player.getBlob();
 	if (blob is null || blob.hasTag("undead")) return;
 
@@ -38,7 +114,9 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 	blob.Sync("sleeper_name", true);
 
 	if (isKnockable(blob))
+	{
 		setKnocked(blob, 255, true);
+	}
 }
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
@@ -53,28 +131,10 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	}
 }
 
-void onInit(CRules@ this)
-{
-	Reset(this);
-}
-
-void onRestart(CRules@ this)
-{
-	Reset(this);
-}
-
-void Reset(CRules@ this)
-{
-	//set players to any sleepers that were loaded on the map (saved map)
-	const u8 playerCount = getPlayerCount();
-	for (u8 i = 0; i < playerCount; i++)
-	{
-		onNewPlayerJoin(this, getPlayer(i));
-	}
-}
-
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
+	if (player is null) return;
+
 	/*string[]@ tokens = player.getUsername().split("~");
 	if (tokens.length <= 0) return;
 	const string username = tokens[0];*/
@@ -83,16 +143,12 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 
 	CBlob@[] sleepers;
 	if (!getBlobsByTag("sleeper", @sleepers)) return;
-	
-	const u8 sleepersLength = sleepers.length;
-	for (u8 i = 0; i < sleepersLength; i++)
+
+	for (int i = 0; i < sleepers.length; i++)
 	{
 		CBlob@ sleeper = sleepers[i];
 		if (!sleeper.hasTag("dead") && sleeper.get_string("sleeper_name") == username)
 		{
-			CBlob@ oldBlob = player.getBlob();
-			if (oldBlob !is null) oldBlob.server_Die();
-
 			WakeupSleeper(sleeper, player);
 			break;
 		}
@@ -123,10 +179,14 @@ void WakeupSleeper(CBlob@ sleeper, CPlayer@ player)
 	sleeper.Sync("sleeper", true);
 	sleeper.Sync("sleeper_name", true);
 	
-	AttachmentPoint@ pickup = sleeper.getAttachments().getAttachmentPoint("PICKUP", false);
-	if (pickup !is null && pickup.getOccupied() !is null)
+	const string[] detach_points = { "PICKUP", "WORKER" };
+	for (int i = 0; i < detach_points.length; i++)
 	{
-		sleeper.server_DetachFrom(pickup.getOccupied());
+		if (sleeper.isAttachedToPoint(detach_points[i]))
+		{
+			sleeper.server_DetachFromAll();
+			break;
+		}
 	}
 
 	if (sleeper.exists("sleeper_coins"))
@@ -148,22 +208,26 @@ void WakeupSleeper(CBlob@ sleeper, CPlayer@ player)
 		params.write_u8(1);
 		sleeper.SendCommand(sleeper.getCommandID(knockedProp), params);
 	}
-	
-	if (isClient()) //hack fix for emote hotkey error
+
+	//hack fix for emote hotkey error
+	if (isClient())
+	{
 		getRules().Tag("reload emotes");
+	}
 }
 
 void KnockSleepers()
 {
 	CBlob@[] sleepers;
 	if (!getBlobsByTag("sleeper", @sleepers)) return;
-	
-	const u16 sleepersLength = sleepers.length;
-	for (u16 i = 0; i < sleepersLength; i++)
+
+	for (int i = 0; i < sleepers.length; i++)
 	{
 		CBlob@ sleeper = sleepers[i];
 		if (isKnockable(sleeper))
+		{
 			setKnocked(sleeper, 255, true);
+		}
 	}
 }
 
@@ -171,19 +235,17 @@ void UseSleepersAsRespawn(CRules@ this)
 {
 	CBlob@[] sleepers;
 	if (!getBlobsByTag("sleeper", @sleepers)) return;
-	
-	const u16 sleepersLength = sleepers.length;
-	for (u16 i = 0; i < sleepersLength; i++)
+
+	for (int i = 0; i < sleepers.length; i++)
 	{
 		CBlob@ sleeper = sleepers[i];
 		if (!sleeper.hasTag("dead") && sleeper.get_u32("sleeper_time") < getGameTime() - unused_time_required)
 		{
-			const u8 playerCount = getPlayerCount();
-			for (u8 p = 0; p < playerCount; p++)
+			for (int p = 0; p < getPlayerCount(); p++)
 			{
 				CPlayer@ player = getPlayer(p);
 				if (player is null || player.getBlob() !is null || player.getTeamNum() != 0) continue;
-				
+
 				const string[] inputs = { sleeper.get_string("sleeper_name") };
 				server_SendGlobalMessage(this, "Respawn2", 8, inputs, color_white.color, player);
 

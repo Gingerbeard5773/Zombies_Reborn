@@ -50,7 +50,7 @@ void CheckGameOver(CRules@ this, CPlayer@ player)
 	const u16 dayNumber = this.get_u16("day_number");
 	if (dayNumber < 2) return;
 
-	if (getSurvivors(player).length > 0) return;
+	if (getSurvivors().length > 0) return;
 
 	this.SetCurrentState(GAME_OVER);
 

@@ -42,10 +42,11 @@ void SetupTranslations()
 	getRules().set("translations", @d);
 
 	//respawning
-	d.set("Respawn0",               Init("Waiting for dawn...",              "В ожидании рассвета..."));
-	d.set("Respawn1",               Init("Waiting to spawn as an undead...", "В ожидании восстания из мертвых..."));
-	d.set("Respawn2",               Init("Respawned as {INPUT}",             "Возродиться как {INPUT}"));
-	d.set("Respawn3",               Init("Spawn in the sky",                 "Появление в небе"));
+	d.set("Respawn0",               Init("Waiting for dawn...",                 "В ожидании рассвета..."));
+	d.set("Respawn1",               Init("Waiting to spawn as an undead...",    "В ожидании восстания из мертвых..."));
+	d.set("Respawn2",               Init("Respawned as {INPUT}",                "Возродиться как {INPUT}"));
+	d.set("Respawn3",               Init("Spawn in the sky",                    "Появление в небе"));
+	d.set("Respawn4",               Init("This is your last life until dawn",   ""));
 
 	//global messages
 	d.set("Day",                    Init("Day {INPUT}",                                                 "День {INPUT}"));
