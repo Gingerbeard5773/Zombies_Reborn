@@ -91,18 +91,18 @@ void onTick(CRules@ this)
 
 	if (SHOW_MENU)
 	{
-		if (this.isGameOver())
-		{
-			RemoveRespawnMenu();
-			SHOW_MENU = false;
-		}
-
 		CBlob@[] respawns;
 		PopulateSpawnList(@respawns, player.getTeamNum());
 		if (RESPAWNS_COUNT != respawns.length || getRespawnMenu() is null)
 		{
 			RESPAWNS_COUNT = respawns.length;
 			BuildRespawnMenu(this, player, respawns);
+		}
+
+		if (this.isGameOver())
+		{
+			RemoveRespawnMenu();
+			SHOW_MENU = false;
 		}
 	}
 }
