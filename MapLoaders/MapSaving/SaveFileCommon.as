@@ -1,12 +1,14 @@
 // Savefile Common
 
+#include "CBitStreamDivider.as"
+
 namespace Save
 {
 	const string SaveFileName = "Zombie_Save_";
 	const string AllSavesFileName = "Zombie_Saves";
 }
 
-shared class SaveFile
+class SaveFile
 {
 	string map_dimensions;
 	string map_data;
@@ -100,42 +102,6 @@ shared class SaveFile
 		if (!stream.saferead_u16(bobert_day))         { error("Failed to read bobert_day [SaveFileCommon]");      return false; }
 		if (!stream.saferead_string(tech_data))       { error("Failed to read tech_data [SaveFileCommon]");       return false; }
 		if (!stream.saferead_s32(map_seed))           { error("Failed to read map_seed [SaveFileCommon]");        return false; }
-
-		return true;
-	}
-
-	/// CBitstream has limits that we have to bypass when dealing with these massive strings
-
-	void WriteDivided(const string&in data, CBitStream@ stream)
-	{
-		const u32 chunk_size = 500;
-		const u32 data_length = data.size();
-		const u16 chunks_count = (data_length + chunk_size - 1) / chunk_size;
-		stream.write_u16(chunks_count);
-
-		for (u16 i = 0; i < chunks_count; i++)
-		{
-			const u32 start = i * chunk_size;
-			const int count = Maths::Min(chunk_size, data_length - start);
-
-			stream.write_string(data.substr(start, count));
-		}
-	}
-
-	bool ReadDivided(string&out data, CBitStream@ stream)
-	{
-		u16 chunks_count;
-		if (!stream.saferead_u16(chunks_count)) return false;
-
-		data = "";
-
-		for (u16 i = 0; i < chunks_count; i++)
-		{
-			string part;
-			if (!stream.saferead_string(part)) return false;
-
-			data += part;
-		}
 
 		return true;
 	}

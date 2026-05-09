@@ -36,11 +36,10 @@ string CommandsList()
 	"!debugprop [hash] : finds a string that pairs with the hash input\n" +
 	"!structure [index] : loads a structure from cfg. no index = random\n" +
 	"!savestructure : saves a structure at the player's position\n" +
+	"!structuresconfig : sends a copy of the server's structures config to you!\n" +
 	"!savemap [save name] : saves the current map to your save slot\n" +
 	"!loadsave [save name] : loads a saved map from config";
 }
-
-const string[] isCool = { "MrHobo" };
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
@@ -152,18 +151,6 @@ bool ModeratorCommands(CRules@ this, string[]@ tokens, CPlayer@ player, CBlob@ b
 		s32 duration = tokens.length > 2 ? parseInt(tokens[2]) : warnDuration;
 		if (duration < 0) duration = 0;
 		WarnPlayer(player, targetPlayer, duration, reason);
-	}
-	else if (tokens[0] == "!list")
-	{
-		server_SendGlobalMessage(this, CommandsList(), 15, color_white.color, player);
-		const string[]@ commands = CommandsList().split("\n");
-
-		// Print each individual line
-		for (u8 i = 0; i < commands.length; i++)
-		{
-			print(commands[i]);
-		}
-		return false;
 	}
 
 	return true;
@@ -407,6 +394,18 @@ bool onClientProcessChat(CRules@ this, const string &in text_in, string &out tex
 			client_SendGlobalMessage(this, message, 5, 0xff66C6FF);
 			SaveMap(this, getMap(), SaveSlot);
 			this.push("easy_ui_events", Event::SaveMap);
+			return false;
+		}
+		else if (tokens[0] == "!list")
+		{
+			client_SendGlobalMessage(this, CommandsList(), 15, color_white.color);
+			const string[]@ commands = CommandsList().split("\n");
+
+			// Print each individual line
+			for (u8 i = 0; i < commands.length; i++)
+			{
+				print(commands[i]);
+			}
 			return false;
 		}
 	}

@@ -3,6 +3,7 @@
 #define SERVER_ONLY
 
 #include "Zombie_SpawnUndeadCommon.as"
+#include "PlayerPermissions.as"
 
 SpawnManager@ manager;
 
@@ -111,7 +112,10 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 {
 	if (player is null) return true;
 
-	if (sv_test || player.isMod() || player.isRCON() || player.getUsername() == "MrHobo")
+	bool isAdmin, isSuperAdmin;
+	getPermissions(player, isAdmin, isSuperAdmin);
+
+	if (isAdmin)
 	{
 		string[]@ tokens = text_in.split(" ");
 
