@@ -11,7 +11,7 @@ void addOnNewDayHour(CRules@ this, onNewDayHourHandle@ handle)
 	{
 		dictionary temp;
 		this.set("onNewDayHour handles", temp);
-		@dict = temp;
+		this.get("onNewDayHour handles", @dict);
 	}
 
 	const string script = getFilenameWithoutPath(getCurrentScriptName());
