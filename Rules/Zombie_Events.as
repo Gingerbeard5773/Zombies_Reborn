@@ -7,7 +7,7 @@
 #include "Zombie_DaysCommon.as"
 #include "GetSurvivors.as"
 #include "BrainTask.as"
-#include "Zombie_EventsSpawner.as"
+#include "SpatialNavigator.as"
 
 void onInit(CRules@ this)
 {
@@ -184,9 +184,13 @@ void doSedgwickEvent(CRules@ this, CMap@ map, const u16&in day_number)
 void doBobertEvent(CRules@ this, CMap@ map)
 {
 	CBlob@[] spawners = getSurvivors();
+	if (spawners.length == 0) return;
 
-	Vec2f spawn = getSpawnLocation(Vec2f(2, 2), 128.0f, spawners, @getStandardSpawnCost);
-	if (spawn == Vec2f_zero) return;
+	Vec2f origin = spawners[XORRandom(spawners.length)].getPosition();
+	Navigator navigator(origin, 20, 20);
+	navigator.cost_evaluators = { @getDistanceCost, @getRandomCost, @getTouchingBlobsCost, @getWaterCost };
+	navigator.valid_evaluators = { @isOpenSpace, @isOnGround };
+	Vec2f spawn = navigator.getWeightedPosition();
 
 	server_SendGlobalMessage(this, "Bobert", 6);
 
