@@ -3,6 +3,7 @@
 #include "UndeadTargeting.as"
 #include "PressOldKeys.as"
 #include "GetSurvivors.as"
+#include "UndeadTeam.as"
 #include "Zombie_AchievementsCommon.as"
 
 const f32 brain_target_radius = 512.0f;
@@ -124,29 +125,29 @@ void FlyAround(CBrain@ this, CBlob@ blob)
 
 void TaxiUndead(CBrain@ this, CBlob@ blob, CBlob@ carried)
 {
-	CBlob@ taxiTarget = getBlobByNetworkID(blob.get_netid("brain_player_target"));
-	if (taxiTarget is null)
+	CBlob@ player_target = getBlobByNetworkID(blob.get_netid("brain_player_target"));
+	if (player_target is null)
 	{
 		DetachTarget(this, blob, carried);
 		return;
 	}
 
-	const Vec2f targetPos = taxiTarget.getPosition();
+	const Vec2f target_pos = player_target.getPosition();
 
-	if (getXBetween(targetPos, blob.getPosition()) < 50.0f)
+	if (getXBetween(target_pos, blob.getPosition()) < 50.0f)
 	{
-		carried.set_Vec2f("brain_destination", targetPos); //tell the zombie where to look
+		carried.set_Vec2f("brain_destination", target_pos); //tell the zombie where to look
 		DetachTarget(this, blob, carried);
 	}
 	else
 	{
 		CMap@ map = getMap();
-		
+
 		// aim at the destination
-		blob.setAimPos(targetPos);
+		blob.setAimPos(target_pos);
 
 		// fly to our destination
-		FlyTo(blob, Vec2f(targetPos.x, getFlyHeight(targetPos.x, map)));
+		FlyTo(blob, Vec2f(target_pos.x, getFlyHeight(target_pos.x, map)));
 
 		// stay away from anything any nearby obstructions such as a tower
 		DetectForwardObstructions(blob, map);
@@ -160,79 +161,96 @@ void FindTarget(CBrain@ this, CBlob@ blob, CMap@ map)
 {
 	CBlob@ player_target = getBlobByNetworkID(blob.get_netid("brain_player_target"));
 	if (player_target is null)
-		SetPlayerTarget(blob);
-	
-	Vec2f pos = blob.getPosition();
-	
-	CBlob@[] nearBlobs;
-	map.getBlobsInRadius(pos, brain_target_radius, @nearBlobs);
-
-	CBlob@[] taxiCandidates;
-	CBlob@ bestCandidate;
-	f32 closest_dist = 999999.9f;
-	
-	const u16 blobsLength = nearBlobs.length;
-	for (u16 i = 0; i < blobsLength; ++i)
 	{
-		CBlob@ candidate = nearBlobs[i];
+		SetPlayerTarget(blob);
+	}
 
-		const f32 dist = (candidate.getPosition() - pos).Length();
-		if (dist < closest_dist && !candidate.isAttached() && !candidate.hasTag("dead") && candidate.hasTag("player") && !candidate.hasTag("winged"))
+	Vec2f pos = blob.getPosition();
+
+	CBlob@[] blobs;
+	map.getBlobsInRadius(pos, brain_target_radius, @blobs);
+
+	CBlob@[] taxi_blobs;
+	CBlob@ best_target;
+	f32 closest_distance = 999999.9f;
+
+	for (int i = 0; i < blobs.length; ++i)
+	{
+		CBlob@ candidate = blobs[i];
+
+		const f32 distance = (candidate.getPosition() - pos).Length();
+		if (distance >= closest_distance) continue;
+
+		if (blob.isAttached() || blob.hasTag("dead")) continue;
+
+		if (candidate.hasTag("undead"))
 		{
-			if (candidate.hasTag("undead"))
+			if (isInNeedOfTaxi(candidate, player_target))
 			{
-				if (isFriendlyInNeedOfService(blob, candidate, player_target))
-					taxiCandidates.push_back(candidate);
-			}
-			else if (isTargetVisible(blob, candidate)) //players override all undead taxi service
-			{
-				@bestCandidate = candidate;
-				closest_dist = dist;
-				break;
+				taxi_blobs.push_back(candidate);
 			}
 		}
+		else if (canTarget(blob, candidate))
+		{
+			@best_target = candidate;
+			closest_distance = distance;
+			break;
+		}
 	}
-	
-	if (taxiCandidates.length > 0 && bestCandidate is null)
+
+	if (taxi_blobs.length > 0 && best_target is null)
 	{
-		@bestCandidate = taxiCandidates[XORRandom(taxiCandidates.length)];
+		@best_target = taxi_blobs[XORRandom(taxi_blobs.length)];
 	}
-	
-	if (bestCandidate !is null)
+
+	if (best_target !is null)
 	{
-		this.SetTarget(bestCandidate);
+		this.SetTarget(best_target);
 	}
 }
 
-const bool isFriendlyInNeedOfService(CBlob@ blob, CBlob@ friendly, CBlob@ player_target)
+bool canTarget(CBlob@ blob, CBlob@ candidate)
+{
+	if (!candidate.hasTag("player") || isUndeadTeam(candidate)) return false;
+
+	if (!isTargetVisible(blob, candidate)) return false;
+
+	return true;
+}
+
+bool isInNeedOfTaxi(CBlob@ candidate, CBlob@ player_target)
 {
 	if (player_target is null) return false;
-	
-	CBlob@ target = friendly.getBrain().getTarget();
-	return target is null && getXBetween(friendly.getPosition(), player_target.getPosition()) > 210.0f;
+
+	if (candidate.hasTag("winged") || !isUndeadTeam(candidate)) return false;
+
+	CBrain@ brain = candidate.getBrain();
+	if (brain is null) return false;
+
+	CBlob@ target = brain.getTarget();
+	return target is null && getXBetween(candidate.getPosition(), player_target.getPosition()) > 210.0f;
 }
 
 void FlyTo(CBlob@ blob, Vec2f&in destination)
 {
-	Vec2f mypos = blob.getPosition();
+	Vec2f pos = blob.getPosition();
 	const f32 radius = blob.getRadius();
 
-	blob.setKeyPressed(destination.x < mypos.x ? key_left : key_right, true);
+	blob.setKeyPressed(destination.x < pos.x ? key_left : key_right, true);
 
-	if (destination.y < mypos.y)
+	if (destination.y < pos.y)
 		blob.setKeyPressed(key_up, true);
-	else if ((blob.isKeyPressed(key_right) && (getMap().isTileSolid(mypos + Vec2f(1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)) ||
-		     (blob.isKeyPressed(key_left)  && (getMap().isTileSolid(mypos + Vec2f(-1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)))
+	else if ((blob.isKeyPressed(key_right) && (getMap().isTileSolid(pos + Vec2f(1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)) ||
+		     (blob.isKeyPressed(key_left)  && (getMap().isTileSolid(pos + Vec2f(-1.3f * radius, radius) * 1.0f) || blob.getShape().vellen < 0.1f)))
 		blob.setKeyPressed(key_up, true);
 }
 
 void DetectForwardObstructions(CBlob@ blob, CMap@ map)
 {
-	Vec2f mypos = blob.getPosition();
+	Vec2f pos = blob.getPosition();
+	Vec2f end_pos = pos + Vec2f(blob.isKeyPressed(key_right) ? 256.0f : 256.0f, 0);
 
-	const bool obstructed = map.rayCastSolid(mypos, Vec2f(blob.isKeyPressed(key_right) ? mypos.x + 256.0f :
-		                                                                                 mypos.x - 256.0f, mypos.y));
-	if (obstructed)
+	if (map.rayCastSolid(pos, end_pos))
 	{
 		blob.setKeyPressed(key_up, true);
 	}
@@ -276,7 +294,6 @@ void DetachTarget(CBrain@ this, CBlob@ blob, CBlob@ carried)
 		carried.server_DetachFrom(blob);
 	}
 
-	// remove target
 	this.SetTarget(null);
 }
 
