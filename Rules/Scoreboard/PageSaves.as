@@ -110,15 +110,29 @@ Component@[]@ SavesPage()
 		if (save_slot.isEmpty()) continue;
 
 		const u16 day_number = configs[i].read_u16("day_number", 1);
+		const s32 date_saved = configs[i].read_s32("date_saved", 0);
 
 		Label@ save_label = getHeader(save_slot, "menu", color_white);
 		save_label.SetAlignment(0.0f, 0.0f);
 		save_label.SetMargin(0, 0);
 		ForceTextInsideBounds(save_label, button_bounds);
+		
+		List@ info_container = StandardList(ui);
+		info_container.SetStretchRatio(1.0f, 0.0f);
+		info_container.SetCellWrap(2);
 
 		Label@ day_label = getHeader(Translate("Day").replace("{INPUT}", day_number+""), "normal", SColor(255, 230, 230, 230));
 		day_label.SetAlignment(0.0f, 0.0f);
 		day_label.SetMargin(0, 0);
+
+		const string date = date_saved == 0 ? "None" : Time_Date(date_saved);
+
+		Label@ date_label = getHeader(date, "normal", SColor(255, 230, 230, 230));
+		date_label.SetAlignment(1.0f, 0.0f);
+		date_label.SetMargin(0, 0);
+		
+		info_container.AddComponent(day_label);
+		info_container.AddComponent(date_label);
 
 		SaveHandler@ handler = SaveHandler(viewing_pane, save_slot);
 		button.AddEventListener(Event::Release, handler);
@@ -129,7 +143,7 @@ Component@[]@ SavesPage()
 		}
 
 		button.AddComponent(save_label);
-		button.AddComponent(day_label);
+		button.AddComponent(info_container);
 	}
 
 	components.push_back(main_container);
@@ -265,16 +279,20 @@ class SaveHandler : EventHandler
 
 		List@ info_container = StandardList(ui);
 		info_container.SetStretchRatio(1.0f, 0.0f);
-		info_container.SetCellWrap(2);
-		
+
 		const u16 day_number = config.read_u16("day_number", 1);
-		const string map_seed = config.read_string("map_seed", "Legacy");
+		const string map_seed = config.read_string("map_seed", "None");
+		const s32 date_saved = config.read_s32("date_saved", 0);
+
+		const string date = date_saved == 0 ? "None" : Time_Date(date_saved);
 
 		Label@ day_label = getHeader(Translate("Day").replace("{INPUT}", day_number+""), "medium font", color_white);
-		Label@ seed_label = getHeader(getTranslatedString("Map: {MAP}").replace("{MAP}", map_seed), "medium font", color_white);
+		Label@ seed_label = getHeader(Translate("Seed").replace("{INPUT}", map_seed), "medium font", color_white);
+		Label@ date_label = getHeader(Translate("Date").replace("{INPUT}", date), "medium font", color_white);
 
 		info_container.AddComponent(day_label);
 		info_container.AddComponent(seed_label);
+		info_container.AddComponent(date_label);
 
 		Icon@ icon = MapIcon(SaveMapTexture, Vec2f(width, height));
 		icon.SetStretchRatio(1.0f, 1.0f);
@@ -561,6 +579,64 @@ bool isMapBorder(const u32&in index, const int&in width, const int&in height)
 	const bool top = index < width;
 	const bool bottom = index > width * height - width;
 	return left || right || top || bottom;
+}
+
+string Time_Date(u32&in time)
+{
+	const u32 SECONDS_PER_DAY = 86400;
+	const u32 SECONDS_PER_HOUR = 3600;
+	const u32 SECONDS_PER_MINUTE = 60;
+
+	u32 days = time / SECONDS_PER_DAY;
+	u32 year = 1970;
+
+	while (true)
+	{
+		const bool leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+		const u32 days_in_year = leap ? 366 : 365;
+
+		if (days >= days_in_year)
+		{
+			days -= days_in_year;
+			year++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	u8[] month_days = {31,28,31,30,31,30,31,31,30,31,30,31};
+
+	const bool leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+
+	if (leap)
+	{
+		month_days[1] = 29;
+	}
+
+	u32 month = 1;
+
+	for (u8 i = 0; i < 12; i++)
+	{
+		if (days >= month_days[i])
+		{
+			days -= month_days[i];
+			month++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	const u32 day = days + 1;
+	u32 remaining_seconds = time % SECONDS_PER_DAY;
+	const u32 hour = remaining_seconds / SECONDS_PER_HOUR;
+	remaining_seconds %= SECONDS_PER_HOUR;
+	const u32 minute = remaining_seconds / SECONDS_PER_MINUTE;
+
+	return year + "/" + month + "/" + day + " " + hour + ":" + minute;
 }
 
 // Testing purposes

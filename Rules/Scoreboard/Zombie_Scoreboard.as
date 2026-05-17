@@ -349,9 +349,12 @@ void RenderScoreboard(int render_id)
 
 	ui.Render();
 
-	if (getControls().isKeyPressed(KEY_LCONTROL) || getControls().isKeyPressed(KEY_LSHIFT))
+	if (g_debug == 1)
 	{
-		ui.Debug(getControls().isKeyPressed(KEY_LSHIFT));
+		if (getControls().isKeyPressed(KEY_LCONTROL) || getControls().isKeyPressed(KEY_LSHIFT))
+		{
+			ui.Debug(getControls().isKeyPressed(KEY_LSHIFT));
+		}
 	}
 
 	if (current_page !is @ScoreboardPage) return;
@@ -485,7 +488,7 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 	f32 width = 200;
 
 	const string info = Translate("ZF");
-	const string mapName = getTranslatedString("Map: {MAP}").replace("{MAP}", this.get_string("map_name"));
+	const string seed = Translate("Seed").replace("{INPUT}", this.get_string("map_name"));
 	const string dayRecord = Translate("AllTimeRecord").replace("{INPUT}", this.get_u16("day_record")+"");
 	const string dayCount = Translate("DayNum").replace("{DAYS}", this.get_u16("day_number")+"");
 	
@@ -493,7 +496,7 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 	GUI::GetTextDimensions(info, dim);
 	if (dim.x + 15 > width) width = dim.x + 15;
 
-	GUI::GetTextDimensions(mapName, dim);
+	GUI::GetTextDimensions(seed, dim);
 	if (dim.x + 15 > width) width = dim.x + 15;
 
 	pos.x -= width / 2;
@@ -508,7 +511,7 @@ void drawServerInfo(CRules@ this, const f32&in x, const f32&in y)
 	mid.y += 15;
 	GUI::DrawTextCentered(info, mid, color_white);
 	mid.y += 15;
-	GUI::DrawTextCentered(mapName, mid, color_white);
+	GUI::DrawTextCentered(seed, mid, color_white);
 	mid.y += 25;
 	GUI::DrawTextCentered(dayRecord, mid, color_white);
 	mid.y += 25;

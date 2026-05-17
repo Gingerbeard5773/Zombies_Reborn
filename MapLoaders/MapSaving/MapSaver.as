@@ -325,6 +325,9 @@ void SaveMap(CRules@ this, CMap@ map, const string&in save_slot = "AutoSave")
 	save.tech_data = SerializeTechTree();
 	save.map_seed = this.get_s32("map_seed");
 
+	// collect date & time saved
+	save.date_saved = Time_Local();
+
 	save.Write(config);
 
 	config.saveFile(Save::SaveFileName + save_slot);

@@ -25,6 +25,7 @@ class SaveFile
 	u16 bobert_day;
 	string tech_data;
 	s32 map_seed;
+	s32 date_saved;
 
 	SaveFile() {}
 
@@ -45,6 +46,7 @@ class SaveFile
 		bobert_day = config.read_u16("bobert_day", 0);
 		tech_data = config.read_string("tech_data", "");
 		map_seed = config.read_s32("map_seed", 0);
+		date_saved = config.read_s32("date_saved", 0);
 	}
 
 	void Write(ConfigFile@ config)
@@ -64,6 +66,7 @@ class SaveFile
 		config.add_u16("bobert_day", bobert_day);
 		config.add_string("tech_data", tech_data);
 		config.add_s32("map_seed", map_seed);
+		config.add_s32("date_saved", date_saved);
 	}
 
 	void Serialize(CBitStream@ stream)
@@ -83,6 +86,7 @@ class SaveFile
 		stream.write_u16(bobert_day);
 		stream.write_string(tech_data);
 		stream.write_s32(map_seed);
+		stream.write_s32(date_saved);
 	}
 
 	bool Unserialize(CBitStream@ stream)
@@ -102,6 +106,7 @@ class SaveFile
 		if (!stream.saferead_u16(bobert_day))         { error("Failed to read bobert_day [SaveFileCommon]");      return false; }
 		if (!stream.saferead_string(tech_data))       { error("Failed to read tech_data [SaveFileCommon]");       return false; }
 		if (!stream.saferead_s32(map_seed))           { error("Failed to read map_seed [SaveFileCommon]");        return false; }
+		if (!stream.saferead_s32(date_saved))         { error("Failed to read date_saved [SaveFileCommon]");      return false; }
 
 		return true;
 	}

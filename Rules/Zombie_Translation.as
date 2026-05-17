@@ -535,6 +535,8 @@ void SetupTranslations()
 	
 	//saves
 	d.set("Saves",                  Init("Saves", ""));
+	d.set("Seed",                   Init("Seed: {INPUT}", ""));
+	d.set("Date",                   Init("Date: {INPUT}", ""));
 	d.set("LoadWorld",              Init("Load World", ""));
 	d.set("SaveWorld",              Init("Saving Worlds", ""));
 	d.set("SaveInfo0",              Init("Use chat command", ""));
