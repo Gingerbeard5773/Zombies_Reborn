@@ -72,7 +72,7 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 
 bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-	return false;
+	return inventoryBlob.getName() == "crate";
 }
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
