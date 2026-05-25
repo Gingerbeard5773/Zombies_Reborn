@@ -8,6 +8,7 @@
 #include "GetSurvivors.as"
 #include "BrainTask.as"
 #include "SpatialNavigator.as"
+#include "PlayerPermissions.as"
 
 void onInit(CRules@ this)
 {
@@ -200,4 +201,48 @@ void doBobertEvent(CRules@ this, CMap@ map)
 	server_SendGlobalMessage(this, "Bobert", 6);
 
 	server_CreateBlob("bobert", 0, spawn);
+}
+
+void doEnchanterEvent(CRules@ this, CMap@ map, const u16&in day_number)
+{
+	if (day_number % 10 != 0) return; //every ten days
+
+	CBlob@[] spawners = getSurvivors();
+	getBlobsByTag("building", @spawners);
+	if (spawners.length == 0) return;
+	
+	Vec2f origin = spawners[XORRandom(spawners.length)].getPosition();
+	Navigator navigator(origin);
+	navigator.space_above = 4;
+	navigator.cost_evaluators = { @getProximityCost, @getRandomCost, @getTouchingBlobsCost, @getWaterCost };
+	navigator.valid_evaluators = { @isInMap, @isOpenSpace, @hasOpenSpaceAbove, @isOnGround };
+	Vec2f spawn = navigator.getBestPositionFromOrigin(32, 32);
+
+	server_SendGlobalMessage(this, "Enchanter", 6);
+
+	server_CreateBlob("enchanter", 0, spawn);
+}
+
+bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
+{
+	if (player is null) return true;
+
+	bool isAdmin, isSuperAdmin;
+	getPermissions(player, isAdmin, isSuperAdmin);
+	if (!isSuperAdmin) return true;
+
+	if (textIn == "!trader")
+	{
+		doTraderEvent(this, getMap());
+	}
+	else if (textIn == "!bobert")
+	{
+		doBobertEvent(this, getMap());
+	}
+	else if (textIn == "!enchanter")
+	{
+		doEnchanterEvent(this, getMap(), 10);
+	}
+
+	return true;
 }

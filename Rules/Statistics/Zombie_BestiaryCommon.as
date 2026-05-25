@@ -41,7 +41,8 @@ namespace Bestiary
 		{0, 1, 2, 3}, //spectre
 		{0},          //sedgwick
 		{0},          //trader
-		{0}           //bobert
+		{0},          //bobert
+		{0}           //enchanter
 	};
 
 	BestiaryEntry@[]@ getEntries()
@@ -60,7 +61,8 @@ namespace Bestiary
 			BestiaryEntry("spectre",      Translate("BestiarySpectre"),      "Spectre",       Vec2f(32, 32), 3, animation_frames[9]),
 			BestiaryEntry("sedgwick",     Translate("BestiarySedgwick"),     "Necromancer",   Vec2f(24, 24), 3, animation_frames[10]),
 			BestiaryEntry("trader",       Translate("BestiaryTrader"),       "TraderMale",    Vec2f(16, 16), 0, animation_frames[11]),
-			BestiaryEntry("bobert",       Translate("BestiaryBobert"),       "Bobert",        Vec2f(16, 16), 0, animation_frames[12])
+			BestiaryEntry("bobert",       Translate("BestiaryBobert"),       "Bobert",        Vec2f(16, 16), 0, animation_frames[12]),
+			BestiaryEntry("enchanter",    Translate("BestiaryEnchanter"),    "Enchanter",     Vec2f(24, 24), 0, animation_frames[13])
 		};
 
 		return @entries;
