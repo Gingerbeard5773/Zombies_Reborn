@@ -11,7 +11,7 @@ void ParticleBlast(Vec2f pos, const int&in amount = 1)
 		Vec2f vel(blast_random.NextFloat() * 2.0f, 0);
 		vel.RotateBy(blast_random.NextFloat() * 360.0f);
 
-		CParticle@ p = ParticleAnimated("GenericBlast6.png", pos, vel, f32(XORRandom(360)), 1.0f, 2 + XORRandom(4), 0.0f, true);
+		CParticle@ p = ParticleAnimated("GenericBlast6.png", pos, vel, f32(XORRandom(360)), 1.0f, 1 + XORRandom(4), 0.0f, true);
 		if (p is null) continue;
 
 		p.fastcollision = true;
@@ -31,13 +31,13 @@ void ParticleBlastBig(Vec2f pos, const int&in amount = 1)
 		Vec2f vel(blast_random.NextFloat() * 6.0f, 0);
 		vel.RotateBy(blast_random.NextFloat() * 360.0f);
 
-		CParticle@ p = ParticleAnimated("GenericBlast5.png", pos, vel, f32(XORRandom(360)), 1.0f, 2 + XORRandom(4), 0.0f, true);
+		CParticle@ p = ParticleAnimated("GenericBlast5.png", pos, vel, f32(XORRandom(360)), 1.0f, 1 + XORRandom(4), 0.0f, true);
 		if (p is null) continue;
 
 		p.fastcollision = true;
 		p.scale = 0.45f + blast_random.NextFloat()*0.5f;
 		p.damping = 0.85f;
-		p.Z = 200.0f;
+		p.Z = 300.0f;
 	}
 }
 
@@ -56,6 +56,6 @@ void ParticleBlastSmall(Vec2f pos, const int&in amount = 1)
 
 		p.bounce = 0;
 		p.fastcollision = true;
-		p.Z = 300.0f;
+		p.Z = 301.0f;
 	}
 }
