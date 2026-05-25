@@ -231,15 +231,15 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	getPermissions(player, isAdmin, isSuperAdmin);
 	if (!isSuperAdmin) return true;
 
-	if (textIn == "!trader")
+	if (text_in == "!trader")
 	{
 		doTraderEvent(this, getMap());
 	}
-	else if (textIn == "!bobert")
+	else if (text_in == "!bobert")
 	{
 		doBobertEvent(this, getMap());
 	}
-	else if (textIn == "!enchanter")
+	else if (text_in == "!enchanter")
 	{
 		doEnchanterEvent(this, getMap(), 10);
 	}
