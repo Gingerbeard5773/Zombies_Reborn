@@ -36,9 +36,9 @@ Payment@[]@ getEnchanterPayments()
 	//Payment("coin",           "Coins",           50, 500,   70),
 
 	Payment("mat_gold",       "Gold",            50, 150,   100),
-	Payment("mat_steelingot", "Steel Ingot",     3, 8,      40),
-	Payment("mat_ironingot",  "Iron Ingot",      8, 32,     40),
-	Payment("mat_coal",       "Coal",            150, 400,  40),
+	Payment("mat_steelingot", "Steel Ingot",     3, 8,      30),
+	Payment("mat_ironingot",  "Iron Ingot",      8, 20,     30),
+	Payment("mat_coal",       "Coal",            150, 400,  30),
 
 	Payment("scroll",         "Scroll",          1, 1,      70),
 
