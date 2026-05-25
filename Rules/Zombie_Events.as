@@ -48,6 +48,11 @@ void onNewDayHour(CRules@ this, u16 day_hour)
 
 	switch(day_hour)
 	{
+		case 2:
+		{
+			doEnchanterEvent(this, map, day_number);
+			break;
+		}
 		case 3:
 		{
 			if (day_number > bobert_day)
@@ -187,10 +192,10 @@ void doBobertEvent(CRules@ this, CMap@ map)
 	if (spawners.length == 0) return;
 
 	Vec2f origin = spawners[XORRandom(spawners.length)].getPosition();
-	Navigator navigator(origin, 20, 20);
-	navigator.cost_evaluators = { @getDistanceCost, @getRandomCost, @getTouchingBlobsCost, @getWaterCost };
-	navigator.valid_evaluators = { @isOpenSpace, @isOnGround };
-	Vec2f spawn = navigator.getWeightedPosition();
+	Navigator navigator(origin);
+	navigator.cost_evaluators = { @getProximityCost, @getRandomCost, @getTouchingBlobsCost, @getWaterCost };
+	navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isOnGround };
+	Vec2f spawn = navigator.getBestPositionFromOrigin(20, 20);
 
 	server_SendGlobalMessage(this, "Bobert", 6);
 

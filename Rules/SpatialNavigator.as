@@ -6,8 +6,6 @@
    This script is a generic tool that can be used for things like:
    - Finding spawning locations for blobs
    - Finding areas for your blob to move to
-   
-   Should be noted: this tool is only configured for blobs with 2x2 tilesize
 */
 
 funcdef f32 CostHandle(Vec2f, Navigator@);
@@ -16,20 +14,19 @@ funcdef bool ValidHandle(Vec2f, Navigator@);
 class Navigator
 {
 	Vec2f origin;
-	int width;
-	int height;
 
-	int space_above;
+	int space_above = 0;
+	f32 proximity = 64.0f;
 
 	CostHandle@[] cost_evaluators;
 	ValidHandle@[] valid_evaluators;
 
-	Navigator(Vec2f origin, const int&in width, const int&in height)
+	Navigator() {}
+
+	Navigator(Vec2f origin)
 	{
 		this.origin = getMap().getAlignedWorldPos(origin + Vec2f(4, 4));
-		this.width = width;
-		this.height = height;
-		
+
 		AddValidEvaluator(@isInMap);
 	}
 
@@ -43,25 +40,84 @@ class Navigator
 		valid_evaluators.push_back(handle);
 	}
 
-	Vec2f getWeightedPosition()
+	Vec2f getBestPositionFromOrigin(const int&in width, const int&in height)
 	{
-		Vec2f start_pos = origin - Vec2f(width * 4, height * 4);
+		Vec2f[]@ candidates = getValidPositionsInBox(origin, width, height);
+		return getBestPosition(candidates);
+	}
+	
+	Vec2f getBestPositionFromOrigin(const f32&in radius)
+	{
+		Vec2f[]@ candidates = getValidPositionsInRadius(origin, radius);
+		return getBestPosition(candidates);
+	}
 
-		f32 best_cost = 999999.0f;
-		Vec2f best_pos = origin;
+	Vec2f[]@ getValidPositionsInBox(Vec2f center, const int&in width, const int&in height)
+	{
+		Vec2f half_size(width * 4, height * 4);
+		Vec2f tl = center - half_size;
+		Vec2f br = center + half_size;
+		return getValidPositionsInBox(tl, br);
+	}
 
+	Vec2f[]@ getValidPositionsInBox(Vec2f tl, Vec2f br)
+	{
 		Vec2f[] candidates;
 
-		for (int w = 0; w < width; w++)
+		if (tl.x > br.x) { f32 t = tl.x; tl.x = br.x; br.x = t; }
+		if (tl.y > br.y) { f32 t = tl.y; tl.y = br.y; br.y = t; }
+
+		CMap@ map = getMap();
+
+		tl = map.getAlignedWorldPos(tl);
+		br = map.getAlignedWorldPos(br);
+
+		for (f32 x = tl.x; x <= br.x; x += 8.0f)
 		{
-			for (int h = 0; h < height; h++)
+			for (f32 y = tl.y; y <= br.y; y += 8.0f)
 			{
-				Vec2f candidate = start_pos + Vec2f(w * 8, h * 8);
+				Vec2f candidate(x, y);
+
 				if (!isValid(candidate)) continue;
 
 				candidates.push_back(candidate);
 			}
 		}
+
+		return candidates;
+	}
+
+	Vec2f[]@ getValidPositionsInRadius(Vec2f center, const f32&in radius)
+	{
+		Vec2f[] candidates;
+
+		CMap@ map = getMap();
+
+		center = map.getAlignedWorldPos(center);
+
+		for (f32 x = -radius; x < radius; x += 8.0f)
+		{
+			for (f32 y = -radius; y < radius; y += 8.0f)
+			{
+				Vec2f off(x, y);
+				if (off.LengthSquared() > radius * radius) continue;
+
+				Vec2f candidate = center + off;
+
+				if (!isValid(candidate)) continue;
+
+				candidates.push_back(candidate);
+			}
+		}
+
+		return candidates;
+	}
+
+	// Finds the candidate with the lowest cost from the passed list
+	Vec2f getBestPosition(Vec2f[]@ candidates)
+	{
+		f32 best_cost = 999999.0f;
+		Vec2f best_pos = origin;
 
 		while (candidates.length > 0)
 		{
@@ -112,7 +168,8 @@ Vec2f[] corners = { Vec2f(-4, -4), Vec2f(4, -4), Vec2f(-4, 4), Vec2f(4, 4) };
 bool isInMap(Vec2f pos, Navigator@ vars)
 {
 	Vec2f dim = getMap().getMapDimensions();
-	if (pos.x <= 0 || pos.x >= dim.x || pos.y >= dim.y) return false;
+	const f32 margin = 16.0f;
+	if (pos.x <= margin || pos.x >= dim.x - margin || pos.y >= dim.y - margin) return false;
 	return true;
 }
 
@@ -163,10 +220,10 @@ f32 getRandomCost(Vec2f pos, Navigator@ vars)
 	return XORRandom(50);
 }
 
-f32 getDistanceCost(Vec2f pos, Navigator@ vars)
+f32 getProximityCost(Vec2f pos, Navigator@ vars)
 {
 	const f32 distance = (pos - vars.origin).Length();
-	if (distance < 64.0f) return Maths::Abs(distance - 64.0f * 3);
+	if (distance < vars.proximity) return Maths::Abs(distance - vars.proximity * 2);
 
 	return 0.0f;
 }
