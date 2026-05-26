@@ -57,13 +57,13 @@ dictionary@ getGuideItems()
 	items.set("shotgun",             Translate("GuideShotgun"));
 	items.set("bazooka",             Translate("GuideBazooka"));
 	items.set("flamethrower",        Translate("GuideFlamethrower"));
-	items.set("magicquiver",         Translate("GuideMagicQuiver")));
-	items.set("trident",             Translate("GuideTrident")));
-	items.set("goldenhelmet",        Translate("GuideGoldenHelmet")));
-	items.set("goldenarmor",         Translate("GuideGoldenArmor")));
-	items.set("crowntelepathy",      Translate("GuideCrownTelepathy")));
-	items.set("wings",               Translate("GuideWings")));
-	items.set("goldenchicken",       Translate("GuideGoldenChicken")));
+	items.set("magicquiver",         Translate("GuideMagicQuiver"));
+	items.set("trident",             Translate("GuideTrident"));
+	items.set("goldenhelmet",        Translate("GuideGoldenHelmet"));
+	items.set("goldenarmor",         Translate("GuideGoldenArmor"));
+	items.set("crowntelepathy",      Translate("GuideCrownTelepathy"));
+	items.set("wings",               Translate("GuideWings"));
+	items.set("goldenchicken",       Translate("GuideGoldenChicken"));
 
 	return @items;
 }
