@@ -169,22 +169,18 @@ namespace Achievement
 
 	string getArray(const int&in index, ConfigFile@ cfg)
 	{
-		string achievements_array = cfg.exists("achievements") ? cfg.read_string("achievements") : "";
+		string achievements_array = cfg.read_string("achievements", "");
 
 		if (index >= achievements_array.length)
 		{
-			bool resized = false;
-			while (achievements_array.length < index)
+			while (achievements_array.length <= index)
 			{
 				achievements_array += "0";
-				resized = true;
 			}
-			if (resized)
-			{
-				print("Resizing achievements array to accomodate new achievements");
-				cfg.add_string("achievements", achievements_array);
-				cfg.saveFile(filename);
-			}
+
+			print("Resizing achievements array to accomodate new achievements");
+			cfg.add_string("achievements", achievements_array);
+			cfg.saveFile(filename);
 		}
 
 		return achievements_array;

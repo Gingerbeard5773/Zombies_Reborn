@@ -100,25 +100,21 @@ namespace Bestiary
 
 	string getArray(const int&in index, ConfigFile@ cfg)
 	{
-		string bestiary_entries = cfg.exists("bestiary_entries") ? cfg.read_string("bestiary_entries") : "";
+		string entries = cfg.read_string("bestiary_entries", "");
 
-		if (index >= bestiary_entries.length)
+		if (index >= entries.length)
 		{
-			bool resized = false;
-			while (bestiary_entries.length < index)
+			while (entries.length <= index)
 			{
-				bestiary_entries += "0";
-				resized = true;
+				entries += "0";
 			}
-			if (resized)
-			{
-				print("Resizing bestiary array to accomodate new entries");
-				cfg.add_string("bestiary_entries", bestiary_entries);
-				cfg.saveFile(filename);
-			}
+
+			print("Resizing bestiary array to accommodate new entries");
+			cfg.add_string("bestiary_entries", entries);
+			cfg.saveFile(filename);
 		}
 
-		return bestiary_entries;
+		return entries;
 	}
 
 	void client_Unlock(const string&in name)
