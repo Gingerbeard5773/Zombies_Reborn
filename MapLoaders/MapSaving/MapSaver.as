@@ -278,6 +278,24 @@ string SerializeTaskData(u16[]@ saved_netids)
 	return task_data;
 }
 
+string SerializeCoinData()
+{
+	string coin_data;
+
+	for (u16 i = 0; i < getPlayerCount(); i++)
+	{
+		CPlayer@ player = getPlayer(i);
+		if (player is null) continue;
+
+		const int coins = player.getCoins();
+		if (coins <= 0) continue;
+
+		coin_data += player.getUsername() + " " + coins + ";";
+	}
+
+	return coin_data;
+}
+
 string SerializeTechTree()
 {
 	string tech_data = "";
@@ -322,6 +340,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in save_slot = "AutoSave")
 	save.day_number = this.exists("day_number") ? this.get_u16("day_number") : 1;
 	save.day_time = map.getDayTime();
 	save.bobert_day = this.get_u16("bobert_day");
+	save.coin_data = SerializeCoinData();
 	save.tech_data = SerializeTechTree();
 	save.map_seed = this.get_s32("map_seed");
 
@@ -418,6 +437,8 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	//dirt data has to be loaded late because of an engine issue..
 	LoadDirt(map, save.dirt_data);
+
+	LoadCoins(this, save.coin_data);
 
 	LoadTechTree(this, save.tech_data);
 
@@ -668,6 +689,35 @@ void LoadTasks(CMap@ map, const string&in task_data, CBlob@[]@ loaded_blobs)
 	}
 
 	all_tasks.clear();
+}
+
+void LoadCoins(CRules@ this, const string&in coin_data)
+{
+	dictionary player_coins;
+
+	const string[]@ pairs = coin_data.split(";");
+	for (int i = 0; i < pairs.length - 1; i++)
+	{
+		const string[]@ indices = pairs[i].split(" ");
+		if (indices.length != 2) { error("MapSaver: Failed coin indices"); continue; }
+
+		const string username = indices[0];
+		const int coins = parseInt(indices[1]);
+
+		CPlayer@ player = getPlayerByUsername(username);
+		if (player is null)
+		{
+			player_coins.set(username, coins);
+			continue;
+		}
+
+		if (player.getCoins() < coins)
+		{
+			player.server_setCoins(coins);
+		}
+	}
+
+	this.set("player_coins", player_coins);
 }
 
 void LoadTechTree(CRules@ this, const string&in tech_data)

@@ -19,6 +19,7 @@ class SaveFile
 	string attachment_data;
 	string owner_data;
 	string equipment_data;
+	string coin_data;
 	string task_data;
 	u16 day_number;
 	f32 day_time;
@@ -40,6 +41,7 @@ class SaveFile
 		attachment_data = config.read_string("attachment_data", "");
 		owner_data = config.read_string("owner_data", "");
 		equipment_data = config.read_string("equipment_data", "");
+		coin_data = config.read_string("coin_data", "");
 		task_data = config.read_string("task_data", "");
 		day_number = config.read_u16("day_number", 1);
 		day_time = config.read_f32("day_time", 0.2f);
@@ -60,6 +62,7 @@ class SaveFile
 		config.add_string("attachment_data", attachment_data);
 		config.add_string("owner_data", owner_data);
 		config.add_string("equipment_data", equipment_data);
+		config.add_string("coin_data", coin_data);
 		config.add_string("task_data", task_data);
 		config.add_u16("day_number", day_number);
 		config.add_f32("day_time", day_time);
@@ -80,6 +83,7 @@ class SaveFile
 		WriteDivided(attachment_data, stream);
 		WriteDivided(owner_data, stream);
 		WriteDivided(equipment_data, stream);
+		WriteDivided(coin_data, stream);
 		WriteDivided(task_data, stream);
 		stream.write_u16(day_number);
 		stream.write_f32(day_time);
@@ -100,6 +104,7 @@ class SaveFile
 		if (!ReadDivided(attachment_data, stream))    { error("Failed to read attachment_data [SaveFileCommon]"); return false; }
 		if (!ReadDivided(owner_data, stream))         { error("Failed to read owner_data [SaveFileCommon]");      return false; }
 		if (!ReadDivided(equipment_data, stream))     { error("Failed to read equipment_data [SaveFileCommon]");  return false; }
+		if (!ReadDivided(coin_data, stream))          { error("Failed to read coin_data [SaveFileCommon]");       return false; }
 		if (!ReadDivided(task_data, stream))          { error("Failed to read task_data [SaveFileCommon]");       return false; }
 		if (!stream.saferead_u16(day_number))         { error("Failed to read day_number [SaveFileCommon]");      return false; }
 		if (!stream.saferead_f32(day_time))           { error("Failed to read day_time [SaveFileCommon]");        return false; }

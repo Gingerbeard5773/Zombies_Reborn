@@ -27,6 +27,9 @@ void onRestart(CRules@ this)
 {
 	if (isServer())
 	{
+		dictionary player_coins;
+		this.set("player_coins", player_coins);
+
 		CMap@ map = getMap();
 
 		LoadSavedRules(this, map);
@@ -92,7 +95,9 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
 	onDamageOwnerRejoin(this, player);
-	
+
+	onCoinsOwnerRejoin(this, player);
+
 	if (!isClient())
 	{
 		CBitStream stream;
@@ -142,6 +147,26 @@ void onDamageOwnerRejoin(CRules@ this, CPlayer@ player)
 		SerializeDamageOwnerPlayers(blobs, stream);
 		this.SendCommand(this.getCommandID("client_load_damage_owners"), stream, player);
 	}
+}
+
+void onCoinsOwnerRejoin(CRules@ this, CPlayer@ player)
+{
+	if (!isServer()) return;
+
+	dictionary@ player_coins;
+	if (!this.get("player_coins", @player_coins)) return;
+
+	const string username = player.getUsername();
+
+	int coins;
+	if (!player_coins.get(username, coins)) return;
+
+	if (player.getCoins() < coins)
+	{
+		player.server_setCoins(coins);
+	}
+
+	player_coins.delete(username);
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
