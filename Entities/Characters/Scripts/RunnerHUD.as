@@ -11,26 +11,37 @@ void onInit(CSprite@ this)
 
 void ManageCursors(CBlob@ this)
 {
-	if (getHUD().hasButtons())
+	CHUD@ hud = getHUD();
+	if (hud.hasButtons())
 	{
-		getHUD().SetDefaultCursor();
+		hud.SetDefaultCursor();
 		return;
 	}
 
 	const string name = this.getName();
 	if (name == "archer" || this.isAttached() && this.isAttachedToPoint("GUNNER"))
 	{
-		getHUD().SetCursorImage("Entities/Characters/Archer/ArcherCursor.png", Vec2f(32, 32));
-		getHUD().SetCursorOffset(Vec2f(-16, -16) * cl_mouse_scale);
+		hud.SetCursorImage("Entities/Characters/Archer/ArcherCursor.png", Vec2f(32, 32));
+		hud.SetCursorOffset(Vec2f(-16, -16) * cl_mouse_scale);
 	}
 	else if (name == "knight")
 	{
-		getHUD().SetCursorImage("Entities/Characters/Knight/KnightCursor.png", Vec2f(32, 32));
-		getHUD().SetCursorOffset(Vec2f(-11, -11) * cl_mouse_scale);
+		hud.SetCursorImage("Entities/Characters/Knight/KnightCursor.png", Vec2f(32, 32));
+		hud.SetCursorOffset(Vec2f(-11, -11) * cl_mouse_scale);
+	}
+	else if (name == "builder")
+	{
+		hud.SetCursorImage("Entities/Characters/Builder/BuilderCursor.png");
+		//hud.SetCursorOffset(Vec2f(0, 0) * cl_mouse_scale);
+	}
+	else if (name == "wizard")
+	{
+		hud.SetCursorImage("MagicCursor.png", Vec2f(32, 32));
+		hud.SetCursorOffset(Vec2f(-16, -16) * cl_mouse_scale);
 	}
 	else
 	{
-		getHUD().SetCursorImage("Entities/Characters/Builder/BuilderCursor.png");
+		hud.SetDefaultCursor();
 	}
 }
 

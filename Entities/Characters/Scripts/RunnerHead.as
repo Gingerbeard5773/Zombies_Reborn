@@ -15,32 +15,14 @@ const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
 
 int getHeadsPackIndex(int headIndex)
 {
-	if (headIndex > 255) {
-		if ((headIndex % 256) >= NUM_UNIQUEHEADS) {
+	if (headIndex > 255)
+	{
+		if ((headIndex % 256) >= NUM_UNIQUEHEADS)
+		{
 			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 256.0f));
 		}
 	}
 	return 0;
-}
-
-bool doTeamColour(int packIndex)
-{
-	switch (packIndex) {
-		case 1: //FOTW
-			return false;
-	}
-	//otherwise
-	return true;
-}
-
-bool doSkinColour(int packIndex)
-{
-	switch (packIndex) {
-		case 1: //FOTW
-			return false;
-	}
-	//otherwise
-	return true;
 }
 
 int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
@@ -83,11 +65,6 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 
 	return (((headIndex - NUM_UNIQUEHEADS / 2) * 2) +
 	        (blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
-}
-
-string getHeadTexture(int headIndex)
-{
-	return getHeadsPackByIndex(getHeadsPackIndex(headIndex)).filename;
 }
 
 void onPlayerInfoChanged(CSprite@ this)
@@ -164,11 +141,15 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		texture_file = "heads.png";
 	}
 
-	const int team = doTeamColour(headsPackIndex) ? blob.getTeamNum() : 0;
-	const int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
+	int team = blob.getTeamNum();
+
+	if (headsPackIndex == 1) // FOTW heads pack
+	{
+		team = 0;
+	}
 
 	//add new head
-	CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
+	CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, 0);
 	if (head !is null)
 	{
 		Animation@ anim = head.addAnimation("default", 0, false);
@@ -183,7 +164,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	blob.set_s32("head index", headFrame);
 	blob.set_string("head texture", texture_file);
 	blob.set_s32("head team", team);
-	blob.set_s32("head skin", skin);
+	blob.set_s32("head skin", 0);
 
 	return head;
 }
@@ -193,29 +174,28 @@ void onGib(CSprite@ this)
 	if (g_kidssafe) return;
 
 	CBlob@ blob = this.getBlob();
-	if (blob !is null && blob.getName() != "bed")
-	{
-		int frame = blob.get_s32("head index");
-		int framex = frame % FRAMES_WIDTH;
-		int framey = frame / FRAMES_WIDTH;
+	if (blob is null) return;
 
-		Vec2f pos = blob.getPosition();
-		Vec2f vel = blob.getVelocity();
-		f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.5;
-		makeGibParticle(
-			blob.get_string("head texture"),
-			pos, vel + getRandomVelocity(90, hp , 30),
-			framex, framey, Vec2f(16, 16),
-			2.0f, 20, "/BodyGibFall", blob.getTeamNum()
-		);
-	}
+	int frame = blob.get_s32("head index");
+	int framex = frame % FRAMES_WIDTH;
+	int framey = frame / FRAMES_WIDTH;
+
+	Vec2f pos = blob.getPosition();
+	Vec2f vel = blob.getVelocity();
+	f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.5;
+	makeGibParticle(
+		blob.get_string("head texture"),
+		pos, vel + getRandomVelocity(90, hp , 30),
+		framex, framey, Vec2f(16, 16),
+		2.0f, 20, "/BodyGibFall", blob.getTeamNum()
+	);
 }
 
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
-	this.getCurrentScript().tickFrequency = blob.getShape().isStatic() ? 60 : 1;
+	//this.getCurrentScript().tickFrequency = blob.getShape().isStatic() ? 60 : 1;
 
 	// head animations
 	CSpriteLayer@ head = this.getSpriteLayer("head");
@@ -228,12 +208,10 @@ void onTick(CSprite@ this)
 
 	if (head !is null)
 	{
-		Vec2f offset;
-
 		// pixeloffset from script
 		// set the head offset and Z value according to the pink/yellow pixels
 		int layer = 0;
-		Vec2f head_offset = getHeadOffset(blob, -1, layer);
+		Vec2f offset = getHeadOffset(blob, -1, layer);
 
 		// behind, in front or not drawn
 		if (layer == 0)
@@ -245,8 +223,6 @@ void onTick(CSprite@ this)
 			head.SetVisible(this.isVisible());
 			head.SetRelativeZ(layer * 0.25f);
 		}
-
-		offset = head_offset;
 
 		// set the proper offset
 		Vec2f headoffset(this.getFrameWidth() / 2, -this.getFrameHeight() / 2);
@@ -260,7 +236,7 @@ void onTick(CSprite@ this)
 			head.animation.frame = 2;
 
 			// sparkle blood if cut throat
-			if (getNet().isClient() && getGameTime() % 2 == 0 && blob.hasTag("cutthroat"))
+			if (isClient() && getGameTime() % 2 == 0 && blob.hasTag("cutthroat"))
 			{
 				Vec2f vel = getRandomVelocity(90.0f, 1.3f * 0.1f * XORRandom(40), 2.0f);
 				ParticleBlood(blob.getPosition() + Vec2f(this.isFacingLeft() ? headoffset.x : -headoffset.x, headoffset.y), vel, SColor(255, 126, 0, 0));
