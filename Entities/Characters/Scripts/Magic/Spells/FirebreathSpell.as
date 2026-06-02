@@ -112,7 +112,7 @@ class FirebreathSpell : Spell
 		Navigator navigator(pos);
 		navigator.proximity = 32.0f;
 		navigator.cost_evaluators = { @getProximityCost, @getRandomCost, @getVisibleCost };
-		navigator.valid_evaluators = { @isInMap, @isOpenSpace };
+		navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isUnobstructedByBlobs };
 		return navigator.getBestPositionFromOrigin(15, 15);
 	}
 }

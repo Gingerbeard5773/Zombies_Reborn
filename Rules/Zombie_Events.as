@@ -195,7 +195,7 @@ void doBobertEvent(CRules@ this, CMap@ map)
 	Vec2f origin = spawners[XORRandom(spawners.length)].getPosition();
 	Navigator navigator(origin);
 	navigator.cost_evaluators = { @getProximityCost, @getRandomCost, @getTouchingBlobsCost, @getWaterCost };
-	navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isOnGround };
+	navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isUnobstructedByBlobs, @isOnGround };
 	Vec2f spawn = navigator.getBestPositionFromOrigin(20, 20);
 
 	server_SendGlobalMessage(this, "Bobert", 6);
@@ -215,7 +215,7 @@ void doEnchanterEvent(CRules@ this, CMap@ map, const u16&in day_number)
 	Navigator navigator(origin);
 	navigator.space_above = 4;
 	navigator.cost_evaluators = { @getProximityCost, @getRandomCost, @getTouchingBlobsCost, @getWaterCost };
-	navigator.valid_evaluators = { @isInMap, @isOpenSpace, @hasOpenSpaceAbove, @isOnGround };
+	navigator.valid_evaluators = { @isInMap, @isOpenSpace, @hasOpenSpaceAbove, @isUnobstructedByBlobs, @isOnGround };
 	Vec2f spawn = navigator.getBestPositionFromOrigin(32, 32);
 
 	server_SendGlobalMessage(this, "Enchanter", 6);

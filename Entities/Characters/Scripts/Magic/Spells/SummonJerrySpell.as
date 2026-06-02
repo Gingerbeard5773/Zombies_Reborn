@@ -158,7 +158,7 @@ class SummonJerrySpell : Spell
 	{
 		Navigator navigator(pos);
 		navigator.cost_evaluators = { @getRandomCost };
-		navigator.valid_evaluators = { @isInMap, @isOpenSpace };
+		navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isUnobstructedByBlobs };
 		bot_start_pos = navigator.getBestPositionFromOrigin(30, 30);
 	}
 
@@ -176,7 +176,7 @@ class SummonJerrySpell : Spell
 	{
 		Navigator navigator(bot_start_pos);
 		navigator.cost_evaluators = { @getProximityCost, @getRandomCost };
-		navigator.valid_evaluators = { @isInMap, @isOpenSpace };
+		navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isUnobstructedByBlobs };
 		return navigator.getBestPositionFromOrigin(30, 30);
 	}
 

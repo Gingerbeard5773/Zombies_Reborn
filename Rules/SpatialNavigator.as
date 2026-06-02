@@ -211,6 +211,31 @@ bool isOnGround(Vec2f pos, Navigator@ vars)
 	return true;
 }
 
+bool isUnobstructedByBlobs(Vec2f pos, Navigator@ vars)
+{
+	CMap@ map = getMap();
+	CBlob@[] blobs;
+	Vec2f tl(pos.x - 2, pos.y - 2);
+	Vec2f br(pos.x + 2, pos.y + 2);
+	if (!map.getBlobsInBox(tl, br, @blobs)) return true;
+
+	for (int i = 0; i < blobs.length; i++)
+	{
+		CBlob@ blob = blobs[i];
+		CShape@ shape = blob.getShape();
+		if (shape is null) continue;
+		
+		if (!blob.isCollidable() || blob.isPlatform()) continue;
+
+		if (shape.isStatic() && shape.getConsts().support > 0)
+		{
+			return false;
+		}
+	}
+	
+	return true;
+}
+
 
 /// COSTS FUNCS
 ///  Determines how likely the position is- More cost equals less likely

@@ -208,7 +208,7 @@ class EnergyBeamStormSpell : Spell
 		Navigator navigator(bot_start_pos);
 		navigator.proximity = 200.0f;
 		navigator.cost_evaluators = { @getProximityCost, @getRandomCost };
-		navigator.valid_evaluators = { @isInMap, @isOpenSpace };
+		navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isUnobstructedByBlobs };
 		return navigator.getBestPositionFromOrigin(60, 60);
 	}
 

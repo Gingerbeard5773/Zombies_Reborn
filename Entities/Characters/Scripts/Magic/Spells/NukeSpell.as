@@ -205,7 +205,7 @@ class NukeSpell : Spell
 		Navigator navigator(bot_start_pos);
 		navigator.proximity = 300.0f;
 		navigator.cost_evaluators = { @getProximityCost, @getRandomCost };
-		navigator.valid_evaluators = { @isInMap, @isOpenSpace };
+		navigator.valid_evaluators = { @isInMap, @isOpenSpace, @isUnobstructedByBlobs };
 		return navigator.getBestPositionFromOrigin(80, 80);
 	}
 
