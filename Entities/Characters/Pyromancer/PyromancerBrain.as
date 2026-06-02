@@ -19,8 +19,6 @@
 
 	Sound effects (Laughing n shit)
 
-	Fix spawning ontop of doors or other 'solid' blobs
-
 	Change difficulty according to survivor count
 */
 

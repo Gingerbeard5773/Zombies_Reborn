@@ -25,7 +25,7 @@ class Navigator
 
 	Navigator(Vec2f origin)
 	{
-		this.origin = getMap().getAlignedWorldPos(origin + Vec2f(4, 4));
+		this.origin = getAlignedPos(origin);
 
 		AddValidEvaluator(@isInMap);
 	}
@@ -69,8 +69,8 @@ class Navigator
 
 		CMap@ map = getMap();
 
-		tl = map.getAlignedWorldPos(tl);
-		br = map.getAlignedWorldPos(br);
+		tl = getAlignedPos(tl);
+		br = getAlignedPos(br);
 
 		for (f32 x = tl.x; x <= br.x; x += 8.0f)
 		{
@@ -91,9 +91,7 @@ class Navigator
 	{
 		Vec2f[] candidates;
 
-		CMap@ map = getMap();
-
-		center = map.getAlignedWorldPos(center);
+		center = getAlignedPos(center);
 
 		for (f32 x = -radius; x < radius; x += 8.0f)
 		{
@@ -157,6 +155,13 @@ class Navigator
 		}
 		return true;
 	}
+	
+	Vec2f getAlignedPos(Vec2f pos)
+	{
+		const int x = Maths::Round(pos.x / 8) * 8;
+		const int y = Maths::Round(pos.y / 8) * 8;
+		return Vec2f(x, y);
+	}
 }
 
 
@@ -178,7 +183,10 @@ bool isOpenSpace(Vec2f pos, Navigator@ vars)
 	CMap@ map = getMap();
 	for (int i = 0; i < 4; i++)
 	{
-		Tile tile = map.getTile(pos + corners[i]);
+		Vec2f check_pos = pos + corners[i];
+		if (check_pos.y <= 0.0f) continue;
+
+		Tile tile = map.getTile(check_pos);
 		if (map.isTileSolid(tile)) return false;
 	}
 	return true;
@@ -193,7 +201,10 @@ bool hasOpenSpaceAbove(Vec2f pos, Navigator@ vars)
 	{
 		for (int y = 0; y < vars.space_above; y++)
 		{
-			Tile tile = map.getTile(start_pos + Vec2f(x * 8, y * 8));
+			Vec2f check_pos = start_pos + Vec2f(x * 8, y * 8);
+			if (check_pos.y <= 0.0f) continue;
+
+			Tile tile = map.getTile(check_pos);
 			if (map.isTileSolid(tile)) return false;
 		}
 	}
@@ -202,9 +213,12 @@ bool hasOpenSpaceAbove(Vec2f pos, Navigator@ vars)
 
 bool isOnGround(Vec2f pos, Navigator@ vars)
 {
+	pos.y += 12;
+	if (pos.y <= 0.0f) return false;
+	
 	CMap@ map = getMap();
-	if (!map.isTileSolid(map.getTile(pos + Vec2f(4, 12))) &&
-	    !map.isTileSolid(map.getTile(pos + Vec2f(-4, 12))))
+	if (!map.isTileSolid(map.getTile(pos + Vec2f(4, 0))) &&
+	    !map.isTileSolid(map.getTile(pos + Vec2f(-4, 0))))
 	{
 		return false;
 	}
