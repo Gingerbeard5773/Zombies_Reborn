@@ -21,7 +21,7 @@ void onTick(CBlob@ this)
 	if (getKnockedRemaining(this) < 10 && rand.NextRanged(8000 / (1 + level * 1.5f)) == 0)
 	{
 		const u8 knock = 5 + rand.NextRanged(3) * level;
-		SetKnocked(this, knock, true);
+		setKnocked(this, knock, true);
 	}
 	
 	if (this.isMyPlayer())
