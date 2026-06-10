@@ -56,8 +56,11 @@ void SetupTranslations()
 	d.set("Sedgwick",               Init("Sedgwick the necromancer has appeared!",                      "Некромант Седжвик только что явился!"));
 	d.set("Migrant1",               Init("A refugee has arrived!",                                      "Прибыл беженец!"));
 	d.set("Migrant2",               Init("Refugees have arrived!",                                      "Беженцы прибывают!"));
+	d.set("PeacefulNight",          Init("The night is peaceful...",                                    ""));
 	d.set("Bobert",                 Init("Bobert has appeared!",                                        ""));
 	d.set("Enchanter",              Init("Tim the enchanter has appeared!",                             ""));
+	d.set("Pyromancer",             Init("Solrath the pyromancer has appeared!",                        ""));
+	d.set("PyromancerAttack",       Init("Solrath is attacking!",                                       ""));
 	d.set("GoldTilesUnlocked",      Init("All technology researched- Gold tiles unlocked!",             ""));
 	d.set("ScrollTimeStart",        Init("Time is speeding up",                                         ""));
 	d.set("ScrollTimeFinish",       Init("Time has returned to its normal pace",                        ""));
@@ -318,6 +321,14 @@ void SetupTranslations()
 	d.set("Bobert3",                Init("Lotsa of valuables! for sale!",                            "Множества ценых вищей на продажу!"));
 	d.set("Bobert4",                Init("Hi!!! Buy my stuff! :D",                                   "Привет! Купи мои вещи!"));
 
+	//pyromancer
+	d.set("Pyromancer0",            Init("Tenacious humans, I have arrived to stomp out your vigor.", ""));
+	d.set("Pyromancer1",            Init("You are to be annihilated at this time.", ""));
+	d.set("Pyromancer2",            Init("None shall survive.", ""));
+	d.set("Pyromancer3",            Init("I must retreat, I will return...", ""));
+	d.set("Pyromancer4",            Init("I am free! Prepare to be destroyed!", ""));
+	d.set("Pyromancer5",            Init("Curse thee with your sealing magic. I shall escape soon to demolish you...", ""));
+	
 	//enchanter
 	d.set("Enchanter0",             Init("Bring forth the items I seek and you shall be rewarded.",        ""));
 	d.set("Enchanter1",             Init("Excellent. Bring forth an item you wish to be given power.",     ""));
@@ -331,7 +342,6 @@ void SetupTranslations()
 	d.set("Enchanter9",             Init("Provide me with what I require.",                                ""));
 	d.set("Enchanter10",            Init("Very well. Place before me what you seek to strengthen.",        ""));
 	d.set("Enchanter11",            Init("To have the gall to attempt such a thing, shame on thee...",     ""));
-
 	d.set("EnchantGUI0",            Init("Give Payment",                           ""));
 	d.set("EnchantGUI1",            Init("Assess Item",                            ""));
 	d.set("EnchantGUI2",            Init("Tim requires these items as remittance", ""));

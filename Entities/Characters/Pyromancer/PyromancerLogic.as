@@ -4,6 +4,12 @@
 #include "Hitters.as"
 #include "ParticleTeleport.as"
 #include "UndeadTeam.as"
+#include "Hitters.as"
+#include "GetSurvivors.as"
+#include "Zombie_Translation.as"
+#include "Zombie_GlobalMessagesCommon.as"
+
+const int breakout_time = 30 * 5;
 
 void onInit(CBlob@ this)
 {
@@ -35,12 +41,22 @@ void onInit(CBlob@ this)
 	this.addCommandID("knocked"); //unused atm, only added to stop console spam
 
 	this.server_setTeamNum(getUndeadTeam());
+	
+	this.SetChatBubbleFont("medium font");
 
 	this.addCommandID("client_teleport");
 
 	this.SetLight(true);
 	this.SetLightRadius(75.0f);
 	this.SetLightColor(SColor(255, 240, 170, 171));
+	
+	// Change difficulty depending on player count
+	if (isServer())
+	{
+		CPlayer@[] players; getSurvivors(@players);
+		const f32 additional = players.length * 5.0f;
+		this.server_SetHealth(this.getInitialHealth() + additional);
+	}
 }
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
@@ -49,6 +65,11 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 	{
 		this.getBrain().server_SetActive(false);
 	}
+}
+
+bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
+{
+	return false;
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
@@ -88,4 +109,80 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		ParticleTeleportSparks(old_pos, new_pos);
 		ParticleTeleport(new_pos);
 	}
+}
+
+void onTick(CBlob@ this)
+{
+	ProcessIntroduction(this);
+
+	if (this.isInInventory())
+	{
+		BreakoutOfCrate(this);
+	}
+}
+
+void ProcessIntroduction(CBlob@ this)
+{
+	if (getGameTime() % 30 != 0) return;
+
+	int intro_time = this.get_u8("introduction_time");
+	if (intro_time >= 15) return;
+	
+	intro_time++;
+
+	this.set_u8("introduction_time", intro_time);
+	
+	if (intro_time == 15 && isServer())
+	{
+		server_SendGlobalMessage(getRules(), "PyromancerAttack", 6);
+	}
+
+	switch(intro_time)
+	{
+		case 3:  Chat(this, Translate("Pyromancer0"));  break;
+		case 7:  Chat(this, Translate("Pyromancer1"));  break;
+		case 12: Chat(this, Translate("Pyromancer2"));  break;
+	}
+}
+
+void BreakoutOfCrate(CBlob@ this)
+{
+	if (!isServer()) return;
+
+	CBlob@ inventory_blob = this.getInventoryBlob();
+	if (inventory_blob is null) return;
+	
+	int breakout_delay = this.get_u32("breakout_delay") - 1;
+	if (breakout_delay <= 0)
+	{
+		this.server_Hit(inventory_blob, inventory_blob.getPosition(), Vec2f_zero, 0.3f, Hitters::crush, true);
+
+		breakout_delay = breakout_time;
+	}
+	this.set_u32("breakout_delay", breakout_delay);
+}
+
+void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	Chat(this, Translate("Pyromancer5"));
+
+	this.set_u8("introduction_time", 15);
+	this.set_u32("breakout_delay", breakout_time);
+
+	this.doTickScripts = true;
+}
+
+void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	Chat(this, Translate("Pyromancer4"));
+}
+
+void Chat(CBlob@ this, const string&in text)
+{
+	this.Chat(text);
+}
+
+void onDie(CBlob@ this)
+{
+	//reward for killing this boss
 }

@@ -340,6 +340,7 @@ void SaveMap(CRules@ this, CMap@ map, const string&in save_slot = "AutoSave")
 	save.day_number = this.exists("day_number") ? this.get_u16("day_number") : 1;
 	save.day_time = map.getDayTime();
 	save.bobert_day = this.get_u16("bobert_day");
+	save.pyromancer_day = this.get_u16("pyromancer_day");
 	save.coin_data = SerializeCoinData();
 	save.tech_data = SerializeTechTree();
 	save.map_seed = this.get_s32("map_seed");
@@ -447,6 +448,9 @@ bool LoadSavedRules(CRules@ this, CMap@ map)
 
 	this.set_u16("bobert_day", save.bobert_day);
 	this.Sync("bobert_day", true);
+	
+	this.set_u16("pyromancer_day", save.pyromancer_day);
+	this.Sync("pyromancer_day", true);
 
 	map.SetDayTime(save.day_time);
 	this.set_u16("last_day_hour", Maths::Roundf(save.day_time*10));

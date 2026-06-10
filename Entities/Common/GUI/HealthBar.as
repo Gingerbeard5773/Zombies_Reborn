@@ -7,7 +7,7 @@ void onRender(CSprite@ this)
 	CBlob@ blob = this.getBlob();
 	if (blob.isInInventory()) return;
 	
-	if (blob.hasTag("player") && !blob.hasTag("migrant")) return;
+	if (blob.getPlayer() !is null) return;
 	
 	Vec2f center = blob.getPosition();
 	Vec2f mouseWorld = getControls().getMouseWorldPos();

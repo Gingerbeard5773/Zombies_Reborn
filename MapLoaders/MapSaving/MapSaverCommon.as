@@ -45,6 +45,8 @@ void InitializeBlobHandlers()
 	blobHandlers.set("armoredbomber",  BomberBlobHandler());
 
 	blobHandlers.set("enchanter",      EnchanterBlobHandler());
+	
+	blobHandlers.set("pyromancer",     PyromancerBlobHandler());
 
 	blobHandlers.set("sign",           SignBlobHandler());
 }
@@ -482,6 +484,34 @@ class EnchanterBlobHandler : BlobDataHandler
 		blob.set_bool("enchanter_paid", enchanter_paid);
 		blob.set_u8("enchants_count", enchants_count);
 		blob.set_u32("time till departure", time_left);
+	}
+}
+
+class PyromancerBlobHandler : BlobDataHandler
+{
+	string Serialize(CBlob@ blob) override
+	{
+		string data = BlobDataHandler::Serialize(blob);
+		data += blob.get_u8("introduction_time") + ";";
+		data += blob.get_u16("brain_movement_delay") + ";";
+		
+		Vec2f destination = blob.get_Vec2f("brain_destination");
+		data += destination.x + ";" + destination.y + ";";
+		return data;
+	}
+
+	void LoadBlobData(CBlob@ blob, const string[]@ data) override
+	{
+		BlobDataHandler::LoadBlobData(blob, data);
+		if (data.length < 13) return;
+
+		const u8 intro_time = parseInt(data[9]);
+		const u16 movement_delay = parseInt(data[10]);
+		const f32 destination_x = parseFloat(data[11]);
+		const f32 destination_y = parseFloat(data[12]);
+		blob.set_u8("introduction_time", intro_time);
+		blob.set_u16("brain_movement_delay", movement_delay);
+		blob.set_Vec2f("brain_destination", Vec2f(destination_x, destination_y));
 	}
 }
 

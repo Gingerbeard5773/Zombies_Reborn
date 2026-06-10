@@ -24,6 +24,7 @@ class SaveFile
 	u16 day_number;
 	f32 day_time;
 	u16 bobert_day;
+	u16 pyromancer_day;
 	string tech_data;
 	s32 map_seed;
 	s32 date_saved;
@@ -46,6 +47,7 @@ class SaveFile
 		day_number = config.read_u16("day_number", 1);
 		day_time = config.read_f32("day_time", 0.2f);
 		bobert_day = config.read_u16("bobert_day", 0);
+		pyromancer_day = config.read_u16("pyromancer_day", 0);
 		tech_data = config.read_string("tech_data", "");
 		map_seed = config.read_s32("map_seed", 0);
 		date_saved = config.read_s32("date_saved", 0);
@@ -67,6 +69,7 @@ class SaveFile
 		config.add_u16("day_number", day_number);
 		config.add_f32("day_time", day_time);
 		config.add_u16("bobert_day", bobert_day);
+		config.add_u16("pyromancer_day", pyromancer_day);
 		config.add_string("tech_data", tech_data);
 		config.add_s32("map_seed", map_seed);
 		config.add_s32("date_saved", date_saved);
@@ -88,6 +91,7 @@ class SaveFile
 		stream.write_u16(day_number);
 		stream.write_f32(day_time);
 		stream.write_u16(bobert_day);
+		stream.write_u16(pyromancer_day);
 		stream.write_string(tech_data);
 		stream.write_s32(map_seed);
 		stream.write_s32(date_saved);
@@ -109,6 +113,7 @@ class SaveFile
 		if (!stream.saferead_u16(day_number))         { error("Failed to read day_number [SaveFileCommon]");      return false; }
 		if (!stream.saferead_f32(day_time))           { error("Failed to read day_time [SaveFileCommon]");        return false; }
 		if (!stream.saferead_u16(bobert_day))         { error("Failed to read bobert_day [SaveFileCommon]");      return false; }
+		if (!stream.saferead_u16(pyromancer_day))     { error("Failed to read pyromancer_day [SaveFileCommon]");  return false; }
 		if (!stream.saferead_string(tech_data))       { error("Failed to read tech_data [SaveFileCommon]");       return false; }
 		if (!stream.saferead_s32(map_seed))           { error("Failed to read map_seed [SaveFileCommon]");        return false; }
 		if (!stream.saferead_s32(date_saved))         { error("Failed to read date_saved [SaveFileCommon]");      return false; }
