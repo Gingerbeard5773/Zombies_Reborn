@@ -14,8 +14,6 @@
 	"hell portal" calamity spell
 
 	Sound effects (Laughing n shit)
-	
-	Add reward for killing the pyromancer
 */
 
 const int movement_delay = 30 * 3;

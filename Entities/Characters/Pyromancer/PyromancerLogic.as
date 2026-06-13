@@ -6,6 +6,7 @@
 #include "UndeadTeam.as"
 #include "Hitters.as"
 #include "GetSurvivors.as"
+#include "LootTable.as"
 #include "Zombie_Translation.as"
 #include "Zombie_GlobalMessagesCommon.as"
 
@@ -182,7 +183,16 @@ void Chat(CBlob@ this, const string&in text)
 	this.Chat(text);
 }
 
+LootItem@[] pyromancer_loot_table =
+{
+	LootItem("scroll_clone", 1, 1, 1),
+	LootItem("scroll_obliteration", 1, 1, 1),
+	LootItem("scroll_time", 1, 1, 1),
+	LootItem("scroll_rewind", 1, 1, 1),
+	LootItem("scroll_resurgence", 1, 1, 1)
+};
+
 void onDie(CBlob@ this)
 {
-	//reward for killing this boss
+	server_MakeLoot(pyromancer_loot_table, this);
 }
