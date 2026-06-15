@@ -20,16 +20,6 @@ void onInit(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	sprite.SetEmitSound("SpellLoop.ogg");
 	sprite.SetEmitSoundPaused(true);
-
-	for (int i = 0; i < 4; i++)
-	{
-		CSpriteLayer@ layer = sprite.addSpriteLayer("magic_coin_"+i, "coins.png", 16, 16, 0, 0);
-		Animation@ spin = layer.addAnimation("spin", 2, true);
-		int[] frames = { 3, 9, 15 };
-		spin.AddFrames(frames);
-		layer.SetAnimation(spin);
-		layer.SetVisible(false);
-	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -83,7 +73,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.Tag("used");
 		Sound::Play("SpellMagic1.ogg");
-		this.getSprite().ReloadSprites(0, 0);
 	}
 }
 
@@ -171,7 +160,7 @@ void HandleEffects(CBlob@ this)
 
 	for (int i = 0; i < 4; i++)
 	{
-		CSpriteLayer@ layer = sprite.getSpriteLayer("magic_coin_" + i);
+		CSpriteLayer@ layer = getCoinLayer(sprite, i);
 		if (layer is null) continue;
 
 		const f32 time = getGameTime() * 2.0f;
@@ -188,6 +177,22 @@ void HandleEffects(CBlob@ this)
 		layer.SetVisible(true);
 		layer.SetFacingLeft(false);
 	}
+}
+
+CSpriteLayer@ getCoinLayer(CSprite@ sprite, const int&in index)
+{
+	const string layer_name = "magic_coin_"+index;
+	CSpriteLayer@ layer = sprite.getSpriteLayer(layer_name);
+	if (layer is null)
+	{
+		@layer = sprite.addSpriteLayer(layer_name, "coins.png", 16, 16, 0, 0);
+		Animation@ spin = layer.addAnimation("spin", 2, true);
+		int[] frames = { 3, 9, 15 };
+		spin.AddFrames(frames);
+		layer.SetAnimation(spin);
+	}
+
+	return layer;
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)

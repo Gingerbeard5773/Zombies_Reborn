@@ -379,7 +379,9 @@ class BrainTask
 			CBlob@ b = blobsInRadius[i];
 			if ((!b.hasTag("undead") && !b.hasTag("skelepede")) || b.isAttached()) continue;
 
-			if (!canSeeAttacker(b)) continue;
+			if (!isAttacker(b)) continue;
+
+			if (!isAttackerVisible(b)) continue;
 
 			attackers.push_back(b);
 		}
@@ -387,7 +389,16 @@ class BrainTask
 		return @attackers;
 	}
 
-	bool canSeeAttacker(CBlob@ target)
+	bool isAttacker(CBlob@ target)
+	{
+		if (blob.getTeamNum() == target.getTeamNum()) return false;
+
+		if (target.isAttached()) return false;
+
+		return target.hasTag("undead") || target.hasTag("skelepede") || target.hasTag("player");
+	}
+
+	bool isAttackerVisible(CBlob@ target)
 	{
 		Vec2f aimvec = target.getPosition() - blob.getPosition();
 		HitInfo@[] hitinfos;
@@ -432,10 +443,10 @@ class BrainTask
 		return best_target;
 	}
 
-	u8 getPriority(CBlob@ b)
+	u8 getPriority(CBlob@ target)
 	{
-		if (b.hasTag("wraith")) return 255;
-		if (b.hasTag("skelepede")) return 254;
+		if (target.hasTag("wraith")) return 255;
+		if (target.hasTag("skelepede")) return 254;
 		return 0;
 	}
 
