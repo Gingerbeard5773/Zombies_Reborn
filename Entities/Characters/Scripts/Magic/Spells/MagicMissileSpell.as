@@ -17,6 +17,42 @@ class MagicMissileSpell : Spell
 		fragile = false;
 	}
 
+	void onTick(CBlob@ caster, WizardVars@ vars)
+	{
+		Spell::onTick(caster, vars);
+
+		vars.spell_position = getPos(caster);
+
+		if (!isClient()) return;
+
+		for (int i = 0; i < 1; i++)
+		{
+			const f32 angle = magic_random.NextFloat() * 360.0f;
+			const f32 r = 0.1f * Maths::Sqrt(magic_random.NextFloat());
+
+			Vec2f offset(r, 0);
+			offset.RotateBy(angle);
+
+			Vec2f particle_pos = vars.spell_position + offset;
+
+			Vec2f vel = offset;
+			if (vel.LengthSquared() > 0)
+			{
+				vel.Normalize();
+				vel *= 0.25f + magic_random.NextFloat() * 1.5f;
+			}
+
+			CParticle@ p = ParticlePixelUnlimited(particle_pos, vel, color_white, true);
+			if (p is null) continue;
+
+			p.collides = false;
+			p.timeout = 5 + magic_random.NextRanged(10);
+			p.damping = 0.92f;
+			p.gravity = Vec2f(0, 0);
+			p.Z = 650.0f;
+		}
+	}
+
 	void onComplete(CBlob@ caster, WizardVars@ vars)
 	{
 		Spell::onComplete(caster, vars);
@@ -52,6 +88,21 @@ class MagicMissileSpell : Spell
 			}
 		}
 
-		caster.getSprite().PlaySound("MagicMissile.ogg", 0.8f, 1.0f + XORRandom(3)/10.0f);
+		if (isClient())
+		{
+			caster.getSprite().PlaySound("MagicMissile.ogg", 0.8f, 1.0f + XORRandom(3)/10.0f);
+		}
+	}
+
+	Vec2f getDirection(CBlob@ caster)
+	{
+		Vec2f norm = caster.getAimPos() - caster.getPosition();
+		norm.Normalize();
+		return norm;
+	}
+
+	Vec2f getPos(CBlob@ caster)
+	{
+		return caster.getPosition() + getDirection(caster) * 8.0f;
 	}
 }
