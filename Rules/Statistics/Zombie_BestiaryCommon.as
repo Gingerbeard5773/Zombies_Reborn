@@ -42,27 +42,29 @@ namespace Bestiary
 		{0},          //sedgwick
 		{0},          //trader
 		{0},          //bobert
-		{0}           //enchanter
+		{0},          //enchanter
+		{0}           //pyromancer
 	};
 
 	BestiaryEntry@[]@ getEntries()
 	{
 		BestiaryEntry@[] entries =
 		{
-			BestiaryEntry("skeleton",     Translate("BestiarySkeleton"),     "Skeleton.png",      Vec2f(25, 25), 3, animation_frames[0]),
-			BestiaryEntry("zombie",       Translate("BestiaryZombie"),       "Zombie.png",        Vec2f(25, 25), 3, animation_frames[1]),
-			BestiaryEntry("zombieknight", Translate("BestiaryZombieKnight"), "ZombieKnight.png",  Vec2f(32, 32), 3, animation_frames[2]),
-			BestiaryEntry("greg",         Translate("BestiaryGreg"),         "Greg.png",          Vec2f(32, 32), 3, animation_frames[3]),
-			BestiaryEntry("wraith",       Translate("BestiaryWraith"),       "Wraith.png",        Vec2f(32, 32), 3, animation_frames[4]),
-			BestiaryEntry("darkwraith",   Translate("BestiaryDarkWraith"),   "DarkWraith.png",    Vec2f(32, 32), 3, animation_frames[5]),
-			BestiaryEntry("skelepede",    Translate("BestiarySkelepede"),    "SkelepedeIcon.png", Vec2f(96, 32), 3, animation_frames[6]),
-			BestiaryEntry("horror",       Translate("BestiaryHorror"),       "Horror.png",        Vec2f(32, 32), 3, animation_frames[7]),
-			BestiaryEntry("jerry",        Translate("BestiaryJerry"),        "Jerry.png",         Vec2f(32, 32), 3, animation_frames[8]),
-			BestiaryEntry("spectre",      Translate("BestiarySpectre"),      "Spectre.png",       Vec2f(32, 32), 3, animation_frames[9]),
-			BestiaryEntry("sedgwick",     Translate("BestiarySedgwick"),     "Necromancer.png",   Vec2f(24, 24), 3, animation_frames[10]),
-			BestiaryEntry("trader",       Translate("BestiaryTrader"),       "TraderMale.png",    Vec2f(16, 16), 0, animation_frames[11]),
-			BestiaryEntry("bobert",       Translate("BestiaryBobert"),       "Bobert.png",        Vec2f(16, 16), 0, animation_frames[12]),
-			BestiaryEntry("enchanter",    Translate("BestiaryEnchanter"),    "Enchanter.png",     Vec2f(24, 24), 0, animation_frames[13])
+			BestiaryEntry("skeleton",     Translate("BestiarySkeleton"),     "Skeleton.png",        Vec2f(25, 25), 3, animation_frames[0]),
+			BestiaryEntry("zombie",       Translate("BestiaryZombie"),       "Zombie.png",          Vec2f(25, 25), 3, animation_frames[1]),
+			BestiaryEntry("zombieknight", Translate("BestiaryZombieKnight"), "ZombieKnight.png",    Vec2f(32, 32), 3, animation_frames[2]),
+			BestiaryEntry("greg",         Translate("BestiaryGreg"),         "Greg.png",            Vec2f(32, 32), 3, animation_frames[3]),
+			BestiaryEntry("wraith",       Translate("BestiaryWraith"),       "Wraith.png",          Vec2f(32, 32), 3, animation_frames[4]),
+			BestiaryEntry("darkwraith",   Translate("BestiaryDarkWraith"),   "DarkWraith.png",      Vec2f(32, 32), 3, animation_frames[5]),
+			BestiaryEntry("skelepede",    Translate("BestiarySkelepede"),    "SkelepedeIcon.png",   Vec2f(96, 32), 3, animation_frames[6]),
+			BestiaryEntry("horror",       Translate("BestiaryHorror"),       "Horror.png",          Vec2f(32, 32), 3, animation_frames[7]),
+			BestiaryEntry("jerry",        Translate("BestiaryJerry"),        "Jerry.png",           Vec2f(32, 32), 3, animation_frames[8]),
+			BestiaryEntry("spectre",      Translate("BestiarySpectre"),      "Spectre.png",         Vec2f(32, 32), 3, animation_frames[9]),
+			BestiaryEntry("sedgwick",     Translate("BestiarySedgwick"),     "Necromancer.png",     Vec2f(24, 24), 3, animation_frames[10]),
+			BestiaryEntry("trader",       Translate("BestiaryTrader"),       "TraderMale.png",      Vec2f(16, 16), 0, animation_frames[11]),
+			BestiaryEntry("bobert",       Translate("BestiaryBobert"),       "Bobert.png",          Vec2f(16, 16), 0, animation_frames[12]),
+			BestiaryEntry("enchanter",    Translate("BestiaryEnchanter"),    "Enchanter.png",       Vec2f(24, 24), 0, animation_frames[13]),
+			BestiaryEntry("pyromancer",   Translate("BestiaryPyromancer"),   "PyromancerIcon.png",  Vec2f(32, 32), 0, animation_frames[14])
 		};
 
 		return @entries;

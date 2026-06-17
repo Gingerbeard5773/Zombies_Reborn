@@ -9,11 +9,14 @@
 #include "LootTable.as"
 #include "Zombie_Translation.as"
 #include "Zombie_GlobalMessagesCommon.as"
+#include "Zombie_BestiaryCommon.as"
 
 const int breakout_time = 30 * 5;
 
 void onInit(CBlob@ this)
 {
+	Bestiary::client_Unlock("pyromancer");
+
 	Spell@[] pyromancer_spells =
 	{
 		FireboltSpell(),

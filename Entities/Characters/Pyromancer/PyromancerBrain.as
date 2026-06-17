@@ -7,9 +7,9 @@
 /*
 	Complete sprite / head
 
-	assess if cmd is necessary for onComplete
-
-	Effects for any remaining spells
+	Change damage taken / implement "shield"?
+	
+	Debuff spells
 
 	"hell portal" calamity spell
 

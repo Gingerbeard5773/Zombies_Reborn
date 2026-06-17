@@ -327,8 +327,8 @@ void SetupTranslations()
 	d.set("Pyromancer2",            Init("None shall survive.", ""));
 	d.set("Pyromancer3",            Init("I must retreat, I will return...", ""));
 	d.set("Pyromancer4",            Init("I am free! Prepare to be destroyed!", ""));
-	d.set("Pyromancer5",            Init("Curse thee with your sealing magic. I shall escape soon to demolish you...", ""));
-	
+	d.set("Pyromancer5",            Init("Curse thee with your sealing magic. I shall escape soon...", ""));
+
 	//enchanter
 	d.set("Enchanter0",             Init("Bring forth the items I seek and you shall be rewarded.",        ""));
 	d.set("Enchanter1",             Init("Excellent. Bring forth an item you wish to be given power.",     ""));
@@ -554,10 +554,11 @@ void SetupTranslations()
 	d.set("BestiaryTrader",         Init("Trader\nThe merchant whom travels by sky to every settlement to trade. They offer scrolls of varying quality.",  ""));
 	d.set("BestiaryBobert",         Init("Bobert\nA friendly undead wandering trader who shows up occasionally with rare foreign goods.",                  ""));
 	d.set("BestiaryEnchanter",      Init("Tim\nA wizard who specializes in enchanting, he is capable of improving your items for a price.",                ""));
-	
+	d.set("BestiaryPyromancer",     Init("Solrath\nAn extremely dangerous pyromancer whom serves as a powerful force of the undead army.", ""));
+
 	//settings
 	d.set("Settings",               Init("Settings", ""));
-	
+
 	//saves
 	d.set("Saves",                  Init("Saves", ""));
 	d.set("Seed",                   Init("Seed: {INPUT}", ""));

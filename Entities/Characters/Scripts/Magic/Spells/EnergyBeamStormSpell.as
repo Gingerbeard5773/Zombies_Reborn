@@ -16,7 +16,7 @@ class EnergyBeamStormSpell : Spell
 		result_name = "energybeamstorm";
 		icon_name = "$orb$";
 		tier = SpellTier::TierIII;
-		time_to_cast = 30 * 8;
+		time_to_cast = 30 * 10;
 		cooldown_time = 3000;
 		auto_cast = true;
 		fragile = true;
