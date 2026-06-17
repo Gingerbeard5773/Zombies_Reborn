@@ -50,13 +50,14 @@ void EquipBlob(CBlob@ this, CBlob@ equippedblob)
 
 	SetBlobActive(equippedblob, false);
 
+	equippedblob.SetDamageOwnerPlayer(this.getPlayer());
+	equippedblob.set_netid("equipper_id", this.getNetworkID());
+
 	onEquipHandle@ onEquip;
 	if (equippedblob.get("onEquip handle", @onEquip))
 	{
 		onEquip(equippedblob, this);
 	}
-
-	equippedblob.set_netid("equipper_id", this.getNetworkID());
 }
 
 void UnequipBlob(CBlob@ this, CBlob@ equippedblob, const bool&in put_in_inventory = true)
@@ -65,6 +66,8 @@ void UnequipBlob(CBlob@ this, CBlob@ equippedblob, const bool&in put_in_inventor
 	equippedblob.setPosition(this.getPosition());
 
 	SetBlobActive(equippedblob, true);
+
+	equippedblob.set_netid("equipper_id", 0);
 
 	if (put_in_inventory)
 	{
@@ -76,8 +79,6 @@ void UnequipBlob(CBlob@ this, CBlob@ equippedblob, const bool&in put_in_inventor
 	{
 		onUnequip(equippedblob, this);
 	}
-
-	equippedblob.set_netid("equipper_id", 0);
 }
 
 void SetBlobActive(CBlob@ equippedblob, const bool&in active)
