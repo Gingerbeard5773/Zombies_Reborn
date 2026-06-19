@@ -320,7 +320,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	{
 		this.server_Hit(blob, blob.getPosition(), Vec2f_zero, 10.0f, Hitters::crush, true);
 	}
-	else if (blob.hasTag("player") && !blob.hasTag("undead") && !blob.hasTag("dead") && !this.hasAttached())
+	else if (canGrabTarget(this, blob))
 	{
 		//attach victim to mouth
 		Vec2f mouth(0, -5);
@@ -338,6 +338,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			this.server_AttachTo(blob, "PICKUP");
 		}
 	}
+}
+
+bool canGrabTarget(CBlob@ this, CBlob@ blob)
+{
+	if (this.hasAttached()) return false;
+
+	if (this.getTeamNum() == blob.getTeamNum()) return false;
+
+	return blob.hasTag("player") && !blob.hasTag("undead") && !blob.hasTag("dead");
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
