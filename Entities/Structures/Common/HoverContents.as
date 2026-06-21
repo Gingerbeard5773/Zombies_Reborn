@@ -101,7 +101,10 @@ string getIconName(CBlob@ item, const string&in name)
 
 bool isValuable(CBlob@ item)
 {
-	if (item.getName() == "holygrenade") return true;
+	const string name = item.getName();
+	if (name == "holygrenade" || name == "chainsaw" || name == "spear" || name == "partisan") return true;
+
+	if (name == "bucket") return false;
 
 	return item.hasTag("gun") || item.exists("equipment_slot");
 }
