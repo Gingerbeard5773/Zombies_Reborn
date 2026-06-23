@@ -179,6 +179,8 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
 	Chat(this, Translate("Pyromancer4"));
+	this.set_Vec2f("brain_destination", inventoryBlob.getPosition());
+	this.set_u16("brain_movement_delay", 90);
 }
 
 void Chat(CBlob@ this, const string&in text)

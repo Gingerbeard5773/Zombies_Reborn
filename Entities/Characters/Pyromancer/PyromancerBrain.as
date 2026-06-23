@@ -16,7 +16,7 @@
 	Sound effects (Laughing n shit)
 */
 
-const int movement_delay = 30 * 3;
+const int movement_delay = 30 * 2;
 const int target_delay = 45;
 
 const f32 teleport_distance = 240.0f;
